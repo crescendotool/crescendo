@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by Peter Visser (Controllab Products B.V.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="XML-RPC_Library">
+		<xs:annotation>
+			<xs:documentation>CommandPlugin Schema</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="schemeVersion">
+					<xs:complexType>
+						<xs:group ref="versionInfo"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="name" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The name of the library</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="interfaceVersion">
+					<xs:complexType>
+						<xs:group ref="versionInfo"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="implementationVersion">
+					<xs:complexType>
+						<xs:group ref="versionInfo"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="description" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Optional descriptio of the library</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="methods">
+					<xs:annotation>
+						<xs:documentation>All the methods that are belonging to this library</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="method">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="description" minOccurs="0"/>
+										<xs:element ref="methodCall">
+											<xs:annotation>
+												<xs:documentation>XML-RPC methodCall</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:group ref="validMethodResponse"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="methodFaultResponses">
+					<xs:annotation>
+						<xs:documentation>All the fault responses belonging to all the methods in this library</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:group ref="faultMethodResponse"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="methodCall">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="methodName" type="xs:string"/>
+				<xs:element name="params" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:element name="param">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="value">
+											<xs:complexType>
+												<xs:group ref="structValue"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="description" type="xs:string"/>
+	<xs:group name="versionInfo">
+		<xs:sequence>
+			<xs:element name="major" type="xs:nonNegativeInteger"/>
+			<xs:element name="minor" type="xs:nonNegativeInteger"/>
+			<xs:element name="revision" type="xs:nonNegativeInteger"/>
+			<xs:element name="patch" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>default 0</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:element name="struct">
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element name="member">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name"/>
+							<xs:group ref="scalarValue"/>
+							<xs:element ref="description" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:group name="scalarValue">
+		<xs:sequence>
+			<xs:element name="value">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="int" type="xs:int"/>
+						<xs:element name="i4" type="xs:int"/>
+						<xs:element name="boolean" type="xs:boolean"/>
+						<xs:element name="string" type="xs:string"/>
+						<xs:group ref="structValue"/>
+						<xs:element name="double" type="xs:double"/>
+						<xs:element name="dateTime.iso8601" type="xs:dateTime"/>
+						<xs:element name="base64" type="xs:base64Binary"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="structValue">
+		<xs:sequence>
+			<xs:element name="struct">
+				<xs:complexType>
+					<xs:sequence maxOccurs="unbounded">
+						<xs:element name="member">
+							<xs:annotation>
+								<xs:documentation>XSD is not as strict here as should be! first member must be faultCode-int second member must be faultString-string</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="name"/>
+									<xs:choice>
+										<xs:group ref="scalarValue"/>
+										<xs:group ref="arrayValue"/>
+									</xs:choice>
+									<xs:element ref="description" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Optional description for each member</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="validMethodResponse">
+		<xs:sequence>
+			<xs:element name="methodResponse">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="params">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="param">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="value">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:group ref="structValue"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="faultMethodResponse">
+		<xs:sequence>
+			<xs:element name="methodResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="fault">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="value">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="struct">
+													<xs:annotation>
+														<xs:documentation>Method fault as one member with int and one member with string</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence minOccurs="2" maxOccurs="2">
+															<xs:element name="member">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="name" type="xs:string"/>
+																		<xs:element name="value">
+																			<xs:complexType>
+																				<xs:choice>
+																					<xs:element name="int"/>
+																					<xs:element name="string"/>
+																				</xs:choice>
+																			</xs:complexType>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="arrayValue">
+		<xs:sequence>
+			<xs:element name="array">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="data">
+							<xs:complexType>
+								<xs:sequence minOccurs="0" maxOccurs="unbounded">
+									<xs:group ref="scalarValue"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+</xs:schema>
