@@ -15,7 +15,7 @@
   			<groupId>org.destecs.tools</groupId>
   			<artifactId>jprotocolgenerator</artifactId>
   			<version>1.0.0</version>
-  			<executions>
+  			<!-- executions>
 					<execution>
 						<id>java</id>
 						<phase>process-resources</phase>
@@ -24,13 +24,13 @@
 							
 						</goals>
 					</execution>
-				</executions>
+				</executions-->
   			<configuration>
 					<name>
 						ICoSimProtocol
 					</name>
 					<xmldefinition>
-						 SimplifiedDestecsInterface.xml
+						 DestecsInterface.xml
 					</xmldefinition>
 					<packagename>
 						org.destecs.protocol

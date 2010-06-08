@@ -128,10 +128,11 @@
 						<xs:element name="i4" type="xs:int"/>
 						<xs:element name="boolean" type="xs:boolean"/>
 						<xs:element name="string" type="xs:string"/>
-						<xs:group ref="structValue"/>
 						<xs:element name="double" type="xs:double"/>
 						<xs:element name="dateTime.iso8601" type="xs:dateTime"/>
 						<xs:element name="base64" type="xs:base64Binary"/>
+						<xs:group ref="structValue"/>
+						<xs:group ref="arrayValue"/>
 					</xs:choice>
 				</xs:complexType>
 			</xs:element>
@@ -148,10 +149,9 @@
 							</xs:annotation>
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="name"/>
+									<xs:element name="name" type="xs:string" nillable="true"/>
 									<xs:choice>
 										<xs:group ref="scalarValue"/>
-										<xs:group ref="arrayValue"/>
 									</xs:choice>
 									<xs:element ref="description" minOccurs="0">
 										<xs:annotation>
