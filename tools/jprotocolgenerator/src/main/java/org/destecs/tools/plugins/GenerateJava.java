@@ -4,9 +4,7 @@ import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.destecs.tools.XmlRpcJavaInterfaceGenerator;
-import org.overturetool.astgen.ASTgen;
-import org.overturetool.astgen.Kind;
+import org.destecs.tools.jprotocolgenerator.XmlRpcJavaInterfaceGenerator;
 
 /**
  * Generate Java source form an AST file

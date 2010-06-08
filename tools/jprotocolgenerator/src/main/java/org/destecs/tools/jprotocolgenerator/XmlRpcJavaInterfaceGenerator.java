@@ -1,4 +1,4 @@
-package org.destecs.tools;
+package org.destecs.tools.jprotocolgenerator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,6 +13,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.Assert;
 
+import org.destecs.tools.jprotocolgenerator.ast.IInterface;
+import org.destecs.tools.jprotocolgenerator.ast.ITypeNode;
+import org.destecs.tools.jprotocolgenerator.ast.ListType;
+import org.destecs.tools.jprotocolgenerator.ast.MapType;
+import org.destecs.tools.jprotocolgenerator.ast.Method;
+import org.destecs.tools.jprotocolgenerator.ast.Parameter;
+import org.destecs.tools.jprotocolgenerator.ast.RpcMethodAnnotation;
+import org.destecs.tools.jprotocolgenerator.ast.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,36 +55,38 @@ public class XmlRpcJavaInterfaceGenerator
 	public static final String TAG_INT = "int";
 	public static final String TAG_DOUBLE = "double";
 
-	public static final String TYPE_ERROR = "_ERROR_UNKNOWN_TYPE_";
+	public static final ITypeNode TYPE_ERROR = new Type();
 
 	/**
-	 * @param args xml definition file (required), interface name, packagename ,output folder
+	 * @param args
+	 *            xml definition file (required), interface name, packagename ,output folder
 	 */
 	public static void main(String[] args)
-	{String interfaceName = null;
-			String outputFolder = null;
+	{
+		String interfaceName = null;
+		String outputFolder = null;
 
 		StringBuffer sb = new StringBuffer();
+		IInterface interfaceNode = new IInterface();
 		String outputFileName = "";
 		try
 		{
 			String packageName = "org.destecs.protocol";
 			String xmlFilePath = args[0];
-			
-			if(args.length == 4)
+
+			if (args.length == 4)
 			{
 				interfaceName = args[1];
 				packageName = args[2];
-				outputFolder  = args[3];
+				outputFolder = args[3];
 			}
-			
+
 			System.out.println("Interface Generation:");
-			System.out.println("\tInterfaceName: "+ interfaceName);
-			System.out.println("\tPackageName: "+ packageName);
-			System.out.println("\tInput Xml: "+ xmlFilePath);
-			System.out.println("\tOutput folder: "+ outputFolder);
-			
-			
+			System.out.println("\tInterfaceName: " + interfaceName);
+			System.out.println("\tPackageName: " + packageName);
+			System.out.println("\tInput Xml: " + xmlFilePath);
+			System.out.println("\tOutput folder: " + outputFolder);
+
 			File file = new File(xmlFilePath);
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -84,16 +94,25 @@ public class XmlRpcJavaInterfaceGenerator
 			doc.getDocumentElement().normalize();
 
 			outputFileName = cleanName(doc.getDocumentElement().getNodeName());
-			sb.append("package "+packageName+";");
+
+			interfaceNode.packageName = packageName;
+			sb.append("package " + packageName + ";");
 
 			sb.append("\n");
+
+			interfaceNode.imports.add(new Type(Map.class));
+			interfaceNode.imports.add(new Type(List.class));
+
 			sb.append("\nimport " + Map.class.getName() + ";");
 			sb.append("\nimport " + List.class.getName() + ";");
 			sb.append("\n");
-			if(interfaceName == null)
+			if (interfaceName == null)
 			{
-				interfaceName = "I"+ outputFileName;
+				interfaceName = "I" + outputFileName;
 			}
+
+			interfaceNode.name = interfaceName;
+
 			sb.append("\npublic interface " + interfaceName);
 			sb.append("\n{");
 
@@ -110,33 +129,96 @@ public class XmlRpcJavaInterfaceGenerator
 					Element fstElmnt = (Element) fstNode;
 
 					sb.append("\n\t");
-					sb.append(getMethodSignature(fstElmnt));
+					// sb.append(getMethodSignature(fstElmnt));
+					interfaceNode.definitions.add(getMethodSignature(fstElmnt));
 					sb.append("\n");
 
 				}
 
 			}
 			sb.append("\n}");
+			sb = new StringBuffer();
+			sb.append(interfaceNode.toSource());
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 
 		System.out.println(sb.toString());
+
+		System.out.println("\n\n");
+		System.out.println(new GenerateProxy().generate(interfaceNode, outputFolder));
+
+		List<IInterface> interfaceDefinitions = unpackGroups(interfaceNode);
+
+		saveFile(interfaceName, outputFolder, interfaceNode.toSource());
+
+		for (IInterface iInterface : interfaceDefinitions)
+		{
+			saveFile(iInterface.name, outputFolder, iInterface.toSource());
+		}
+
+	}
+
+	private static List<IInterface> unpackGroups(IInterface interfaceNode)
+	{
+		List<String> groups = new Vector<String>();
+		for (Method m : interfaceNode.definitions)
+		{
+			if (m.group != null && !groups.contains(m.group)
+					&& m.group.trim().length() > 0)
+			{
+				groups.add(m.group);
+			}
+		}
+
+		List<IInterface> interfaces = new Vector<IInterface>();
+		List<Method> medthods = new Vector<Method>();
+		for (String group : groups)
+		{
+			IInterface intf = new IInterface();
+			intf.imports = interfaceNode.imports;
+			intf.packageName = interfaceNode.packageName;
+			intf.name = getValidJavaName("I"+firstCharToUpper(makeJavaName(group), true));
+			for (Method m : interfaceNode.definitions)
+			{
+				if (m.group != null && m.group.equals(group))
+				{
+					intf.definitions.add(m);
+					medthods.add(m);
+				}
+			}
+			interfaceNode.extended.add(intf);
+			interfaces.add(intf);
+		}
+
+		// remove all grouped from source interface
+		interfaceNode.definitions.removeAll(medthods);
+		
+		
+		
+
+		return interfaces;
+
+	}
+
+	private static void saveFile(String fileName, String outputFolder,
+			String data)
+	{
 		FileOutputStream fos;
 		try
 		{
 			File output = null;
-			if(outputFolder!=null)
+			if (outputFolder != null)
 			{
-				output = new File(outputFolder,interfaceName+".java");
-			}else
+				output = new File(outputFolder, fileName + ".java");
+			} else
 			{
-				output = new File(interfaceName+".java");
+				output = new File(fileName + ".java");
 			}
-			fos = new FileOutputStream( output, false);
+			fos = new FileOutputStream(output, false);
 
-			fos.write(sb.toString().getBytes());
+			fos.write(data.toString().getBytes());
 			fos.close();
 		} catch (FileNotFoundException e)
 		{
@@ -149,31 +231,36 @@ public class XmlRpcJavaInterfaceGenerator
 		}
 	}
 
-	private static String getParams(Element paramsNode, boolean isReturn)
+	private static List<Parameter> getParams(Element paramsNode,
+			boolean isReturn)
 	{
-		StringBuilder sb = new StringBuilder();
+//		StringBuilder sb = new StringBuilder();
 
+		List<Parameter> parameters = new Vector<Parameter>();
 		// Element paramsNode = (Element) element.getElementsByTagName(TAG_PARAMS).item(0);
 
 		if (!paramsNode.hasChildNodes())
 		{
-			return Void.class.getName();
-		}
-
-		for (Element param : getElements(paramsNode.getElementsByTagName(TAG_PARAM)))
+			parameters.add(new Parameter(new Type(Void.class)));
+		} else
 		{
-			if (sb.length() > 0)
-			{
-				sb.append(",");
-			}
-			sb.append(" " + getParam(param, isReturn));
-		}
 
-		return sb.toString().trim();
+			for (Element param : getElements(paramsNode.getElementsByTagName(TAG_PARAM)))
+			{
+				// if (sb.length() > 0)
+				// {
+				// sb.append(",");
+				// }
+				// sb.append(" " + getParam(param, isReturn));
+				parameters.add(getParam(param, isReturn));
+			}
+		}
+		return parameters;// sb.toString().trim();
 	}
 
-	private static String getMethodSignature(Element element)
+	private static Method getMethodSignature(Element element)
 	{
+		Method method = new Method();
 		StringBuilder sb = new StringBuilder();
 
 		String name = "";
@@ -189,10 +276,17 @@ public class XmlRpcJavaInterfaceGenerator
 					if (c2.getNodeName().equals(TAG_METHOD_NAME))
 					{
 						name = c2.getFirstChild().getNodeValue();
+						method.name =getValidJavaName( makeJavaName(removeGroup(name)));
+						method.group = getGroup(name);
+						if (!method.name.equals(name))
+						{
+							method.annotation = new RpcMethodAnnotation(name);
+						}
 					} else if (c2.getNodeName().equals(TAG_PARAMS))
 					{
 
-						parameters = getParams(c2, false);
+						// parameters = getParams(c2, false);
+						method.parameters = getParams(c2, false);
 					}
 
 				}
@@ -207,7 +301,8 @@ public class XmlRpcJavaInterfaceGenerator
 					if (c2.getNodeName().equals(TAG_PARAMS))
 					{
 
-						returnType = getParams(c2, true);
+						// returnType = getParams(c2, true);
+						method.returnType = getParams(c2, true).get(0).type;
 					}
 
 				}
@@ -219,10 +314,13 @@ public class XmlRpcJavaInterfaceGenerator
 		{
 			for (Node node : getNodes(element.getChildNodes(), Node.COMMENT_NODE))
 			{
-				sb.append("\n\t/**");
-				sb.append("\n\t* " + node.getNodeValue().replace("\n", "\n\t* "));
-				sb.append("\n\t*/");
-				sb.append("\n\t");
+				StringBuilder doc = new StringBuilder();
+				doc.append("\n\t/**");
+				doc.append("\n\t* "
+						+ node.getNodeValue().replace("\n", "\n\t* "));
+				doc.append("\n\t*/");
+				// doc.append("\n\t");
+				method.javaDoc = doc.toString();
 			}
 		}
 		sb.append(returnType);
@@ -235,10 +333,68 @@ public class XmlRpcJavaInterfaceGenerator
 		}
 		sb.append(");");
 		System.out.println("Method generation completed: " + name);
-		return sb.toString();
+		return method;// sb.toString();
 	}
 
-	private static String getParam(Element param, boolean isReturn)
+	private static String removeGroup(String name)
+	{
+		if (name.contains("."))
+		{
+			return name.substring(name.lastIndexOf('.') + 1);
+		}
+		return name;
+	}
+
+	private static String getGroup(String name)
+	{
+		if (name.contains("."))
+		{
+			return name.substring(0, name.lastIndexOf('.'));
+		}
+		return "";
+	}
+
+	private static String makeJavaName(String name)
+	{
+		StringBuilder sb = new StringBuilder();
+		if (name.contains("."))
+		{
+			int count = 0;
+			for (String part : name.split("\\."))
+			{
+				if (count > 0)
+				{
+					sb.append("_");
+				}
+				sb.append(firstCharToUpper(part, false));
+
+				count++;
+			}
+		} else
+		{
+			sb.append(name);
+		}
+		return firstCharToUpper(sb.toString(), false);
+	}
+
+	private static String firstCharToUpper(String part, boolean upper)
+	{
+		if (part == null || part.length() == 0)
+		{
+			return "";
+		}
+		String start = part.substring(0, 1);
+		if (upper)
+		{
+			start = start.toUpperCase();
+		} else
+		{
+			start = start.toLowerCase();
+		}
+		return start + part.substring(1);
+	}
+
+	private static Parameter getParam(Element param, boolean isReturn)
 	{
 
 		Element value = null;// (Element)getFirstChildElement( param);// .getElementsByTagName(TAG_VALUE).item(0);
@@ -263,25 +419,28 @@ public class XmlRpcJavaInterfaceGenerator
 
 		if (!value.hasChildNodes())
 		{
-			return String.class.getName();
-		}
+			return new Parameter(new Type(String.class), getValidJavaName(name));
 
-		Element typeNode = getFirstChildElement(value);
-
-		String type = getType(typeNode);
-
-		if (isReturn)
-		{
-			return type;
 		} else
 		{
 
-			return type + " " + name;
+			Element typeNode = getFirstChildElement(value);
+
+			ITypeNode type = getType(typeNode);
+
+			if (isReturn)
+			{
+				return new Parameter(type);
+			} else
+			{
+				return new Parameter(type, getValidJavaName(name));
+
+			}
 		}
 
 	}
 
-	private static String getType(Element typeNode)
+	private static ITypeNode getType(Element typeNode)
 	{
 		if (typeNode.getNodeName().equals(TAG_BOOLEAN)
 				|| typeNode.getNodeName().equals(TAG_STRING)
@@ -300,7 +459,7 @@ public class XmlRpcJavaInterfaceGenerator
 		return TYPE_ERROR;
 	}
 
-	private static String getArrayType(Element typeNode)
+	private static ITypeNode getArrayType(Element typeNode)
 	{
 		Assert.assertEquals(TAG_ARRAY, typeNode.getNodeName());
 
@@ -312,7 +471,7 @@ public class XmlRpcJavaInterfaceGenerator
 
 		sb.append(List.class.getSimpleName() + "<");
 
-		String rangeType = null;
+		ITypeNode rangeType = null;
 		for (Element value : getElements(data.getChildNodes()))
 		{
 			if (value.getNodeName().equals(TAG_VALUE))
@@ -323,7 +482,7 @@ public class XmlRpcJavaInterfaceGenerator
 					rangeType = getType(nextedTypeElement);
 				} else if (!rangeType.equals(getType(nextedTypeElement)))
 				{
-					rangeType = Object.class.getSimpleName();
+					rangeType = new Type(Object.class);
 					break;
 				}
 			}
@@ -338,39 +497,58 @@ public class XmlRpcJavaInterfaceGenerator
 		sb.append(rangeType);
 		sb.append(">");
 
-		return sb.toString();
+		return new ListType(rangeType);// sb.toString();
 	}
 
-	private static String getStructType(Element typeNode)
+	private static ITypeNode getStructType(Element typeNode)
 	{
 		Assert.assertEquals(TAG_STRUCT, typeNode.getNodeName());
 
 		StringBuilder sb = new StringBuilder();
-
+		MapType mapType = new MapType();
 		sb.append(Map.class.getSimpleName());
 		sb.append("<");
 		sb.append(String.class.getSimpleName());
 		sb.append(",");
 
-		String rangeType = null;
+		ITypeNode rangeType = null;
 		for (Element member : getElements(typeNode.getChildNodes()))
 		{
 			if (member.getNodeName().equals(TAG_MEMBER))
 			{
+				String possibleName = null;
+				ITypeNode possibleType = null;
+
 				for (Element value : getElements(member.getChildNodes()))
 				{
 					if (value.getNodeName().equals(TAG_VALUE))
 					{
 						Element nextedTypeElement = getFirstChildElement(value);
+						possibleType = getType(nextedTypeElement);
 						if (rangeType == null)
 						{
-							rangeType = getType(nextedTypeElement);
-						} else if (!rangeType.equals(getType(nextedTypeElement)))
+							rangeType = possibleType;
+
+						} else if (!rangeType.equals(possibleType))
 						{
-							rangeType = Object.class.getSimpleName();
+							rangeType = new Type(Object.class);
 							break;
 						}
+					} else if (value.getNodeName().equals(TAG_NAME))
+					{
+						if (value.hasChildNodes())
+						{
+							possibleName = value.getFirstChild().getNodeValue();
+						} else
+						{
+							possibleName = "";
+						}
 					}
+				}
+				if (possibleName != null
+						&& !mapType.possibleEntries.containsKey(possibleName))
+				{
+					mapType.possibleEntries.put(possibleName, possibleType);
 				}
 			}
 		}
@@ -384,28 +562,30 @@ public class XmlRpcJavaInterfaceGenerator
 		sb.append(rangeType);
 		sb.append(">");
 
-		return sb.toString();
+		mapType.keyType = new Type(String.class);
+		mapType.valueType = rangeType;
+
+		return mapType; // new MapType(new Type(String.class),rangeType); //sb.toString();
 	}
 
-	private static String getBasicType(Element typeElement)
+	private static ITypeNode getBasicType(Element typeElement)
 	{
 		if (typeElement.getNodeName().equals(TAG_BOOLEAN))
 		{
-			return Boolean.class.getSimpleName();
+			return new Type(Boolean.class);
 		} else if (typeElement.getNodeName().equals(TAG_STRING))
 		{
-			return String.class.getSimpleName();
+			return new Type(String.class);
 		} else if (typeElement.getNodeName().equals(TAG_INT))
 		{
-			return Integer.class.getSimpleName();
+			return new Type(Integer.class);
 		} else if (typeElement.getNodeName().equals(TAG_DOUBLE))
 		{
-			return Double.class.getSimpleName();
+			return new Type(Double.class);
 		}
 
 		return null;
 	}
-
 
 	public static List<Element> getElements(NodeList nodeList)
 	{
@@ -467,5 +647,28 @@ public class XmlRpcJavaInterfaceGenerator
 			sb.append(" -> " + getNodePath(node.getParentNode()));
 		}
 		return sb;
+	}
+
+	public static String getValidJavaName(String name)
+	{
+		final String[] reservedWords = { "abstract", "assert", "boolean",
+				"break", "byte", "case", "catch", "char", "class", "const*",
+				"continue", "default", "double", "do", "else", "enum",
+				"extends", "false", "final", "finally", "float", "for",
+				"goto*", "if", "implements", "" + "import", "instanceof",
+				"int", "interface", "long", "native", "new", "null", "package",
+				"private", "protected", "public", "return", "short", "static",
+				"strictfp", "super", "switch", "synchronized", "this", "throw",
+				"throws", "transient", "" + "true", "try", "void", "volatile",
+				"while" };
+		name = name.trim();
+		for (String reserved : reservedWords)
+		{
+			if(reserved.equals(name))
+			{
+				return name+"_";
+			}
+		}
+		return name;
 	}
 }
