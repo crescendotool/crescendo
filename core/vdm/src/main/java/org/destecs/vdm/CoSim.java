@@ -12,6 +12,9 @@ import org.apache.xmlrpc.webserver.ServletWebServer;
 import org.apache.xmlrpc.webserver.WebServer;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
 import org.destecs.protocol.ICoSimProtocol;
+import org.destecs.protocol.xmlrpc.serializer.ObservableXMLWriterFactory;
+import org.destetcs.core.xmlrpc.extensions.AnnotedPropertyHandlerMapping;
+
 
 /**
  * @author kela
@@ -49,10 +52,12 @@ public class CoSim
 		WebServer webServer = new WebServer(port);
 
 		webServer.getXmlRpcServer().setXMLWriterFactory(new ObservableXMLWriterFactory());
+		
+		//webServer.getXmlRpcServer().setWorkerFactory(new XmlRpcWorkerFactoryDestecs(webServer.getXmlRpcServer()));
 
 		XmlRpcServer xmlRpcServer = webServer.getXmlRpcServer();
 
-		PropertyHandlerMapping phm = new PropertyHandlerMapping();
+		PropertyHandlerMapping phm = new AnnotedPropertyHandlerMapping();  // new PropertyHandlerMapping();
 
 		phm.addHandler(ICoSimProtocol.class.getName(), CoSimImpl.class);
 
@@ -61,7 +66,7 @@ public class CoSim
 		XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
 		serverConfig.setEnabledForExtensions(true);
 		serverConfig.setContentLengthOptional(false);
-
+		
 		webServer.start();
 	}
 

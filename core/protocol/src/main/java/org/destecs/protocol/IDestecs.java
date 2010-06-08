@@ -2,6 +2,7 @@ package org.destecs.protocol;
 
 import java.util.Map;
 import java.util.List;
+import org.destetcs.core.xmlrpc.extensions.RpcMethod;
 
 public interface IDestecs
 {

@@ -1,4 +1,4 @@
-package org.destecs.vdm;
+package org.destecs.protocol.xmlrpc.serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;

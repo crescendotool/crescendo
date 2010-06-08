@@ -1,4 +1,4 @@
-package org.destecs.vdm;
+package org.destecs.vdm.utility;
 
 import java.util.HashMap;
 import java.util.List;

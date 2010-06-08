@@ -16,6 +16,8 @@
     
     <module>cosim</module>
     <module>vdm</module>
+    <module>xmlrpcextensions</module>
+
   
   </modules>
   <dependencies>

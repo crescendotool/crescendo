@@ -40,5 +40,13 @@
   		</plugin>
   	</plugins>
   </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.destetcs.core.xmlrpcextensions</groupId>
+  		<artifactId>xmlrpcbaseextension</artifactId>
+  		<version>1.0.0</version>
+  	</dependency>
+  </dependencies>
+
  
 </project>
