@@ -20,6 +20,7 @@ import org.destecs.tools.jprotocolgenerator.ast.MapType;
 import org.destecs.tools.jprotocolgenerator.ast.Method;
 import org.destecs.tools.jprotocolgenerator.ast.Parameter;
 import org.destecs.tools.jprotocolgenerator.ast.RpcMethodAnnotation;
+import org.destecs.tools.jprotocolgenerator.ast.RpcMethodType;
 import org.destecs.tools.jprotocolgenerator.ast.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -102,6 +103,7 @@ public class XmlRpcJavaInterfaceGenerator
 
 			interfaceNode.imports.add(new Type(Map.class));
 			interfaceNode.imports.add(new Type(List.class));
+			interfaceNode.imports.add(new RpcMethodType());
 
 			sb.append("\nimport " + Map.class.getName() + ";");
 			sb.append("\nimport " + List.class.getName() + ";");
@@ -111,7 +113,7 @@ public class XmlRpcJavaInterfaceGenerator
 				interfaceName = "I" + outputFileName;
 			}
 
-			interfaceNode.name = interfaceName;
+			interfaceNode.setName(interfaceName);
 
 			sb.append("\npublic interface " + interfaceName);
 			sb.append("\n{");
@@ -144,18 +146,18 @@ public class XmlRpcJavaInterfaceGenerator
 			e.printStackTrace();
 		}
 
-		System.out.println(sb.toString());
-
-		System.out.println("\n\n");
-		System.out.println(new GenerateProxy().generate(interfaceNode, outputFolder));
+//		System.out.println(sb.toString());
+//
+//		System.out.println("\n\n");
+		new GenerateProxy().generate(interfaceNode, outputFolder);
 
 		List<IInterface> interfaceDefinitions = unpackGroups(interfaceNode);
 
-		saveFile(interfaceName, outputFolder, interfaceNode.toSource());
+		saveFile(interfaceName, outputFolder, interfaceNode);
 
 		for (IInterface iInterface : interfaceDefinitions)
 		{
-			saveFile(iInterface.name, outputFolder, iInterface.toSource());
+			saveFile(iInterface.getName(), outputFolder, iInterface);
 		}
 
 	}
@@ -179,7 +181,8 @@ public class XmlRpcJavaInterfaceGenerator
 			IInterface intf = new IInterface();
 			intf.imports = interfaceNode.imports;
 			intf.packageName = interfaceNode.packageName;
-			intf.name = getValidJavaName("I"+firstCharToUpper(makeJavaName(group), true));
+			intf.setName(getValidJavaName("I"
+					+ firstCharToUpper(makeJavaName(group), true)));
 			for (Method m : interfaceNode.definitions)
 			{
 				if (m.group != null && m.group.equals(group))
@@ -194,31 +197,33 @@ public class XmlRpcJavaInterfaceGenerator
 
 		// remove all grouped from source interface
 		interfaceNode.definitions.removeAll(medthods);
-		
-		
-		
 
 		return interfaces;
 
 	}
 
 	private static void saveFile(String fileName, String outputFolder,
-			String data)
+			IInterface intf)
 	{
 		FileOutputStream fos;
 		try
 		{
 			File output = null;
+			File folder = null;
 			if (outputFolder != null)
 			{
-				output = new File(outputFolder, fileName + ".java");
+				folder = intf.getOutputFolder(new File(outputFolder));
+
+				// output = new File(folder, name + ".java");
 			} else
 			{
-				output = new File(fileName + ".java");
+				folder = intf.getOutputFolder(new File("."));
 			}
+			folder.mkdirs();
+			output = new File(folder, fileName + ".java");
 			fos = new FileOutputStream(output, false);
 
-			fos.write(data.toString().getBytes());
+			fos.write(intf.toSource().getBytes());
 			fos.close();
 		} catch (FileNotFoundException e)
 		{
@@ -234,7 +239,7 @@ public class XmlRpcJavaInterfaceGenerator
 	private static List<Parameter> getParams(Element paramsNode,
 			boolean isReturn)
 	{
-//		StringBuilder sb = new StringBuilder();
+		// StringBuilder sb = new StringBuilder();
 
 		List<Parameter> parameters = new Vector<Parameter>();
 		// Element paramsNode = (Element) element.getElementsByTagName(TAG_PARAMS).item(0);
@@ -276,7 +281,7 @@ public class XmlRpcJavaInterfaceGenerator
 					if (c2.getNodeName().equals(TAG_METHOD_NAME))
 					{
 						name = c2.getFirstChild().getNodeValue();
-						method.name =getValidJavaName( makeJavaName(removeGroup(name)));
+						method.name = getValidJavaName(makeJavaName(removeGroup(name)));
 						method.group = getGroup(name);
 						if (!method.name.equals(name))
 						{
@@ -291,7 +296,7 @@ public class XmlRpcJavaInterfaceGenerator
 
 				}
 
-				System.out.println("Generating method: " + name);
+//				System.out.println("Generating method: " + name);
 
 			} else if (child.getNodeName().equals(TAG_METHOD_RESPONSE))
 			{
@@ -332,7 +337,7 @@ public class XmlRpcJavaInterfaceGenerator
 			sb.append(parameters);
 		}
 		sb.append(");");
-		System.out.println("Method generation completed: " + name);
+//		System.out.println("Method generation completed: " + name);
 		return method;// sb.toString();
 	}
 
@@ -631,10 +636,19 @@ public class XmlRpcJavaInterfaceGenerator
 		String fixedName = name.replace('.', '_').replaceAll("_", "").replaceAll("-", "");
 		if (name.contains(".") || name.contains("_") || name.contains("-"))
 		{
-			System.err.println("Error in name: " + name + " replaced with "
+			System.out.println("Name normalized: " + padToWidth(name,' ',25) + " -> "
 					+ fixedName);
 		}
 		return fixedName;
+	}
+	
+	public static String padToWidth(String name,char padChar,int length)
+	{
+		while(name.length()<length)
+		{
+			name +=padChar;
+		}
+		return name;
 	}
 
 	public static StringBuffer getNodePath(Node node)
@@ -664,9 +678,9 @@ public class XmlRpcJavaInterfaceGenerator
 		name = name.trim();
 		for (String reserved : reservedWords)
 		{
-			if(reserved.equals(name))
+			if (reserved.equals(name))
 			{
-				return name+"_";
+				return name + "_";
 			}
 		}
 		return name;

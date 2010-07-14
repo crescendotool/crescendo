@@ -18,7 +18,7 @@ public class ListType implements ITypeNode
 	@Override
 	public String toSource()
 	{
-		return "List<"+type.toSource()+">";
+		return "List<"+type.getName()+">";
 	}
 
 	@Override

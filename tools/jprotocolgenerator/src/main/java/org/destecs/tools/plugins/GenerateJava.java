@@ -30,7 +30,7 @@ public class GenerateJava extends AstGenBaseMojo
 	{
 		
 		try{
-			String packageFolder = getProjectJavaSrcDirectory().getAbsolutePath()+File.separatorChar+packagename.replace('.', File.separatorChar);
+			String packageFolder = getProjectJavaSrcDirectory().getAbsolutePath();//+File.separatorChar+packagename.replace('.', File.separatorChar);
 			XmlRpcJavaInterfaceGenerator.main(new String[]{new File(getResourcesDir(),xmldefinition).getAbsolutePath(),name,packagename,packageFolder});
 			
 		}catch(Exception e)

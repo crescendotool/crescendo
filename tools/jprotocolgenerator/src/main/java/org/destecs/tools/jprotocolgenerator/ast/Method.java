@@ -10,9 +10,11 @@ public class Method implements IAstNode
 	public List<Parameter> parameters = new Vector<Parameter>();
 	public String body;
 	public String javaDoc;
+	public String javaDocText;
 	public IAnnotation annotation;
 	public String group;
-	
+	public boolean isConstructor = false;
+
 	public Method clone()
 	{
 		Method m = new Method();
@@ -22,6 +24,7 @@ public class Method implements IAstNode
 		m.body = this.body;
 		m.javaDoc = this.javaDoc;
 		m.group = this.group;
+		m.isConstructor = this.isConstructor;
 		return m;
 	}
 
@@ -30,29 +33,36 @@ public class Method implements IAstNode
 	{
 		StringBuilder sb = new StringBuilder();
 
-		if(javaDoc!=null)
+		if (javaDoc != null)
 		{
-		sb.append(javaDoc);
-		sb.append("\n\t");
+			sb.append(javaDoc);
+			sb.append("\n\t");
+		} else if (javaDocText != null)
+		{
+			sb.append("/**\n\t* " + javaDocText + "\n\t*/");
+			sb.append("\n\t");
 		}
-		if(annotation!=null)
+		if (annotation != null)
 		{
 			sb.append(annotation.toSource());
 			sb.append("\n\t");
 		}
 		sb.append("public ");
-		sb.append(returnType.toSource());
-		sb.append(" ");
+		if (!isConstructor)
+		{
+			sb.append(returnType.getName());
+			sb.append(" ");
+		}
 		sb.append(name);
 		sb.append("(");
 		for (IAstNode node : parameters)
 		{
 			sb.append(node.toSource());
-			sb.append(", " );
+			sb.append(", ");
 		}
 		if (parameters.size() > 0)
 		{
-			sb.delete(sb.length() - 2,sb.length());
+			sb.delete(sb.length() - 2, sb.length());
 		}
 		sb.append(")");
 		if (body == null)
@@ -67,10 +77,10 @@ public class Method implements IAstNode
 
 		return sb.toString();
 	}
-	
+
 	@Override
 	public String toString()
 	{
-	return toSource();
+		return toSource();
 	}
 }
