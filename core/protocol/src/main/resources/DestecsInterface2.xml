@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library-with-array.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library-with-array.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<schemeVersion>
 		<major>1</major>
 		<minor>0</minor>
@@ -23,7 +24,7 @@
 		<method>
 		<!-- Gets the version of the CoSim implementation in the form: majorVersion.MinorVersion.majorBuild.minorBuild  -->
 			<methodCall>
-				<methodName>Destecs.GetVersion</methodName>
+				<methodName>NS.GetVersion</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -45,9 +46,9 @@
 		</method>
 		<!--Load-->
 		<method>
-		<!-- Loads a file from its path. The model is activated after load -->
+				<!-- Loads a file from its path. The model is activated after load -->
 			<methodCall>
-				<methodName>Destecs.Load</methodName>
+				<methodName>Load</methodName>
 				<params>
 					<param>
 						<value>
@@ -70,7 +71,7 @@
 						<value>
 							<struct>
 								<member>
-									<name>success</name>
+									<name></name>
 									<value>
 										<boolean>true</boolean>
 									</value>
@@ -86,7 +87,7 @@
 		<method>
 		<!-- Unloads a file from its path -->
 			<methodCall>
-				<methodName>Destecs.UnLoad</methodName>
+				<methodName>UnLoad</methodName>
 				<params>
 					<param>
 						<value>
@@ -109,7 +110,7 @@
 						<value>
 							<struct>
 								<member>
-									<name/>
+									<name></name>
 									<value>
 										<boolean>true</boolean>
 									</value>
@@ -125,7 +126,7 @@
 		<method>
 		<!-- Activates a file or project from its path -->
 			<methodCall>
-				<methodName>Destecs.SetActive</methodName>
+				<methodName>SetActive</methodName>
 				<params>
 					<param>
 						<value>
@@ -148,7 +149,7 @@
 						<value>
 							<struct>
 								<member>
-									<name/>
+									<name></name>
 									<value>
 										<boolean>true</boolean>
 									</value>
@@ -162,9 +163,9 @@
 		</method>
 		<!--GetStatus-->
 		<method>
-		<!-- Gets the status: 0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished, 4= Loaded -->
+		<!-- Gets the status: 0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished -->
 			<methodCall>
-				<methodName>Destecs.GetStatus</methodName>
+				<methodName>GetStatus</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -172,7 +173,7 @@
 						<value>
 							<struct>
 								<member>
-									<name/>
+									<name></name>
 									<value>
 										<int>1</int>
 									</value>
@@ -189,7 +190,7 @@
 		<!-- Queries the interface used in Co-Simulation Grouped in a Map with keys SharedDesignParameters,DesignParameters,Inputs,Outputs.
 		The structure of each of them is a Map from name to value -->
 			<methodCall>
-				<methodName>Destecs.QueryInterface</methodName>
+				<methodName>QueryInterface</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -223,53 +224,49 @@
 								</member>
 								<member>
 									<name>Inputs</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<struct>
-														<member>
-															<name>name</name>
-															<value>
-																<string>inputname</string>
-															</value>
-														</member>
-														<member>
-															<name>value</name>
-															<value>
-																<double>3.14159265</double>
-															</value>
-														</member>
-													</struct>
-												</value>
-											</data>
-										</array>
-									</value>
+									<array>
+										<data>
+											<value>
+												<struct>
+													<member>
+														<name>name</name>
+														<value>
+															<string>inputname</string>
+														</value>
+													</member>
+													<member>
+														<name>value</name>
+														<value>
+															<double>3.14159265</double>
+														</value>
+													</member>
+												</struct>
+											</value>
+										</data>
+									</array>
 								</member>
 								<member>
 									<name>Outputs</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<struct>
-														<member>
-															<name>name</name>
-															<value>
-																<string>outputname</string>
-															</value>
-														</member>
-														<member>
-															<name>value</name>
-															<value>
-																<double>3.14159265</double>
-															</value>
-														</member>
-													</struct>
-												</value>
-											</data>
-										</array>
-									</value>
+									<array>
+										<data>
+											<value>
+												<struct>
+													<member>
+														<name>name</name>
+														<value>
+															<string>outputname</string>
+														</value>
+													</member>
+													<member>
+														<name>value</name>
+														<value>
+															<double>3.14159265</double>
+														</value>
+													</member>
+												</struct>
+											</value>
+										</data>
+									</array>
 								</member>
 							</struct>
 						</value>
@@ -280,7 +277,7 @@
 		<!--QueryFaults-->
 		<method>
 			<methodCall>
-				<methodName>Destecs.QueryFaults</methodName>
+				<methodName>QueryFaults</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -288,7 +285,7 @@
 						<value>
 							<struct>
 								<member>
-									<name>faults</name>
+									<name></name>
 									<value>
 										<array>
 											<data>
@@ -321,7 +318,7 @@
 		<!--Initialize-->
 		<method>
 			<methodCall>
-				<methodName>Destecs.Initialize</methodName>
+				<methodName>Initialize</methodName>
 				<params>
 					<param>
 						<value>
@@ -345,31 +342,6 @@
 										</array>
 									</value>
 								</member>
-								<member>
-									<name>SharedParameter</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<struct>
-														<member>
-															<name>name</name>
-															<value>
-																<string>parname</string>
-															</value>
-														</member>
-														<member>
-															<name>value</name>
-															<value>
-																<double>3.14159265</double>
-															</value>
-														</member>
-													</struct>
-												</value>
-											</data>
-										</array>
-									</value>
-								</member>
 							</struct>
 						</value>
 					</param>
@@ -381,7 +353,7 @@
 						<value>
 							<struct>
 								<member>
-									<name/>
+									<name></name>
 									<value>
 										<boolean>true</boolean>
 									</value>
@@ -396,48 +368,48 @@
 		<!--Step-->
 		<method>
 			<methodCall>
-				<methodName>Destecs.Step</methodName>
+				<methodName>Step</methodName>
 				<params>
 					<param>
 						<value>
 							<struct>
 								<member>
-									<name>singleStep</name>
-									<value>
-										<boolean>false</boolean>
-									</value>
-									<description>true=take a single step (do not cross the outputTime), false=take steps untill outputTime has been reached</description>
-								</member>
-								<member>
 									<name>outputTime</name>
 									<value>
 										<double>1.0</double>
 									</value>
-									<description>If zero then just take one step (regardless of the singleStep parameter) else take enough steps to reach outputTime unless singleStep is true</description>
+									<description>time at which output is desired, simulation will not go beyond this point. If zero then just take one step</description>
+								</member>
+								<member>
+									<name>goToOutputTime</name>
+									<value>
+										<boolean>false</boolean>
+									</value>
+									<description>true=go on until output time is reached, false=return after one step</description>
 								</member>
 								<member>
 									<name>inputs</name>
 									<value>
-										<array>
-											<data>
-												<value>
-													<struct>
-														<member>
-															<name>name</name>
-															<value>
-																<string>inputname</string>
-															</value>
-														</member>
-														<member>
-															<name>value</name>
-															<value>
-																<double>3.14159265</double>
-															</value>
-														</member>
-													</struct>
-												</value>
-											</data>
-										</array>
+									<array>
+										<data>
+											<value>
+												<struct>
+													<member>
+														<name>name</name>
+														<value>
+															<string>inputname</string>
+														</value>
+													</member>
+													<member>
+														<name>value</name>
+														<value>
+															<double>3.14159265</double>
+														</value>
+													</member>
+												</struct>
+											</value>
+										</data>
+									</array>
 									</value>
 								</member>
 							</struct>
@@ -466,28 +438,26 @@
 								</member>
 								<member>
 									<name>outputs</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<struct>
-														<member>
-															<name>name</name>
-															<value>
-																<string>outputname</string>
-															</value>
-														</member>
-														<member>
-															<name>value</name>
-															<value>
-																<double>3.14159265</double>
-															</value>
-														</member>
-													</struct>
-												</value>
-											</data>
-										</array>
-									</value>
+									<array>
+										<data>
+											<value>
+												<struct>
+													<member>
+														<name>name</name>
+														<value>
+															<string>outputname</string>
+														</value>
+													</member>
+													<member>
+														<name>value</name>
+														<value>
+															<double>3.14159265</double>
+														</value>
+													</member>
+												</struct>
+											</value>
+										</data>
+									</array>
 								</member>
 							</struct>
 						</value>
@@ -498,7 +468,7 @@
 		<!--Terminate-->
 		<method>
 			<methodCall>
-				<methodName>Destecs.Terminate</methodName>
+				<methodName>Terminate</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -521,7 +491,7 @@
 		<!--SetParameter-->
 		<method>
 			<methodCall>
-				<methodName>Destecs.SetParameter</methodName>
+				<methodName>SetParameter</methodName>
 				<params>
 					<param>
 						<value>
@@ -564,7 +534,7 @@
 		<!--Break-->
 		<method>
 			<methodCall>
-				<methodName>Destecs.Break</methodName>
+				<methodName>Break</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -572,7 +542,7 @@
 						<value>
 							<struct>
 								<member>
-									<name/>
+									<name></name>
 									<value>
 										<boolean>true</boolean>
 									</value>
@@ -587,7 +557,7 @@
 		<!--ShowData-->
 		<method>
 			<methodCall>
-				<methodName>Destecs.ShowData</methodName>
+				<methodName>ShowData</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -595,7 +565,7 @@
 						<value>
 							<struct>
 								<member>
-									<name/>
+									<name></name>
 									<value>
 										<boolean>true</boolean>
 									</value>
@@ -607,7 +577,8 @@
 				</params>
 			</methodResponse>
 		</method>
-		<!-- Application GetStatus !-->
+		
+		
 	</methods>
 	<methodFaultResponses>
 		<methodResponse>

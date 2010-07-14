@@ -28,5 +28,10 @@
     	<artifactId>xmlrpcserverextension</artifactId>
     	<version>1.0.0</version>
     </dependency>
+    <dependency>
+    	<groupId>org.overturetool.core</groupId>
+    	<artifactId>vdmj</artifactId>
+    	<version>2.0.1</version>
+    </dependency>
  </dependencies>
 </project>

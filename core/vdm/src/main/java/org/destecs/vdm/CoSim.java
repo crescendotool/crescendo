@@ -8,13 +8,9 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
-import org.apache.xmlrpc.webserver.ServletWebServer;
 import org.apache.xmlrpc.webserver.WebServer;
-import org.apache.xmlrpc.webserver.XmlRpcServlet;
 import org.destecs.protocol.ICoSimProtocol;
-import org.destecs.protocol.xmlrpc.serializer.ObservableXMLWriterFactory;
 import org.destetcs.core.xmlrpc.extensions.AnnotedPropertyHandlerMapping;
-
 
 /**
  * @author kela
@@ -23,7 +19,7 @@ import org.destetcs.core.xmlrpc.extensions.AnnotedPropertyHandlerMapping;
 public class CoSim
 {
 	private static final int port = 8080;
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	/**
 	 * @param args
@@ -34,30 +30,22 @@ public class CoSim
 	public static void main(String[] args) throws ServletException,
 			IOException, XmlRpcException
 	{
-		if (!DEBUG)
-		{
-			XmlRpcServlet servlet = new XmlRpcServlet();
+		// XmlRpcServlet servlet = new XmlRpcServlet();
+		//
+		// ServletWebServer webServer = new ServletWebServer(servlet, port);
+		//
+		// webServer.start();
 
-			ServletWebServer webServer = new ServletWebServer(servlet, port);
-
-			webServer.start();
-		} else
-		{
-			debugMode();
-		}
-	}
-
-	private static void debugMode() throws XmlRpcException, IOException
-	{
 		WebServer webServer = new WebServer(port);
 
-		webServer.getXmlRpcServer().setXMLWriterFactory(new ObservableXMLWriterFactory());
-		
-		//webServer.getXmlRpcServer().setWorkerFactory(new XmlRpcWorkerFactoryDestecs(webServer.getXmlRpcServer()));
-
+		// webServer.getXmlRpcServer().setXMLWriterFactory(new ObservableXMLWriterFactory());
+		if (!DEBUG)
+		{
+			webServer.getXmlRpcServer().setWorkerFactory(new XmlRpcWorkerFactoryDestecs(webServer.getXmlRpcServer()));
+		}
 		XmlRpcServer xmlRpcServer = webServer.getXmlRpcServer();
 
-		PropertyHandlerMapping phm = new AnnotedPropertyHandlerMapping();  // new PropertyHandlerMapping();
+		PropertyHandlerMapping phm = new AnnotedPropertyHandlerMapping(); // new PropertyHandlerMapping();
 
 		phm.addHandler(ICoSimProtocol.class.getName(), CoSimImpl.class);
 
@@ -66,8 +54,7 @@ public class CoSim
 		XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
 		serverConfig.setEnabledForExtensions(true);
 		serverConfig.setContentLengthOptional(false);
-		
+
 		webServer.start();
 	}
-
 }
