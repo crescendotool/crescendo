@@ -1,0 +1,73 @@
+﻿table.method
+{
+	padding: 0px;
+	margin: 0px;
+	border: thin groove #000000;
+	width: 100%;
+	border-spacing: 0px;
+	background-color: #F0F0F0;
+}
+
+table.fault
+{
+	padding: 0px;
+	margin: 0px;
+	border: thin groove #000000;
+	width: 100%;
+	border-spacing: 0px;
+	background-color: #F0F0F0;
+}
+
+th.heading
+{
+	
+	border-width: 0px;
+	padding: 0px;
+	margin: 0px;
+	font-weight: bold;
+	text-align: left;
+	width: 140px;
+	vertical-align: top;
+}
+
+tr.header
+{
+	padding: 0px;
+	margin: 0px;
+	font-size: large;
+	background-color: #99CCFF;
+	border-top-style: inherit;
+	border-right-style: inherit;
+	border-bottom-style: solid;
+	border-left-style: inherit;
+	border-top-width: inherit;
+	border-right-width: inherit;
+	border-bottom-width: thin;
+	border-left-width: inherit;
+}
+
+span.description
+{
+	color: #999999;
+}
+
+span.typename
+{
+	color: #000000;
+	font-weight: bold;
+	font-family: 'Courier New' , Courier, monospace;
+	font-size: 12px;
+}
+
+span.missingname
+{
+	font-family: 'Courier New' , Courier, monospace;
+	font-size: 12px;
+	color: #FF0000;
+}
+
+span.name
+{
+	font-family: 'Courier New' , Courier, monospace;
+	font-size: 12px;
+}
