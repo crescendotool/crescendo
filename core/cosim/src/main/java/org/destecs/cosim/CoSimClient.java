@@ -41,7 +41,8 @@ public class CoSimClient
 
 		ProxyICoSimProtocol p = new ProxyICoSimProtocol(dt);
 
-		// if (p.load("C:\\overture\\runtime-ide.product\\HomeAutomationRT").success)
+		System.out.println("Interface Version: " + dt.getVersion());
+
 		if (p.load("C:\\destecs\\workspace\\watertank").success)
 		{
 			/*
@@ -57,59 +58,48 @@ public class CoSimClient
 			shareadDesignParameters.add(new InitializeSharedParameterStructParam("maxLevel", 500.0));
 
 			List<InitializefaultsStructParam> enabledFaults = new Vector<InitializefaultsStructParam>();
-			p.initialize(shareadDesignParameters, enabledFaults);
-
-			
-
-			// for (long time : steps)
-			// {
-			// System.out.println("\nStep..:\n\n"
-			// + p.step(new Double(time), inputs, false));
-			// Thread.sleep(1000);
-			// }
-			Double time = 0.0;
-			Double level = 0.0;
-			for (int i = 0; i < 1000; i++)
+			if (p.initialize(shareadDesignParameters, enabledFaults).success)
 			{
-				/*
-				 * Begin stepping
-				 */
-				List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
-				inputs.add(new StepinputsStructParam("level", level));
-				
-				StepStruct result = p.step(time, inputs, false);
 
-				time = result.time;
-
-				StringBuilder sb = new StringBuilder();
-
-				sb.append("Step: Time = " + time + " ");
-
-				for (StepStructoutputsStruct o : result.outputs)
+				Double time = 0.0;
+				Double level = 0.0;
+				for (int i = 0; i < 1000; i++)
 				{
-					sb.append(o.name + " = " + o.value+ " ");
+					/*
+					 * Begin stepping
+					 */
+					List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
+					inputs.add(new StepinputsStructParam("level", level));
+
+					StepStruct result = p.step(time, inputs, false);
+
+					time = result.time;
+
+					StringBuilder sb = new StringBuilder();
+
+					sb.append("Step: Time = " + time + " ");
+
+					for (StepStructoutputsStruct o : result.outputs)
+					{
+						sb.append(o.name + " = " + o.value + " ");
+					}
+
+					System.out.println(sb.toString());
+
+					level += 0.1;
 				}
-
-				System.out.println(sb.toString());
-				
-				level +=0.1;
+				if(!p.stop().success)
+				{
+					System.err.println("Stop faild");
+				}
+			} else
+			{
+				System.err.println("Initilization faild");
 			}
-
+		} else
+		{
+			System.err.println("Load faild");
 		}
-
-		// Object resultF = p.queryFaults();
-		// System.out.println("\nqueryFaults..:\n\n " + resultF);
-
-		// ICoSimProtocol dt = (ICoSimProtocol)
-		// factory.newInstance(Thread.currentThread().getContextClassLoader(),ICoSimProtocol.class,"PREFIX");
-
-		// System.out.println("GetVersion: "+dt.GetVersion());
-		//		
-		// Map<String, List<Map<String, Object>>> interfaceDefinition = dt.QueryInterface();
-		// System.out.println("QueryInterface: "+interfaceDefinition);
-
-		// System.out.println(dt.getVersion());
-
 	}
 
 	public static String pad(String text, int length)
@@ -120,9 +110,6 @@ public class CoSimClient
 		}
 		return text;
 	}
-
-	static long[] steps = { 0, 4, 8, 34, 126, 146, 150, 154, 180, 272, 292,
-			296, 999999999 };
 
 	public static void printInterface(QueryInterfaceStruct result)
 	{

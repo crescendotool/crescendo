@@ -13,6 +13,10 @@ import org.overturetool.vdmj.values.BUSValue;
 
 public class CoSimResourceScheduler extends ResourceScheduler
 {
+	public CoSimResourceScheduler()
+	{
+		SimulationManager.getInstance().register(this);
+	}
 
 	/**
 	 * 
@@ -20,6 +24,8 @@ public class CoSimResourceScheduler extends ResourceScheduler
 	private static final long serialVersionUID = 1L;
 	
 	private Long nextSimulationStop = new Long(0);
+	
+	private boolean forceStop = false;
 	
 	@Override
 	public void start(MainThread main)
@@ -35,6 +41,12 @@ public class CoSimResourceScheduler extends ResourceScheduler
 		{
 			long minstep = Long.MAX_VALUE;
 			idle = true;
+			
+			if(forceStop)
+			{
+				SchedulableThread.signalAll(Signal.TERMINATE);
+				return;
+			}
 
 			for (Resource resource: resources)
 			{
@@ -123,6 +135,11 @@ public class CoSimResourceScheduler extends ResourceScheduler
 			
 		}
 		
+	}
+
+	public void stop()
+	{
+		this.forceStop = true;
 	}
 
 }

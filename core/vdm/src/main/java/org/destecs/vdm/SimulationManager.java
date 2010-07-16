@@ -10,6 +10,7 @@ import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.vdmj.VDMCO;
+import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
 import org.overturetool.vdmj.Settings;
@@ -38,6 +39,8 @@ public class SimulationManager
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
 
+	private CoSimResourceScheduler scheduler = null;
+
 	private CoSimStatusEnum status = CoSimStatusEnum.NOT_INITIALIZED;
 	/**
 	 * A handle to the unique Singleton instance.
@@ -56,14 +59,18 @@ public class SimulationManager
 		return _instance;
 	}
 
+	public void register(CoSimResourceScheduler scheduler)
+	{
+		this.scheduler = scheduler;
+	}
+
 	public synchronized Long waitForStep(long minstep)
 	{
-		this.nextSchedulableActionTime = SystemClock.getWallTime()+minstep;
+		this.nextSchedulableActionTime = SystemClock.getWallTime() + minstep;
 		interpreterRunning = false;
 		this.notify();
 
-		System.out.println("Wait at clock:   "
-				+ SystemClock.getWallTime());
+		System.out.println("Wait at clock:   " + SystemClock.getWallTime());
 		try
 		{
 			this.wait();
@@ -168,8 +175,8 @@ public class SimulationManager
 			Value val = getValue(p.name);
 			if (val != null)
 			{
-//				System.out.println("Setting " + p.name + ": " + val + " to "
-//						+ p.value);
+				// System.out.println("Setting " + p.name + ": " + val + " to "
+				// + p.value);
 				if (val.deref() instanceof NumericValue)
 				{
 					((NumericValue) val.deref()).value = p.value;
@@ -203,17 +210,17 @@ public class SimulationManager
 		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
 
 		// outputs.add(new StepStructoutputsStruct("setValve", 3.0));
-		for (LexNameToken key : getOutputLexNames())
-		{
-			try
-			{
-				outputs.add(new StepStructoutputsStruct(key.name, mainContext.getGlobal().get(key).realValue(null)));
-			} catch (ValueException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		for (LexNameToken key : getOutputLexNames())
+//		{
+//			try
+//			{
+//				outputs.add(new StepStructoutputsStruct(key.name, mainContext.getGlobal().get(key).realValue(null)));
+//			} catch (ValueException e)
+//			{
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 
 		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime), outputs);
 
@@ -305,7 +312,7 @@ public class SimulationManager
 
 			files.addAll(getSpecFiles(path));
 
-			controller.setLogFile(new File(path, "logFile.log"));
+			controller.setLogFile(new File(path, "logFile.logrt"));
 			controller.setScript(script);
 
 			ExitStatus status = controller.parse(files);
@@ -349,25 +356,34 @@ public class SimulationManager
 			e.printStackTrace();
 			return false;
 		}
-		runner = new Thread(new Runnable()
-		{
-			public void run()
-			{
-				if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
-				{
-					System.out.println("INIT OK");
-				} else
-				{
-					System.err.println("INIT ERROR");
-				}
 
-			}
-		});
-		runner.setDaemon(true);
-		runner.start();
-		// TODO need to catch the init errors of the interpreter here and return false if any
-		this.status = CoSimStatusEnum.INITIALIZED;
-		return true;
+		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
+		{
+
+			runner = new Thread(new Runnable()
+			{
+				public void run()
+				{
+					if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
+					{
+						System.out.println("INIT OK");
+					} else
+					{
+						System.err.println("INIT ERROR");
+					}
+
+				}
+			});
+			runner.setDaemon(true);
+			runner.start();
+			// TODO need to catch the init errors of the interpreter here and return false if any
+			this.status = CoSimStatusEnum.INITIALIZED;
+			return true;
+		}else{
+			this.status =CoSimStatusEnum.NOT_INITIALIZED;
+			return false;
+		}
+		
 	}
 
 	private void setFaults(List<InitializefaultsStructParam> faults)
@@ -439,5 +455,19 @@ public class SimulationManager
 	public Integer getStatus()
 	{
 		return this.status.value;
+	}
+
+	public synchronized Boolean stopSimulation()
+	{
+		try
+		{
+			scheduler.stop();
+			notify();
+			return true;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

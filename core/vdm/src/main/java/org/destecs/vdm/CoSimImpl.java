@@ -21,6 +21,7 @@ import org.destecs.protocol.structs.QueryInterfaceStructOutputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructSharedParameterStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
+import org.destecs.protocol.structs.StopStruct;
 import org.destecs.protocol.structs.TerminateStruct;
 
 @SuppressWarnings("unchecked")
@@ -167,36 +168,8 @@ public class CoSimImpl implements IDestecs
 		throw new NoSuchMethodError("Not supported by VDMJ");
 	}
 
-	// public Map<String, List<Map<String, Object>>> queryInterface()
-	// {
-	// final String SHARED_DESIGN_PARAMETERS ="SharedDesignParameters";
-	// final String DESIGN_PARAMETERS ="DesignParameters";
-	// final String INPUTS ="Inputs";
-	// final String OUTPUTS ="Outputs";
-	//		
-	// ShareCoSimGroup sdp = new ShareCoSimGroup(SHARED_DESIGN_PARAMETERS);
-	// sdp.add("minLevel", 4);
-	// sdp.add("maxLevel", 40);
-	//		
-	// ShareCoSimGroup dp = new ShareCoSimGroup(DESIGN_PARAMETERS);
-	// dp.add("mass", 200);
-	//		
-	// ShareCoSimGroup inputs = new ShareCoSimGroup(INPUTS);
-	// inputs.add("x", 4);
-	// inputs.add("y", 40);
-	//		
-	// ShareCoSimGroup output = new ShareCoSimGroup(OUTPUTS);
-	// output.add("x1", 4);
-	// output.add("y1", 40);
-	//		
-	// Map<String, List<Map<String, Object>>> m = new HashMap<String, List<Map<String, Object>>>();
-	//		
-	// m.putAll(sdp.encode());
-	// m.putAll(dp.encode());
-	// m.putAll(inputs.encode());
-	// m.putAll(output.encode());
-	//		
-	// return m;
-	// }
-
+	public Map<String, Boolean> stop()
+	{
+		return new StopStruct(SimulationManager.getInstance().stopSimulation()).toMap();
+	}
 }

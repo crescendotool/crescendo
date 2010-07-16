@@ -312,6 +312,9 @@ public class XmlRpcJavaInterfaceGenerator
 
 				}
 
+			}else if(javaDoc && child.getNodeName().equals(TAG_DESCRIPTION) )
+			{
+				method.javaDocText = child.getFirstChild().getNodeValue().replace("\n", "\n\t* ");
 			}
 		}
 
