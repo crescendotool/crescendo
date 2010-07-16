@@ -248,7 +248,10 @@
 					<xs:sequence>
 						<xs:element name="data">
 							<xs:complexType>
-								<xs:sequence minOccurs="0" maxOccurs="unbounded">
+								<xs:sequence>
+									<xs:annotation>
+										<xs:documentation>Only one value to specify the the type that the array will hold </xs:documentation>
+									</xs:annotation>
 									<xs:group ref="scalarValue"/>
 								</xs:sequence>
 							</xs:complexType>

@@ -11,7 +11,7 @@
   <interfaceVersion>
     <major>1</major>
     <minor>2</minor>
-    <revision>2</revision>
+    <revision>3</revision>
   </interfaceVersion>
   <implementationVersion>
     <major>1</major>
@@ -22,7 +22,7 @@
   <methods>
     <!--GetVersion-->
     <method>
-      <description>Gets the version of the CoSim implementation in the form: majorVersion.MinorVersion.majorBuild.minorBuild</description>
+      <description>Gets the name and version of the simulator in the form: name / majorVersion.MinorVersion.revision.patch</description>
       <methodCall>
         <methodName>Destecs.GetVersion</methodName>
       </methodCall>
@@ -32,11 +32,66 @@
             <value>
               <struct>
                 <member>
+                  <name>name</name>
+                  <value>
+                    <string>20-sim</string>
+                  </value>
+                  <description>The name of the simulator program</description>
+                </member>
+                <member>
                   <name>version</name>
                   <value>
                     <string>4.1.2.3</string>
                   </value>
-                  <description>majorVersion.MinorVersion.majorBuild.minorBuild</description>
+                  <description>majorVersion.MinorVersion.revision.patch</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--Initialize-->
+    <method>
+      <description>Initialize the simulator for co-simulation, after calling this function all the other functions should be available, load, step ...</description>
+      <methodCall>
+        <methodName>Destecs.Initialize</methodName>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>result</name>
+                  <value>
+                    <boolean>true</boolean>
+                  </value>
+                  <description>if failed then the function will return a fault response</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--Terminate-->
+    <method>
+      <description>Terminates the simulator tool. After a reply no futher communication be be posible. The simulator tool will release all resources and terminate.</description>
+      <methodCall>
+        <methodName>Destecs.Terminate</methodName>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>result</name>
+                  <value>
+                    <boolean>true</boolean>
+                  </value>
+                  <description>if failed then the function will return a fault response</description>
                 </member>
               </struct>
             </value>
@@ -46,7 +101,7 @@
     </method>
     <!--Load-->
     <method>
-      <description>Loads a file from its path. The model is activated after load</description>
+      <description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
       <methodCall>
         <methodName>Destecs.Load</methodName>
         <params>
@@ -122,69 +177,6 @@
         </params>
       </methodResponse>
     </method>
-    <!-- SetActive!-->
-    <method>
-      <description>Activates a file or project from its path</description>
-      <methodCall>
-        <methodName>Destecs.SetActive</methodName>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>name</name>
-                  <value>
-                    <string>C:\My Models\PID_Controller.emx</string>
-                  </value>
-                  <description>name of the file or project to set active</description>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodCall>
-      <methodResponse>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>success</name>
-                  <value>
-                    <boolean>true</boolean>
-                  </value>
-                  <description>if failed then the function will return a fault response</description>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodResponse>
-    </method>
-    <!--GetStatus-->
-    <method>
-      <description>Gets the status: 0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished, 4= Loaded</description>
-      <methodCall>
-        <methodName>Destecs.GetStatus</methodName>
-      </methodCall>
-      <methodResponse>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>status</name>
-                  <value>
-                    <int>1</int>
-                  </value>
-                  <description>0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished</description>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodResponse>
-    </method>
     <!--QueryInterface-->
     <method>
       <description>
@@ -200,7 +192,19 @@
             <value>
               <struct>
                 <member>
-                  <name>SharedParameter</name>
+                  <name>sharedParameters</name>
+                  <value>
+                    <array>
+                      <data>
+                        <value>
+                            <string>parname</string>
+                        </value>
+                      </data>
+                    </array>
+                  </value>
+                </member>
+                <member>
+                  <name>events</name>
                   <value>
                     <array>
                       <data>
@@ -209,13 +213,19 @@
                             <member>
                               <name>name</name>
                               <value>
-                                <string>parname</string>
+                                <string>eventname</string>
                               </value>
                             </member>
                             <member>
-                              <name>value</name>
+                              <name>sharedParameter</name>
                               <value>
-                                <double>3.14159265</double>
+                                <string>parametername</string>
+                              </value>
+                            </member>
+                            <member>
+                              <name>sharedVariable</name>
+                              <value>
+                                <string>variablename</string>
                               </value>
                             </member>
                           </struct>
@@ -225,50 +235,24 @@
                   </value>
                 </member>
                 <member>
-                  <name>Inputs</name>
+                  <name>inputs</name>
                   <value>
                     <array>
                       <data>
                         <value>
-                          <struct>
-                            <member>
-                              <name>name</name>
-                              <value>
-                                <string>inputname</string>
-                              </value>
-                            </member>
-                            <member>
-                              <name>value</name>
-                              <value>
-                                <double>3.14159265</double>
-                              </value>
-                            </member>
-                          </struct>
+                            <string>inputname</string>
                         </value>
                       </data>
                     </array>
                   </value>
                 </member>
                 <member>
-                  <name>Outputs</name>
+                  <name>outputs</name>
                   <value>
                     <array>
                       <data>
                         <value>
-                          <struct>
-                            <member>
-                              <name>name</name>
-                              <value>
-                                <string>outputname</string>
-                              </value>
-                            </member>
-                            <member>
-                              <name>value</name>
-                              <value>
-                                <double>3.14159265</double>
-                              </value>
-                            </member>
-                          </struct>
+                            <string>outputname</string>
                         </value>
                       </data>
                     </array>
@@ -280,99 +264,25 @@
         </params>
       </methodResponse>
     </method>
-    <!--QueryFaults-->
+    <!--SetParameter-->
     <method>
-      <description>Query faults returns fault options. This means it returns a id : description pair of posible faults modelled in the mldel which can be enabled.</description>
+      <description>Sets any parameter that is *not* used in the co-simulation.</description>
       <methodCall>
-        <methodName>Destecs.QueryFaults</methodName>
-      </methodCall>
-      <methodResponse>
+        <methodName>Destecs.SetParameter</methodName>
         <params>
           <param>
             <value>
               <struct>
                 <member>
-                  <name>faults</name>
+                  <name>name</name>
                   <value>
-                    <array>
-                      <data>
-                        <value>
-                          <struct>
-                            <member>
-                              <name>id</name>
-                              <value>
-                                <int>1</int>
-                              </value>
-                            </member>
-                            <member>
-                              <name>description</name>
-                              <value>
-                                <string>description of the fault</string>
-                              </value>
-                            </member>
-                          </struct>
-                        </value>
-                      </data>
-                    </array>
-                  </value>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodResponse>
-    </method>
-    <!--Initialize-->
-    <method>
-      <description>Initialize prepares the model for simulation. The apropiate faults will be inserted in the model and the shared design parameters will be set. The simulator / inpterpreter will then enter a state where it waits for steps to be performed.</description>
-      <methodCall>
-        <methodName>Destecs.Initialize</methodName>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>faults</name>
-                  <value>
-                    <array>
-                      <data>
-                        <value>
-                          <struct>
-                            <member>
-                              <name>identifier</name>
-                              <value>
-                                <int>1</int>
-                              </value>
-                            </member>
-                          </struct>
-                        </value>
-                      </data>
-                    </array>
+                    <string>parName</string>
                   </value>
                 </member>
                 <member>
-                  <name>SharedParameter</name>
+                  <name>value</name>
                   <value>
-                    <array>
-                      <data>
-                        <value>
-                          <struct>
-                            <member>
-                              <name>name</name>
-                              <value>
-                                <string>parname</string>
-                              </value>
-                            </member>
-                            <member>
-                              <name>value</name>
-                              <value>
-                                <double>3.14159265</double>
-                              </value>
-                            </member>
-                          </struct>
-                        </value>
-                      </data>
-                    </array>
+                    <double>3.14159265</double>
                   </value>
                 </member>
               </struct>
@@ -386,11 +296,331 @@
             <value>
               <struct>
                 <member>
-                  <name>success</name>
+                  <name>result</name>
                   <value>
                     <boolean>true</boolean>
                   </value>
                   <description>if failed then the function will return a fault response</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--SetParameters-->
+    <method>
+      <description>Sets parameters that are *not* used in the co-simulation.</description>
+      <methodCall>
+        <methodName>Destecs.SetParameters</methodName>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>parameters</name>
+                  <value>
+					  <array>
+						  <data>
+							<value>
+							  <struct>
+								<member>
+									<name>name</name>
+										<value>
+											<string>parName</string>
+										</value>
+									</member>
+									<member>
+										<name>value</name>
+										<value>
+											<double>3.14159265</double>
+										</value>
+									</member>
+								</struct>
+							 </value>
+						  </data>
+						</array>
+					</value>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>result</name>
+                  <value>
+                    <boolean>true</boolean>
+                  </value>
+                  <description>if failed then the function will return a fault response</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--SetDesignParameter-->
+    <method>
+      <description>Sets any parameter that is *used* in the co-simulation.</description>
+      <methodCall>
+        <methodName>Destecs.SetDesignParameter</methodName>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>name</name>
+                  <value>
+                    <string>parName</string>
+                  </value>
+                </member>
+                <member>
+                  <name>value</name>
+                  <value>
+                    <double>3.14159265</double>
+                  </value>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>result</name>
+                  <value>
+                    <boolean>true</boolean>
+                  </value>
+                  <description>if failed then the function will return a fault response</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--SetDesignParameters-->
+    <method>
+      <description>Sets design parameters that are used in the co-simulation.</description>
+      <methodCall>
+        <methodName>Destecs.SetParameters</methodName>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>designParameters</name>
+                  <value>
+					  <array>
+						  <data>
+							<value>
+							  <struct>
+								<member>
+									<name>name</name>
+										<value>
+											<string>parName</string>
+										</value>
+									</member>
+									<member>
+										<name>value</name>
+										<value>
+											<double>3.14159265</double>
+										</value>
+									</member>
+								</struct>
+							 </value>
+						  </data>
+						</array>
+					</value>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>result</name>
+                  <value>
+                    <boolean>true</boolean>
+                  </value>
+                  <description>if failed then the function will return a fault response</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--GetParameter-->
+    <method>
+      <description>Gets any parameter that is *not* used in the co-simulation.</description>
+      <methodCall>
+        <methodName>Destecs.GetParameter</methodName>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>name</name>
+                  <value>
+                    <string>parName</string>
+                  </value>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>value</name>
+                  <value>
+                    <double>1.2345</double>
+                  </value>
+                  <description>returns value of parameter</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--GetParameters-->
+    <method>
+      <description>Gets values from all parameters that are *not* used in the co-simulation.</description>
+      <methodCall>
+        <methodName>Destecs.GetParameters</methodName>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>parameters</name>
+				  <value>
+				    <array>
+                      <data>
+                        <value>
+						  <struct>
+							<member>
+								<name>name</name>
+									<value>
+										<string>parName</string>
+									</value>
+								</member>
+								<member>
+									<name>value</name>
+									<value>
+										<double>3.14159265</double>
+									</value>
+								</member>
+							</struct>
+		                 </value>
+                      </data>
+                    </array>
+				  </value>
+                  <description>name value pairs of all parameters</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--GetDesignParameter-->
+    <method>
+      <description>Gets any design parameter that is used in the co-simulation.</description>
+      <methodCall>
+        <methodName>Destecs.GetDesignParameter</methodName>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>name</name>
+                  <value>
+                    <string>parName</string>
+                  </value>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>value</name>
+                  <value>
+                    <double>1.2345</double>
+                  </value>
+                  <description>returns value of parameter</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--GetDesignParameters-->
+    <method>
+      <description>Gets values from all parameters that are used in the co-simulation.</description>
+      <methodCall>
+        <methodName>Destecs.GetDesignParameters</methodName>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>designParameters</name>
+				  <value>
+				    <array>
+                      <data>
+                        <value>
+						  <struct>
+							<member>
+								<name>name</name>
+									<value>
+										<string>parName</string>
+									</value>
+								</member>
+								<member>
+									<name>value</name>
+									<value>
+										<double>3.14159265</double>
+									</value>
+								</member>
+							</struct>
+		                 </value>
+                      </data>
+                    </array>
+				  </value>
+                  <description>name value pairs of all parameters</description>
                 </member>
               </struct>
             </value>
@@ -495,17 +725,29 @@
                     </array>
                   </value>
                 </member>
+                <member>
+                  <name>events</name>
+                  <value>
+                    <array>
+                      <data>
+                        <value>
+                            <string>eventname</string>
+						</value>
+                      </data>
+                    </array>
+                  </value>
+                </member>
               </struct>
             </value>
           </param>
         </params>
       </methodResponse>
     </method>
-    <!--Terminate-->
+    <!--GetStatus-->
     <method>
-      <description>Terminates the server. After a reply no future communication be be posible. The server will release all resources and terminate in the OS.</description>
+      <description>Gets the status: 0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished, 4= Loaded</description>
       <methodCall>
-        <methodName>Destecs.Terminate</methodName>
+        <methodName>Destecs.GetStatus</methodName>
       </methodCall>
       <methodResponse>
         <params>
@@ -513,11 +755,11 @@
             <value>
               <struct>
                 <member>
-                  <name>result</name>
+                  <name>status</name>
                   <value>
-                    <boolean>true</boolean>
+                    <int>1</int>
                   </value>
-                  <description>if failed then the function will return a fault response</description>
+                  <description>0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished</description>
                 </member>
               </struct>
             </value>
@@ -525,99 +767,6 @@
         </params>
       </methodResponse>
     </method>
-    <!--SetParameter-->
-    <method>
-      <description>Sets any parameter defines as: SharedDesignParameter, Variable IN/OUT or a local design parmeter not used in the co-simulation.</description>
-      <methodCall>
-        <methodName>Destecs.SetParameter</methodName>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>name</name>
-                  <value>
-                    <string>parName</string>
-                  </value>
-                </member>
-                <member>
-                  <name>value</name>
-                  <value>
-                    <double>3.14159265</double>
-                  </value>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodCall>
-      <methodResponse>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>result</name>
-                  <value>
-                    <boolean>true</boolean>
-                  </value>
-                  <description>if failed then the function will return a fault response</description>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodResponse>
-    </method>
-    <!--Break-->
-    <method>
-      <description>Suspends the simulation if the server supports this feature. Resume can be done by calling step.</description>
-      <methodCall>
-        <methodName>Destecs.Break</methodName>
-      </methodCall>
-      <methodResponse>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>success</name>
-                  <value>
-                    <boolean>true</boolean>
-                  </value>
-                  <description>if failed then the function will return a fault response</description>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodResponse>
-    </method>
-    <!--ShowData-->
-    <method>
-      <description>Asks for data to be shown by the server. If the data is shown without problems true is returned else a fault code</description>
-      <methodCall>
-        <methodName>Destecs.ShowData</methodName>
-      </methodCall>
-      <methodResponse>
-        <params>
-          <param>
-            <value>
-              <struct>
-                <member>
-                  <name>success</name>
-                  <value>
-                    <boolean>true</boolean>
-                  </value>
-                  <description>if failed then the function will return a fault response</description>
-                </member>
-              </struct>
-            </value>
-          </param>
-        </params>
-      </methodResponse>
-    </method>
-    <!-- Application GetStatus !-->
   </methods>
   <methodFaultResponses>
     <methodResponse>
