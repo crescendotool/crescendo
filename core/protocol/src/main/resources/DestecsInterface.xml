@@ -217,6 +217,13 @@
                               </value>
                             </member>
                             <member>
+                              <name>type</name>
+                              <value>
+                                <int>0</int>
+                              </value>
+							  <description>-1 = eventdown, 0 = event, 1 = eventup</description>
+                            </member>
+                            <member>
                               <name>sharedParameter</name>
                               <value>
                                 <string>parametername</string>
