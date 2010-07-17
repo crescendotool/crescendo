@@ -20,6 +20,59 @@
     <patch>22</patch>
   </implementationVersion>
   <methods>
+  <description>
+  <![CDATA[
+Normal control flow of the protocol:<br/>
+
+Text:
+<ol>
+
+<li>Check the protocol version
+<li>Initialize the tool for Co-Simulation
+<li>Load a model
+<li>Check the models interface
+<li>*Get shared design parameters and check agains contract - included in query interface
+<li>Set shared design parameters with values from scenario
+<li>Get all parameters check if they need to be set form scenario. This is parameters only relevant to the current tool
+<li>Set all parameters for the tool from the scenario
+<li>Start the simulator
+<li>Step until simulation completed it's time
+<li>Stop the simulator. No future simulation is possible after this call.
+<li>UnLoad the model
+<li>Terminate the external tool if no more simulations should be performed
+</ol>
+
+Commands:
+<ol>
+
+<li>GetVersion
+<li>Initialize
+<li>Load
+<li>QueryInterface
+<li>*GetDesignParameters - included in query interface
+<li>SetDesignParameters
+<li>GetParameters
+<li>SetParameters
+
+<li>Start
+<li>Step
+<li>Stop
+
+<li>UnLoad
+
+<li>Terminate
+
+</ol>
+
+Commands that can be fired at any point:
+<ul>
+
+<li>GetStatus
+
+</ul>
+]]>
+  
+  </description>
     <!--GetVersion-->
     <method>
       <description>Gets the name and version of the simulator in the form: name / majorVersion.MinorVersion.revision.patch</description>
@@ -34,7 +87,7 @@
                 <member>
                   <name>name</name>
                   <value>
-                    <string>20-sim</string>
+    	              <string>20-sim</string>
                   </value>
                   <description>The name of the simulator program</description>
                 </member>
@@ -63,7 +116,7 @@
             <value>
               <struct>
                 <member>
-                  <name>result</name>
+                  <name>success</name>
                   <value>
                     <boolean>true</boolean>
                   </value>
@@ -87,7 +140,7 @@
             <value>
               <struct>
                 <member>
-                  <name>result</name>
+                  <name>success</name>
                   <value>
                     <boolean>true</boolean>
                   </value>
@@ -192,7 +245,7 @@
             <value>
               <struct>
                 <member>
-                  <name>sharedParameters</name>
+                  <name>sharedDesignParameters</name>
                   <value>
                     <array>
                       <data>
@@ -303,7 +356,7 @@
             <value>
               <struct>
                 <member>
-                  <name>result</name>
+                  <name>success</name>
                   <value>
                     <boolean>true</boolean>
                   </value>
@@ -360,7 +413,7 @@
             <value>
               <struct>
                 <member>
-                  <name>result</name>
+                  <name>success</name>
                   <value>
                     <boolean>true</boolean>
                   </value>
@@ -404,7 +457,7 @@
             <value>
               <struct>
                 <member>
-                  <name>result</name>
+                  <name>success</name>
                   <value>
                     <boolean>true</boolean>
                   </value>
@@ -420,7 +473,7 @@
     <method>
       <description>Sets design parameters that are used in the co-simulation.</description>
       <methodCall>
-        <methodName>Destecs.SetParameters</methodName>
+        <methodName>Destecs.SetDesignParameters</methodName>
         <params>
           <param>
             <value>
@@ -461,7 +514,7 @@
             <value>
               <struct>
                 <member>
-                  <name>result</name>
+                  <name>success</name>
                   <value>
                     <boolean>true</boolean>
                   </value>
@@ -683,6 +736,19 @@
                     </array>
                   </value>
                 </member>
+                <member>
+                  <name>events</name>
+                  <value>
+                    <array>
+                      <data>
+                        <value>
+                            <string>eventname</string>
+						</value>
+                      </data>
+                    </array>
+                  </value>
+                  <description>A list of Event causing this Step</description>
+                </member>
               </struct>
             </value>
           </param>
@@ -743,6 +809,7 @@
                       </data>
                     </array>
                   </value>
+                  <description>A list of Event names causing the Step to return early</description>
                 </member>
               </struct>
             </value>
@@ -767,6 +834,54 @@
                     <int>1</int>
                   </value>
                   <description>0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+    <!--Start-->
+    <method>
+      <description>Starts the simulator or interpreter. After this function is called a Step can be taken</description>
+      <methodCall>
+        <methodName>Destecs.Start</methodName>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>success</name>
+                  <value>
+                    <boolean>true</boolean>
+                  </value>
+                  <description>if failed then the function will return a fault response</description>
+                </member>
+              </struct>
+            </value>
+          </param>
+        </params>
+      </methodResponse>
+    </method>
+     <!--Stop-->
+    <method>
+      <description>Stops the simulator or interpreter. After this function is no Steps can be taken and the model cannot be Satrted again</description>
+      <methodCall>
+        <methodName>Destecs.Stop</methodName>
+      </methodCall>
+      <methodResponse>
+        <params>
+          <param>
+            <value>
+              <struct>
+                <member>
+                  <name>success</name>
+                  <value>
+                    <boolean>true</boolean>
+                  </value>
+                  <description>if failed then the function will return a fault response</description>
                 </member>
               </struct>
             </value>

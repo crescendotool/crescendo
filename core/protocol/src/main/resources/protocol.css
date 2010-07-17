@@ -71,3 +71,11 @@ span.name
 	font-family: 'Courier New' , Courier, monospace;
 	font-size: 12px;
 }
+
+span.flow
+{
+	font-family: 'Courier New' , Courier, monospace;
+	font-size: 12px;
+	width: 100%;
+	background-color: #F0F0F0;
+}
