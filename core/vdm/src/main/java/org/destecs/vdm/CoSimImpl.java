@@ -9,20 +9,18 @@ import java.util.Vector;
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
-import org.destecs.protocol.structs.InitializeSharedParameterStructParam;
+
+import org.destecs.protocol.structs.GetDesignParametersStruct;
 import org.destecs.protocol.structs.InitializeStruct;
-import org.destecs.protocol.structs.InitializefaultsStructParam;
 import org.destecs.protocol.structs.LoadStruct;
-import org.destecs.protocol.structs.QueryFaultsStruct;
-import org.destecs.protocol.structs.QueryFaultsStructfaultsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
-import org.destecs.protocol.structs.QueryInterfaceStructInputsStruct;
-import org.destecs.protocol.structs.QueryInterfaceStructOutputsStruct;
-import org.destecs.protocol.structs.QueryInterfaceStructSharedParameterStruct;
+import org.destecs.protocol.structs.SetDesignParametersStruct;
+import org.destecs.protocol.structs.StartStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.protocol.structs.StopStruct;
 import org.destecs.protocol.structs.TerminateStruct;
+import org.destecs.protocol.structs.UnLoadStruct;
 
 @SuppressWarnings("unchecked")
 public class CoSimImpl implements IDestecs
@@ -30,44 +28,40 @@ public class CoSimImpl implements IDestecs
 
 	private static final String version = "0.0.0.1";
 
-	public Map<String, Boolean> break_()
-	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
-	}
-
 	public Map<String, Integer> getStatus()
 	{
 		return new GetStatusStruct(SimulationManager.getInstance().getStatus()).toMap();
 	}
 
-	public Map<String, String> getVersion()
+	public Map<String, Object> getVersion()
 	{
-		return new GetVersionStruct(version).toMap();
+		return new GetVersionStruct("VDMJ", version).toMap();
 	}
 
-	public Map<String, Boolean> initialize(Map<String, Object> data)
+	public Map<String, Boolean> initialize()
 	{
-		List<InitializeSharedParameterStructParam> SharedParameter = new Vector<InitializeSharedParameterStructParam>();
-		if (data.keySet().contains("SharedParameter"))
-		{
-			Object tmpL0 = data.get("SharedParameter");
-			for (Object m : (Object[]) tmpL0)
-			{
-				SharedParameter.add(new InitializeSharedParameterStructParam((Map<String, Object>) m));
-			}
-		}
-
-		List<InitializefaultsStructParam> faults = new Vector<InitializefaultsStructParam>();
-		if (data.keySet().contains("faults"))
-		{
-			Object tmpL0 = data.get("faults");
-			for (Object m : (Object[]) tmpL0)
-			{
-				faults.add(new InitializefaultsStructParam((Map<String, Integer>) m));
-			}
-		}
-
-		return new InitializeStruct(SimulationManager.getInstance().initialize(SharedParameter,faults)).toMap();
+//		List<InitializeSharedParameterStructParam> SharedParameter = new Vector<InitializeSharedParameterStructParam>();
+//		if (data.keySet().contains("SharedParameter"))
+//		{
+//			Object tmpL0 = data.get("SharedParameter");
+//			for (Object m : (Object[]) tmpL0)
+//			{
+//				SharedParameter.add(new InitializeSharedParameterStructParam((Map<String, Object>) m));
+//			}
+//		}
+//
+//		List<InitializefaultsStructParam> faults = new Vector<InitializefaultsStructParam>();
+//		if (data.keySet().contains("faults"))
+//		{
+//			Object tmpL0 = data.get("faults");
+//			for (Object m : (Object[]) tmpL0)
+//			{
+//				faults.add(new InitializefaultsStructParam((Map<String, Integer>) m));
+//			}
+//		}
+//
+//		return new InitializeStruct(SimulationManager.getInstance().initialize(SharedParameter, faults)).toMap();
+		return new InitializeStruct(true).toMap();
 	}
 
 	public Map<String, Boolean> load(Map<String, String> data)
@@ -77,14 +71,14 @@ public class CoSimImpl implements IDestecs
 		return new LoadStruct(SimulationManager.getInstance().load(new File(path))).toMap();
 	}
 
-	public Map<String, List<Map<String, Object>>> queryFaults()
-	{
-		QueryFaultsStruct faults = new QueryFaultsStruct();
-
-		faults.faults.add(new QueryFaultsStructfaultsStruct(3, "Bad valve"));
-
-		return faults.toMap();
-	}
+	// public Map<String, List<Map<String, Object>>> queryFaults()
+	// {
+	// QueryFaultsStruct faults = new QueryFaultsStruct();
+	//
+	// faults.faults.add(new QueryFaultsStructfaultsStruct(3, "Bad valve"));
+	//
+	// return faults.toMap();
+	// }
 
 	public Map<String, Object> queryInterface()
 	{
@@ -95,38 +89,35 @@ public class CoSimImpl implements IDestecs
 
 		for (String name : SimulationManager.getInstance().getSharedDesignParameters())
 		{
-			s.SharedParameter.add(new QueryInterfaceStructSharedParameterStruct(name, new Double(0)));
+			s.sharedDesignParameters.add(name);
 		}
 
 		for (String name : SimulationManager.getInstance().getInputVariables())
 		{
-			s.Inputs.add(new QueryInterfaceStructInputsStruct(name, new Double(0)));
+			s.inputs.add(name);
 		}
 
 		for (String name : SimulationManager.getInstance().getOutputVariables())
 		{
-			s.Outputs.add(new QueryInterfaceStructOutputsStruct(name, new Double(0)));
+			s.outputs.add(name);
 		}
 
-		// TODO add events
+		// No events from VDM
 
 		return s.toMap();
 	}
 
-	public Map<String, Boolean> setActive(Map<String, String> data)
-	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
-	}
+	// public Map<String, Boolean> setActive(Map<String, String> data)
+	// {
+	// throw new NoSuchMethodError("Not supported by VDMJ");
+	// }
 
-	public Map<String, Boolean> setParameter(Map<String, Object> data)
-	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
-	}
+	
 
-	public Map<String, Boolean> showData()
-	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
-	}
+	// public Map<String, Boolean> showData()
+	// {
+	// throw new NoSuchMethodError("Not supported by VDMJ");
+	// }
 
 	public Map<String, Object> step(Map<String, Object> data)
 	{
@@ -143,15 +134,26 @@ public class CoSimImpl implements IDestecs
 			}
 		}
 
-//		Boolean singleStep = (Boolean) data.get("singleStep");
+		// Boolean singleStep = (Boolean) data.get("singleStep");
 
-//		System.out.println("Decoded:");
-//		System.out.println("outputtime:" + outputTime);
-//		System.out.println("singlestep:" + singleStep);
-//		System.out.println("Inputs: " + inputs);
+		List tmp1 = Arrays.asList((Object[]) data.get("events"));
+
+		List<String> events = new Vector<String>();
+		for (Object in : tmp1)
+		{
+			if (in instanceof String)
+			{
+				events.add((String) in);
+			}
+		}
+
+		// System.out.println("Decoded:");
+		// System.out.println("outputtime:" + outputTime);
+		// System.out.println("singlestep:" + singleStep);
+		// System.out.println("Inputs: " + inputs);
 
 		// Ignore single step
-		StepStruct result = SimulationManager.getInstance().step(outputTime, inputs);
+		StepStruct result = SimulationManager.getInstance().step(outputTime, inputs, events);
 
 		return result.toMap();
 	}
@@ -159,17 +161,81 @@ public class CoSimImpl implements IDestecs
 	public Map<String, Boolean> terminate()
 	{
 		System.out.println("DESTECS VDM is terminating now...");
+
+		Thread shutdown = new Thread(new Runnable()
+		{
+
+			public void run()
+			{
+				try
+				{
+					Thread.sleep(1000);
+				} catch (InterruptedException e)
+				{
+					// Wait for terminate to reply to client then terminate
+				}
+				System.exit(0);
+			}
+		});
+		shutdown.start();
 		return new TerminateStruct(true).toMap();
-		// TODO terminate
 	}
 
 	public Map<String, Boolean> unLoad(Map<String, String> data)
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+		return new UnLoadStruct(true).toMap();
 	}
 
 	public Map<String, Boolean> stop()
 	{
 		return new StopStruct(SimulationManager.getInstance().stopSimulation()).toMap();
+	}
+
+	public Map<String, Double> getDesignParameter(Map<String, String> data)
+	{
+		throw new NoSuchMethodError("Not supported by VDMJ");
+	}
+
+	public Map<String, List<Map<String, Object>>> getDesignParameters()
+	{
+		throw new NoSuchMethodError("Not supported by VDMJ");
+	}
+
+	public Map<String, Double> getParameter(Map<String, String> data)
+	{
+		throw new NoSuchMethodError("Not supported by VDMJ");
+	}
+
+	public Map<String, List<Map<String, Object>>> getParameters()
+	{
+		throw new NoSuchMethodError("Not supported by VDMJ");
+	}
+
+	public Map<String, Boolean> setDesignParameter(Map<String, Object> data)
+	{
+		throw new NoSuchMethodError("Not supported by VDMJ");
+	}
+
+	public Map<String, Boolean> setDesignParameters(
+			Map<String, List<Map<String, Object>>> data)
+	{
+		System.out.println("Not implemented setDesignParameters");
+		return new SetDesignParametersStruct(true).toMap();
+	}
+
+	public Map<String, Boolean> setParameter(Map<String, Object> data)
+	{
+		throw new NoSuchMethodError("Not supported by VDMJ");
+	}
+	
+	public Map<String, Boolean> setParameters(
+			Map<String, List<Map<String, Object>>> data)
+	{
+		throw new NoSuchMethodError("Not supported by VDMJ");
+	}
+
+	public Map<String, Boolean> start()
+	{
+		return new  StartStruct(SimulationManager.getInstance().initialize()).toMap();
 	}
 }

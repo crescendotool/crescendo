@@ -248,14 +248,25 @@ public class GenerateProxy
 				{
 					t = new ListType(new Type(Object.class));
 				}
+				
+				MapType mapt = ((MapType) p1.type);
+				if (mapt.valueType instanceof ListType)
+				{
+					sb.append("\n\n\t\tList<" + ((ListType) mapt.valueType).type.toSource() + "> pTmp" + pCount
+							+ (" = new List<" + ((ListType) mapt.valueType).type.toSource()+">").replace("List", "Vector")
+							+ "();");
+				}else{
+									
 				sb.append("\n\n\t\t" + t.toSource() + " pTmp" + pCount
 						+ " = new " + t.toSource().replace("List", "Vector")
 						+ "();");
+				}
+				
 				sb.append("\n\t\tfor( IStruct a: " + key + ")");
 				sb.append("\n\t\t{");
 
 				String cast = "";
-				MapType mapt = ((MapType) p1.type);
+				
 				if (mapt.valueType instanceof ListType)
 				{
 					cast = ((ListType) mapt.valueType).type.toSource();
@@ -419,33 +430,21 @@ public class GenerateProxy
 					m.body += f.type.getName() + " tmp" + count
 							+ " = new Vector<" + newRet.getName()
 							+ ">();\n\t\t";
-//					m.body += "if( value.keySet().toArray().length >= "
-//							+ new Integer(count + 1) + " )\n\t\t";// && value.get(value.keySet().toArray()[2])
-					// instanceof Iterable
+
 					
 					m.body += "if( value.keySet().contains(\""+f.getName()+"\" ))\n\t\t";
-					
-
 					m.body += "{\n\t\t\t";
 
-					// m.body += "for( " + ((ListType) type).type + " m : ("
-					// + type.getName() + ") value.get(value.keySet().toArray()[" + count
-					// + "]))\n\t\t\t";
+			
 					if (map.valueType instanceof List
 							|| map.valueType instanceof ListType)
 					{
-//						m.body += "Object tmpL" + count
-//								+ " = value.get(value.keySet().toArray()["
-//								+ count + "]);\n\t\t\t";
 						m.body += "Object tmpL" + count
 						+ " = value.get(\""+f.getName()+"\");\n\t\t\t";
 						m.body += "for( Object m : (Object[])tmpL"+count+")\n\t\t\t";
-						// m.body += "for( Object m : (List)value.get(value.keySet().toArray()["
-						// + count + "]))\n\t\t\t";
+
 					} else
 					{
-//						m.body += "for( Object m : (Object[])value.get(value.keySet().toArray()["
-//								+ count + "]))\n\t\t\t";
 						m.body += "for( Object m : (Object[])value.get(\""+f.getName()+"\"))\n\t\t\t";
 					}
 
@@ -465,9 +464,35 @@ public class GenerateProxy
 				} else
 				{
 					f.type = map.possibleEntries.get(p);
-					m.body += "this." + f.getName() + " = (" + f.type.getName()
-							+ ") value.get(value.keySet().toArray()[" + count
-							+ "]);\n\t\t";
+//					m.body += "this." + f.getName() + " = (" + f.type.getName()
+//							+ ") value.get(value.keySet().toArray()[" + count
+//							+ "]);\n\t\t";
+					m.body += "if( value.keySet().contains(\""+f.getName()+"\" ))\n\t\t";
+					m.body += "{\n\t\t\t";
+
+			
+					if (map.valueType instanceof List
+							|| map.valueType instanceof ListType)
+					{
+						m.body += "Object tmpL" + count
+						+ " = value.get(\""+f.getName()+"\");\n\t\t\t";
+						m.body += "for( Object m : (Object[])tmpL"+count+")\n\t\t\t";
+
+					} else
+					{
+						m.body += "for( Object m : (Object[])value.get(\""+f.getName()+"\"))\n\t\t\t";
+					}
+
+					m.body += "{\n\t\t\t\t";
+
+					m.body += "this." + f.getName() + ".add((" + ((ListType) type).type + ") m";
+					m.body += ");\n\t\t\t";
+
+					m.body += "}\n\t\t";
+
+					m.body += "}\n\t\t";
+
+					
 				}
 			} else if (type instanceof MapType)
 			{
@@ -488,8 +513,7 @@ public class GenerateProxy
 			{
 				f.type = map.possibleEntries.get(p);
 				m.body += "this." + f.getName() + " = (" + f.type.getName()
-						+ ") value.get(value.keySet().toArray()[" + count
-						+ "]);\n\t\t";
+						+ ") value.get(\""+f.getName()+"\");\n\t\t";
 			}
 			count++;
 		}

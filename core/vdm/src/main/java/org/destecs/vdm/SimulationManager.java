@@ -4,13 +4,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
-import org.destecs.protocol.structs.InitializeSharedParameterStructParam;
-import org.destecs.protocol.structs.InitializefaultsStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
+import org.destecs.vdmj.scheduler.EventThread;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
 import org.overturetool.vdmj.Settings;
@@ -20,12 +19,20 @@ import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.lex.Dialect;
+import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
+import org.overturetool.vdmj.scheduler.AsyncThread;
+import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
+import org.overturetool.vdmj.scheduler.MessageRequest;
 import org.overturetool.vdmj.scheduler.SystemClock;
+import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NumericValue;
+import org.overturetool.vdmj.values.ObjectValue;
+import org.overturetool.vdmj.values.OperationValue;
 import org.overturetool.vdmj.values.Value;
+import org.overturetool.vdmj.values.ValueList;
 
 public class SimulationManager
 {
@@ -163,7 +170,7 @@ public class SimulationManager
 	}
 
 	public synchronized StepStruct step(Double outputTime,
-			List<StepinputsStructParam> inputs)
+			List<StepinputsStructParam> inputs, List<String> events)
 	{
 		// Double timeReached = outputTime;
 		// StepResultEnum status = null;
@@ -190,6 +197,14 @@ public class SimulationManager
 
 		nextTimeStep = outputTime.longValue();
 		System.out.println("Next Step clock: " + nextTimeStep);
+		
+		if(events.size()>0)
+		{
+			for (String event : events)
+			{
+				evalEvent(event);
+			}
+		}
 
 		try
 		{
@@ -222,9 +237,48 @@ public class SimulationManager
 //			}
 //		}
 
-		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime), outputs);
+		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime),new Vector<String>(), outputs);
 
 		return result;
+	}
+
+	private void evalEvent(String event)
+	{
+		final String classDefinitionName ="testEventHandlers";
+		
+		if (mainContext != null)
+		{
+			for (LexNameToken key : mainContext.getGlobal().keySet())
+			{
+				if (key.name.equals(classDefinitionName))
+				{
+					ObjectValue s= (ObjectValue) mainContext.getGlobal().get(key).deref();
+					for (LexNameToken memberKey : s.members.keySet())
+					{
+						if(memberKey.name.equals(event))
+						{
+							
+							OperationValue eventOp= (OperationValue) s.members.get(memberKey);
+							try
+							{
+								EventThread eThread = new EventThread(Thread.currentThread());
+								BasicSchedulableThread.add(eThread);
+								eventOp.eval(new LexLocation(new File("co-sim"), "CO-SIM", 0, 0, 0, 0), new ValueList(), mainContext);
+								BasicSchedulableThread.remove(eThread);
+							} catch (ValueException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							System.out.println(s);
+						}
+					}
+					
+				}
+
+			}
+		}
+		
 	}
 
 	private List<LexNameToken> getOutputLexNames()
@@ -337,14 +391,14 @@ public class SimulationManager
 		return false;
 	}
 
-	public Boolean initialize(
+	public Boolean initialize(/*
 			List<InitializeSharedParameterStructParam> sharedParameter,
-			List<InitializefaultsStructParam> faults)
+			List<InitializefaultsStructParam> faults*/)
 	{
 
-		setSharedDesignParameters(sharedParameter);
-
-		setFaults(faults);
+//		setSharedDesignParameters(sharedParameter);
+//
+//		setFaults(faults);
 
 		final List<File> files = new Vector<File>();
 		try
@@ -386,47 +440,47 @@ public class SimulationManager
 		
 	}
 
-	private void setFaults(List<InitializefaultsStructParam> faults)
-	{
-		// TODO set faults this might need to be set from the load instead
-	}
-
-	private void setSharedDesignParameters(
-			List<InitializeSharedParameterStructParam> sharedParameter)
-	{
-		try
-		{
-			for (ClassDefinition cd : controller.getInterpreter().getClasses())
-			{
-				if (cd.getName().equalsIgnoreCase(interfaceClassName))
-				{
-					for (Definition d : cd.definitions)
-					{
-						if (d instanceof ValueDefinition)
-						{
-							// This should work but gives null list.add(d.getName());
-							String name = ((ValueDefinition) d).pattern.toString();
-							for (InitializeSharedParameterStructParam designParameter : sharedParameter)
-							{
-								if (name.equals(designParameter.name))
-								{
-									// ((RealLiteralExpression)((ValueDefinition) d).exp).value.value
-									// =designParameter.value;
-									// TODO cannot set value because it is final, remember that INV checks must be
-									// performed after / during the value change
-								}
-							}
-
-						}
-					}
-				}
-			}
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	private void setFaults(List<InitializefaultsStructParam> faults)
+//	{
+//		// TODO set faults this might need to be set from the load instead
+//	}
+//
+//	private void setSharedDesignParameters(
+//			List<InitializeSharedParameterStructParam> sharedParameter)
+//	{
+//		try
+//		{
+//			for (ClassDefinition cd : controller.getInterpreter().getClasses())
+//			{
+//				if (cd.getName().equalsIgnoreCase(interfaceClassName))
+//				{
+//					for (Definition d : cd.definitions)
+//					{
+//						if (d instanceof ValueDefinition)
+//						{
+//							// This should work but gives null list.add(d.getName());
+//							String name = ((ValueDefinition) d).pattern.toString();
+//							for (InitializeSharedParameterStructParam designParameter : sharedParameter)
+//							{
+//								if (name.equals(designParameter.name))
+//								{
+//									// ((RealLiteralExpression)((ValueDefinition) d).exp).value.value
+//									// =designParameter.value;
+//									// TODO cannot set value because it is final, remember that INV checks must be
+//									// performed after / during the value change
+//								}
+//							}
+//
+//						}
+//					}
+//				}
+//			}
+//		} catch (Exception e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	private static List<File> getSpecFiles(File path)
 	{

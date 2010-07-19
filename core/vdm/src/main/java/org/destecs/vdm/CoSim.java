@@ -9,8 +9,8 @@ import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
 import org.apache.xmlrpc.webserver.WebServer;
+import org.destecs.core.xmlrpc.extensions.AnnotedPropertyHandlerMapping;
 import org.destecs.protocol.ICoSimProtocol;
-import org.destetcs.core.xmlrpc.extensions.AnnotedPropertyHandlerMapping;
 
 /**
  * @author kela

@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-   	<groupId>org.destetcs</groupId>
+   	<groupId>org.destecs</groupId>
   		<artifactId>core</artifactId>
     	<version>1.0.0</version>
   </parent>
@@ -9,8 +9,23 @@
   <artifactId>vdm</artifactId>
   <version>1.0.0</version>
   <name>Co-Simulator for VDM</name>
- 
-
+ <build>
+ 	<plugins>
+  		<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>org.destecs.vdm.CoSim</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+  	</plugins>
+ </build>
  <dependencies>
     <dependency>
     	<groupId>org.destecs.core</groupId>
@@ -24,7 +39,7 @@
     	<version>3.1.3</version>
     </dependency>
     <dependency>
-    	<groupId>org.destetcs.core.xmlrpcextensions</groupId>
+    	<groupId>org.destecs.core.xmlrpcextensions</groupId>
     	<artifactId>xmlrpcserverextension</artifactId>
     	<version>1.0.0</version>
     </dependency>
