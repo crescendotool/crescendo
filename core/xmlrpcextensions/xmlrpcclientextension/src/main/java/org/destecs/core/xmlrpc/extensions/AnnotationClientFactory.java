@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.destetcs.core.xmlrpc.extensions;
+package org.destecs.core.xmlrpc.extensions;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -28,6 +28,9 @@ import org.apache.xmlrpc.common.TypeConverter;
 import org.apache.xmlrpc.common.TypeConverterFactory;
 import org.apache.xmlrpc.common.TypeConverterFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcInvocationException;
+import org.destecs.core.xmlrpc.extensions.RpcMethod;
+
+
 
 
 

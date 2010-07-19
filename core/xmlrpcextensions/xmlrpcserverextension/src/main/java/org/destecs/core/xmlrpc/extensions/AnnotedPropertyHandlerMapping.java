@@ -1,4 +1,4 @@
-package org.destetcs.core.xmlrpc.extensions;
+package org.destecs.core.xmlrpc.extensions;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcHandler;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
+import org.destecs.core.xmlrpc.extensions.RpcMethod;
+
 
 
 

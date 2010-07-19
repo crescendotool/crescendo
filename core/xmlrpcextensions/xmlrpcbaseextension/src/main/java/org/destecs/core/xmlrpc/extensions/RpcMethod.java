@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.destetcs.core.xmlrpc.extensions;
+package org.destecs.core.xmlrpc.extensions;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
