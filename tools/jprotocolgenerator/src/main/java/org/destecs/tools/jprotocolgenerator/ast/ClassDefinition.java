@@ -1,6 +1,5 @@
 package org.destecs.tools.jprotocolgenerator.ast;
 
-import java.lang.annotation.Annotation;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;

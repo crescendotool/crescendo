@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.management.MBeanAttributeInfo;
-
 import org.destecs.tools.jprotocolgenerator.ast.ClassDefinition;
 import org.destecs.tools.jprotocolgenerator.ast.Field;
 import org.destecs.tools.jprotocolgenerator.ast.FreeTextType;
@@ -22,8 +20,6 @@ import org.destecs.tools.jprotocolgenerator.ast.Method;
 import org.destecs.tools.jprotocolgenerator.ast.Parameter;
 import org.destecs.tools.jprotocolgenerator.ast.Type;
 import org.destecs.tools.jprotocolgenerator.ast.VoidType;
-
-import com.sun.xml.internal.bind.v2.runtime.output.Pcdata;
 
 public class GenerateProxy
 {
