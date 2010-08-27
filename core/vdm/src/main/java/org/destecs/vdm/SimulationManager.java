@@ -23,11 +23,8 @@ import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
-import org.overturetool.vdmj.scheduler.AsyncThread;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.MessageRequest;
 import org.overturetool.vdmj.scheduler.SystemClock;
-import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
@@ -77,7 +74,7 @@ public class SimulationManager
 		interpreterRunning = false;
 		this.notify();
 
-		System.out.println("Wait at clock:   " + SystemClock.getWallTime());
+		System.out.println("Wait at clock:   " + SystemClock.getWallTime()+" - for "+ minstep+" steps");
 		try
 		{
 			this.wait();
@@ -113,8 +110,11 @@ public class SimulationManager
 					{
 						if (d instanceof ValueDefinition)
 						{
-							// This should work but gives null list.add(d.getName());
-							list.add(((ValueDefinition) d).pattern.toString());
+							for (LexNameToken name : ((ValueDefinition) d).pattern.getVariableNames())
+							{
+								list.add(name.name);
+							}
+							
 						}
 					}
 				}
@@ -225,17 +225,17 @@ public class SimulationManager
 		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
 
 		// outputs.add(new StepStructoutputsStruct("setValve", 3.0));
-//		for (LexNameToken key : getOutputLexNames())
-//		{
-//			try
-//			{
-//				outputs.add(new StepStructoutputsStruct(key.name, mainContext.getGlobal().get(key).realValue(null)));
-//			} catch (ValueException e)
-//			{
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
+		for (LexNameToken key : getOutputLexNames())
+		{
+			try
+			{
+				outputs.add(new StepStructoutputsStruct(key.name, mainContext.getGlobal().get(key).realValue(null)));
+			} catch (ValueException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime),new Vector<String>(), outputs);
 

@@ -1,6 +1,10 @@
 package org.destecs.cosim;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -30,15 +34,19 @@ public class CoSimClient
 			InterruptedException
 	{
 		String modelPath = MODEL_BASE_PATH;
-		if(args.length>0)
+		if (args.length > 0)
 		{
 			modelPath = args[0];
-			if(!new File(modelPath).exists() || !new File(modelPath).isDirectory())
+			if (!new File(modelPath).exists()
+					|| !new File(modelPath).isDirectory())
 			{
-				System.err.println("Model path is not valid: "+ modelPath);
+				System.err.println("Model path is not valid: " + modelPath);
 				return;
 			}
 		}
+		
+		List<D> simulationData =readData(args[1]);
+		
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		config.setServerURL(new URL("http://127.0.0.1:8080/xmlrpc"));
 		XmlRpcClient client = new XmlRpcClient();
@@ -75,8 +83,8 @@ public class CoSimClient
 			// List<InitializefaultsStructParam> enabledFaults = new Vector<InitializefaultsStructParam>();
 
 			List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 10.0));
-			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 500.0));
+			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 1.0));
+			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 2.0));
 
 			if (p.setDesignParameters(shareadDesignParameters).success)
 			{
@@ -87,8 +95,10 @@ public class CoSimClient
 					Double time = 0.0;
 					Double level = 0.0;
 					int eventLoop = 5;
-					for (int i = 0; i < 100; i++)
+					for (int i = 0; i < simulationData.size(); i++)
 					{
+						time = simulationData.get(i).timeS*1000;
+						level = simulationData.get(i).tankTankLevel;
 						/*
 						 * Begin stepping
 						 */
@@ -96,19 +106,19 @@ public class CoSimClient
 						inputs.add(new StepinputsStructParam("level", level));
 
 						List<String> events = new Vector<String>();
-						if (time > 10 && eventLoop <= 0)
-						{
-							events.add("high");
-							eventLoop=5;
-						}
-						eventLoop--;
+//						if (time > 10 && eventLoop <= 0)
+//						{
+//							events.add("high");
+//							eventLoop = 5;
+//						}
+//						eventLoop--;
 						StepStruct result = p.step(time, inputs, false, events);
 
-						time = result.time;
+//						time = result.time;
 
 						StringBuilder sb = new StringBuilder();
 
-						sb.append("Step: Time = " + time + " ");
+						sb.append("VDM Requesting time step of = " + result.time + " ");
 
 						for (StepStructoutputsStruct o : result.outputs)
 						{
@@ -117,7 +127,7 @@ public class CoSimClient
 
 						System.out.println(sb.toString());
 
-						level += 0.1;
+//						level += 0.1;
 					}
 					if (!p.stop().success)
 					{
@@ -135,7 +145,7 @@ public class CoSimClient
 		{
 			System.err.println("Load faild");
 		}
-		
+
 		p.terminate();
 
 		// if (p.load("C:\\destecs\\workspace\\watertank").success)
@@ -257,4 +267,74 @@ public class CoSimClient
 		System.out.println(sb.toString());
 	}
 
+	public static List<D> readData(String filename)
+	{
+		List<D> data = new Vector<D>();
+
+		File file = new File(filename);
+		StringBuffer contents = new StringBuffer();
+		BufferedReader reader = null;
+
+		try
+		{
+			reader = new BufferedReader(new FileReader(file));
+			String text = null;
+			boolean isFirst = true;
+			// repeat until all lines is read
+			while ((text = reader.readLine()) != null)
+			{
+				if (isFirst)
+				{
+					isFirst = false;
+					continue;
+				}
+				String[] elements = text.split(",");
+				data.add(new D(Double.parseDouble(elements[0]), Double.parseDouble(elements[1]), Double.parseDouble(elements[2]), Double.parseDouble(elements[3])));
+			}
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			try
+			{
+				if (reader != null)
+				{
+					reader.close();
+				}
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		return data;
+	}
+
+	public static class D
+	{
+		// time{s},tank\Tank\level,Control\valvecontrol,Control\count
+		public final Double timeS;
+		public final Double tankTankLevel;
+		public final Double controlValveControl;
+		public final Double controlCount;
+
+		public D(Double timeS, Double tankTankLevel,
+				Double controlValveControl, Double controlCount)
+		{
+			this.timeS = timeS;
+			this.controlCount = controlCount;
+			this.controlValveControl = controlValveControl;
+			this.tankTankLevel = tankTankLevel;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return String.format("\ntimeS=%1$s, \ntankTankLevel=%2$s, \ncontrolValveControl=%3$s, \ncontrolCount=%4$s", timeS, tankTankLevel, controlValveControl, controlCount);
+		}
+	}
 }
