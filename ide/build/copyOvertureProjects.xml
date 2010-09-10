@@ -1,29 +1,106 @@
-<copy todir="${buildDirectory}/plugins">
-	<fileset dir="${OvertureSourceIdeBase}">
-		<include name="ui/**" />
-		<include name="core/**" />
-		<include name="debug/**" />
-		<include name="help/**" />
-		<include name="platform/**" />
-		<include name="ui/**" />
-		<!--exclude name="**/target/" /-->
+
+	<!--
+		copy todir="${buildDirectory}/plugins"> <fileset
+		dir="${OvertureSourceIdeBase}"> <include name="ui/**" /> <include
+		name="core/**" /> <include name="debug/**" /> <include name="help/**"
+		/
+	-->
+	<!--  include name="platform/**" /-->
+	<!-- include name="ui/**" /-->
+	<!--exclude name="**/target/" /-->
+	<!--
+		/fileset> <fileset dir="${OvertureSourceIdeBase}/plugins/"> <include
+		name="**" /> <exclude name="**/idedebughelper/" /> <exclude
+		name="**/proofsupport/" /> </fileset> </copy
+	-->
+
+
+<copy todir="${buildDirectory}/plugins/overture.ui" filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/ui">
+		<exclude name="**/target/" />
 	</fileset>
-	<fileset dir="../plugins/">
-		<include name="**" />
-		<exclude name="**/idedebughelper/" />
-		<exclude name="**/proofsupport/" />
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.core" filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/core">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.debug" filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/debug">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.help" filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/help">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+
+	<!-- 
+Plugins
+ -->
+<copy todir="${buildDirectory}/plugins/overture.plugins.coverageeditor"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/coverageeditor">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.plugins.csk"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/csk">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.plugins.latex"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/latex">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.plugins.poviewer"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/poviewer">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.plugins.quickinterpreter"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/quickinterpreter">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.plugins.showtrace"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/showtrace">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.plugins.traces"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/traces">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+<copy todir="${buildDirectory}/plugins/overture.plugins.umltrans"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/plugins/umltrans">
+		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
 
 	<!-- Platform plugin, manage version number -->
-<copy todir="${buildDirectory}/plugins" filtering="true">
-	<fileset dir="${OvertureSourceIdeBase}">
-		<include name="platform/**" />
+
+
+<copy todir="${buildDirectory}/plugins/overture.platform"
+	filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/platform">
+		<!-- include name="platform/**" /-->
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy file="${OvertureSourceIdeBase}/platform/plugin.properties" toFile="${buildDirectory}/plugins/platform/plugin.properties"
+<copy file="${OvertureSourceIdeBase}/platform/plugin.properties"
+	toFile="${buildDirectory}/plugins/overture.platform/plugin.properties"
 	overwrite="true" filtering="true">
 	<filterchain>
 		<replacetokens>
@@ -35,7 +112,7 @@
 	</filterchain>
 </copy>
 <copy file="${OvertureSourceIdeBase}/platform/META-INF/MANIFEST.MF"
-	toFile="${buildDirectory}/plugins/platform/META-INF/MANIFEST.MF"
+	toFile="${buildDirectory}/plugins/overture.platform/META-INF/MANIFEST.MF"
 	overwrite="true" filtering="true">
 	<filterchain>
 		<tokenfilter>
@@ -47,143 +124,154 @@
 
 	<!-- IDE -->
 
-<copy todir="${buildDirectory}/plugins/builders.vdmj">
+<copy todir="${buildDirectory}/plugins/overture.builders.vdmj">
 	<fileset dir="${OvertureSourceIdeBase}/builders/vdmj">
 		<exclude name="**/target/" />
 	</fileset>
-
 </copy>
-<copy todir="${buildDirectory}/plugins/parsers.vdmj">
+
+<copy todir="${buildDirectory}/plugins/overture.parsers.vdmj">
 	<fileset dir="${OvertureSourceIdeBase}/parsers/vdmj">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
 
-<copy todir="${buildDirectory}/plugins/vdmpp.core">
+<copy todir="${buildDirectory}/plugins/overture.vdmpp.core">
 	<fileset dir="${OvertureSourceIdeBase}/vdmpp/core">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/vdmpp.ui">
+<copy todir="${buildDirectory}/plugins/overture.vdmpp.ui">
 	<fileset dir="${OvertureSourceIdeBase}/vdmpp/ui">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/plugins/vdmpp.debug">
+<copy todir="${buildDirectory}/plugins/overture.vdmpp.debug">
 	<fileset dir="${OvertureSourceIdeBase}/vdmpp/debug">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
 
-<copy todir="${buildDirectory}/plugins/vdmsl.core">
+<copy todir="${buildDirectory}/plugins/overture.vdmsl.core">
 	<fileset dir="${OvertureSourceIdeBase}/vdmsl/core">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/vdmsl.ui">
+<copy todir="${buildDirectory}/plugins/overture.vdmsl.ui">
 	<fileset dir="${OvertureSourceIdeBase}/vdmsl/ui">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/plugins/vdmsl.debug">
+<copy todir="${buildDirectory}/plugins/overture.vdmsl.debug">
 	<fileset dir="${OvertureSourceIdeBase}/vdmsl/debug">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
 
-<copy todir="${buildDirectory}/plugins/vdmrt.core">
+<copy todir="${buildDirectory}/plugins/overture.vdmrt.core">
 	<fileset dir="${OvertureSourceIdeBase}/vdmrt/core">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/vdmrt.ui">
+<copy todir="${buildDirectory}/plugins/overture.vdmrt.ui">
 	<fileset dir="${OvertureSourceIdeBase}/vdmrt/ui">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/plugins/vdmrt.debug">
+<copy todir="${buildDirectory}/plugins/overture.vdmrt.debug">
 	<fileset dir="${OvertureSourceIdeBase}/vdmrt/debug">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/generated.showtrace">
+<copy todir="${buildDirectory}/plugins/overture.generated.showtrace">
 	<fileset dir="${OvertureSourceIdeBase}/generated/showtrace">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/generated.traces">
+<copy todir="${buildDirectory}/plugins/overture.generated.traces">
 	<fileset dir="${OvertureSourceIdeBase}/generated/traces">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/generated.umltrans">
+<copy todir="${buildDirectory}/plugins/overture.generated.umltrans">
 	<fileset dir="${OvertureSourceIdeBase}/generated/umltrans">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/generated.vdmj">
+<copy todir="${buildDirectory}/plugins/overture.generated.vdmj">
 	<fileset dir="${OvertureSourceIdeBase}/generated/vdmj">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}">
-	<fileset dir="${OvertureSourceIdeBase}">
-		<include name="features/core/**" />
-		<include name="features/rcp/**" />
+	<!--
+		copy todir="${buildDirectory}"> <fileset
+		dir="${OvertureSourceIdeBase}"> <include name="features/core/**" />
+		<include name="features/rcp/**" /> <exclude name="**/target/" />
+		</fileset> </copy
+	-->
+
+<copy todir="${buildDirectory}/features/overture.core" filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/features/core">
 		<exclude name="**/target/" />
 	</fileset>
-
 </copy>
+<copy todir="${buildDirectory}/features/overture.rcp" filtering="true">
+	<fileset dir="${OvertureSourceIdeBase}/features/rcp">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+
+
 	<!--
 		Copying features and renaming the directories to a flat structure
 	-->
-<copy todir="${buildDirectory}/features/features.coverageeditor">
+<copy todir="${buildDirectory}/features/overture.features.coverageeditor">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/coverageeditor">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/features/features.csk">
+<copy todir="${buildDirectory}/features/overture.features.csk">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/csk">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/features/features.ct">
+<copy todir="${buildDirectory}/features/overture.features.ct">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/ct">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/features/features.latex">
+<copy todir="${buildDirectory}/features/overture.features.latex">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/latex">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/features/features.poviewer">
+<copy todir="${buildDirectory}/features/overture.features.poviewer">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/poviewer">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/features/features.quickinterpreter">
+<copy todir="${buildDirectory}/features/overture.features.quickinterpreter">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/quickinterpreter">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/features/features.realtimelogviewer">
+<copy todir="${buildDirectory}/features/overture.features.realtimelogviewer">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/realtimelogviewer">
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-<copy todir="${buildDirectory}/features/features.umltrans">
+<copy todir="${buildDirectory}/features/overture.features.umltrans">
 	<fileset dir="${OvertureSourceIdeBase}/plugins/features/umltrans">
 		<exclude name="**/target/" />
 	</fileset>

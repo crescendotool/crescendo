@@ -131,6 +131,6 @@
 
 	</target>
 
-
-	<target name="build" depends="clean,init, pde-build,sourceclean" />
+<!--,sourceclean-->
+	<target name="build" depends="clean,init, pde-build" />
 </project>
