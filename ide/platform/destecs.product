@@ -31,13 +31,7 @@
       <solaris/>
       <win useIco="true">
          <ico path="/org.destecs.ide.platform/icons/full/destecs.ico"/>
-         <bmp
-            winSmallHigh="/org.destecs.ide.platform/resources/16.bmp"
-            winSmallLow="/org.destecs.ide.platform/resources/816.bmp"
-            winMediumHigh="/org.destecs.ide.platform/resources/32.bmp"
-            winMediumLow="/org.destecs.ide.platform/resources/832.bmp"
-            winLargeHigh="/org.destecs.ide.platform/resources/48.bmp"
-            winLargeLow="/org.destecs.ide.platform/resources/848.bmp"/>
+         <bmp/>
       </win>
    </launcher>
 
@@ -50,7 +44,7 @@
    </plugins>
 
    <features>
-      <feature id="org.destecs.ide.features.rcp" version="0.1.0.qualifier"/>
+      <feature id="org.destecs.ide.features.rcp" version="0.0.1.qualifier"/>
    </features>
 
 
