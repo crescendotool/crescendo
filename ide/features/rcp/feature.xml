@@ -2,7 +2,7 @@
 <feature
       id="org.destecs.ide.features.rcp"
       label="DESTECS RCP"
-      version="0.1.0.qualifier">
+      version="0.0.1.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
