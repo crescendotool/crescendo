@@ -14,7 +14,7 @@
   <modules>
     <module>protocol</module>
     
-    <module>cosim</module>
+    <module>simulationengine</module>
     <module>vdm</module>
     <module>xmlrpcextensions</module>
 
