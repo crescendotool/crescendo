@@ -1,4 +1,4 @@
-package contracteditor.editor.core;
+package org.destecs.ide.contracteditor.editor.core;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.IContentAssistant;

@@ -1,4 +1,4 @@
-package contracteditor.editor.core;
+package org.destecs.ide.contracteditor.editor.core;
 
 import org.overture.ide.ui.editor.core.VdmEditor;
 import org.overture.ide.ui.editor.core.VdmSourceViewerConfiguration;

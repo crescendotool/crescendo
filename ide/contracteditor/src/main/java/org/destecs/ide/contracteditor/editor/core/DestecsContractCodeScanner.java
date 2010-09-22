@@ -1,4 +1,4 @@
-package contracteditor.editor.core;
+package org.destecs.ide.contracteditor.editor.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
