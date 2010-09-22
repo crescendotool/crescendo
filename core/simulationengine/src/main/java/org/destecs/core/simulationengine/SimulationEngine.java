@@ -14,6 +14,9 @@ import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
 import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
+import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
+import org.destecs.protocol.structs.StepStruct;
+import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 
 public class SimulationEngine
@@ -45,14 +48,9 @@ public class SimulationEngine
 	private ISimulatorLauncher dtLauncher = null;
 	private ISimulatorLauncher ctLauncher = null;
 
-	private List<IEngineListener> engineListeners = new Vector<IEngineListener>();
-	private List<IMessageListener> messageListeners = new Vector<IMessageListener>();
-	private List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
-
-	public SimulationEngine()
-	{
-
-	}
+	public final List<IEngineListener> engineListeners = new Vector<IEngineListener>();
+	public final List<IMessageListener> messageListeners = new Vector<IMessageListener>();
+	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
 
 	public void setDtEndpoint(URL endpoint)
 	{
@@ -129,7 +127,7 @@ public class SimulationEngine
 		}
 	}
 
-	public void simulate() throws InvalidEndpointsExpection,
+	public void simulate(List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,float totalSimulationTime) throws InvalidEndpointsExpection,
 			ModelPathNotValidException, InvalidSimulationLauncher
 	{
 		validate();
@@ -168,6 +166,157 @@ public class SimulationEngine
 			terminate(Simulator.ALL);
 		}
 		
+		//validate shared design parameters
+		if(!validateSharedDesignParameters(sharedDesignParameters))
+		{
+			terminate(Simulator.ALL);
+		}
+		
+		if(!setSharedDesignParameters(Simulator.DT,dtProxy,sharedDesignParameters))
+		{
+			terminate(Simulator.DT);
+		}
+		
+//		if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
+//		{
+//			terminate(Simulator.CT);
+//		}
+		
+		//start simulation
+		if(!startSimulator(Simulator.DT,dtProxy))
+		{
+			terminate(Simulator.DT);
+		}
+		
+		if(!startSimulator(Simulator.CT,ctProxy))
+		{
+			terminate(Simulator.CT);
+		}
+		
+		simulate(totalSimulationTime,dtProxy,ctProxy);
+		
+		//stop the simulators
+		
+		stop(Simulator.DT,dtProxy);
+//		stop(Simulator.CT,ctProxy);
+		
+		terminate(Simulator.DT,dtProxy,dtLauncher);
+		terminate(Simulator.CT,ctProxy,ctLauncher);
+		
+	}
+
+	private void terminate(Simulator simulator, ProxyICoSimProtocol proxy,ISimulatorLauncher launcher)
+	{
+		messageInfo(Simulator.DT, "terminate");
+		engineInfo(simulator, "Terminating...");
+		proxy.terminate();
+		engineInfo(simulator, "Terminating...kill");
+		launcher.kill();
+		engineInfo(simulator, "Terminating...done");
+	}
+
+	private boolean stop(Simulator simulator, ProxyICoSimProtocol proxy)
+	{
+		messageInfo(simulator, "stop");
+		return proxy.stop().success;
+	}
+
+	private void simulate(float totalSimulationTime,ProxyICoSimProtocol dtProxy,ProxyICoSimProtocol ctProxy)
+	{
+		// Initial input for DT
+		
+		Double initTime = 100.0;
+		Double time = 0.0;
+		//Double level = 0.0;
+		List<String> events = new Vector<String>();
+		List<StepStructoutputsStruct> resultOutput = null;
+
+		List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
+		//inputs.add(new StepinputsStructParam("level", level));
+
+		messageInfo(Simulator.DT, "step");
+		StepStruct result = dtProxy.step(initTime, inputs, false, events);
+		simulationInfo(Simulator.DT, result);
+		
+		while (time < 5) {
+			// input for CT
+			resultOutput = result.outputs;
+
+			inputs = new Vector<StepinputsStructParam>();
+			for (StepStructoutputsStruct stepStructoutputsStruct : resultOutput) {
+
+				if (stepStructoutputsStruct.name
+						.equals("valveState")) {
+					inputs.add(new StepinputsStructParam(
+							stepStructoutputsStruct.name,
+							stepStructoutputsStruct.value));
+				}
+			}
+
+			messageInfo(Simulator.CT, "step");
+			result = ctProxy.step((result.time)/1000, inputs, false, events);
+			simulationInfo(Simulator.CT, result);
+	
+			
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("20-sim Requesting time step of = "
+					+ result.time + " ");
+
+			for (StepStructoutputsStruct o : result.outputs) {
+				sb.append(o.name + " = " + o.value + " ");
+			}
+			
+			resultOutput = result.outputs;
+
+			System.out.println(sb.toString());
+
+			// input for DT
+			for (StepStructoutputsStruct stepStructoutputsStruct : resultOutput) {
+
+				if (stepStructoutputsStruct.name
+						.equals("level")) {
+					inputs.add(new StepinputsStructParam(
+							stepStructoutputsStruct.name,
+							stepStructoutputsStruct.value));
+				}
+			}
+			
+
+			messageInfo(Simulator.DT, "step");
+			result = dtProxy.step(((result.time)*1000)+5, inputs, false,
+					events);
+			simulationInfo(Simulator.DT, result);
+
+			sb = new StringBuilder();
+
+			sb.append("VDM Requesting time step of = "
+					+ result.time + " ");
+
+			for (StepStructoutputsStruct o : result.outputs) {
+				sb.append(o.name + " = " + o.value + " ");
+			}
+
+			System.out.println(sb.toString());
+			time = (result.time)/1000;
+		}
+	}
+
+	private boolean startSimulator(Simulator simulator, ProxyICoSimProtocol proxy)
+	{
+		messageInfo(simulator, "start");
+		return proxy.start().success;
+	}
+
+	private boolean setSharedDesignParameters(
+			Simulator simulator,
+			ProxyICoSimProtocol proxy,
+			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
+	{
+		messageInfo(simulator, "setDesignParameters");
+		boolean success =proxy.setDesignParameters(sharedDesignParameters).success;
+		
+		return success;
 	}
 
 	private boolean valideteInterfaces(ProxyICoSimProtocol dtProxy,
@@ -175,9 +324,11 @@ public class SimulationEngine
 	{
 		messageInfo(Simulator.DT, "queryInterface");
 		QueryInterfaceStruct dtInterface = dtProxy.queryInterface();
+		engineInfo(Simulator.DT, toStringInterface(dtInterface));
 		
 		messageInfo(Simulator.CT, "queryInterface");
 		QueryInterfaceStruct ctInterface = ctProxy.queryInterface();
+		engineInfo(Simulator.CT, toStringInterface(ctInterface));
 		
 		engineInfo(Simulator.ALL, "Validating interfaces... - Skipped");
 		
@@ -245,13 +396,63 @@ public class SimulationEngine
 		}
 	}
 
-	private void simulationInfo(Simulator fromSimulator, float timestamp,
-			float desiredTime, List<StepinputsStructParam> variables)
+	private void simulationInfo(Simulator fromSimulator, StepStruct result)
 	{
+		
 		for (ISimulationListener listener : simulationListeners)
 		{
-			listener.stepInfo(fromSimulator, timestamp, desiredTime, variables);
+			listener.stepInfo(fromSimulator, result);
 		}
 	}
+	
+	private boolean validateSharedDesignParameters(List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
+	{
+		for (SetDesignParametersdesignParametersStructParam parameter : sharedDesignParameters)
+		{
+			engineInfo(Simulator.ALL, parameter.name + ": "+ parameter.value);
+		}
+		return true;
+	}
 
+	
+	
+	public static String toStringInterface(QueryInterfaceStruct result) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("_____________________________\n");
+		sb.append("|\tInterface\n");
+		sb.append("|----------------------------\n");
+
+		sb.append("|  Shared Design Parameters\n");
+		sb.append("|\n");
+		if (result.sharedDesignParameters.size() > 0) {
+			for (String p : result.sharedDesignParameters) {
+				sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
+			}
+		} else {
+			sb.append("|    None.\n");
+		}
+		sb.append("|----------------------------\n");
+		sb.append("|  Input Variables\n");
+		sb.append("|\n");
+		if (result.inputs.size() > 0) {
+			for (String p : result.inputs) {
+				sb.append("|    " + p /* p.name + " : " + p.value */+ "\n");
+			}
+		} else {
+			sb.append("|    None.\n");
+		}
+		sb.append("|----------------------------\n");
+		sb.append("|  Output Variables\n");
+		sb.append("|\n");
+		if (result.outputs.size() > 0) {
+			for (String p : result.outputs) {
+				sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
+			}
+		} else {
+			sb.append("|    None.\n");
+		}
+		sb.append("_____________________________");
+		return (sb.toString());
+	}
 }

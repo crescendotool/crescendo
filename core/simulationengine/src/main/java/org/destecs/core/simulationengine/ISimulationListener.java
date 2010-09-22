@@ -1,12 +1,9 @@
 package org.destecs.core.simulationengine;
 
-import java.util.List;
-
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
-import org.destecs.protocol.structs.StepinputsStructParam;
+import org.destecs.protocol.structs.StepStruct;
 
 public interface ISimulationListener
 {
-	void stepInfo(Simulator simulator, float timestamp, float desiredTime,
-			List<StepinputsStructParam> variables);
+	void stepInfo(Simulator simulator, StepStruct result);
 }
