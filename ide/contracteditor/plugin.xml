@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+ <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
+            default="true"
+            extensions="*.csc"
+            id="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
+            name="DESTECS Contract Editor">
+      </editor>
+   </extension>
+
+</plugin>
