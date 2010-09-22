@@ -1,6 +1,7 @@
 package org.destecs.ide.simeng.ui.views;
 
 
+import org.destecs.ide.simeng.internal.core.VdmRtLauncher;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.*;
@@ -99,6 +100,7 @@ public class SampleView extends ViewPart {
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+		
 	}
 
 	private void hookContextMenu() {

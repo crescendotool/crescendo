@@ -7,11 +7,12 @@ public class CoSimStarterView extends ViewPart {
 
 	public CoSimStarterView() {
 		super();
+		
 	}
 
 	public void createPartControl(Composite parent) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	public void setFocus() {
