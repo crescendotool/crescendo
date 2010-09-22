@@ -17,6 +17,7 @@
     <!-- Put all child Eclipse Plugin projects(modules) here -->
 
     <module>simulationengine</module>
+	<module>vdm</module>
   
 
   </modules>

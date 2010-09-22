@@ -1,5 +1,9 @@
 <copy todir="${buildDirectory}/plugins">
 	<fileset dir="../">
+	<include name="ui/**" />
+	<include name="core/**" />
+	<include name="contracteditor/**" />
+	<include name="simeng/**" />
 		<!-- include name="ui/**" />
 		<include name="core/**" />
 		<include name="debug/**" />
@@ -45,6 +49,18 @@
 	</filterchain>
 </copy>
 
+<!-- generated -->
+<copy todir="${buildDirectory}/plugins/destecs.generated.simulationengine">
+	<fileset dir="../generated/simulationengine">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
+
+<copy todir="${buildDirectory}/plugins/destecs.generated.vdm">
+	<fileset dir="../generated/vdm">
+		<exclude name="**/target/" />
+	</fileset>
+</copy>
 	<!-- IDE -->
 
 

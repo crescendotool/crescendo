@@ -21,7 +21,7 @@
             restorable="true">
       </view>
    </extension>
-   <extension
+   <!--extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="org.eclipse.jdt.ui.JavaPerspective">
@@ -38,6 +38,6 @@
       <contexts
             file="contexts.xml">
       </contexts>
-   </extension>
+   </extension-->
 
 </plugin>

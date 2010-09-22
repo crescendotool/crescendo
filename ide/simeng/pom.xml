@@ -1,24 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.destecs</groupId>
     <artifactId>ide</artifactId>
     <version>1.0.0</version>
   </parent>
-
+  <modelVersion>4.0.0</modelVersion>
   <groupId>org.destecs.ide</groupId>
   <artifactId>org.destecs.ide.simeng</artifactId>
-  <packaging>pom</packaging>
+  <name>DESTECS Simulation Engine</name>
   <version>1.0.0</version>
-  <name>DESTECS Simulation Engine IDE</name>
-  <description>Top level of the Simulation Engine IDE</description>
-  
-  <modules>
-    <!-- Put all child Eclipse Plugin projects(modules) here -->
-
-    <module>core</module>
-    <module>ui</module>
+ 
+  <packaging>source-plugin</packaging>
 
 
-  </modules>
 </project>

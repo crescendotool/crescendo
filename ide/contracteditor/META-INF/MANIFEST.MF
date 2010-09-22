@@ -12,4 +12,4 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.overture.ide.ui;bundle-version="0.3.0"
-Bundle-Activator: org.destecs.ide.contracteditor.editor.core.DestecsContractEditor
+Bundle-Activator: org.destecs.ide.contracteditor.Activator

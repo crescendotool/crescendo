@@ -5,9 +5,12 @@ Bundle-ClassPath: .
 Bundle-Version: 1.0.0
 Eclipse-BuddyPolicy: registered
 Bundle-Localization: plugin
-Bundle-Name: org.destecs.ide.simeng.ui
+Bundle-Name: DESTECS Simulation Engine
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.destecs.ide.simeng.ui;singleton:=true
+Bundle-SymbolicName: org.destecs.ide.simeng;singleton:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.ui;bundle-version="3.6.0",
- org.eclipse.core.runtime
+Require-Bundle: org.eclipse.ui.views;bundle-version="3.4.1",
+ org.eclipse.ui;bundle-version="3.5.2",
+ org.eclipse.core.runtime;bundle-version="3.5.0",
+ org.destecs.ide.generated.simulationengine;bundle-version="1.0.0"
+Bundle-Activator: org.destecs.ide.simeng.Activator
