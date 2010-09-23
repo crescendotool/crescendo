@@ -1,7 +1,9 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.destecs.protocol.structs.StepStruct;
@@ -17,6 +19,7 @@ import org.overturetool.vdmj.config.Properties;
 import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
+import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
@@ -25,14 +28,38 @@ import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.SystemClock;
+import org.overturetool.vdmj.values.NameValuePair;
+import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
+import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
 
 public class SimulationManager
 {
+	private class StringPair
+	{
+		public final String instanceName;
+		public final String variableName;
+
+		public StringPair(String instance, String variable)
+		{
+			this.instanceName = instance;
+			this.variableName = variable;
+		}
+
+		@Override
+		public String toString()
+		{
+			return instanceName + "." + variableName;
+		}
+	}
+
+	private Map<String, StringPair> link = new Hashtable<String, StringPair>();
+	private List<String> outputLinks = new Vector<String>();
+
 	private final static String interfaceClassName = "Interface";
 	private final static String specFileExtension = "vdmrt";
 	private VDMCO controller = null;
@@ -63,6 +90,13 @@ public class SimulationManager
 		return _instance;
 	}
 
+	private SimulationManager()
+	{
+		link.put("level", new StringPair("levelSensor", "level"));
+		link.put("valve", new StringPair("valveActuator", "valveState"));
+		outputLinks.add("valve");
+	}
+
 	public void register(CoSimResourceScheduler scheduler)
 	{
 		this.scheduler = scheduler;
@@ -74,7 +108,8 @@ public class SimulationManager
 		interpreterRunning = false;
 		this.notify();
 
-		System.out.println("Wait at clock:   " + SystemClock.getWallTime()+" - for "+ minstep+" steps");
+		System.out.println("Wait at clock:   " + SystemClock.getWallTime()
+				+ " - for " + minstep + " steps");
 		try
 		{
 			this.wait();
@@ -114,7 +149,7 @@ public class SimulationManager
 							{
 								list.add(name.name);
 							}
-							
+
 						}
 					}
 				}
@@ -178,27 +213,13 @@ public class SimulationManager
 		// TODO set inputs
 		for (StepinputsStructParam p : inputs)
 		{
-
-			Value val = getValue(p.name);
-			if (val != null)
-			{
-				// System.out.println("Setting " + p.name + ": " + val + " to "
-				// + p.value);
-				if (val.deref() instanceof NumericValue)
-				{
-					((NumericValue) val.deref()).value = p.value;
-				}
-			} else
-			{
-				System.err.println("Setting val error, not found: " + p.name);
-			}
-
+			setValue(p.name,p.value);
 		}
 
 		nextTimeStep = outputTime.longValue();
 		System.out.println("Next Step clock: " + nextTimeStep);
-		
-		if(events.size()>0)
+
+		if (events.size() > 0)
 		{
 			for (String event : events)
 			{
@@ -225,11 +246,22 @@ public class SimulationManager
 		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
 
 		// outputs.add(new StepStructoutputsStruct("setValve", 3.0));
-		for (LexNameToken key : getOutputLexNames())
+//		for (LexNameToken key : getOutputLexNames())
+//		{
+//			try
+//			{
+//				outputs.add(new StepStructoutputsStruct(key.name, mainContext.getGlobal().get(key).realValue(null)));
+//			} catch (ValueException e)
+//			{
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+		for (String key : outputLinks)
 		{
 			try
 			{
-				outputs.add(new StepStructoutputsStruct(key.name, mainContext.getGlobal().get(key).realValue(null)));
+				outputs.add(new StepStructoutputsStruct(key, getOutput(key)));
 			} catch (ValueException e)
 			{
 				// TODO Auto-generated catch block
@@ -237,28 +269,45 @@ public class SimulationManager
 			}
 		}
 
-		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime),new Vector<String>(), outputs);
+		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime), new Vector<String>(), outputs);
 
 		return result;
 	}
 
+	private void setValue(String name,Double value)
+	{
+		Value val = getValue(name);
+		if (val != null)
+		{
+			// System.out.println("Setting " + p.name + ": " + val + " to "
+			// + p.value);
+			if (val.deref() instanceof NumericValue)
+			{
+				((NumericValue) val.deref()).value = value;
+			}
+		} else
+		{
+			System.err.println("Setting val error, not found: " + name);
+		}
+	}
+
 	private void evalEvent(String event)
 	{
-		final String classDefinitionName ="testEventHandlers";
-		
+		final String classDefinitionName = "testEventHandlers";
+
 		if (mainContext != null)
 		{
 			for (LexNameToken key : mainContext.getGlobal().keySet())
 			{
 				if (key.name.equals(classDefinitionName))
 				{
-					ObjectValue s= (ObjectValue) mainContext.getGlobal().get(key).deref();
+					ObjectValue s = (ObjectValue) mainContext.getGlobal().get(key).deref();
 					for (LexNameToken memberKey : s.members.keySet())
 					{
-						if(memberKey.name.equals(event))
+						if (memberKey.name.equals(event))
 						{
-							
-							OperationValue eventOp= (OperationValue) s.members.get(memberKey);
+
+							OperationValue eventOp = (OperationValue) s.members.get(memberKey);
 							try
 							{
 								EventThread eThread = new EventThread(Thread.currentThread());
@@ -273,12 +322,12 @@ public class SimulationManager
 							System.out.println(s);
 						}
 					}
-					
+
 				}
 
 			}
 		}
-		
+
 	}
 
 	private List<LexNameToken> getOutputLexNames()
@@ -298,21 +347,64 @@ public class SimulationManager
 		}
 		return list;
 	}
+	
+	private Double getOutput(String name) throws ValueException
+	{
+		NameValuePairList list = SystemDefinition.getSystemMembers();
+		if(list!= null && link.containsKey(name))
+		{
+			StringPair var =link.get(name);
+			for (NameValuePair p : list)
+			{
+				if(var.instanceName.equals(p.name.getName()) && p.value.deref() instanceof ObjectValue )
+				{
+					ObjectValue po = (ObjectValue) p.value.deref();
+					for (NameValuePair mem : po.members.asList())
+					{
+						if(mem.name.getName().equals(var.variableName))
+						{
+							return mem.value.realValue(null);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
 
 	private Value getValue(String name)
 	{
-		if (mainContext != null)
+		NameValuePairList list = SystemDefinition.getSystemMembers();
+		if(list!= null && link.containsKey(name))
 		{
-			for (LexNameToken key : mainContext.getGlobal().keySet())
+			StringPair var =link.get(name);
+			for (NameValuePair p : list)
 			{
-				if (key.module.equals(interfaceClassName)
-						&& key.name.equals(name))
+				if(var.instanceName.equals(p.name.getName()) && p.value.deref() instanceof ObjectValue )
 				{
-					return mainContext.getGlobal().get(key);
+					ObjectValue po = (ObjectValue) p.value.deref();
+					for (NameValuePair mem : po.members.asList())
+					{
+						if(mem.name.getName().equals(var.variableName))
+						{
+							return mem.value;
+						}
+					}
 				}
-
 			}
 		}
+//		if (mainContext != null)
+//		{
+//			for (LexNameToken key : mainContext.getGlobal().keySet())
+//			{
+//				if (key.module.equals(interfaceClassName)
+//						&& key.name.equals(name))
+//				{
+//					return mainContext.getGlobal().get(key);
+//				}
+//
+//			}
+//		}
 		return null;
 	}
 
@@ -392,13 +484,14 @@ public class SimulationManager
 	}
 
 	public Boolean initialize(/*
-			List<InitializeSharedParameterStructParam> sharedParameter,
-			List<InitializefaultsStructParam> faults*/)
+							 * List<InitializeSharedParameterStructParam> sharedParameter,
+							 * List<InitializefaultsStructParam> faults
+							 */)
 	{
 
-//		setSharedDesignParameters(sharedParameter);
-//
-//		setFaults(faults);
+		// setSharedDesignParameters(sharedParameter);
+		//
+		// setFaults(faults);
 
 		final List<File> files = new Vector<File>();
 		try
@@ -431,56 +524,74 @@ public class SimulationManager
 			runner.setDaemon(true);
 			runner.start();
 			// TODO need to catch the init errors of the interpreter here and return false if any
+			
+			for (String l : outputLinks)
+			{
+				Value v= getValue(l);
+				try
+				{
+					if(v.deref().isNumeric() && v.deref().realValue(null)==0.1)
+					{
+						setValue(l, new Double(0));
+					}
+				} catch (ValueException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			this.status = CoSimStatusEnum.INITIALIZED;
 			return true;
-		}else{
-			this.status =CoSimStatusEnum.NOT_INITIALIZED;
+		} else
+		{
+			this.status = CoSimStatusEnum.NOT_INITIALIZED;
 			return false;
 		}
-		
+
 	}
 
-//	private void setFaults(List<InitializefaultsStructParam> faults)
-//	{
-//		// TODO set faults this might need to be set from the load instead
-//	}
-//
-//	private void setSharedDesignParameters(
-//			List<InitializeSharedParameterStructParam> sharedParameter)
-//	{
-//		try
-//		{
-//			for (ClassDefinition cd : controller.getInterpreter().getClasses())
-//			{
-//				if (cd.getName().equalsIgnoreCase(interfaceClassName))
-//				{
-//					for (Definition d : cd.definitions)
-//					{
-//						if (d instanceof ValueDefinition)
-//						{
-//							// This should work but gives null list.add(d.getName());
-//							String name = ((ValueDefinition) d).pattern.toString();
-//							for (InitializeSharedParameterStructParam designParameter : sharedParameter)
-//							{
-//								if (name.equals(designParameter.name))
-//								{
-//									// ((RealLiteralExpression)((ValueDefinition) d).exp).value.value
-//									// =designParameter.value;
-//									// TODO cannot set value because it is final, remember that INV checks must be
-//									// performed after / during the value change
-//								}
-//							}
-//
-//						}
-//					}
-//				}
-//			}
-//		} catch (Exception e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	// private void setFaults(List<InitializefaultsStructParam> faults)
+	// {
+	// // TODO set faults this might need to be set from the load instead
+	// }
+	//
+	// private void setSharedDesignParameters(
+	// List<InitializeSharedParameterStructParam> sharedParameter)
+	// {
+	// try
+	// {
+	// for (ClassDefinition cd : controller.getInterpreter().getClasses())
+	// {
+	// if (cd.getName().equalsIgnoreCase(interfaceClassName))
+	// {
+	// for (Definition d : cd.definitions)
+	// {
+	// if (d instanceof ValueDefinition)
+	// {
+	// // This should work but gives null list.add(d.getName());
+	// String name = ((ValueDefinition) d).pattern.toString();
+	// for (InitializeSharedParameterStructParam designParameter : sharedParameter)
+	// {
+	// if (name.equals(designParameter.name))
+	// {
+	// // ((RealLiteralExpression)((ValueDefinition) d).exp).value.value
+	// // =designParameter.value;
+	// // TODO cannot set value because it is final, remember that INV checks must be
+	// // performed after / during the value change
+	// }
+	// }
+	//
+	// }
+	// }
+	// }
+	// }
+	// } catch (Exception e)
+	// {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 
 	private static List<File> getSpecFiles(File path)
 	{
