@@ -14,6 +14,7 @@ import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
+import org.destecs.protocol.structs.StepStructoutputsStruct;
 
 public class Main
 {
@@ -60,18 +61,24 @@ public class Main
 
 		public void info(Simulator simulator, String message)
 		{
-			System.out.println(simulator+": "+message);
+			//System.out.println(simulator+": "+message);
 			
 		}
 
 		public void from(Simulator simulator, String messageName)
 		{
-			System.out.println(simulator+": "+messageName);
+			//System.out.println(simulator+": "+messageName);
 		}
 
 		public void stepInfo(Simulator simulator, StepStruct result)
 		{
-			System.out.println(simulator+": "+result);
+			StringBuilder sb = new StringBuilder();
+			sb.append(simulator+": ");
+			for (StepStructoutputsStruct o : result.outputs)
+			{
+				sb.append(o.name+"="+o.value);
+			}
+			System.out.println(sb.toString());
 		}
 		
 	}
