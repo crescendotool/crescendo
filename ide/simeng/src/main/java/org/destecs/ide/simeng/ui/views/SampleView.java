@@ -1,7 +1,7 @@
 package org.destecs.ide.simeng.ui.views;
 
 
-import org.destecs.ide.simeng.internal.core.VdmRtLauncher;
+import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.*;

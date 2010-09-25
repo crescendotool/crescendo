@@ -10,12 +10,12 @@ import org.destecs.core.simulationengine.ISimulatorLauncher;
 import org.destecs.ide.simeng.ISimengConstants;
 import org.eclipse.core.runtime.CoreException;
 
-public class VdmRtLauncher implements ISimulatorLauncher
+public class VdmRtBundleLauncher implements ISimulatorLauncher
 {
 	private Process p;
 	private File dir;
 
-	public VdmRtLauncher(File dir)
+	public VdmRtBundleLauncher(File dir)
 	{
 		this.dir = dir;
 	}

@@ -1,15 +1,20 @@
 package org.destecs.core.simulationengine;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.destecs.core.contract.Contract;
+import org.destecs.core.contract.Parser;
+import org.destecs.core.contract.Variable;
 import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
 import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
+import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
 import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
@@ -51,6 +56,13 @@ public class SimulationEngine
 	public final List<IEngineListener> engineListeners = new Vector<IEngineListener>();
 	public final List<IMessageListener> messageListeners = new Vector<IMessageListener>();
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
+
+	private final File contractFile;
+
+	public SimulationEngine(File contractFile)
+	{
+		this.contractFile = contractFile;
+	}
 
 	public void setDtEndpoint(URL endpoint)
 	{
@@ -99,8 +111,15 @@ public class SimulationEngine
 	}
 
 	private void validate() throws InvalidEndpointsExpection,
-			ModelPathNotValidException, InvalidSimulationLauncher
+			ModelPathNotValidException, InvalidSimulationLauncher,
+			FileNotFoundException
 	{
+		if (contractFile == null || !contractFile.exists())
+		{
+			throw new FileNotFoundException("Contract file now found: "
+					+ contractFile);
+		}
+
 		if (dtEndpoint == null || ctEndpoint == null)
 		{
 			throw new InvalidEndpointsExpection();
@@ -130,53 +149,65 @@ public class SimulationEngine
 	public void simulate(
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,
 			float totalSimulationTime) throws InvalidEndpointsExpection,
-			ModelPathNotValidException, InvalidSimulationLauncher
+			ModelPathNotValidException, InvalidSimulationLauncher,
+			FileNotFoundException
 	{
 		validate();
 
+		Contract contract = null;
+		try
+		{
+			contract = new Parser(contractFile).parse();
+		} catch (Exception e)
+		{
+			abort(Simulator.DT, "Could not parse contract");
+			return;
+		}
 		// launch the simulators
+		engineInfo(Simulator.DT, "Launching");
+		dtLauncher.launch();
 
 		// connect to the simulators
 		ProxyICoSimProtocol dtProxy = connect(dtEndpoint);
 
 		if (!initialize(Simulator.DT, dtProxy))
 		{
-			terminate(Simulator.DT);
+			abort(Simulator.DT, "Could not initialize");
 		}
 
 		ProxyICoSimProtocol ctProxy = connect(ctEndpoint);
 
 		if (!initialize(Simulator.CT, ctProxy))
 		{
-			terminate(Simulator.CT);
+			abort(Simulator.CT, "Could not initialize");
 		}
 
 		// load the models
 		if (!loadModel(Simulator.DT, dtProxy, dtModelBase))
 		{
-			terminate(Simulator.DT);
+			abort(Simulator.DT, "Could not load model");
 		}
 
 		if (!loadModel(Simulator.CT, ctProxy, ctModel))
 		{
-			terminate(Simulator.CT);
+			abort(Simulator.CT, "Could not load model");
 		}
 
 		// validate interfaces
-		if (!valideteInterfaces(dtProxy, ctProxy))
+		if (!valideteInterfaces(contract, dtProxy, ctProxy))
 		{
-			terminate(Simulator.ALL);
+			abort(Simulator.ALL, "Interface validation faild");
 		}
 
 		// validate shared design parameters
 		if (!validateSharedDesignParameters(sharedDesignParameters))
 		{
-			terminate(Simulator.ALL);
+			abort(Simulator.ALL, "Validation of shared designparameters faild");
 		}
 
 		if (!setSharedDesignParameters(Simulator.DT, dtProxy, sharedDesignParameters))
 		{
-			terminate(Simulator.DT);
+			abort(Simulator.DT, "Setting of shared designparameters faild");
 		}
 
 		// if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
@@ -187,12 +218,12 @@ public class SimulationEngine
 		// start simulation
 		if (!startSimulator(Simulator.DT, dtProxy))
 		{
-			terminate(Simulator.DT);
+			abort(Simulator.DT, "Could not start simulator");
 		}
 
 		if (!startSimulator(Simulator.CT, ctProxy))
 		{
-			terminate(Simulator.CT);
+			abort(Simulator.CT, "Could not start simulator");
 		}
 
 		simulate(totalSimulationTime, dtProxy, ctProxy);
@@ -281,8 +312,8 @@ public class SimulationEngine
 		return success;
 	}
 
-	private boolean valideteInterfaces(ProxyICoSimProtocol dtProxy,
-			ProxyICoSimProtocol ctProxy)
+	private boolean valideteInterfaces(Contract contract,
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 	{
 		messageInfo(Simulator.DT, "queryInterface");
 		QueryInterfaceStruct dtInterface = dtProxy.queryInterface();
@@ -292,15 +323,48 @@ public class SimulationEngine
 		QueryInterfaceStruct ctInterface = ctProxy.queryInterface();
 		engineInfo(Simulator.CT, toStringInterface(ctInterface));
 
-		engineInfo(Simulator.ALL, "Validating interfaces... - Skipped");
+		engineInfo(Simulator.ALL, "Validating interfaces...");
+		for (Variable var : contract.getControlledVariables())
+		{
+			if (!dtInterface.outputs.contains(var.name))
+			{
+				abort(Simulator.DT, "Missing-output controlled variable: "
+						+ var);
+				return false;
+
+			}
+			if (!ctInterface.inputs.contains(var.name))
+			{
+				abort(Simulator.DT, "Missing-input controlled variable: "
+						+ var);
+				return false;
+			}
+		}
+		
+		for (Variable var : contract.getMonitoredVariables())
+		{
+			if (!dtInterface.inputs.contains(var.name))
+			{
+				abort(Simulator.DT, "Missing-input monitored variable: "
+						+ var);
+				return false;
+
+			}
+			if (!ctInterface.outputs.contains(var.name))
+			{
+				abort(Simulator.DT, "Missing-output monitored variable: "
+						+ var);
+				return false;
+			}
+		}
+		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
 		return true;
 	}
 
-	private void terminate(Simulator source)
+	private void abort(Simulator source, String reason)
 	{
 		engineInfo(source, "Simulation abourted.");
-
 	}
 
 	private ProxyICoSimProtocol connect(URL url)

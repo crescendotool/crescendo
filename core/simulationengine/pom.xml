@@ -60,6 +60,11 @@
 			<artifactId>xmlrpcclientextension</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.destecs.core</groupId>
+			<artifactId>contract</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 </project>

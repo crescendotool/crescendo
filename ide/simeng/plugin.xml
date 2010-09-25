@@ -39,5 +39,36 @@
             file="contexts.xml">
       </contexts>
    </extension-->
+   
+   
+   
+   <extension
+         point="org.eclipse.ui.views">
+     
+      <view
+            allowMultiple="false"
+            category="org.destecs.ide.ui.view.category"
+            class="org.destecs.ide.simeng.ui.views.InfoTableView"
+            id="org.destecs.ide.simeng.ui.views.SimulationEngineView"
+            name="Simulation Engine View">
+      </view>
+      
+      <view
+            allowMultiple="false"
+            category="org.destecs.ide.ui.view.category"
+            class="org.destecs.ide.simeng.ui.views.InfoTableView"
+            id="org.destecs.ide.simeng.ui.views.SimulationMessagesView"
+            name="Simulation Messages View">
+      </view>
+      
+   <view
+            allowMultiple="false"
+            category="org.destecs.ide.ui.view.category"
+            class="org.destecs.ide.simeng.ui.views.InfoTableView"
+            id="org.destecs.ide.simeng.ui.views.SimulationView"
+            name="Simulation View">
+      </view>
+     
+   </extension>
 
 </plugin>

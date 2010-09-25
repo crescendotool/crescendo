@@ -1,14 +1,14 @@
 package org.destecs.vdm;
 
 import java.io.File;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
+import org.destecs.vdm.links.Links;
+import org.destecs.vdm.links.StringPair;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.EventThread;
@@ -16,11 +16,7 @@ import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
 import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.config.Properties;
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.definitions.Definition;
-import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
-import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexNameToken;
@@ -33,35 +29,13 @@ import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
-import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
 
 public class SimulationManager
 {
-	private class StringPair
-	{
-		public final String instanceName;
-		public final String variableName;
-
-		public StringPair(String instance, String variable)
-		{
-			this.instanceName = instance;
-			this.variableName = variable;
-		}
-
-		@Override
-		public String toString()
-		{
-			return instanceName + "." + variableName;
-		}
-	}
-
-	private Map<String, StringPair> link = new Hashtable<String, StringPair>();
-	private List<String> outputLinks = new Vector<String>();
-
-	private final static String interfaceClassName = "Interface";
 	private final static String specFileExtension = "vdmrt";
+	private final static Links links = new Links(); 
 	private VDMCO controller = null;
 	private Long nextTimeStep = new Long(0);
 	private Long nextSchedulableActionTime = new Long(0);
@@ -90,12 +64,7 @@ public class SimulationManager
 		return _instance;
 	}
 
-	private SimulationManager()
-	{
-		link.put("level", new StringPair("levelSensor", "level"));
-		link.put("valve", new StringPair("valveActuator", "valveState"));
-		outputLinks.add("valve");
-	}
+	
 
 	public void register(CoSimResourceScheduler scheduler)
 	{
@@ -134,83 +103,22 @@ public class SimulationManager
 
 	public List<String> getSharedDesignParameters()
 	{
-		List<String> list = new Vector<String>();
-		try
-		{
-			for (ClassDefinition cd : controller.getInterpreter().getClasses())
-			{
-				if (cd.getName().equalsIgnoreCase(interfaceClassName))
-				{
-					for (Definition d : cd.definitions)
-					{
-						if (d instanceof ValueDefinition)
-						{
-							for (LexNameToken name : ((ValueDefinition) d).pattern.getVariableNames())
-							{
-								list.add(name.name);
-							}
-
-						}
-					}
-				}
-			}
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return list;
+		return links.getSharedDesignParameters();
 	}
 
 	public List<String> getInputVariables()
 	{
-		List<String> list = new Vector<String>();
-		// list.add("level");
-
-		try
-		{
-			for (ClassDefinition cd : controller.getInterpreter().getClasses())
-			{
-				if (cd.getName().equalsIgnoreCase(interfaceClassName))
-				{
-					for (Definition d : cd.definitions)
-					{
-						if (d instanceof InstanceVariableDefinition)
-						{
-							list.add(d.getName());
-						}
-					}
-				}
-			}
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return list;
+		return links.getInputs();
 	}
 
 	public List<String> getOutputVariables()
 	{
-		// List<String> list = new Vector<String>();
-		// list.add("valveState");
-		// return list;
-
-		/*
-		 * We cannot differenced between input and output from the class definition
-		 */
-		return getInputVariables();
+		return links.getOutputs();
 	}
 
 	public synchronized StepStruct step(Double outputTime,
 			List<StepinputsStructParam> inputs, List<String> events)
 	{
-		// Double timeReached = outputTime;
-		// StepResultEnum status = null;
-
-		// TODO set inputs
 		for (StepinputsStructParam p : inputs)
 		{
 			setValue(p.name,p.value);
@@ -245,19 +153,7 @@ public class SimulationManager
 
 		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
 
-		// outputs.add(new StepStructoutputsStruct("setValve", 3.0));
-//		for (LexNameToken key : getOutputLexNames())
-//		{
-//			try
-//			{
-//				outputs.add(new StepStructoutputsStruct(key.name, mainContext.getGlobal().get(key).realValue(null)));
-//			} catch (ValueException e)
-//			{
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-		for (String key : outputLinks)
+		for (String key : links.getOutputs())
 		{
 			try
 			{
@@ -330,30 +226,12 @@ public class SimulationManager
 
 	}
 
-	private List<LexNameToken> getOutputLexNames()
-	{
-		List<LexNameToken> list = new Vector<LexNameToken>();
-		if (mainContext != null)
-		{
-			for (LexNameToken key : mainContext.getGlobal().keySet())
-			{
-				if (key.module.equals(interfaceClassName)
-						&& mainContext.getGlobal().get(key).deref().isNumeric())
-				{
-					list.add(key);
-				}
-
-			}
-		}
-		return list;
-	}
-	
 	private Double getOutput(String name) throws ValueException
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if(list!= null && link.containsKey(name))
+		if(list!= null && links.getLinks().containsKey(name))
 		{
-			StringPair var =link.get(name);
+			StringPair var =links.getBoundVariable(name);
 			for (NameValuePair p : list)
 			{
 				if(var.instanceName.equals(p.name.getName()) && p.value.deref() instanceof ObjectValue )
@@ -375,9 +253,9 @@ public class SimulationManager
 	private Value getValue(String name)
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if(list!= null && link.containsKey(name))
+		if(list!= null && links.getLinks().containsKey(name))
 		{
-			StringPair var =link.get(name);
+			StringPair var =links.getBoundVariable(name);
 			for (NameValuePair p : list)
 			{
 				if(var.instanceName.equals(p.name.getName()) && p.value.deref() instanceof ObjectValue )
@@ -393,18 +271,6 @@ public class SimulationManager
 				}
 			}
 		}
-//		if (mainContext != null)
-//		{
-//			for (LexNameToken key : mainContext.getGlobal().keySet())
-//			{
-//				if (key.module.equals(interfaceClassName)
-//						&& key.name.equals(name))
-//				{
-//					return mainContext.getGlobal().get(key);
-//				}
-//
-//			}
-//		}
 		return null;
 	}
 
@@ -525,7 +391,7 @@ public class SimulationManager
 			runner.start();
 			// TODO need to catch the init errors of the interpreter here and return false if any
 			
-			for (String l : outputLinks)
+			for (String l : links.getOutputs())
 			{
 				Value v= getValue(l);
 				try
