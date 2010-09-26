@@ -198,6 +198,7 @@ public class CoSimStarterView extends ViewPart
 		Job runSimulation = null;
 		try
 		{
+			SimulationEngine.eclipseEnvironment = true;
 			final SimulationEngine engine = new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));
 
 			engine.engineListeners.add(new EngineListener(getInfoTableView(engineViewId)));
@@ -317,8 +318,8 @@ public class CoSimStarterView extends ViewPart
 		engine.setCtEndpoint(new URL("http://localhost:1580"));
 
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 1.0));
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 2.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", 1.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
 
 		engine.simulate(shareadDesignParameters, 5);
 	}
@@ -337,7 +338,7 @@ public class CoSimStarterView extends ViewPart
 		{
 			List<String> l = new Vector<String>();
 			l.add(simulator.toString());
-			l.add(message);
+			l.add(message.replace('\n', ' '));
 			view.setDataList(l);
 		}
 	}
