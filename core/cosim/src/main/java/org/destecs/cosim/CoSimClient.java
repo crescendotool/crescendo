@@ -66,44 +66,7 @@ public class CoSimClient {
 		}
 		// Connection to VDM initialized
 
-		// THIS IS JUST DEBUG
-//		if (dtp.load(modelPath).success) {
-//			List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-//			shareadDesignParameters
-//					.add(new SetDesignParametersdesignParametersStructParam(
-//							"minLevel", 1.0));
-//			shareadDesignParameters
-//					.add(new SetDesignParametersdesignParametersStructParam(
-//							"maxLevel", 2.0));
-//
-//			if (dtp.setDesignParameters(shareadDesignParameters).success
-//			// && ctp.setDesignParameters(shareadDesignParameters).success
-//			) {
-//				Double time = 0.0;
-//				Double level = 0.0;
-//				if (dtp.start().success) {
-//					for (int i = 0; i < 1000; i++) {
-//						List<StepinputsStructParam> inputs = new
-//						 Vector<StepinputsStructParam>();
-//						 inputs.add(new StepinputsStructParam("level", level));
-//						
-//						 List<String> events = new Vector<String>();
-//						 // if (time > 10 && eventLoop <= 0)
-//						 // {
-//						 // events.add("high");
-//						 // eventLoop = 5;
-//						 // }
-//						 // eventLoop--;
-//						 StepStruct result = dtp.step(time, inputs, false,
-//						 events);
-//					}
-//
-//				}
-//
-//			}
-//
-//			return;
-//		}
+		
 
 		
 
@@ -129,34 +92,14 @@ public class CoSimClient {
 
 		// Connection to 20-sim initialized
 
-		// List<StepinputsStructParam> ctInputs = new
-		// ArrayList<StepinputsStructParam>();
-		// ctInputs.add(new StepinputsStructParam("pipi", 3.14));
-		//
-		// for(int i=0;i<4;i++)
-		// ctp.step(new Double(1), ctInputs, true, new ArrayList<String>());
-
+		
 		if (dtp.load(modelPath).success) {
 			/*
 			 * query the interface for matching / validation
 			 */
 			printInterface(dtp.queryInterface());
 
-			/*
-			 * well we should properly also set the shared design parameters
-			 * here This should start the interpreter
-			 */
-			// List<InitializeSharedParameterStructParam>
-			// shareadDesignParameters = new
-			// Vector<InitializeSharedParameterStructParam>();
-			// shareadDesignParameters.add(new
-			// InitializeSharedParameterStructParam("minLevel", 10.0));
-			// shareadDesignParameters.add(new
-			// InitializeSharedParameterStructParam("maxLevel", 500.0));
-			//
-			// List<InitializefaultsStructParam> enabledFaults = new
-			// Vector<InitializefaultsStructParam>();
-
+			
 			List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 			shareadDesignParameters
 					.add(new SetDesignParametersdesignParametersStructParam(
@@ -245,44 +188,7 @@ public class CoSimClient {
 						time = (result.time)/1000;
 					}
 
-					// int eventLoop = 5;
-					// for (int i = 0; i < simulationData.size(); i++)
-					// {
-					// time = simulationData.get(i).timeS*1000;
-					// level = simulationData.get(i).tankTankLevel;
-					// /*
-					// * Begin stepping
-					// */
-					// List<StepinputsStructParam> inputs = new
-					// Vector<StepinputsStructParam>();
-					// inputs.add(new StepinputsStructParam("level", level));
-					//
-					// List<String> events = new Vector<String>();
-					// // if (time > 10 && eventLoop <= 0)
-					// // {
-					// // events.add("high");
-					// // eventLoop = 5;
-					// // }
-					// // eventLoop--;
-					// StepStruct result = dtp.step(time, inputs, false,
-					// events);
-					//
-					// // time = result.time;
-					//
-					// StringBuilder sb = new StringBuilder();
-					//
-					// sb.append("VDM Requesting time step of = " + result.time
-					// + " ");
-					//
-					// for (StepStructoutputsStruct o : result.outputs)
-					// {
-					// sb.append(o.name + " = " + o.value + " ");
-					// }
-					//
-					// System.out.println(sb.toString());
-
-					// level += 0.1;
-					// }
+					
 
 					if (!dtp.stop().success) {
 						System.err.println("Stop faild");
@@ -299,70 +205,7 @@ public class CoSimClient {
 
 		dtp.terminate();
 
-		// if (p.load("C:\\destecs\\workspace\\watertank").success)
-		// {
-		// /*
-		// * query the interface for matching / validation
-		// */
-		// printInterface(p.queryInterface());
-		//
-		// /*
-		// * well we should properly also set the shared design parameters here
-		// This should start the interpreter
-		// */
-		// List<InitializeSharedParameterStructParam> shareadDesignParameters =
-		// new
-		// Vector<InitializeSharedParameterStructParam>();
-		// shareadDesignParameters.add(new
-		// InitializeSharedParameterStructParam("minLevel", 10.0));
-		// shareadDesignParameters.add(new
-		// InitializeSharedParameterStructParam("maxLevel", 500.0));
-		//
-		// List<InitializefaultsStructParam> enabledFaults = new
-		// Vector<InitializefaultsStructParam>();
-		// if (p.initialize(shareadDesignParameters, enabledFaults).success)
-		// {
-		//
-		// Double time = 0.0;
-		// Double level = 0.0;
-		// for (int i = 0; i < 1000; i++)
-		// {
-		// /*
-		// * Begin stepping
-		// */
-		// List<StepinputsStructParam> inputs = new
-		// Vector<StepinputsStructParam>();
-		// inputs.add(new StepinputsStructParam("level", level));
-		//
-		// StepStruct result = p.step(time, inputs, false);
-		//
-		// time = result.time;
-		//
-		// StringBuilder sb = new StringBuilder();
-		//
-		// sb.append("Step: Time = " + time + " ");
-		//
-		// for (StepStructoutputsStruct o : result.outputs)
-		// {
-		// sb.append(o.name + " = " + o.value + " ");
-		// }
-		//
-		// System.out.println(sb.toString());
-		//
-		// level += 0.1;
-		// }
-		// if(!p.stop().success)
-		// {
-		// System.err.println("Stop faild");
-		// }
-		// } else
-		// {
-		// System.err.println("Initilization faild");
-		// }
-		// } else
-		// {
-		// System.err.println("Load faild");
-		// }
+		
 	}
 
 	public static String pad(String text, int length) {

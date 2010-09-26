@@ -32,8 +32,8 @@ public class Main
 		engine.setCtEndpoint(new URL("http://localhost:1580"));
 
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 1.0));
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 2.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", 1.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
 
 		Listener listener = new Listener();
 		engine.engineListeners.add(listener);
@@ -67,8 +67,8 @@ public class Main
 		engine.setCtEndpoint(new URL("http://localhost:1580"));
 
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 1.0));
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 2.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", 1.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
 
 		Listener listener = new Listener();
 		engine.engineListeners.add(listener);

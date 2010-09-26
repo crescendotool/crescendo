@@ -15,7 +15,7 @@ public class VdmRtLauncher implements ISimulatorLauncher
 		System.out.println("Please launch VDM-RT co-sim now... waiting for 5 seconds");
 		try
 		{
-			Thread.sleep(5000);
+			Thread.sleep(1000);
 		} catch (InterruptedException e)
 		{
 		}

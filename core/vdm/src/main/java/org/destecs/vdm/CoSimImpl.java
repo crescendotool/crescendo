@@ -40,27 +40,28 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Boolean> initialize()
 	{
-//		List<InitializeSharedParameterStructParam> SharedParameter = new Vector<InitializeSharedParameterStructParam>();
-//		if (data.keySet().contains("SharedParameter"))
-//		{
-//			Object tmpL0 = data.get("SharedParameter");
-//			for (Object m : (Object[]) tmpL0)
-//			{
-//				SharedParameter.add(new InitializeSharedParameterStructParam((Map<String, Object>) m));
-//			}
-//		}
-//
-//		List<InitializefaultsStructParam> faults = new Vector<InitializefaultsStructParam>();
-//		if (data.keySet().contains("faults"))
-//		{
-//			Object tmpL0 = data.get("faults");
-//			for (Object m : (Object[]) tmpL0)
-//			{
-//				faults.add(new InitializefaultsStructParam((Map<String, Integer>) m));
-//			}
-//		}
-//
-//		return new InitializeStruct(SimulationManager.getInstance().initialize(SharedParameter, faults)).toMap();
+		// List<InitializeSharedParameterStructParam> SharedParameter = new
+		// Vector<InitializeSharedParameterStructParam>();
+		// if (data.keySet().contains("SharedParameter"))
+		// {
+		// Object tmpL0 = data.get("SharedParameter");
+		// for (Object m : (Object[]) tmpL0)
+		// {
+		// SharedParameter.add(new InitializeSharedParameterStructParam((Map<String, Object>) m));
+		// }
+		// }
+		//
+		// List<InitializefaultsStructParam> faults = new Vector<InitializefaultsStructParam>();
+		// if (data.keySet().contains("faults"))
+		// {
+		// Object tmpL0 = data.get("faults");
+		// for (Object m : (Object[]) tmpL0)
+		// {
+		// faults.add(new InitializefaultsStructParam((Map<String, Integer>) m));
+		// }
+		// }
+		//
+		// return new InitializeStruct(SimulationManager.getInstance().initialize(SharedParameter, faults)).toMap();
 		return new InitializeStruct(true).toMap();
 	}
 
@@ -111,8 +112,6 @@ public class CoSimImpl implements IDestecs
 	// {
 	// throw new NoSuchMethodError("Not supported by VDMJ");
 	// }
-
-	
 
 	// public Map<String, Boolean> showData()
 	// {
@@ -219,15 +218,21 @@ public class CoSimImpl implements IDestecs
 	public Map<String, Boolean> setDesignParameters(
 			Map<String, List<Map<String, Object>>> data)
 	{
-		System.out.println("Not implemented setDesignParameters");
-		return new SetDesignParametersStruct(true).toMap();
+		boolean success = false;
+		if (data.values().size() > 0)
+		{
+			Object s = data.values().iterator().next();
+			List tmp = Arrays.asList((Object[]) s);
+			success = SimulationManager.getInstance().setDesignParameters(tmp);
+		}
+		return new SetDesignParametersStruct(success).toMap();
 	}
 
 	public Map<String, Boolean> setParameter(Map<String, Object> data)
 	{
 		throw new NoSuchMethodError("Not supported by VDMJ");
 	}
-	
+
 	public Map<String, Boolean> setParameters(
 			Map<String, List<Map<String, Object>>> data)
 	{
@@ -236,6 +241,6 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Boolean> start()
 	{
-		return new  StartStruct(SimulationManager.getInstance().initialize()).toMap();
+		return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
 	}
 }

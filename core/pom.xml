@@ -17,6 +17,7 @@
     <module>simulationengine</module>
     <module>vdm</module>
     <module>xmlrpcextensions</module>
+	<module>contract</module>
 
   
   </modules>

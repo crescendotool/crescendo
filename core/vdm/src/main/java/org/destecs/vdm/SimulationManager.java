@@ -1,7 +1,9 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.destecs.protocol.structs.StepStruct;
@@ -16,14 +18,20 @@ import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
 import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.config.Properties;
+import org.overturetool.vdmj.definitions.ClassDefinition;
+import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
+import org.overturetool.vdmj.definitions.ValueDefinition;
+import org.overturetool.vdmj.expressions.RealLiteralExpression;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexNameToken;
+import org.overturetool.vdmj.lex.LexRealToken;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.SystemClock;
+import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.NumericValue;
@@ -35,7 +43,8 @@ import org.overturetool.vdmj.values.ValueList;
 public class SimulationManager
 {
 	private final static String specFileExtension = "vdmrt";
-	private final static Links links = new Links(); 
+	private final static String linkFileExtension = "vdmlink";
+	private static Links links = new Links();
 	private VDMCO controller = null;
 	private Long nextTimeStep = new Long(0);
 	private Long nextSchedulableActionTime = new Long(0);
@@ -63,8 +72,6 @@ public class SimulationManager
 		}
 		return _instance;
 	}
-
-	
 
 	public void register(CoSimResourceScheduler scheduler)
 	{
@@ -121,7 +128,7 @@ public class SimulationManager
 	{
 		for (StepinputsStructParam p : inputs)
 		{
-			setValue(p.name,p.value);
+			setValue(p.name, p.value);
 		}
 
 		nextTimeStep = outputTime.longValue();
@@ -170,7 +177,7 @@ public class SimulationManager
 		return result;
 	}
 
-	private void setValue(String name,Double value)
+	private void setValue(String name, Double value)
 	{
 		Value val = getValue(name);
 		if (val != null)
@@ -229,17 +236,18 @@ public class SimulationManager
 	private Double getOutput(String name) throws ValueException
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if(list!= null && links.getLinks().containsKey(name))
+		if (list != null && links.getLinks().containsKey(name))
 		{
-			StringPair var =links.getBoundVariable(name);
+			StringPair var = links.getBoundVariable(name);
 			for (NameValuePair p : list)
 			{
-				if(var.instanceName.equals(p.name.getName()) && p.value.deref() instanceof ObjectValue )
+				if (var.instanceName.equals(p.name.getName())
+						&& p.value.deref() instanceof ObjectValue)
 				{
 					ObjectValue po = (ObjectValue) p.value.deref();
 					for (NameValuePair mem : po.members.asList())
 					{
-						if(mem.name.getName().equals(var.variableName))
+						if (mem.name.getName().equals(var.variableName))
 						{
 							return mem.value.realValue(null);
 						}
@@ -253,17 +261,18 @@ public class SimulationManager
 	private Value getValue(String name)
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if(list!= null && links.getLinks().containsKey(name))
+		if (list != null && links.getLinks().containsKey(name))
 		{
-			StringPair var =links.getBoundVariable(name);
+			StringPair var = links.getBoundVariable(name);
 			for (NameValuePair p : list)
 			{
-				if(var.instanceName.equals(p.name.getName()) && p.value.deref() instanceof ObjectValue )
+				if (var.instanceName.equals(p.name.getName())
+						&& p.value.deref() instanceof ObjectValue)
 				{
 					ObjectValue po = (ObjectValue) p.value.deref();
 					for (NameValuePair mem : po.members.asList())
 					{
-						if(mem.name.getName().equals(var.variableName))
+						if (mem.name.getName().equals(var.variableName))
 						{
 							return mem.value;
 						}
@@ -314,6 +323,12 @@ public class SimulationManager
 	{
 		try
 		{
+			for (File linkFile : getLinkFiles(path))
+			{
+				links = Links.load(linkFile);
+				break;
+			}
+
 			Properties.init();
 			Settings.dialect = Dialect.VDM_RT;
 			Settings.usingCmdLine = true;
@@ -390,13 +405,14 @@ public class SimulationManager
 			runner.setDaemon(true);
 			runner.start();
 			// TODO need to catch the init errors of the interpreter here and return false if any
-			
+
 			for (String l : links.getOutputs())
 			{
-				Value v= getValue(l);
+				Value v = getValue(l);
 				try
 				{
-					if(v.deref().isNumeric() && v.deref().realValue(null)==0.1)
+					if (v.deref().isNumeric()
+							&& v.deref().realValue(null) == 0.1)
 					{
 						setValue(l, new Double(0));
 					}
@@ -406,7 +422,7 @@ public class SimulationManager
 					e.printStackTrace();
 				}
 			}
-			
+
 			this.status = CoSimStatusEnum.INITIALIZED;
 			return true;
 		} else
@@ -478,6 +494,25 @@ public class SimulationManager
 		return files;
 	}
 
+	private static List<File> getLinkFiles(File path)
+	{
+		List<File> files = new Vector<File>();
+
+		if (path.isFile()
+				&& path.getName().toLowerCase().endsWith(linkFileExtension))
+		{
+			files.add(path);
+		} else if (path.isDirectory())
+		{
+			for (File file : path.listFiles())
+			{
+				files.addAll(getLinkFiles(file));
+			}
+
+		}
+		return files;
+	}
+
 	public void setMainContext(Context ctxt)
 	{
 		this.mainContext = ctxt;
@@ -500,5 +535,78 @@ public class SimulationManager
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	/**
+	 * Sets design parameters. All class definitions in the loaded model are searched and existing value definitions are
+	 * exstracted. If their name match the parameter the LexRealToken value is updated by reflection (value is final)
+	 * with the new value from the design parameter
+	 * 
+	 * @param parameters
+	 *            A list of Maps containing (name,value) keys and name->String, value->Double
+	 * @return false if any error occur else true
+	 */
+	public Boolean setDesignParameters(List<Map<String, Object>> parameters)
+	{
+		try
+		{
+			for (Map<String, Object> parameter : parameters)
+			{
+				boolean found = false;
+				String parameterName = parameter.get("name").toString();
+
+				if (!links.getSharedDesignParameters().contains(parameterName))
+				{
+					System.err.println("Tried to set unlinked shared design parameter: "
+							+ parameterName);
+					return false;
+				}
+				StringPair vName = links.getBoundVariable(parameterName);
+				double newValue = (Double) parameter.get("value");
+
+				for (ClassDefinition cd : controller.getInterpreter().getClasses())
+				{
+					if (!cd.getName().equals(vName.instanceName))
+					{
+						// wrong class
+						continue;
+					}
+					for (Definition def : cd.definitions)
+					{
+						if (def instanceof ValueDefinition)
+						{
+							ValueDefinition vDef = (ValueDefinition) def;
+							if (vDef.pattern.toString().equals(vName.variableName)
+									&& vDef.isValueDefinition()
+									&& vDef.getType() instanceof RealType)
+							{
+								if (vDef.exp instanceof RealLiteralExpression)
+								{
+									RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
+									LexRealToken token = exp.value;
+
+									Field valueField = LexRealToken.class.getField("value");
+									valueField.setAccessible(true);
+
+									valueField.setDouble(token, newValue);
+									found = true;
+								}
+							}
+						}
+					}
+				}
+				if (!found)
+				{
+					System.err.println("Tried to set unknown shared design parameter: "
+							+ parameterName);
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
 	}
 }

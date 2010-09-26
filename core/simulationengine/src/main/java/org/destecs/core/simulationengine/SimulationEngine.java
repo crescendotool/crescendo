@@ -45,8 +45,8 @@ public class SimulationEngine
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
-	 * XML-RPC -needed since Eclipse replaced the javax.xml.parsers with an older Eclipse specific version.
-	 * <b>Must be false if running standalone in console mode</b>
+	 * XML-RPC -needed since Eclipse replaced the javax.xml.parsers with an older Eclipse specific version. <b>Must be
+	 * false if running standalone in console mode</b>
 	 */
 	public static boolean eclipseEnvironment = false;
 
@@ -64,7 +64,7 @@ public class SimulationEngine
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
 
 	private final File contractFile;
-	
+
 	private boolean forceStopSimulation = false;
 
 	public SimulationEngine(File contractFile)
@@ -160,92 +160,123 @@ public class SimulationEngine
 			ModelPathNotValidException, InvalidSimulationLauncher,
 			FileNotFoundException
 	{
-		//reset force simulation stop
-		this.forceStopSimulation = false;
-		validate();
-
-		Contract contract = null;
 		try
 		{
-			contract = new Parser(contractFile).parse();
-		} catch (Exception e)
+			// reset force simulation stop
+			this.forceStopSimulation = false;
+			validate();
+
+			Contract contract = null;
+			try
+			{
+				contract = new Parser(contractFile).parse();
+			} catch (Exception e)
+			{
+				abort(Simulator.ALL, "Could not parse contract");
+				return;
+			}
+
+			// validate shared design parameters
+			if (!validateSharedDesignParameters(sharedDesignParameters, contract))
+			{
+				abort(Simulator.ALL, "Validation of shared designparameters faild.");
+			}
+
+			// launch the simulators
+			engineInfo(Simulator.DT, "Launching");
+			dtLauncher.launch();
+
+			// connect to the simulators
+			ProxyICoSimProtocol dtProxy = connect(dtEndpoint);
+
+			if (!initialize(Simulator.DT, dtProxy))
+			{
+				abort(Simulator.DT, "Could not initialize");
+			}
+
+			ProxyICoSimProtocol ctProxy = connect(ctEndpoint);
+
+			if (!initialize(Simulator.CT, ctProxy))
+			{
+				abort(Simulator.CT, "Could not initialize");
+			}
+
+			// load the models
+			if (!loadModel(Simulator.DT, dtProxy, dtModelBase))
+			{
+				abort(Simulator.DT, "Could not load model");
+			}
+
+			if (!loadModel(Simulator.CT, ctProxy, ctModel))
+			{
+				abort(Simulator.CT, "Could not load model");
+			}
+
+			// validate interfaces
+			if (!valideteInterfaces(contract, dtProxy, ctProxy))
+			{
+				abort(Simulator.ALL, "Interface validation faild");
+				return;
+			}
+
+			if (!setSharedDesignParameters(Simulator.DT, dtProxy, sharedDesignParameters))
+			{
+				abort(Simulator.DT, "Setting of shared designparameters faild");
+			}
+
+			// if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
+			// {
+			// terminate(Simulator.CT);
+			// }
+
+			// start simulation
+			if (!startSimulator(Simulator.DT, dtProxy))
+			{
+				abort(Simulator.DT, "Could not start simulator");
+			}
+
+			if (!startSimulator(Simulator.CT, ctProxy))
+			{
+				abort(Simulator.CT, "Could not start simulator");
+			}
+
+			simulate(totalSimulationTime, dtProxy, ctProxy);
+
+			// stop the simulators
+
+			stop(Simulator.DT, dtProxy);
+			// stop(Simulator.CT,ctProxy);
+
+			terminate(Simulator.DT, dtProxy, dtLauncher);
+			terminate(Simulator.CT, ctProxy, ctLauncher);
+		} finally
 		{
-			abort(Simulator.DT, "Could not parse contract");
-			return;
+			dtLauncher.kill();
 		}
-		// launch the simulators
-		engineInfo(Simulator.DT, "Launching");
-		dtLauncher.launch();
+	}
 
-		// connect to the simulators
-		ProxyICoSimProtocol dtProxy = connect(dtEndpoint);
-
-		if (!initialize(Simulator.DT, dtProxy))
+	private boolean validateSharedDesignParameters(
+			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,
+			Contract contract)
+	{
+		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters)
 		{
-			abort(Simulator.DT, "Could not initialize");
+			boolean found = false;
+			for (Variable var : contract.getSharedDesignParameters())
+			{
+				if (var.name.endsWith(p.name))
+				{
+					found = true;
+				}
+			}
+			if (!found)
+			{
+				abort(Simulator.ALL, "Shared design parameter invalid to contract: \""
+						+ p.name + "\" in " + contractFile);
+				return false;
+			}
 		}
-
-		ProxyICoSimProtocol ctProxy = connect(ctEndpoint);
-
-		if (!initialize(Simulator.CT, ctProxy))
-		{
-			abort(Simulator.CT, "Could not initialize");
-		}
-
-		// load the models
-		if (!loadModel(Simulator.DT, dtProxy, dtModelBase))
-		{
-			abort(Simulator.DT, "Could not load model");
-		}
-
-		if (!loadModel(Simulator.CT, ctProxy, ctModel))
-		{
-			abort(Simulator.CT, "Could not load model");
-		}
-
-		// validate interfaces
-		if (!valideteInterfaces(contract, dtProxy, ctProxy))
-		{
-			abort(Simulator.ALL, "Interface validation faild");
-		}
-
-		// validate shared design parameters
-		if (!validateSharedDesignParameters(sharedDesignParameters))
-		{
-			abort(Simulator.ALL, "Validation of shared designparameters faild");
-		}
-
-		if (!setSharedDesignParameters(Simulator.DT, dtProxy, sharedDesignParameters))
-		{
-			abort(Simulator.DT, "Setting of shared designparameters faild");
-		}
-
-		// if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
-		// {
-		// terminate(Simulator.CT);
-		// }
-
-		// start simulation
-		if (!startSimulator(Simulator.DT, dtProxy))
-		{
-			abort(Simulator.DT, "Could not start simulator");
-		}
-
-		if (!startSimulator(Simulator.CT, ctProxy))
-		{
-			abort(Simulator.CT, "Could not start simulator");
-		}
-
-		simulate(totalSimulationTime, dtProxy, ctProxy);
-
-		// stop the simulators
-
-		stop(Simulator.DT, dtProxy);
-		// stop(Simulator.CT,ctProxy);
-
-		terminate(Simulator.DT, dtProxy, dtLauncher);
-		terminate(Simulator.CT, ctProxy, ctLauncher);
-
+		return true;
 	}
 
 	private void terminate(Simulator simulator, ProxyICoSimProtocol proxy,
@@ -280,9 +311,9 @@ public class SimulationEngine
 
 		while (time < 5)
 		{
-			if(forceStopSimulation)
+			if (forceStopSimulation)
 			{
-				//simulation stop requested, stop simulation loop
+				// simulation stop requested, stop simulation loop
 				break;
 			}
 			// Step CT
@@ -297,7 +328,7 @@ public class SimulationEngine
 			time = (result.time) / 1000;
 		}
 	}
-	
+
 	public void forceSimulationStop()
 	{
 		this.forceStopSimulation = true;
@@ -381,7 +412,7 @@ public class SimulationEngine
 
 	private void abort(Simulator source, String reason)
 	{
-		engineInfo(source, "Simulation abourted.");
+		engineInfo(source, "[Abort] " + reason);
 	}
 
 	private ProxyICoSimProtocol connect(URL url)
@@ -454,63 +485,101 @@ public class SimulationEngine
 		}
 	}
 
-	private boolean validateSharedDesignParameters(
-			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
-	{
-		for (SetDesignParametersdesignParametersStructParam parameter : sharedDesignParameters)
-		{
-			engineInfo(Simulator.ALL, parameter.name + ": " + parameter.value);
-		}
-		return true;
-	}
-
 	public static String toStringInterface(QueryInterfaceStruct result)
 	{
 		StringBuilder sb = new StringBuilder();
+		if (!eclipseEnvironment)
+		{
 
-		sb.append("_____________________________\n");
-		sb.append("|\tInterface\n");
-		sb.append("|----------------------------\n");
+			sb.append("\n_____________________________\n");
+			sb.append("|\tInterface\n");
+			sb.append("|----------------------------\n");
 
-		sb.append("|  Shared Design Parameters\n");
-		sb.append("|\n");
-		if (result.sharedDesignParameters.size() > 0)
-		{
-			for (String p : result.sharedDesignParameters)
+			sb.append("|  Shared Design Parameters\n");
+			sb.append("|\n");
+			if (result.sharedDesignParameters.size() > 0)
 			{
-				sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
-			}
-		} else
-		{
-			sb.append("|    None.\n");
-		}
-		sb.append("|----------------------------\n");
-		sb.append("|  Input Variables\n");
-		sb.append("|\n");
-		if (result.inputs.size() > 0)
-		{
-			for (String p : result.inputs)
+				for (String p : result.sharedDesignParameters)
+				{
+					sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
+				}
+			} else
 			{
-				sb.append("|    " + p /* p.name + " : " + p.value */+ "\n");
+				sb.append("|    None.\n");
 			}
-		} else
-		{
-			sb.append("|    None.\n");
-		}
-		sb.append("|----------------------------\n");
-		sb.append("|  Output Variables\n");
-		sb.append("|\n");
-		if (result.outputs.size() > 0)
-		{
-			for (String p : result.outputs)
+			sb.append("|----------------------------\n");
+			sb.append("|  Input Variables\n");
+			sb.append("|\n");
+			if (result.inputs.size() > 0)
 			{
-				sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
+				for (String p : result.inputs)
+				{
+					sb.append("|    " + p /* p.name + " : " + p.value */+ "\n");
+				}
+			} else
+			{
+				sb.append("|    None.\n");
 			}
-		} else
+			sb.append("|----------------------------\n");
+			sb.append("|  Output Variables\n");
+			sb.append("|\n");
+			if (result.outputs.size() > 0)
+			{
+				for (String p : result.outputs)
+				{
+					sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
+				}
+			} else
+			{
+				sb.append("|    None.\n");
+			}
+			sb.append("_____________________________");
+		}else
 		{
-			sb.append("|    None.\n");
+			sb.append("");
+			sb.append("Interface => ");
+			
+
+			sb.append("Design P( ");
+			
+			if (result.sharedDesignParameters.size() > 0)
+			{
+				for (String p : result.sharedDesignParameters)
+				{
+					sb.append("" + p/* p.name + " : " + p.value */+ " ");
+				}
+			} else
+			{
+				sb.append("- ");
+			}
+			
+			sb.append(")| Inputs( ");
+			
+			if (result.inputs.size() > 0)
+			{
+				for (String p : result.inputs)
+				{
+					sb.append("" + p /* p.name + " : " + p.value */+ " ");
+				}
+			} else
+			{
+				sb.append("-  ");
+			}
+			
+			sb.append(") Outputs( ");
+			
+			if (result.outputs.size() > 0)
+			{
+				for (String p : result.outputs)
+				{
+					sb.append("" + p/* p.name + " : " + p.value */+ " ");
+				}
+			} else
+			{
+				sb.append("- ");
+			}
+			sb.append(")");
 		}
-		sb.append("_____________________________");
 		return (sb.toString());
 	}
 }
