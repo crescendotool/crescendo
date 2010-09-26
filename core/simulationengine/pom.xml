@@ -50,6 +50,12 @@
 			<artifactId>xmlrpc-client</artifactId>
 			<version>3.1.3</version>
 		</dependency>
+		 <dependency>
+     <groupId>org.apache.xmlrpc</groupId>
+			<artifactId>xmlrpc-client</artifactId>
+			<version>3.1.3</version>
+       <classifier>sources</classifier>
+    </dependency>
 		<dependency>
 			<groupId>org.destecs.core</groupId>
 			<artifactId>protocol</artifactId>

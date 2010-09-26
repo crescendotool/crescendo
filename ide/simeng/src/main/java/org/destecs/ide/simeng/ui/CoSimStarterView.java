@@ -1,7 +1,9 @@
 package org.destecs.ide.simeng.ui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Vector;
@@ -9,12 +11,17 @@ import java.util.Vector;
 import org.destecs.core.simulationengine.IEngineListener;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
+import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
+import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
@@ -187,48 +194,97 @@ public class CoSimStarterView extends ViewPart
 		final String messageViewId = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
 		final String engineViewId = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
 		final String simulationViewId = "org.destecs.ide.simeng.ui.views.SimulationView";
-		
-		final SimulationEngine engine = new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));
-		engine.engineListeners.add(new EngineListener(getInfoTableView(engineViewId)));
-		engine.messageListeners.add(new MessageListener(getInfoTableView(messageViewId)));
-		engine.simulationListeners.add(new SimulationListener(getInfoTableView(simulationViewId)));
-		Job runSimulation = new Job("Simulation")
+
+		Job runSimulation = null;
+		try
 		{
-			
-			@Override
-			protected IStatus run(IProgressMonitor monitor)
+			final SimulationEngine engine = new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));
+
+			engine.engineListeners.add(new EngineListener(getInfoTableView(engineViewId)));
+			engine.messageListeners.add(new MessageListener(getInfoTableView(messageViewId)));
+			engine.simulationListeners.add(new SimulationListener(getInfoTableView(simulationViewId)));
+			runSimulation = new Job("Simulation")
 			{
-				
 
-				try
+				@Override
+				protected IStatus run(IProgressMonitor monitor)
 				{
+					final List<Throwable> exceptions = new Vector<Throwable>();
+					class SimulationRunner extends Thread
+					{
+						public SimulationRunner()
+						{
+							setDaemon(true);
+							setName("Simulation Engine");
+						}
+
+						public void run()
+						{
+							ISafeRunnable runnable = new ISafeRunnable()
+							{
+
+								public void run() throws Exception
+								{
+									runSumulation(engine);
+
+								}
+
+								public void handleException(Throwable e)
+								{
+									exceptions.add(e);
+								}
+							};
+
+							SafeRunner.run(runnable);
+						};
+
+					}
 					
-
-					engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File("C:\\destecs\\workspace\\watertank_new\\model")));
-					engine.setDtModel(new File("C:\\destecs\\workspace\\watertank_new\\model"));
-					engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
-
-					engine.setCtSimulationLauncher(new Clp20SimLauncher());
-					engine.setCtModel(new File("C:\\destecs\\workspace\\watertank_new\\WaterTank.emx"));
-					engine.setCtEndpoint(new URL("http://localhost:1580"));
-
-					List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-					shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 1.0));
-					shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 2.0));
-
+					Thread simulationEngineThread = new SimulationRunner();
 					
+					simulationEngineThread.start();
+					
+					while (!simulationEngineThread.isInterrupted() && simulationEngineThread.isAlive())
+					{
+						sleep(2000);
 
-					engine.simulate(shareadDesignParameters, 5);
-					return Status.OK_STATUS;
-				} catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return new Status(IStatus.ERROR,"","Simulation faild",e);
+						if (monitor.isCanceled())
+						{
+							engine.forceSimulationStop();
+						}
+					}
+
+					if (exceptions.size() == 0)
+					{
+						return Status.OK_STATUS;
+					} else
+					{
+						for (Throwable throwable : exceptions)
+						{
+							throwable.printStackTrace();
+						}
+						return new Status(IStatus.ERROR, "", "Simulation faild", exceptions.get(0));
+					}
+
 				}
 
-			}
-		};
+				private void sleep(long i)
+				{
+					try
+					{
+						Thread.sleep(i);
+					} catch (InterruptedException e)
+					{
+						//Ignore it
+					}
+					
+				}
+			};
+
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		runSimulation.schedule();
 	}
 
@@ -247,6 +303,26 @@ public class CoSimStarterView extends ViewPart
 		}
 	}
 
+	private void runSumulation(final SimulationEngine engine)
+			throws ModelPathNotValidException, MalformedURLException,
+			InvalidEndpointsExpection, InvalidSimulationLauncher,
+			FileNotFoundException
+	{
+		engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File("C:\\destecs\\workspace\\watertank_new\\model")));
+		engine.setDtModel(new File("C:\\destecs\\workspace\\watertank_new\\model"));
+		engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
+
+		engine.setCtSimulationLauncher(new Clp20SimLauncher());
+		engine.setCtModel(new File("C:\\destecs\\workspace\\watertank_new\\WaterTank.emx"));
+		engine.setCtEndpoint(new URL("http://localhost:1580"));
+
+		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 1.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 2.0));
+
+		engine.simulate(shareadDesignParameters, 5);
+	}
+
 	private static class EngineListener implements IEngineListener
 	{
 		private InfoTableView view;
@@ -254,6 +330,7 @@ public class CoSimStarterView extends ViewPart
 		public EngineListener(InfoTableView view)
 		{
 			this.view = view;
+			this.view.resetBuffer();
 		}
 
 		public void info(Simulator simulator, String message)

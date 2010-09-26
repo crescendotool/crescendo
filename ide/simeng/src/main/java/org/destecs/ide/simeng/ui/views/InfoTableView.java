@@ -323,15 +323,20 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		});
 	}
 
-	public void setDataList(
+	public synchronized void setDataList(
 			final List<String> data)
 	{
-		
+		dataSource.add(data);
+		refreshList();
+	}
+
+	private void refreshPackTable()
+	{
 		display.asyncExec(new Runnable() {
 
 			public void run()
 			{
-				dataSource.add(data);
+				
 				viewer.refresh();
 //				if (viewer.getLabelProvider() instanceof ViewLabelProvider)
 //					((ViewLabelProvider) viewer.getLabelProvider()).resetCounter(); // this
@@ -351,6 +356,12 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 			}
 
 		});
+	}
+	
+	public synchronized void resetBuffer()
+	{
+		dataSource.clear();
+		refreshList();
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)

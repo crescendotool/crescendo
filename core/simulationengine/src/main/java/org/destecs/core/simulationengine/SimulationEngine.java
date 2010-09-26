@@ -14,7 +14,6 @@ import org.destecs.core.contract.Variable;
 import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
 import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
-import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
 import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
@@ -44,6 +43,13 @@ public class SimulationEngine
 		}
 	}
 
+	/**
+	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
+	 * XML-RPC -needed since Eclipse replaced the javax.xml.parsers with an older Eclipse specific version.
+	 * <b>Must be false if running standalone in console mode</b>
+	 */
+	public static boolean eclipseEnvironment = false;
+
 	private URL dtEndpoint = null;
 	private URL ctEndpoint = null;
 
@@ -58,6 +64,8 @@ public class SimulationEngine
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
 
 	private final File contractFile;
+	
+	private boolean forceStopSimulation = false;
 
 	public SimulationEngine(File contractFile)
 	{
@@ -152,6 +160,8 @@ public class SimulationEngine
 			ModelPathNotValidException, InvalidSimulationLauncher,
 			FileNotFoundException
 	{
+		//reset force simulation stop
+		this.forceStopSimulation = false;
 		validate();
 
 		Contract contract = null;
@@ -270,6 +280,11 @@ public class SimulationEngine
 
 		while (time < 5)
 		{
+			if(forceStopSimulation)
+			{
+				//simulation stop requested, stop simulation loop
+				break;
+			}
 			// Step CT
 			messageInfo(Simulator.CT, "step");
 			result = ctProxy.step((result.time) / 1000, outputToInput(result.outputs), false, events);
@@ -281,6 +296,11 @@ public class SimulationEngine
 
 			time = (result.time) / 1000;
 		}
+	}
+	
+	public void forceSimulationStop()
+	{
+		this.forceStopSimulation = true;
 	}
 
 	private List<StepinputsStructParam> outputToInput(
@@ -335,25 +355,22 @@ public class SimulationEngine
 			}
 			if (!ctInterface.inputs.contains(var.name))
 			{
-				abort(Simulator.DT, "Missing-input controlled variable: "
-						+ var);
+				abort(Simulator.DT, "Missing-input controlled variable: " + var);
 				return false;
 			}
 		}
-		
+
 		for (Variable var : contract.getMonitoredVariables())
 		{
 			if (!dtInterface.inputs.contains(var.name))
 			{
-				abort(Simulator.DT, "Missing-input monitored variable: "
-						+ var);
+				abort(Simulator.DT, "Missing-input monitored variable: " + var);
 				return false;
 
 			}
 			if (!ctInterface.outputs.contains(var.name))
 			{
-				abort(Simulator.DT, "Missing-output monitored variable: "
-						+ var);
+				abort(Simulator.DT, "Missing-output monitored variable: " + var);
 				return false;
 			}
 		}
@@ -375,6 +392,10 @@ public class SimulationEngine
 		XmlRpcClient client = new XmlRpcClient();
 		client.setConfig(config);
 
+		if (SimulationEngine.eclipseEnvironment)
+		{
+			client.setTransportFactory(new CustomSAXParserTransportFactory(client));
+		}
 		// add factory for annotations for generated protocol
 		AnnotationClientFactory factory = new AnnotationClientFactory(client);
 

@@ -19,6 +19,30 @@ import org.destecs.protocol.structs.StepStructoutputsStruct;
 
 public class Main
 {
+	public SimulationEngine getEngine() throws ModelPathNotValidException, MalformedURLException
+	{
+		SimulationEngine engine = new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));
+
+		engine.setDtSimulationLauncher(new VdmRtLauncher());
+		engine.setDtModel(new File("C:\\destecs\\workspace\\watertank_new\\model"));
+		engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
+
+		engine.setCtSimulationLauncher(new Clp20SimLauncher());
+		engine.setCtModel(new File("C:\\destecs\\workspace\\watertank_new\\WaterTank.emx"));
+		engine.setCtEndpoint(new URL("http://localhost:1580"));
+
+		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minLevel", 1.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxLevel", 2.0));
+
+		Listener listener = new Listener();
+		engine.engineListeners.add(listener);
+		engine.messageListeners.add(listener);
+		engine.simulationListeners.add(listener);
+
+//		engine.simulate(shareadDesignParameters, 5);
+		return engine;
+	}
 
 	/**
 	 * @param args

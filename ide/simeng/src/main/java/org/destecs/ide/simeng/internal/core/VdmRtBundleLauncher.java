@@ -42,6 +42,9 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			// commandList.addAll(1, getVmArguments(preferences));
 
 			p = Runtime.getRuntime().exec(getArgumentString(commandList), null, dir);
+			
+			new ProcessConsolePrinter(p.getInputStream()).start();
+			new ProcessConsolePrinter(p.getErrorStream()).start();
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
