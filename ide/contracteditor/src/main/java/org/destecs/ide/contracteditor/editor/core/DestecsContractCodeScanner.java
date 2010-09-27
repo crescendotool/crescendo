@@ -55,6 +55,7 @@ public class DestecsContractCodeScanner extends VdmCodeScanner {
 		// Multi line comment
 		rules.add(new MultiLineRule("/*", "*/", comment));
 		
+		
 		// Add rule for strings.
 		rules.add(new SingleLineRule("\"", "\"", string, '\\'));
 		rules.add(new SingleLineRule("'", "'", string, '\\'));
@@ -77,8 +78,17 @@ public class DestecsContractCodeScanner extends VdmCodeScanner {
 			wordRule.addWord(types[i], type);
 		}
 		
+		wordRule.addWord("design_parameters", comment);
+		wordRule.addWord("variables", comment);
+		wordRule.addWord("events", comment);
 			
 		rules.add(wordRule);
+		
+		
+		
+		
+		
+		
 		IRule[] result = new IRule[rules.size()];
 		rules.toArray(result);
 		setRules(result);
@@ -86,7 +96,8 @@ public class DestecsContractCodeScanner extends VdmCodeScanner {
 
 	@Override
 	protected String[] getKeywords() {
-		return new String[]{"contract","end","variable","event","event_ree","event_fee","parameter","DT_OUT","CT_OUT"};
+		//return new String[]{"contract","end","variable","event","event_ree","event_fee","parameter","DT_OUT","CT_OUT"};
+		return new String[]{"contract","end","design_parameter","real","monitored","controlled","event","bool","false","true"};
 	}
 	
 	
