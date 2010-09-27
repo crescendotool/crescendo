@@ -164,7 +164,10 @@ public class SimulationEngine
 		{
 			// reset force simulation stop
 			this.forceStopSimulation = false;
+			engineInfo(Simulator.ALL, "Simulation engine type loaded: "+getClass().getName());
 			validate();
+			
+			infoSharedDesignParameters(sharedDesignParameters);
 
 			Contract contract = null;
 			try
@@ -253,6 +256,19 @@ public class SimulationEngine
 		{
 			dtLauncher.kill();
 		}
+	}
+
+	private void infoSharedDesignParameters(
+			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("Shared Design Parameter initialized as: (");
+		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters)
+		{
+			sb.append(p.name+":="+p.value+" ");
+		}
+		sb.append(")");
+		engineInfo(Simulator.ALL, sb.toString());
 	}
 
 	private boolean validateSharedDesignParameters(

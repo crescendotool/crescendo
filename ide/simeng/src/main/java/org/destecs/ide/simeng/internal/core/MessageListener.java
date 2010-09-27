@@ -1,10 +1,11 @@
-package org.destecs.ide.simeng.ui.views;
+package org.destecs.ide.simeng.internal.core;
 
 import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.IMessageListener;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+import org.destecs.ide.simeng.ui.views.InfoTableView;
 
 public class MessageListener implements IMessageListener
 {

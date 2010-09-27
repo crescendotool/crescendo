@@ -19,8 +19,9 @@ public class DestecsPerspectiveFactory implements IPerspectiveFactory {
 		mainArea.addView(CoSimStarterView.VIEW_ID);
 		
 		IFolderLayout projectExplorerFolder = layout.createFolder("left", IPageLayout.LEFT, 0.20f,"main");
-		projectExplorerFolder.addView("org.eclipse.ui.navigator.ProjectExplorer");
-						
+		//projectExplorerFolder.addView("org.eclipse.ui.navigator.ProjectExplorer");
+		projectExplorerFolder.addView("org.overture.ide.ui.VdmExplorer");
+				
 		IFolderLayout bottomArea = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.70f,editorArea);
 		bottomArea.addView(InfoTableView.SIMULATION_MESSAGES_VIEW_ID);
 		
