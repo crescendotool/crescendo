@@ -24,14 +24,16 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 {
 
 	private TableViewer viewer;
-//	private Action doubleClickAction;
+	// private Action doubleClickAction;
 	final Display display = Display.getCurrent();
 	final List<List<String>> dataSource = new Vector<List<String>>();
-	
+
 	public static String SIMULATION_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationView";
 	public static String SIMULATION_ENGINE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
 	public static String SIMULATION_MESSAGES_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
-//	private Action actionSetProvedFilter;
+	// private Action actionSetProvedFilter;
+
+	private boolean enableTimeColumn = false;
 
 	class ViewContentProvider implements IStructuredContentProvider
 	{
@@ -60,70 +62,69 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 			ITableLabelProvider
 	{
 
-		
-
 		@SuppressWarnings("unchecked")
 		public String getColumnText(Object element, int columnIndex)
 		{
-			if(element instanceof List)
+			if (element instanceof List)
 			{
 				List list = (List) element;
-				if(list.size()>columnIndex)
+				if (list.size() > columnIndex)
 				{
-				return list.get(columnIndex).toString();
+					return list.get(columnIndex).toString();
 				}
 				return "---";
 			}
 			return "---";
-			
 
 		}
 
 		public Image getColumnImage(Object element, int columnIndex)
 		{
-			
+
 			return null;
 		}
 
-//		public Image getColumnImage(Object obj, int index)
-//		{
-//			if (index == 3)
-//			{
-//				return getImage(obj);
-//			}
-//			return null;
-//		}
+		// public Image getColumnImage(Object obj, int index)
+		// {
+		// if (index == 3)
+		// {
+		// return getImage(obj);
+		// }
+		// return null;
+		// }
 
-//		@Override
-//		public Image getImage(Object obj)
-//		{
-//			ProofObligation data = (ProofObligation) obj;
-//
-//			String imgPath = "icons/cview16/unproved.png";
-//
-//			if (data.status == POStatus.PROVED)
-//				imgPath = "icons/cview16/proved.png";
-//			else if (data.status == POStatus.TRIVIAL)
-//				imgPath = "icons/cview16/trivial.png";
-//
-//			return Activator.getImageDescriptor(imgPath).createImage();
-//		}
+		// @Override
+		// public Image getImage(Object obj)
+		// {
+		// ProofObligation data = (ProofObligation) obj;
+		//
+		// String imgPath = "icons/cview16/unproved.png";
+		//
+		// if (data.status == POStatus.PROVED)
+		// imgPath = "icons/cview16/proved.png";
+		// else if (data.status == POStatus.TRIVIAL)
+		// imgPath = "icons/cview16/trivial.png";
+		//
+		// return Activator.getImageDescriptor(imgPath).createImage();
+		// }
 
 	}
 
-//	class IdSorter extends ViewerSorter
-//	{
-//	}
+	// class IdSorter extends ViewerSorter
+	// {
+	// }
 
 	/**
 	 * The constructor.
 	 */
-	public InfoTableView() {
+	public InfoTableView()
+	{
 	}
 
+	
+
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
 	@Override
 	public void createPartControl(Composite parent)
@@ -132,10 +133,12 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 				| SWT.V_SCROLL);
 		// test setup columns...
 		TableLayout layout = new TableLayout();
-		layout.addColumnData(new ColumnWeightData(20,  true));
-		layout.addColumnData(new ColumnWeightData(100,  true));
-//		layout.addColumnData(new ColumnWeightData(60,  false));
-//		layout.addColumnData(new ColumnWeightData(20,  false));
+		layout.addColumnData(new ColumnWeightData(20, true));
+		
+		layout.addColumnData(new ColumnWeightData(100, true));
+
+		// layout.addColumnData(new ColumnWeightData(60, false));
+		// layout.addColumnData(new ColumnWeightData(20, false));
 		viewer.getTable().setLayout(layout);
 		viewer.getTable().setLinesVisible(true);
 		viewer.getTable().setHeaderVisible(true);
@@ -150,123 +153,140 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		column.setText("Message");
 		column.setToolTipText("Message");
 
-//		TableColumn column2 = new TableColumn(viewer.getTable(), SWT.LEFT);
-//		column2.setText("Type");
-//		column2.setToolTipText("Show Type");
-//
-//		TableColumn column3 = new TableColumn(viewer.getTable(), SWT.CENTER);
-//		column3.setText("Status");
-//		column3.setToolTipText("Show status");
+		// TableColumn column2 = new TableColumn(viewer.getTable(), SWT.LEFT);
+		// column2.setText("Type");
+		// column2.setToolTipText("Show Type");
+		//
+		// TableColumn column3 = new TableColumn(viewer.getTable(), SWT.CENTER);
+		// column3.setText("Status");
+		// column3.setToolTipText("Show status");
 
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 
-//		makeActions();
-//		contributeToActionBars();
-//		hookDoubleClickAction();
+		// makeActions();
+		// contributeToActionBars();
+		// hookDoubleClickAction();
 
-//		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-//
-//			public void selectionChanged(SelectionChangedEvent event)
-//			{
-//
-//				Object first = ((IStructuredSelection) event.getSelection()).getFirstElement();
-//				if (first instanceof ProofObligation)
-//				{
-//					try
-//					{
-//						IViewPart v = getSite().getPage()
-//								.showView(IPoviewerConstants.PoTableViewId);
-//
-//						if (v instanceof PoTableView)
-//							((PoTableView) v).setDataList(project,
-//									(ProofObligation) first);
-//					} catch (PartInitException e)
-//					{
-//
-//						e.printStackTrace();
-//					}
-//				}
-//
-//			}
-//		});
+		// viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		//
+		// public void selectionChanged(SelectionChangedEvent event)
+		// {
+		//
+		// Object first = ((IStructuredSelection) event.getSelection()).getFirstElement();
+		// if (first instanceof ProofObligation)
+		// {
+		// try
+		// {
+		// IViewPart v = getSite().getPage()
+		// .showView(IPoviewerConstants.PoTableViewId);
+		//
+		// if (v instanceof PoTableView)
+		// ((PoTableView) v).setDataList(project,
+		// (ProofObligation) first);
+		// } catch (PartInitException e)
+		// {
+		//
+		// e.printStackTrace();
+		// }
+		// }
+		//
+		// }
+		// });
 		viewer.setInput(dataSource);
 	}
 	
-//	private void contributeToActionBars() {
-//		IActionBars bars = getViewSite().getActionBars();
-//		
-//		fillLocalToolBar(bars.getToolBarManager());
-//	}
-	
-//	private void fillLocalToolBar(IToolBarManager manager) {
-//
-//		manager.add(actionSetProvedFilter);
-//		
-//		//drillDownAdapter.addNavigationActions(manager);
-//	}
+	public void addColumn(String name)
+	{
+		for (TableColumn tc : viewer.getTable().getColumns())
+		{
+			if(tc.getText().equals(name))
+			{
+				return;
+			}
+		}
+		((TableLayout)viewer.getTable().getLayout()).addColumnData(new ColumnWeightData(60, false));
+		
+		TableColumn column2 = new TableColumn(viewer.getTable(), SWT.LEFT);
+		column2.setText(name);
+		column2.setToolTipText("Show "+name);
+		refreshPackTable();
+	}
 
-//	private void makeActions()
-//	{
-////		doubleClickAction = new Action() {
-////			@Override
-////			public void run()
-////			{
-////				ISelection selection = viewer.getSelection();
-////				Object obj = ((IStructuredSelection) selection).getFirstElement();
-////				if (obj instanceof ProofObligation)
-////				{
-////					gotoDefinition((ProofObligation) obj);
-////					// showMessage(((ProofObligation) obj).toString());
-////				}
-////			}
-////
-////			private void gotoDefinition(ProofObligation po)
-////			{
-////				EditorUtility.gotoLocation(project.findIFile(po.location.file), po.location, po.name);
-////			}
-////		};
-//		
-////		actionSetProvedFilter = new Action("Filter proved",Action.AS_CHECK_BOX) {
-////			@Override
-////			public void run() {
-////				ViewerFilter[] filters = viewer.getFilters();
-////				boolean isSet = false;
-////				for (ViewerFilter viewerFilter : filters) {
-////					if (viewerFilter.equals(provedFilter))
-////						isSet = true;
-////				}
-////				if (isSet) {
-////					viewer.removeFilter(provedFilter);
-////					
-////				} else {
-////					viewer.addFilter(provedFilter);
-////					
-////				}
-////				if (viewer.getLabelProvider() instanceof ViewLabelProvider)
-////					((ViewLabelProvider) viewer.getLabelProvider()).resetCounter(); // this
-////																					// is
-////																					// needed
-////																					// to
-////																					// reset
-////																					// the
-////				// numbering
-////				viewer.refresh();
-////			}
-////
-////		};
-//	
-//	}
+	// private void contributeToActionBars() {
+	// IActionBars bars = getViewSite().getActionBars();
+	//		
+	// fillLocalToolBar(bars.getToolBarManager());
+	// }
 
-//	private void hookDoubleClickAction()
-//	{
-//		viewer.addDoubleClickListener(new IDoubleClickListener() {
-//			public void doubleClick(DoubleClickEvent event)
-//			{
-//				doubleClickAction.run();
-//			}
-//		});
-//	}
+	// private void fillLocalToolBar(IToolBarManager manager) {
+	//
+	// manager.add(actionSetProvedFilter);
+	//		
+	// //drillDownAdapter.addNavigationActions(manager);
+	// }
+
+	// private void makeActions()
+	// {
+	// // doubleClickAction = new Action() {
+	// // @Override
+	// // public void run()
+	// // {
+	// // ISelection selection = viewer.getSelection();
+	// // Object obj = ((IStructuredSelection) selection).getFirstElement();
+	// // if (obj instanceof ProofObligation)
+	// // {
+	// // gotoDefinition((ProofObligation) obj);
+	// // // showMessage(((ProofObligation) obj).toString());
+	// // }
+	// // }
+	// //
+	// // private void gotoDefinition(ProofObligation po)
+	// // {
+	// // EditorUtility.gotoLocation(project.findIFile(po.location.file), po.location, po.name);
+	// // }
+	// // };
+	//		
+	// // actionSetProvedFilter = new Action("Filter proved",Action.AS_CHECK_BOX) {
+	// // @Override
+	// // public void run() {
+	// // ViewerFilter[] filters = viewer.getFilters();
+	// // boolean isSet = false;
+	// // for (ViewerFilter viewerFilter : filters) {
+	// // if (viewerFilter.equals(provedFilter))
+	// // isSet = true;
+	// // }
+	// // if (isSet) {
+	// // viewer.removeFilter(provedFilter);
+	// //
+	// // } else {
+	// // viewer.addFilter(provedFilter);
+	// //
+	// // }
+	// // if (viewer.getLabelProvider() instanceof ViewLabelProvider)
+	// // ((ViewLabelProvider) viewer.getLabelProvider()).resetCounter(); // this
+	// // // is
+	// // // needed
+	// // // to
+	// // // reset
+	// // // the
+	// // // numbering
+	// // viewer.refresh();
+	// // }
+	// //
+	// // };
+	//	
+	// }
+
+	// private void hookDoubleClickAction()
+	// {
+	// viewer.addDoubleClickListener(new IDoubleClickListener() {
+	// public void doubleClick(DoubleClickEvent event)
+	// {
+	// doubleClickAction.run();
+	// }
+	// });
+	// }
 
 	// private void showMessage(String message)
 	// {
@@ -285,37 +305,38 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		viewer.getControl().setFocus();
 	}
 
-//	public void selectionChanged(IWorkbenchPart part, ISelection selection)
-//	{
-//
-//		if (selection instanceof IStructuredSelection
-//				&& part instanceof InfoTableView)
-//		{
-//			Object first = ((IStructuredSelection) selection).getFirstElement();
-//			if (first instanceof ProofObligation)
-//			{
-//				try
-//				{
-//					IViewPart v = part.getSite()
-//							.getPage()
-//							.showView("org.overture.ide.plugins.poviewer.views.PoTableView");
-//
-//					if (v instanceof PoTableView)
-//						((PoTableView) v).setDataList(project,
-//								(ProofObligation) first);
-//				} catch (PartInitException e)
-//				{
-//
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//
-//	}
+	// public void selectionChanged(IWorkbenchPart part, ISelection selection)
+	// {
+	//
+	// if (selection instanceof IStructuredSelection
+	// && part instanceof InfoTableView)
+	// {
+	// Object first = ((IStructuredSelection) selection).getFirstElement();
+	// if (first instanceof ProofObligation)
+	// {
+	// try
+	// {
+	// IViewPart v = part.getSite()
+	// .getPage()
+	// .showView("org.overture.ide.plugins.poviewer.views.PoTableView");
+	//
+	// if (v instanceof PoTableView)
+	// ((PoTableView) v).setDataList(project,
+	// (ProofObligation) first);
+	// } catch (PartInitException e)
+	// {
+	//
+	// e.printStackTrace();
+	// }
+	// }
+	// }
+	//
+	// }
 
 	public void refreshList()
 	{
-		display.asyncExec(new Runnable() {
+		display.asyncExec(new Runnable()
+		{
 
 			public void run()
 			{
@@ -325,8 +346,7 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		});
 	}
 
-	public synchronized void setDataList(
-			final List<String> data)
+	public synchronized void setDataList(final List<String> data)
 	{
 		dataSource.add(data);
 		refreshList();
@@ -334,23 +354,24 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 	private void refreshPackTable()
 	{
-		display.asyncExec(new Runnable() {
+		display.asyncExec(new Runnable()
+		{
 
 			public void run()
 			{
-				
+
 				viewer.refresh();
-//				if (viewer.getLabelProvider() instanceof ViewLabelProvider)
-//					((ViewLabelProvider) viewer.getLabelProvider()).resetCounter(); // this
-//																					// is
-//																					// needed
-//																					// to
-//																					// reset
-//																					// the
-//				// numbering
-//
-//				viewer.setInput(data);
-				
+				// if (viewer.getLabelProvider() instanceof ViewLabelProvider)
+				// ((ViewLabelProvider) viewer.getLabelProvider()).resetCounter(); // this
+				// // is
+				// // needed
+				// // to
+				// // reset
+				// // the
+				// // numbering
+				//
+				// viewer.setInput(data);
+
 				for (TableColumn col : viewer.getTable().getColumns())
 				{
 					col.pack();
@@ -359,7 +380,7 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 		});
 	}
-	
+
 	public synchronized void resetBuffer()
 	{
 		dataSource.clear();
@@ -369,6 +390,6 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

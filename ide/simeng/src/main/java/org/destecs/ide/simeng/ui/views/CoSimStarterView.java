@@ -53,8 +53,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
@@ -69,16 +71,23 @@ public class CoSimStarterView extends ViewPart
 
 	static public String VIEW_ID = "org.destecs.ide.simeng.ui.cosimstarter";
 
-//	private Label warningLabel = null;
+	// private Label warningLabel = null;
 	private Text ctPath = null;
 	private Text dtPath = null;
 	private Text contractPath = null;
 	private Text scenarioPath = null;
 	private Text sharedDesignParamPath = null;
 	private Text fProjectText;
+	private Text simulationTimeText = null;
 	private WidgetListener fListener = new WidgetListener();
 	private Shell fShell;
 	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+
+	private double totalSimulationTime = 5;
+
+	private Button runButton = null;
+	
+	private IProject project=null;
 
 	public CoSimStarterView()
 	{
@@ -91,7 +100,7 @@ public class CoSimStarterView extends ViewPart
 		fShell = parent.getShell();
 
 		createProjectSelection(parent);
-		
+
 		Group group = new Group(parent, parent.getStyle());
 		group.setText("Simulation Configuration");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -155,19 +164,44 @@ public class CoSimStarterView extends ViewPart
 		scenarioPath.setLayoutData(gridData);
 		scenarioPath.setText("Insert Scenario path here");
 
-		Button runButton = new Button(parent, SWT.PUSH);
+		// Total simulation time Line
+		Label simulationTimeLabel = new Label(group, SWT.NONE);
+		simulationTimeLabel.setText("Total simulation time:");
+		simulationTimeText = new Text(group, SWT.BORDER);
+		gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		simulationTimeText.setLayoutData(gridData);
+		simulationTimeText.setText("5");
+
+		runButton = new Button(parent, SWT.PUSH);
 		runButton.setText("Run CoSim");
 		gridData = new GridData();
 		// gridData.horizontalSpan = 2;
 		runButton.setLayoutData(gridData);
 
-//		warningLabel = new Label(parent, SWT.NONE);
+		// warningLabel = new Label(parent, SWT.NONE);
+		simulationTimeText.addListener(SWT.Modify, new Listener()
+		{
+			public void handleEvent(Event event)
+			{
+				try
+				{
+					totalSimulationTime = new Double(simulationTimeText.getText());
+					runButton.setEnabled(true);
+				} catch (Exception e)
+				{
+					runButton.setEnabled(false);
+				}
+			}
+		});
 
 		runButton.addSelectionListener(new SelectionListener()
 		{
 
 			public void widgetSelected(SelectionEvent e)
 			{
+				storePreferences();
 				startSimulation();
 			}
 
@@ -178,6 +212,15 @@ public class CoSimStarterView extends ViewPart
 			}
 		});
 
+	}
+
+	protected void storePreferences()
+	{
+//		if(project!=null)
+//		{
+//			project.getp
+//		}
+		
 	}
 
 	public void setFocus()
@@ -275,7 +318,8 @@ public class CoSimStarterView extends ViewPart
 							&& dialog.getFirstResult() instanceof IProject)
 					// && ((IProject) dialog.getFirstResult()).getAdapter(IVdmProject.class) != null)
 					{
-						fProjectText.setText(((IProject) dialog.getFirstResult()).getName());
+						project = (IProject) dialog.getFirstResult();
+						fProjectText.setText(project.getName());
 					}
 
 				}
@@ -313,7 +357,7 @@ public class CoSimStarterView extends ViewPart
 			engine.setCtSimulationLauncher(new Clp20SimLauncher());
 			engine.setCtModel(new File(ctPath.getText()));
 			engine.setCtEndpoint(new URL("http://localhost:1580"));
-			
+
 			setSharedDesignParameters(engine);
 
 			runSimulation = new Job("Simulation")
@@ -404,16 +448,16 @@ public class CoSimStarterView extends ViewPart
 
 	private SimulationEngine getEngine()
 	{
-		File contractFile=new File(contractPath.getText().trim());
-		File scenarioFile=new File(scenarioPath.getText().trim());
-		if(scenarioPath.getText().trim().length()>0)
+		File contractFile = new File(contractPath.getText().trim());
+		File scenarioFile = new File(scenarioPath.getText().trim());
+		if (scenarioPath.getText().trim().length() > 0)
 		{
-			
+
 			Scenario scenario = new ScenarioParser(scenarioFile).parse();
-			return new ScenarioSimulationEngine(contractFile, scenario );
-		}else
+			return new ScenarioSimulationEngine(contractFile, scenario);
+		} else
 		{
-			 
+
 			return new SimulationEngine(contractFile);
 		}
 	}
@@ -425,15 +469,15 @@ public class CoSimStarterView extends ViewPart
 		try
 		{
 			props.load(new FileReader(new File(sharedDesignParamPath.getText())));
-			
+
 			for (Object key : props.keySet())
 			{
 				String name = key.toString();
 				Double value = Double.parseDouble(props.getProperty(name));
 				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
-//				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
+				// shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
 			}
-			
+
 		} catch (FileNotFoundException e)
 		{
 			// TODO Auto-generated catch block
@@ -443,7 +487,7 @@ public class CoSimStarterView extends ViewPart
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private InfoTableView getInfoTableView(String id)
@@ -466,10 +510,7 @@ public class CoSimStarterView extends ViewPart
 			InvalidEndpointsExpection, InvalidSimulationLauncher,
 			FileNotFoundException
 	{
-		
-		
-
-		engine.simulate(shareadDesignParameters, 5);
+		engine.simulate(shareadDesignParameters, totalSimulationTime);
 	}
 
 	/**
@@ -537,8 +578,8 @@ public class CoSimStarterView extends ViewPart
 		{
 			// validatePage();
 			// updateLaunchConfigurationDialog();
-//			System.out.println("Selected Project (modify text):"
-//					+ fProjectText.getText());
+			// System.out.println("Selected Project (modify text):"
+			// + fProjectText.getText());
 			searchModels();
 
 		}

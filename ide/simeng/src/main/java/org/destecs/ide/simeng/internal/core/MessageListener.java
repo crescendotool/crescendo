@@ -14,6 +14,7 @@ public class MessageListener implements IMessageListener
 	public MessageListener(InfoTableView view)
 	{
 		this.view = view;
+		this.view.resetBuffer();
 	}
 
 	

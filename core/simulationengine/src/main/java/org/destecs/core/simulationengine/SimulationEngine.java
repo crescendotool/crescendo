@@ -156,7 +156,7 @@ public class SimulationEngine
 
 	public void simulate(
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,
-			float totalSimulationTime) throws InvalidEndpointsExpection,
+			double totalSimulationTime) throws InvalidEndpointsExpection,
 			ModelPathNotValidException, InvalidSimulationLauncher,
 			FileNotFoundException
 	{
@@ -312,7 +312,7 @@ public class SimulationEngine
 		return proxy.stop().success;
 	}
 
-	private void simulate(float totalSimulationTime,
+	private void simulate(Double totalSimulationTime,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 	{
 		Double initTime = 100.0;
