@@ -302,14 +302,17 @@ public class SimulationEngine
 		Double initTime = 100.0;
 		Double time = 0.0;
 
+		engineInfo(Simulator.ALL,"Running simulation: InitialTime="+initTime+" CurrentTime="+time);
+		
 		List<String> events = new Vector<String>();
 
 		// First initialize DT
+		beforeStep(Simulator.DT,initTime,dtProxy,ctProxy);
 		messageInfo(Simulator.DT, "step");
 		StepStruct result = dtProxy.step(initTime, new Vector<StepinputsStructParam>(), false, events);
 		simulationInfo(Simulator.DT, result);
 
-		while (time < 5)
+		while (time < totalSimulationTime)
 		{
 			if (forceStopSimulation)
 			{
@@ -317,16 +320,27 @@ public class SimulationEngine
 				break;
 			}
 			// Step CT
+			beforeStep(Simulator.CT,result.time,dtProxy,ctProxy);
 			messageInfo(Simulator.CT, "step");
-			result = ctProxy.step((result.time) / 1000, outputToInput(result.outputs), false, events);
+			result = ctProxy.step(result.time, outputToInput(result.outputs), false, events);
 			simulationInfo(Simulator.CT, result);
 			// Step DT
+			
+			//TODO: Problem with CT not stopping at the correct time
+			result.time=result.time+0.005;
+			
+			beforeStep(Simulator.DT,result.time,dtProxy,ctProxy);
 			messageInfo(Simulator.DT, "step");
-			result = dtProxy.step(((result.time) * 1000) + 5, outputToInput(result.outputs), false, events);
+			result = dtProxy.step(result.time, outputToInput(result.outputs), false, events);
 			simulationInfo(Simulator.DT, result);
 
-			time = (result.time) / 1000;
+			time = result.time;
 		}
+	}
+	
+	protected void beforeStep(Simulator nextStepEngine,Double nextTime ,ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+	{
+		
 	}
 
 	public void forceSimulationStop()
@@ -460,7 +474,7 @@ public class SimulationEngine
 		return success;
 	}
 
-	private void engineInfo(Simulator simulator, String message)
+	protected void engineInfo(Simulator simulator, String message)
 	{
 		for (IEngineListener listener : engineListeners)
 		{
@@ -468,7 +482,7 @@ public class SimulationEngine
 		}
 	}
 
-	private void messageInfo(Simulator fromSimulator, String message)
+	protected void messageInfo(Simulator fromSimulator, String message)
 	{
 		for (IMessageListener listener : messageListeners)
 		{
@@ -476,7 +490,7 @@ public class SimulationEngine
 		}
 	}
 
-	private void simulationInfo(Simulator fromSimulator, StepStruct result)
+	protected void simulationInfo(Simulator fromSimulator, StepStruct result)
 	{
 
 		for (ISimulationListener listener : simulationListeners)
@@ -553,7 +567,7 @@ public class SimulationEngine
 				sb.append("- ");
 			}
 			
-			sb.append(")| Inputs( ");
+			sb.append(") Inputs( ");
 			
 			if (result.inputs.size() > 0)
 			{

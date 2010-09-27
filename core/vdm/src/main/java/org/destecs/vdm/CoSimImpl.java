@@ -9,12 +9,11 @@ import java.util.Vector;
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
-
-import org.destecs.protocol.structs.GetDesignParametersStruct;
 import org.destecs.protocol.structs.InitializeStruct;
 import org.destecs.protocol.structs.LoadStruct;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.SetDesignParametersStruct;
+import org.destecs.protocol.structs.SetParametersStruct;
 import org.destecs.protocol.structs.StartStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
@@ -108,19 +107,10 @@ public class CoSimImpl implements IDestecs
 		return s.toMap();
 	}
 
-	// public Map<String, Boolean> setActive(Map<String, String> data)
-	// {
-	// throw new NoSuchMethodError("Not supported by VDMJ");
-	// }
-
-	// public Map<String, Boolean> showData()
-	// {
-	// throw new NoSuchMethodError("Not supported by VDMJ");
-	// }
-
 	public Map<String, Object> step(Map<String, Object> data)
 	{
 		Double outputTime = (Double) data.get("outputTime");
+		outputTime = outputTime * 1000;
 
 		List tmp = Arrays.asList((Object[]) data.get("inputs"));
 
@@ -146,13 +136,9 @@ public class CoSimImpl implements IDestecs
 			}
 		}
 
-		// System.out.println("Decoded:");
-		// System.out.println("outputtime:" + outputTime);
-		// System.out.println("singlestep:" + singleStep);
-		// System.out.println("Inputs: " + inputs);
-
 		// Ignore single step
 		StepStruct result = SimulationManager.getInstance().step(outputTime, inputs, events);
+		result.time = result.time / 1000;
 
 		return result.toMap();
 	}
@@ -230,7 +216,10 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Boolean> setParameter(Map<String, Object> data)
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+		String name = (String)data.get("name");
+		Double value=(Double)data.get("value");
+		Boolean success = SimulationManager.getInstance().setParameter(name, value);
+		return new SetParametersStruct(success).toMap();
 	}
 
 	public Map<String, Boolean> setParameters(

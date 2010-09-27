@@ -34,9 +34,12 @@ import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
+import org.overturetool.vdmj.values.NaturalValue;
 import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
+import org.overturetool.vdmj.values.RealValue;
+import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
 
@@ -177,7 +180,7 @@ public class SimulationManager
 		return result;
 	}
 
-	private void setValue(String name, Double value)
+	private boolean setValue(String name, Double value)
 	{
 		Value val = getValue(name);
 		if (val != null)
@@ -188,9 +191,15 @@ public class SimulationManager
 			{
 				((NumericValue) val.deref()).value = value;
 			}
+//			else if (val.deref() instanceof NaturalValue)
+//			{
+//				val.set(val.location, UpdatableValue.factory(new RealValue(value), val.).convertTo(targetType, ctxt), ctxt);
+//			}
+			return true;
 		} else
 		{
 			System.err.println("Setting val error, not found: " + name);
+			return false;
 		}
 	}
 
@@ -608,5 +617,17 @@ public class SimulationManager
 		}
 
 		return true;
+	}
+
+	public Boolean setParameter(String name, Double value)
+	{
+		try
+		{
+			return setValue(name, value);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
