@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.destecs.ide.ui.DestecsPerspectiveFactory"
+            icon="icons/ctool16/destecs_misc.png"
+            id="org.destecs.ide.ui.perspective"
+            name="DESTECS">
+      </perspective>
+   </extension>
+
+</plugin>

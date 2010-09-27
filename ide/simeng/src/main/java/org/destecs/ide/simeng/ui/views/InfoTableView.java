@@ -28,7 +28,9 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	final Display display = Display.getCurrent();
 	final List<List<String>> dataSource = new Vector<List<String>>();
 	
-	
+	public static String SIMULATION_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationView";
+	public static String SIMULATION_ENGINE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
+	public static String SIMULATION_MESSAGES_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
 //	private Action actionSetProvedFilter;
 
 	class ViewContentProvider implements IStructuredContentProvider

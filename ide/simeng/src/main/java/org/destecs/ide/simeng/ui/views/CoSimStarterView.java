@@ -1,4 +1,4 @@
-package org.destecs.ide.simeng.ui;
+package org.destecs.ide.simeng.ui.views;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,6 +63,8 @@ import org.eclipse.ui.part.ViewPart;
 public class CoSimStarterView extends ViewPart
 {
 
+	static public String VIEW_ID = "org.destecs.ide.simeng.ui.cosimstarter";
+	
 	private Label warningLabel = null;
 	private Text ctPath = null;
 	private Text dtPath = null;

@@ -1,11 +1,10 @@
-package org.destecs.ide.simeng.ui;
+package org.destecs.ide.simeng.ui.views;
 
 import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.ISimulationListener;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
-import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 

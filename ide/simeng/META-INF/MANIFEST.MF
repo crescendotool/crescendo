@@ -15,3 +15,4 @@ Require-Bundle: org.eclipse.ui.views;bundle-version="3.4.1",
  org.destecs.ide.generated.simulationengine;bundle-version="1.0.0",
  org.eclipse.core.resources;bundle-version="3.5.2"
 Bundle-Activator: org.destecs.ide.simeng.Activator
+Export-Package: org.destecs.ide.simeng.ui.views
