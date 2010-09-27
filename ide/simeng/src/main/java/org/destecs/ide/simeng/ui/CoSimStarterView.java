@@ -2,7 +2,6 @@ package org.destecs.ide.simeng.ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -18,37 +17,59 @@ import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.layout.PixelConverter;
+import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.model.BaseWorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
+
+
 
 public class CoSimStarterView extends ViewPart
 {
 
-	private Composite top = null;
-	private Button buttonDt = null;
-	private Button buttonCt = null;
-	private Button buttonFaults = null;
-	private Button buttonRun = null;
+	private Label warningLabel = null;
+	private Text ctPath = null;
+	private Text dtPath = null;
+	private Text contractPath = null;
+	private Text fProjectText;
+	private WidgetListener fListener = new WidgetListener();
+	private Shell fShell;
 
 	public CoSimStarterView()
 	{
@@ -56,28 +77,55 @@ public class CoSimStarterView extends ViewPart
 
 	}
 
-	enum ArrowDirection
-	{
-		Up, Down, Right, Left
-	}
-
 	public void createPartControl(Composite parent)
 	{
-		top = new Composite(parent, SWT.NONE);
-		// TODO Auto-generated method stub
-
-		buttonDt = new Button(top, SWT.FLAT);
-		buttonDt.setBounds(new Rectangle(100, 250, 150, 150));
-		buttonCt = new Button(top, SWT.FLAT);
-		buttonCt.setBounds(new Rectangle(500, 250, 150, 150));
-		buttonFaults = new Button(top, SWT.FLAT);
-		buttonFaults.setBounds(new Rectangle(300, 20, 150, 150));
-
-		buttonRun = new Button(top, SWT.PUSH);
-		buttonRun.setBounds(50, 50, 150, 150);
-		buttonRun.setText("RUN");
-		buttonRun.pack();
-		buttonRun.addSelectionListener(new SelectionListener()
+		fShell = parent.getShell();
+		
+		
+		createProjectSelection(parent);
+		
+		parent.setLayout(new GridLayout(1, false));
+		
+		
+		// DT Line
+		Label dtLabel = new Label(parent, SWT.NONE);
+		dtLabel.setText("DT Path:");
+		dtPath= new Text(parent, SWT.BORDER);
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		dtPath.setLayoutData(gridData);
+		dtPath.setText("Insert DT model path here");
+		
+		// CT Line
+		Label ctLabel = new Label(parent, SWT.NONE);
+		ctLabel.setText("CT Path:");
+		ctPath = new Text(parent, SWT.BORDER);
+		gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		ctPath.setLayoutData(gridData);
+		ctPath.setText("Insert CT model path here");
+		
+		// Contract Line
+		Label contractLabel = new Label(parent, SWT.NONE);
+		contractLabel.setText("Contract Path:");
+		contractPath = new Text(parent, SWT.BORDER);
+		gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		contractPath.setLayoutData(gridData);
+		contractPath.setText("Insert Contract path here");
+		
+		Button runButton = new Button(parent,SWT.PUSH);
+		runButton.setText("Run CoSim");
+		gridData = new GridData();
+		//gridData.horizontalSpan = 2;
+		runButton.setLayoutData(gridData);
+		
+		warningLabel = new Label(parent, SWT.NONE);
+		
+		runButton.addSelectionListener(new SelectionListener()
 		{
 
 			public void widgetSelected(SelectionEvent e)
@@ -92,103 +140,119 @@ public class CoSimStarterView extends ViewPart
 			}
 		});
 
-		Image image = new Image(buttonDt.getDisplay(), this.getClass().getResourceAsStream("VDM.png"));
-		buttonDt.setImage(image);
-		buttonDt.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter()
-		{
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e)
-			{
-				try
-				{
-
-					PlatformUI.getWorkbench().showPerspective("org.overture.ide.vdmrt.ui.VdmRtPerspective", PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-				} catch (WorkbenchException e1)
-				{
-
-				}
-			}
-		});
-
-		image = new Image(buttonCt.getDisplay(), this.getClass().getResourceAsStream("20sim.jpg"));
-		buttonCt.setImage(image);
-		buttonCt.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter()
-		{
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e)
-			{
-				try
-				{
-					Runtime.getRuntime().exec("C:\\Program Files\\20-sim 4.1\\bin\\20sim.exe");
-				} catch (IOException e1)
-				{
-
-				}
-			}
-		});
-
-		image = new Image(buttonFaults.getDisplay(), this.getClass().getResourceAsStream("Fault.png"));
-		buttonFaults.setImage(image);
-
-		top.addListener(SWT.Paint, new Listener()
-		{
-
-			public void handleEvent(Event event)
-			{
-
-				event.gc.setLineWidth(4);
-				// DT - CT
-				event.gc.drawLine(250, 250 + 75, 500, 250 + 75);
-
-				drawArrow(event.gc, ArrowDirection.Right, new Point(500, 250 + 75));
-				drawArrow(event.gc, ArrowDirection.Left, new Point(250, 250 + 75));
-				// Fault - DT
-				event.gc.drawLine(250 - 75, 250, 300, 20 + 75);
-				drawArrow(event.gc, ArrowDirection.Down, new Point(250 - 75, 250));
-				// Fault - CT
-				event.gc.drawLine(500 + 75, 250, 300 + 150, 20 + 75);
-				drawArrow(event.gc, ArrowDirection.Down, new Point(500 + 75, 250));
-				// Fault - communication
-				event.gc.drawLine(300 + 75, 20 + 150, 300 + 75, 250 + 75);
-
-				// event.gc.drawLine(300+75, 20+150 , 300+75+20, 20+150+20);
-				// drawArrow(event.gc, ArrowDirection.Up, new Point(300 + 75,20 + 150));
-				drawArrow(event.gc, ArrowDirection.Down, new Point(300 + 75, 250 + 75));
-			}
-		});
+		
 	}
 
-	private void drawArrow(GC gc, ArrowDirection dir, Point point)
-	{
-		final int LENGTH = 20;
-		final int WIDTH = 15;
-		switch (dir)
-		{
-			case Up:
-				gc.drawLine(point.x, point.y, point.x + WIDTH, point.y + LENGTH);
-				gc.drawLine(point.x, point.y, point.x - WIDTH, point.y + LENGTH);
-				break;
-
-			case Down:
-				gc.drawLine(point.x, point.y, point.x + WIDTH, point.y - LENGTH);
-				gc.drawLine(point.x, point.y, point.x - WIDTH, point.y - LENGTH);
-				break;
-
-			case Right:
-				gc.drawLine(point.x, point.y, point.x - LENGTH, point.y - WIDTH);
-				gc.drawLine(point.x, point.y, point.x - LENGTH, point.y + WIDTH);
-				break;
-			case Left:
-				gc.drawLine(point.x, point.y, point.x + LENGTH, point.y - WIDTH);
-				gc.drawLine(point.x, point.y, point.x + LENGTH, point.y + WIDTH);
-				break;
-		}
-
-	}
+	
 
 	public void setFocus()
 	{
 
 	}
 
+	
+	private void createProjectSelection(Composite parent)
+	{
+		Group group = new Group(parent, parent.getStyle());
+		group.setText("Project");
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+
+		group.setLayoutData(gd);
+
+		GridLayout layout = new GridLayout();
+		layout.makeColumnsEqualWidth = false;
+		layout.numColumns = 3;
+		group.setLayout(layout);
+
+		// editParent = group;
+
+		Label label = new Label(group, SWT.MIN);
+		label.setText("Project:");
+		gd = new GridData(GridData.BEGINNING);
+		label.setLayoutData(gd);
+
+		fProjectText = new Text(group, SWT.SINGLE | SWT.BORDER);
+
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		fProjectText.setLayoutData(gd);
+		fProjectText.addModifyListener(fListener);
+
+		Button selectProjectButton = createPushButton(group, "Browse...", null);
+
+		selectProjectButton.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				// ListSelectionDialog dlg = new ListSelectionDialog(getShell(),
+				// ResourcesPlugin.getWorkspace().getRoot(), new
+				// BaseWorkbenchContentProvider(), new
+				// WorkbenchLabelProvider(), "Select the Project:");
+				// dlg.setTitle("Project Selection");
+				// dlg.open();
+				class ProjectContentProvider extends
+						BaseWorkbenchContentProvider
+				{
+					@Override
+					public boolean hasChildren(Object element)
+					{
+						if (element instanceof IProject)
+						{
+							return false;
+						} else
+						{
+							return super.hasChildren(element);
+						}
+					}
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public Object[] getElements(Object element)
+					{
+						List elements = new Vector();
+						Object[] arr = super.getElements(element);
+						if (arr != null)
+						{
+							for (Object object : arr)
+							{
+								if (object instanceof IProject)
+									
+								{
+									elements.add(object);
+								}
+							}
+							return elements.toArray();
+						}
+						return null;
+					}
+
+				}
+				;
+				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new ProjectContentProvider());
+				dialog.setTitle("Project Selection");
+				dialog.setMessage("Select a project:");
+				dialog.setComparator(new ViewerComparator());
+
+				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+
+				if (dialog.open() == Window.OK)
+				{
+					if (dialog.getFirstResult() != null
+							&& dialog.getFirstResult() instanceof IProject)
+							//&& ((IProject) dialog.getFirstResult()).getAdapter(IVdmProject.class) != null)
+					{
+						fProjectText.setText(((IProject) dialog.getFirstResult()).getName());
+					}
+
+				}
+			}
+
+			private Shell getShell() {
+				return fShell;
+			}
+		});
+	}
+	
 	private void startSimulation()
 	{
 		final String messageViewId = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
@@ -198,12 +262,27 @@ public class CoSimStarterView extends ViewPart
 		Job runSimulation = null;
 		try
 		{
+			
+			
+			
 			SimulationEngine.eclipseEnvironment = true;
-			final SimulationEngine engine = new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));
+			final SimulationEngine engine = new SimulationEngine(new File(contractPath.getText()));
 
 			engine.engineListeners.add(new EngineListener(getInfoTableView(engineViewId)));
 			engine.messageListeners.add(new MessageListener(getInfoTableView(messageViewId)));
 			engine.simulationListeners.add(new SimulationListener(getInfoTableView(simulationViewId)));
+			
+			
+			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File(dtPath.getText())));//new File("C:\\destecs\\workspace\\watertank_new\\model")));
+			engine.setDtModel(new File(dtPath.getText()));
+			engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
+
+			engine.setCtSimulationLauncher(new Clp20SimLauncher());
+			engine.setCtModel(new File(ctPath.getText()));
+			engine.setCtEndpoint(new URL("http://localhost:1580"));
+
+			
+			
 			runSimulation = new Job("Simulation")
 			{
 
@@ -289,6 +368,8 @@ public class CoSimStarterView extends ViewPart
 		runSimulation.schedule();
 	}
 
+	
+
 	private InfoTableView getInfoTableView(String id)
 	{
 		IViewPart v;
@@ -309,14 +390,6 @@ public class CoSimStarterView extends ViewPart
 			InvalidEndpointsExpection, InvalidSimulationLauncher,
 			FileNotFoundException
 	{
-		engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File("C:\\destecs\\workspace\\watertank_new\\model")));
-		engine.setDtModel(new File("C:\\destecs\\workspace\\watertank_new\\model"));
-		engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
-
-		engine.setCtSimulationLauncher(new Clp20SimLauncher());
-		engine.setCtModel(new File("C:\\destecs\\workspace\\watertank_new\\WaterTank.emx"));
-		engine.setCtEndpoint(new URL("http://localhost:1580"));
-
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", 1.0));
 		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
@@ -343,4 +416,123 @@ public class CoSimStarterView extends ViewPart
 		}
 	}
 
+	/**
+	 * Creates and returns a new push button with the given
+	 * label and/or image.
+	 * 
+	 * @param parent parent control
+	 * @param label button label or <code>null</code>
+	 * @param image image of <code>null</code>
+	 * 
+	 * @return a new push button
+	 */
+	public static Button createPushButton(Composite parent, String label, Image image) {
+		Button button = new Button(parent, SWT.PUSH);
+		button.setFont(parent.getFont());
+		if (image != null) {
+			button.setImage(image);
+		}
+		if (label != null) {
+			button.setText(label);
+		}
+		GridData gd = new GridData();
+		button.setLayoutData(gd);	
+		setButtonDimensionHint(button);
+		return button;	
+	}	
+	
+	/**
+	 * Sets width and height hint for the button control.
+	 * <b>Note:</b> This is a NOP if the button's layout data is not
+	 * an instance of <code>GridData</code>.
+	 * 
+	 * @param	the button for which to set the dimension hint
+	 */		
+	public static void setButtonDimensionHint(Button button) {
+		Assert.isNotNull(button);
+		Object gd= button.getLayoutData();
+		if (gd instanceof GridData) {
+			((GridData)gd).widthHint= getButtonWidthHint(button);	
+			((GridData)gd).horizontalAlignment = GridData.FILL;	 
+		}
+	}		
+	
+	
+	/**
+	 * Returns a width hint for a button control.
+	 */
+	public static int getButtonWidthHint(Button button) {
+		/*button.setFont(JFaceResources.getDialogFont());*/
+		PixelConverter converter= new PixelConverter(button);
+		int widthHint= converter.convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+		return Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+	}
+
+	class WidgetListener implements ModifyListener, SelectionListener
+	{
+		public void modifyText(ModifyEvent e)
+		{
+			// validatePage();
+			//updateLaunchConfigurationDialog();
+			System.out.println("Selected Project (modify text):" + fProjectText.getText());
+			searchModels();
+			
+		}
+
+		private void searchModels() {
+			IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
+			IProject project = wsRoot.getProject(fProjectText.getText());
+			if(project == null)
+			{
+				//Show error
+				return;
+			}
+			
+			try {
+				IResource[] projectMembers = project.members();
+				for (IResource iResource : projectMembers) {
+					if(iResource instanceof IFolder){
+						IFolder folder = (IFolder) iResource;
+						String fName = folder.getName();
+						if(fName.equals("model")){
+							dtPath.setText(folder.getLocationURI().getPath());							
+						}
+					}
+					else if(iResource instanceof IFile){
+						IFile file = (IFile) iResource;
+						if(file.getFileExtension().equals("csc")){
+							contractPath.setText(file.getLocationURI().getPath());
+						}
+						else if(file.getFileExtension().equals("emx")){
+							ctPath.setText(file.getLocationURI().getPath());
+						}
+					}
+					
+					
+				}
+				
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
+		}
+
+		public void widgetDefaultSelected(SelectionEvent e)
+		{
+			/* do nothing */
+			System.out.println(fProjectText.getText());
+		}
+
+		public void widgetSelected(SelectionEvent e)
+		{
+			System.out.println("Selected Project (widgetSelected):" + fProjectText.getText());
+			// fOperationText.setEnabled(!fdebugInConsole.getSelection());		
+			//updateLaunchConfigurationDialog();
+		}
+
+		
+	}
 }

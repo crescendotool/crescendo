@@ -16,13 +16,13 @@
   <modules>
     <!-- Put all child Eclipse Plugin projects(modules) here -->
 
-    <module>generated</module>
-    <module>platform</module>
-    <module>build</module>
+	<module>generated</module>
+	<module>platform</module>
+	<module>build</module>
 	<module>simeng</module>
 	<module>contracteditor</module>   
 	<module>core</module>
-   
+   	<module>ui</module>
   </modules>
 
 <reporting>
