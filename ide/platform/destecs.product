@@ -22,8 +22,8 @@
 
    <splash
       location="org.destecs.ide.platform"
-      startupProgressRect="0,160,575,20"
-      startupMessageRect="200,145,300,15"
+      startupProgressRect="75,235,300,20"
+      startupMessageRect="75,250,300,15"
       startupForegroundColor="FFFFFF" />
    <launcher name="destecs">
       <linux icon="/org.destecs.ide.platform/icons/full/destecs.xpm"/>
