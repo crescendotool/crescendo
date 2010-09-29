@@ -110,7 +110,7 @@ public class Main
 
 		}
 
-		public void from(Simulator simulator, String messageName)
+		public void from(Simulator simulator,Double time, String messageName)
 		{
 			// System.out.println(simulator+": "+messageName);
 		}

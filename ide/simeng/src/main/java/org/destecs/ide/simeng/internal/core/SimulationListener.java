@@ -9,15 +9,12 @@ import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 
-public class SimulationListener implements ISimulationListener
+public class SimulationListener extends BaseListener implements ISimulationListener
 {
-	private InfoTableView view;
-
 	public SimulationListener(InfoTableView view)
 	{
-		this.view = view;
+		super(view);
 		this.view.addColumn("Time");
-		this.view.resetBuffer();
 	}
 
 	
@@ -36,7 +33,7 @@ public class SimulationListener implements ISimulationListener
 		
 		l.add(sb.toString());
 		l.add(result.time.toString());
-		view.setDataList(l);
+		insetData(l);
 	}
 
 }

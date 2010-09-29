@@ -37,12 +37,12 @@ public class ScenarioSimulationEngine extends SimulationEngine
 					break;
 				case CT:
 					engineInfo(Simulator.CT, "Setting parameter (Next time="+nextTime+"): "+action);
-					messageInfo(Simulator.CT, "setParameter");
+					messageInfo(Simulator.CT,nextTime, "setParameter");
 					ctProxy.setParameter(action.variableName, action.variableValue);
 					break;
 				case DT:
 					engineInfo(Simulator.DT, "Setting parameter (Next time="+nextTime+"): "+action);
-					messageInfo(Simulator.DT, "setParameter");
+					messageInfo(Simulator.DT, nextTime,"setParameter");
 					dtProxy.setParameter(action.variableName, action.variableValue);
 					break;
 

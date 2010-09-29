@@ -7,14 +7,15 @@ import org.destecs.core.simulationengine.IEngineListener;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 
-public class EngineListener implements IEngineListener
+public class EngineListener extends BaseListener implements IEngineListener
 {
-	private InfoTableView view;
+	
 
 	public EngineListener(InfoTableView view)
 	{
-		this.view = view;
-		this.view.resetBuffer();
+		super(view);
+		initialColPack=-1;
+		refreshCount=1;
 	}
 
 	public void info(Simulator simulator, String message)
@@ -22,6 +23,6 @@ public class EngineListener implements IEngineListener
 		List<String> l = new Vector<String>();
 		l.add(simulator.toString());
 		l.add(message.replace('\n', ' '));
-		view.setDataList(l);
+		insetData(l);
 	}
 }

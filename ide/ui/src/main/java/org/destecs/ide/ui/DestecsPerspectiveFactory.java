@@ -12,18 +12,24 @@ public class DestecsPerspectiveFactory implements IPerspectiveFactory {
 		String editorArea = layout.getEditorArea();
 
 		
-		layout.setEditorAreaVisible(false);
+		//layout.setEditorAreaVisible(false);
 		//layout.addView(CoSimStarterView.VIEW_ID, IPageLayout.TOP, 0.75f, editorArea);
 		
-		IFolderLayout mainArea = layout.createFolder("main", IPageLayout.TOP, 0.70f,editorArea);
-		mainArea.addView(CoSimStarterView.VIEW_ID);
+//		IFolderLayout mainArea = layout.createFolder("main", IPageLayout.TOP, 0.70f,editorArea);
+//		mainArea.addView("org.eclipse.ui.editorss");
+		IFolderLayout bottomArea = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.60f,editorArea);
+		bottomArea.addView(InfoTableView.SIMULATION_MESSAGES_VIEW_ID);
 		
-		IFolderLayout projectExplorerFolder = layout.createFolder("left", IPageLayout.LEFT, 0.20f,"main");
+		IFolderLayout projectExplorerFolder = layout.createFolder("left", IPageLayout.LEFT, 0.20f,editorArea);
 		//projectExplorerFolder.addView("org.eclipse.ui.navigator.ProjectExplorer");
 		projectExplorerFolder.addView("org.overture.ide.ui.VdmExplorer");
+		
+		IFolderLayout rightArea = layout.createFolder("right", IPageLayout.RIGHT, 0.65f,editorArea);
+		rightArea.addView(CoSimStarterView.VIEW_ID);
+		
+		
 				
-		IFolderLayout bottomArea = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.70f,editorArea);
-		bottomArea.addView(InfoTableView.SIMULATION_MESSAGES_VIEW_ID);
+		
 		
 		IFolderLayout bottomLeftArea = layout.createFolder("bottomLeft", IPageLayout.LEFT, 0.50f,"bottom");
 		bottomLeftArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);

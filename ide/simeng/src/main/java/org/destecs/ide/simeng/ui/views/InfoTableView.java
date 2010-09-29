@@ -33,7 +33,8 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	public static String SIMULATION_MESSAGES_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
 	// private Action actionSetProvedFilter;
 
-	private boolean enableTimeColumn = false;
+	
+	public int elementCount=200;
 
 	class ViewContentProvider implements IStructuredContentProvider
 	{
@@ -153,46 +154,9 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		column.setText("Message");
 		column.setToolTipText("Message");
 
-		// TableColumn column2 = new TableColumn(viewer.getTable(), SWT.LEFT);
-		// column2.setText("Type");
-		// column2.setToolTipText("Show Type");
-		//
-		// TableColumn column3 = new TableColumn(viewer.getTable(), SWT.CENTER);
-		// column3.setText("Status");
-		// column3.setToolTipText("Show status");
-
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
-
-		// makeActions();
-		// contributeToActionBars();
-		// hookDoubleClickAction();
-
-		// viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-		//
-		// public void selectionChanged(SelectionChangedEvent event)
-		// {
-		//
-		// Object first = ((IStructuredSelection) event.getSelection()).getFirstElement();
-		// if (first instanceof ProofObligation)
-		// {
-		// try
-		// {
-		// IViewPart v = getSite().getPage()
-		// .showView(IPoviewerConstants.PoTableViewId);
-		//
-		// if (v instanceof PoTableView)
-		// ((PoTableView) v).setDataList(project,
-		// (ProofObligation) first);
-		// } catch (PartInitException e)
-		// {
-		//
-		// e.printStackTrace();
-		// }
-		// }
-		//
-		// }
-		// });
+	
 		viewer.setInput(dataSource);
 	}
 	
@@ -213,88 +177,9 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		refreshPackTable();
 	}
 
-	// private void contributeToActionBars() {
-	// IActionBars bars = getViewSite().getActionBars();
-	//		
-	// fillLocalToolBar(bars.getToolBarManager());
-	// }
+	
 
-	// private void fillLocalToolBar(IToolBarManager manager) {
-	//
-	// manager.add(actionSetProvedFilter);
-	//		
-	// //drillDownAdapter.addNavigationActions(manager);
-	// }
 
-	// private void makeActions()
-	// {
-	// // doubleClickAction = new Action() {
-	// // @Override
-	// // public void run()
-	// // {
-	// // ISelection selection = viewer.getSelection();
-	// // Object obj = ((IStructuredSelection) selection).getFirstElement();
-	// // if (obj instanceof ProofObligation)
-	// // {
-	// // gotoDefinition((ProofObligation) obj);
-	// // // showMessage(((ProofObligation) obj).toString());
-	// // }
-	// // }
-	// //
-	// // private void gotoDefinition(ProofObligation po)
-	// // {
-	// // EditorUtility.gotoLocation(project.findIFile(po.location.file), po.location, po.name);
-	// // }
-	// // };
-	//		
-	// // actionSetProvedFilter = new Action("Filter proved",Action.AS_CHECK_BOX) {
-	// // @Override
-	// // public void run() {
-	// // ViewerFilter[] filters = viewer.getFilters();
-	// // boolean isSet = false;
-	// // for (ViewerFilter viewerFilter : filters) {
-	// // if (viewerFilter.equals(provedFilter))
-	// // isSet = true;
-	// // }
-	// // if (isSet) {
-	// // viewer.removeFilter(provedFilter);
-	// //
-	// // } else {
-	// // viewer.addFilter(provedFilter);
-	// //
-	// // }
-	// // if (viewer.getLabelProvider() instanceof ViewLabelProvider)
-	// // ((ViewLabelProvider) viewer.getLabelProvider()).resetCounter(); // this
-	// // // is
-	// // // needed
-	// // // to
-	// // // reset
-	// // // the
-	// // // numbering
-	// // viewer.refresh();
-	// // }
-	// //
-	// // };
-	//	
-	// }
-
-	// private void hookDoubleClickAction()
-	// {
-	// viewer.addDoubleClickListener(new IDoubleClickListener() {
-	// public void doubleClick(DoubleClickEvent event)
-	// {
-	// doubleClickAction.run();
-	// }
-	// });
-	// }
-
-	// private void showMessage(String message)
-	// {
-	// MessageDialog.openInformation(
-	// viewer.getControl().getShell(),
-	// "PO Test",
-	// message);
-	// }
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -305,73 +190,43 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		viewer.getControl().setFocus();
 	}
 
-	// public void selectionChanged(IWorkbenchPart part, ISelection selection)
-	// {
-	//
-	// if (selection instanceof IStructuredSelection
-	// && part instanceof InfoTableView)
-	// {
-	// Object first = ((IStructuredSelection) selection).getFirstElement();
-	// if (first instanceof ProofObligation)
-	// {
-	// try
-	// {
-	// IViewPart v = part.getSite()
-	// .getPage()
-	// .showView("org.overture.ide.plugins.poviewer.views.PoTableView");
-	//
-	// if (v instanceof PoTableView)
-	// ((PoTableView) v).setDataList(project,
-	// (ProofObligation) first);
-	// } catch (PartInitException e)
-	// {
-	//
-	// e.printStackTrace();
-	// }
-	// }
-	// }
-	//
-	// }
-
+	Boolean isUpdating = false;
 	public void refreshList()
 	{
+		if(isUpdating)
+		{
+			return;
+		}
+		synchronized (isUpdating)
+		{
+			isUpdating = true;
+		}
+		
 		display.asyncExec(new Runnable()
 		{
 
 			public void run()
 			{
 				viewer.refresh();
+				viewer.getTable().select(viewer.getTable().getItemCount()-1);
+				viewer.getTable().showSelection();
+				synchronized (isUpdating)
+				{
+					isUpdating = false;
+				}
 			}
 
 		});
+		
 	}
-
-	public synchronized void setDataList(final List<String> data)
-	{
-		dataSource.add(data);
-		refreshList();
-	}
-
-	private void refreshPackTable()
+	
+	public void packColumns()
 	{
 		display.asyncExec(new Runnable()
 		{
 
 			public void run()
 			{
-
-				viewer.refresh();
-				// if (viewer.getLabelProvider() instanceof ViewLabelProvider)
-				// ((ViewLabelProvider) viewer.getLabelProvider()).resetCounter(); // this
-				// // is
-				// // needed
-				// // to
-				// // reset
-				// // the
-				// // numbering
-				//
-				// viewer.setInput(data);
-
 				for (TableColumn col : viewer.getTable().getColumns())
 				{
 					col.pack();
@@ -381,15 +236,41 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		});
 	}
 
+	public synchronized void setDataList(final List<String> data)
+	{
+		while(dataSource.size()>elementCount)
+		{
+			dataSource.remove(0);
+		}
+		dataSource.add(data);
+		//refreshList();
+	}
+
+	public void refreshPackTable()
+	{
+		display.asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				for (TableColumn col : viewer.getTable().getColumns())
+				{
+					col.pack();
+				}
+			}
+
+		});
+		refreshList();
+	}
+
 	public synchronized void resetBuffer()
 	{
 		dataSource.clear();
-		refreshList();
+		//refreshList();
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)
 	{
-		// TODO Auto-generated method stub
+		
 
 	}
 }

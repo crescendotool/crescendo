@@ -7,23 +7,23 @@ import org.destecs.core.simulationengine.IMessageListener;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 
-public class MessageListener implements IMessageListener
+public class MessageListener extends BaseListener implements IMessageListener
 {
-	private InfoTableView view;
-
+	
 	public MessageListener(InfoTableView view)
 	{
-		this.view = view;
-		this.view.resetBuffer();
+		super(view);
+		view.addColumn("Time");
 	}
 
 	
-	public void from(Simulator simulator, String messageName)
+	public void from(Simulator simulator,Double time, String messageName)
 	{
 		List<String> l = new Vector<String>();
 		l.add(simulator.toString());
 		l.add(messageName);
-		view.setDataList(l);
+		l.add(time.toString());
+		insetData(l);
 	}
 
 }

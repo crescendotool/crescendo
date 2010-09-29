@@ -243,15 +243,15 @@ public class SimulationEngine
 				abort(Simulator.CT, "Could not start simulator");
 			}
 
-			simulate(totalSimulationTime, dtProxy, ctProxy);
+	Double finishTime=		simulate(totalSimulationTime, dtProxy, ctProxy);
 
 			// stop the simulators
 
-			stop(Simulator.DT, dtProxy);
+			stop(Simulator.DT,finishTime, dtProxy);
 			// stop(Simulator.CT,ctProxy);
 
-			terminate(Simulator.DT, dtProxy, dtLauncher);
-			terminate(Simulator.CT, ctProxy, ctLauncher);
+			terminate(Simulator.DT, finishTime,dtProxy, dtLauncher);
+			terminate(Simulator.CT, finishTime,ctProxy, ctLauncher);
 		} finally
 		{
 			dtLauncher.kill();
@@ -295,10 +295,10 @@ public class SimulationEngine
 		return true;
 	}
 
-	private void terminate(Simulator simulator, ProxyICoSimProtocol proxy,
+	private void terminate(Simulator simulator,Double time, ProxyICoSimProtocol proxy,
 			ISimulatorLauncher launcher)
 	{
-		messageInfo(Simulator.DT, "terminate");
+		messageInfo(Simulator.DT, time,"terminate");
 		engineInfo(simulator, "Terminating...");
 		proxy.terminate();
 		engineInfo(simulator, "Terminating...kill");
@@ -306,13 +306,13 @@ public class SimulationEngine
 		engineInfo(simulator, "Terminating...done");
 	}
 
-	private boolean stop(Simulator simulator, ProxyICoSimProtocol proxy)
+	private boolean stop(Simulator simulator, Double finishTime, ProxyICoSimProtocol proxy)
 	{
-		messageInfo(simulator, "stop");
+		messageInfo(simulator,finishTime, "stop");
 		return proxy.stop().success;
 	}
 
-	private void simulate(Double totalSimulationTime,
+	private Double simulate(Double totalSimulationTime,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 	{
 		Double initTime = 100.0;
@@ -324,7 +324,7 @@ public class SimulationEngine
 
 		// First initialize DT
 		beforeStep(Simulator.DT,initTime,dtProxy,ctProxy);
-		messageInfo(Simulator.DT, "step");
+		messageInfo(Simulator.DT, initTime,"step");
 		StepStruct result = dtProxy.step(initTime, new Vector<StepinputsStructParam>(), false, events);
 		simulationInfo(Simulator.DT, result);
 
@@ -337,7 +337,7 @@ public class SimulationEngine
 			}
 			// Step CT
 			beforeStep(Simulator.CT,result.time,dtProxy,ctProxy);
-			messageInfo(Simulator.CT, "step");
+			messageInfo(Simulator.CT,result.time ,"step");
 			result = ctProxy.step(result.time, outputToInput(result.outputs), false, events);
 			simulationInfo(Simulator.CT, result);
 			// Step DT
@@ -346,12 +346,13 @@ public class SimulationEngine
 			result.time=result.time+0.005;
 			
 			beforeStep(Simulator.DT,result.time,dtProxy,ctProxy);
-			messageInfo(Simulator.DT, "step");
+			messageInfo(Simulator.DT,result.time , "step");
 			result = dtProxy.step(result.time, outputToInput(result.outputs), false, events);
 			simulationInfo(Simulator.DT, result);
 
 			time = result.time;
 		}
+		return time;
 	}
 	
 	protected void beforeStep(Simulator nextStepEngine,Double nextTime ,ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
@@ -378,7 +379,7 @@ public class SimulationEngine
 	private boolean startSimulator(Simulator simulator,
 			ProxyICoSimProtocol proxy)
 	{
-		messageInfo(simulator, "start");
+		messageInfo(simulator, new Double(0),"start");
 		return proxy.start().success;
 	}
 
@@ -387,7 +388,7 @@ public class SimulationEngine
 			ProxyICoSimProtocol proxy,
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
 	{
-		messageInfo(simulator, "setDesignParameters");
+		messageInfo(simulator,new Double(0), "setDesignParameters");
 		boolean success = proxy.setDesignParameters(sharedDesignParameters).success;
 
 		return success;
@@ -396,11 +397,11 @@ public class SimulationEngine
 	private boolean valideteInterfaces(Contract contract,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 	{
-		messageInfo(Simulator.DT, "queryInterface");
+		messageInfo(Simulator.DT,new Double(0), "queryInterface");
 		QueryInterfaceStruct dtInterface = dtProxy.queryInterface();
 		engineInfo(Simulator.DT, toStringInterface(dtInterface));
 
-		messageInfo(Simulator.CT, "queryInterface");
+		messageInfo(Simulator.CT,new Double(0), "queryInterface");
 		QueryInterfaceStruct ctInterface = ctProxy.queryInterface();
 		engineInfo(Simulator.CT, toStringInterface(ctInterface));
 
@@ -469,10 +470,10 @@ public class SimulationEngine
 
 	private boolean initialize(Simulator simulator, ProxyICoSimProtocol proxy)
 	{
-		messageInfo(simulator, "getVersion");
+		messageInfo(simulator,new Double(0), "getVersion");
 		engineInfo(simulator, "Interface Version: " + proxy.getVersion());
 
-		messageInfo(simulator, "initialize");
+		messageInfo(simulator,new Double(0), "initialize");
 		boolean initializedOk = proxy.initialize().success;
 		engineInfo(simulator, "Initilized ok: " + initializedOk);
 
@@ -483,7 +484,7 @@ public class SimulationEngine
 			File model)
 	{
 		engineInfo(simulator, "Loading model: " + model);
-		messageInfo(simulator, "load");
+		messageInfo(simulator,new Double(0), "load");
 		boolean success = proxy.load(model.getAbsolutePath()).success;
 		engineInfo(simulator, "Loading model completed with no errors: "
 				+ success);
@@ -498,11 +499,11 @@ public class SimulationEngine
 		}
 	}
 
-	protected void messageInfo(Simulator fromSimulator, String message)
+	protected void messageInfo(Simulator fromSimulator,Double time, String message)
 	{
 		for (IMessageListener listener : messageListeners)
 		{
-			listener.from(fromSimulator, message);
+			listener.from(fromSimulator, time,message);
 		}
 	}
 

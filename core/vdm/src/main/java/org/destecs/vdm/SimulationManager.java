@@ -12,7 +12,6 @@ import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.vdm.links.Links;
 import org.destecs.vdm.links.StringPair;
 import org.destecs.vdmj.VDMCO;
-import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.EventThread;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
@@ -24,39 +23,26 @@ import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
 import org.overturetool.vdmj.lex.Dialect;
-import org.overturetool.vdmj.lex.LexLocation;
-import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.lex.LexRealToken;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
-import org.overturetool.vdmj.values.NaturalValue;
-import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
-import org.overturetool.vdmj.values.RealValue;
-import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
 
-public class SimulationManager
+public class SimulationManager extends BasicSimulationManager
 {
 	private final static String specFileExtension = "vdmrt";
 	private final static String linkFileExtension = "vdmlink";
-	private static Links links = new Links();
-	private VDMCO controller = null;
-	private Long nextTimeStep = new Long(0);
-	private Long nextSchedulableActionTime = new Long(0);
-	private boolean interpreterRunning = false;
 	Thread runner;
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
-
-	private CoSimResourceScheduler scheduler = null;
+	
 
 	private CoSimStatusEnum status = CoSimStatusEnum.NOT_INITIALIZED;
 	/**
@@ -74,37 +60,6 @@ public class SimulationManager
 			_instance = new SimulationManager();
 		}
 		return _instance;
-	}
-
-	public void register(CoSimResourceScheduler scheduler)
-	{
-		this.scheduler = scheduler;
-	}
-
-	public synchronized Long waitForStep(long minstep)
-	{
-		this.nextSchedulableActionTime = SystemClock.getWallTime() + minstep;
-		interpreterRunning = false;
-		this.notify();
-
-		System.out.println("Wait at clock:   " + SystemClock.getWallTime()
-				+ " - for " + minstep + " steps");
-		try
-		{
-			this.wait();
-
-		} catch (InterruptedException e)
-		{
-			// Ok just check again
-		}
-
-		// Long nextStep = null;
-		// synchronized (nextTimeStep)
-		// {
-		// nextStep = nextTimeStep;
-		// }
-		System.out.println("Resume at clock: " + nextTimeStep);
-		return nextTimeStep;
 	}
 
 	/*
@@ -125,17 +80,18 @@ public class SimulationManager
 	{
 		return links.getOutputs();
 	}
+	
 
 	public synchronized StepStruct step(Double outputTime,
-			List<StepinputsStructParam> inputs, List<String> events)
+			List<StepinputsStructParam> inputs, List<String> events) throws SimulationException
 	{
 		for (StepinputsStructParam p : inputs)
 		{
-			setValue(p.name, p.value);
+			setValue(p.name, CoSimType.NumericValue, p.value.toString());
 		}
 
 		nextTimeStep = outputTime.longValue();
-		System.out.println("Next Step clock: " + nextTimeStep);
+		debug("Next Step clock: " + nextTimeStep);
 
 		if (events.size() > 0)
 		{
@@ -156,7 +112,8 @@ public class SimulationManager
 			}
 		} catch (Exception e)
 		{
-			e.printStackTrace();
+			debugErr(e);
+		throw new SimulationException("Notification of scheduler faild",e);
 		}
 
 		this.status = CoSimStatusEnum.STEP_TAKEN;
@@ -170,8 +127,8 @@ public class SimulationManager
 				outputs.add(new StepStructoutputsStruct(key, getOutput(key)));
 			} catch (ValueException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				debugErr(e);
+				throw new SimulationException("Faild to get output parameter",e);
 			}
 		}
 
@@ -180,66 +137,38 @@ public class SimulationManager
 		return result;
 	}
 
-	private boolean setValue(String name, Double value)
+	private void evalEvent(String event) throws SimulationException
 	{
-		Value val = getValue(name);
-		if (val != null)
+		boolean evaluated = false;
+		if (links.getEvents().contains(event))
 		{
-			// System.out.println("Setting " + p.name + ": " + val + " to "
-			// + p.value);
-			if (val.deref() instanceof NumericValue)
+			Value val = getValue(event);
+			if (val.deref() instanceof OperationValue)
 			{
-				((NumericValue) val.deref()).value = value;
-			}
-//			else if (val.deref() instanceof NaturalValue)
-//			{
-//				val.set(val.location, UpdatableValue.factory(new RealValue(value), val.).convertTo(targetType, ctxt), ctxt);
-//			}
-			return true;
-		} else
-		{
-			System.err.println("Setting val error, not found: " + name);
-			return false;
-		}
-	}
-
-	private void evalEvent(String event)
-	{
-		final String classDefinitionName = "testEventHandlers";
-
-		if (mainContext != null)
-		{
-			for (LexNameToken key : mainContext.getGlobal().keySet())
-			{
-				if (key.name.equals(classDefinitionName))
+				OperationValue eventOp = (OperationValue) val;
+				if (eventOp.paramPatterns.size() == 0)
 				{
-					ObjectValue s = (ObjectValue) mainContext.getGlobal().get(key).deref();
-					for (LexNameToken memberKey : s.members.keySet())
+					try
 					{
-						if (memberKey.name.equals(event))
-						{
-
-							OperationValue eventOp = (OperationValue) s.members.get(memberKey);
-							try
-							{
-								EventThread eThread = new EventThread(Thread.currentThread());
-								BasicSchedulableThread.add(eThread);
-								eventOp.eval(new LexLocation(new File("co-sim"), "CO-SIM", 0, 0, 0, 0), new ValueList(), mainContext);
-								BasicSchedulableThread.remove(eThread);
-							} catch (ValueException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							System.out.println(s);
-						}
+						EventThread eThread = new EventThread(Thread.currentThread());
+						BasicSchedulableThread.add(eThread);
+						eventOp.eval(coSimLocation, new ValueList(), mainContext);
+						BasicSchedulableThread.remove(eThread);
+						evaluated = true;
+					} catch (ValueException e)
+					{
+						debugErr(e);
+						throw new SimulationException("Faild to evaluate event: "+event,e);
 					}
 
 				}
-
 			}
 		}
-
+		if(!evaluated)
+		{
+			debugErr("Event: "+event+" not found");
+			throw new SimulationException("Faild to find event: "+event);
+		}
 	}
 
 	private Double getOutput(String name) throws ValueException
@@ -267,72 +196,11 @@ public class SimulationManager
 		return null;
 	}
 
-	private Value getValue(String name)
-	{
-		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if (list != null && links.getLinks().containsKey(name))
-		{
-			StringPair var = links.getBoundVariable(name);
-			for (NameValuePair p : list)
-			{
-				if (var.instanceName.equals(p.name.getName())
-						&& p.value.deref() instanceof ObjectValue)
-				{
-					ObjectValue po = (ObjectValue) p.value.deref();
-					for (NameValuePair mem : po.members.asList())
-					{
-						if (mem.name.getName().equals(var.variableName))
-						{
-							return mem.value;
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	enum StepResultEnum
-	{
-		/**
-		 * 0=the step action succeeded, and additional steps can be taken,
-		 */
-		SUCCESS(0),
-		/**
-		 * 1=the step action succeeeded, and the simulation is finished,
-		 */
-		SUCCESS_AND_FINISHED(1),
-		/**
-		 * 2=the step action succeeded, but an event occurred. if failed then the function will return a fault response
-		 */
-		EVENT_OCCURED(2);
-
-		public int value;
-
-		StepResultEnum(int v)
-		{
-			value = v;
-		}
-	}
-
-	enum CoSimStatusEnum
-	{
-		NOT_INITIALIZED(0), LOADED(4), INITIALIZED(1), STEP_TAKEN(2), FINISHED(
-				3);
-
-		public int value;
-
-		CoSimStatusEnum(int v)
-		{
-			value = v;
-		}
-	}
-
-	public Boolean load(File path)
+	public Boolean load(File path) throws SimulationException
 	{
 		try
 		{
-			for (File linkFile : getLinkFiles(path))
+			for (File linkFile : getFiles(path, linkFileExtension))
 			{
 				links = Links.load(linkFile);
 				break;
@@ -346,7 +214,7 @@ public class SimulationManager
 
 			final List<File> files = new Vector<File>();
 
-			files.addAll(getSpecFiles(path));
+			files.addAll(getFiles(path, specFileExtension));
 
 			controller.setLogFile(new File(path, "logFile.logrt"));
 			controller.setScript(script);
@@ -366,8 +234,9 @@ public class SimulationManager
 
 		} catch (Exception e)
 		{
-			e.printStackTrace();
-			return false;
+			debugErr(e);
+			throw new SimulationException("Faild to load model from "+path,e);
+			
 		}
 
 		return false;
@@ -376,7 +245,7 @@ public class SimulationManager
 	public Boolean initialize(/*
 							 * List<InitializeSharedParameterStructParam> sharedParameter,
 							 * List<InitializefaultsStructParam> faults
-							 */)
+							 */) throws SimulationException
 	{
 
 		// setSharedDesignParameters(sharedParameter);
@@ -389,9 +258,12 @@ public class SimulationManager
 			files.addAll(controller.getInterpreter().getSourceFiles());
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+			debugErr(e);
+			if(e instanceof SimulationException)
+			{
+				throw (SimulationException)e;
+			}
+			throw new SimulationException("Faild to initialize, could not get sourcefiles",e);
 		}
 
 		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
@@ -415,22 +287,22 @@ public class SimulationManager
 			runner.start();
 			// TODO need to catch the init errors of the interpreter here and return false if any
 
-			for (String l : links.getOutputs())
-			{
-				Value v = getValue(l);
-				try
-				{
-					if (v.deref().isNumeric()
-							&& v.deref().realValue(null) == 0.1)
-					{
-						setValue(l, new Double(0));
-					}
-				} catch (ValueException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			// for (String l : links.getOutputs())
+			// {
+			// Value v = getValue(l);
+			// try
+			// {
+			// if (v.deref().isNumeric()
+			// && v.deref().realValue(null) == 0.1)
+			// {
+			// setValue(l, new Double(0));
+			// }
+			// } catch (ValueException e)
+			// {
+			// // 
+			// e.printStackTrace();
+			// }
+			// }
 
 			this.status = CoSimStatusEnum.INITIALIZED;
 			return true;
@@ -444,7 +316,7 @@ public class SimulationManager
 
 	// private void setFaults(List<InitializefaultsStructParam> faults)
 	// {
-	// // TODO set faults this might need to be set from the load instead
+	// //  set faults this might need to be set from the load instead
 	// }
 	//
 	// private void setSharedDesignParameters(
@@ -468,7 +340,7 @@ public class SimulationManager
 	// {
 	// // ((RealLiteralExpression)((ValueDefinition) d).exp).value.value
 	// // =designParameter.value;
-	// // TODO cannot set value because it is final, remember that INV checks must be
+	// //  cannot set value because it is final, remember that INV checks must be
 	// // performed after / during the value change
 	// }
 	// }
@@ -479,48 +351,10 @@ public class SimulationManager
 	// }
 	// } catch (Exception e)
 	// {
-	// // TODO Auto-generated catch block
+	// //  Auto-generated catch block
 	// e.printStackTrace();
 	// }
 	// }
-
-	private static List<File> getSpecFiles(File path)
-	{
-		List<File> files = new Vector<File>();
-
-		if (path.isFile()
-				&& path.getName().toLowerCase().endsWith(specFileExtension))
-		{
-			files.add(path);
-		} else if (path.isDirectory())
-		{
-			for (File file : path.listFiles())
-			{
-				files.addAll(getSpecFiles(file));
-			}
-
-		}
-		return files;
-	}
-
-	private static List<File> getLinkFiles(File path)
-	{
-		List<File> files = new Vector<File>();
-
-		if (path.isFile()
-				&& path.getName().toLowerCase().endsWith(linkFileExtension))
-		{
-			files.add(path);
-		} else if (path.isDirectory())
-		{
-			for (File file : path.listFiles())
-			{
-				files.addAll(getLinkFiles(file));
-			}
-
-		}
-		return files;
-	}
 
 	public void setMainContext(Context ctxt)
 	{
@@ -532,20 +366,6 @@ public class SimulationManager
 		return this.status.value;
 	}
 
-	public synchronized Boolean stopSimulation()
-	{
-		try
-		{
-			scheduler.stop();
-			notify();
-			return true;
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-			return false;
-		}
-	}
-
 	/**
 	 * Sets design parameters. All class definitions in the loaded model are searched and existing value definitions are
 	 * exstracted. If their name match the parameter the LexRealToken value is updated by reflection (value is final)
@@ -554,8 +374,9 @@ public class SimulationManager
 	 * @param parameters
 	 *            A list of Maps containing (name,value) keys and name->String, value->Double
 	 * @return false if any error occur else true
+	 * @throws SimulationException 
 	 */
-	public Boolean setDesignParameters(List<Map<String, Object>> parameters)
+	public Boolean setDesignParameters(List<Map<String, Object>> parameters) throws SimulationException
 	{
 		try
 		{
@@ -566,9 +387,10 @@ public class SimulationManager
 
 				if (!links.getSharedDesignParameters().contains(parameterName))
 				{
-					System.err.println("Tried to set unlinked shared design parameter: "
+					debugErr("Tried to set unlinked shared design parameter: "
 							+ parameterName);
-					return false;
+					throw new SimulationException("Tried to set unlinked shared design parameter: "
+						+ parameterName);
 				}
 				StringPair vName = links.getBoundVariable(parameterName);
 				double newValue = (Double) parameter.get("value");
@@ -606,28 +428,57 @@ public class SimulationManager
 				}
 				if (!found)
 				{
-					System.err.println("Tried to set unknown shared design parameter: "
+					debugErr("Tried to set unlinked shared design parameter: "
 							+ parameterName);
+					throw new SimulationException("Tried to set unlinked shared design parameter: "
+						+ parameterName);
 				}
 			}
 		} catch (Exception e)
 		{
-			e.printStackTrace();
-			return false;
+			debugErr(e);
+			if(e instanceof SimulationException)
+			{
+				throw (SimulationException)e;
+			}
+			throw new SimulationException("Internal error in set design parameters",e);
 		}
 
 		return true;
 	}
 
-	public Boolean setParameter(String name, Double value)
+	public Boolean setParameter(String name, Double value) throws SimulationException
 	{
 		try
 		{
-			return setValue(name, value);
+			return setValue(name, CoSimType.NumericValue, value.toString());
 		} catch (Exception e)
 		{
-			e.printStackTrace();
-			return false;
+			debugErr(e);
+			if(e instanceof SimulationException)
+			{
+				throw (SimulationException)e;
+			}
+			throw new SimulationException("Error in set parameter",e);
+		}
+	}
+
+	public synchronized Boolean stopSimulation() throws SimulationException
+	{
+		try
+		{
+			scheduler.stop();
+			notify();
+			return true;
+		} catch (Exception e)
+		{
+			debugErr(e);
+			if(e instanceof SimulationException)
+			{
+				throw (SimulationException)e;
+			}
+			throw new SimulationException("Could not stop the scheduler",e);
+			
 		}
 	}
 }

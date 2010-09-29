@@ -86,8 +86,8 @@ public class CoSimStarterView extends ViewPart
 	private double totalSimulationTime = 5;
 
 	private Button runButton = null;
-	
-	private IProject project=null;
+
+	private IProject project = null;
 
 	public CoSimStarterView()
 	{
@@ -216,11 +216,11 @@ public class CoSimStarterView extends ViewPart
 
 	protected void storePreferences()
 	{
-//		if(project!=null)
-//		{
-//			project.getp
-//		}
-		
+		// if(project!=null)
+		// {
+		// project.getp
+		// }
+
 	}
 
 	public void setFocus()
@@ -338,6 +338,10 @@ public class CoSimStarterView extends ViewPart
 		final String engineViewId = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
 		final String simulationViewId = "org.destecs.ide.simeng.ui.views.SimulationView";
 
+		final InfoTableView messageView = getInfoTableView(messageViewId);
+		final InfoTableView engineView = getInfoTableView(engineViewId);
+		final InfoTableView simulationView = getInfoTableView(simulationViewId);
+
 		Job runSimulation = null;
 		try
 		{
@@ -345,9 +349,9 @@ public class CoSimStarterView extends ViewPart
 			SimulationEngine.eclipseEnvironment = true;
 			final SimulationEngine engine = getEngine();
 
-			engine.engineListeners.add(new EngineListener(getInfoTableView(engineViewId)));
-			engine.messageListeners.add(new MessageListener(getInfoTableView(messageViewId)));
-			engine.simulationListeners.add(new SimulationListener(getInfoTableView(simulationViewId)));
+			engine.engineListeners.add(new EngineListener(engineView));
+			engine.messageListeners.add(new MessageListener(messageView));
+			engine.simulationListeners.add(new SimulationListener(simulationView));
 
 			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File(dtPath.getText())));// new
 			// File("C:\\destecs\\workspace\\watertank_new\\model")));
@@ -412,6 +416,10 @@ public class CoSimStarterView extends ViewPart
 						}
 					}
 
+					messageView.refreshPackTable();
+					engineView.refreshPackTable();
+					simulationView.refreshPackTable();
+
 					if (exceptions.size() == 0)
 					{
 						return Status.OK_STATUS;
@@ -442,8 +450,12 @@ public class CoSimStarterView extends ViewPart
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
+			messageView.refreshPackTable();
+			engineView.refreshPackTable();
+			simulationView.refreshPackTable();
 		}
 		runSimulation.schedule();
+		
 	}
 
 	private SimulationEngine getEngine()

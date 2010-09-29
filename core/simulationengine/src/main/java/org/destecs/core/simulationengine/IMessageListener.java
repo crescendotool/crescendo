@@ -4,5 +4,5 @@ import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 
 public interface IMessageListener
 {
-	void from(Simulator simulator,String messageName);
+	void from(Simulator simulator,Double time,String messageName);
 }

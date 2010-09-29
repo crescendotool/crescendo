@@ -1,6 +1,7 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,13 @@ public class CoSimImpl implements IDestecs
 	{
 		String path = data.get(data.keySet().toArray()[0]);
 
-		return new LoadStruct(SimulationManager.getInstance().load(new File(path))).toMap();
+		try
+		{
+			return new LoadStruct(SimulationManager.getInstance().load(new File(path))).toMap();
+		} catch (SimulationException e)
+		{
+			throw new UndeclaredThrowableException(e);
+		}
 	}
 
 	// public Map<String, List<Map<String, Object>>> queryFaults()
@@ -137,10 +144,18 @@ public class CoSimImpl implements IDestecs
 		}
 
 		// Ignore single step
-		StepStruct result = SimulationManager.getInstance().step(outputTime, inputs, events);
-		result.time = result.time / 1000;
+		StepStruct result;
+		try
+		{
+			result = SimulationManager.getInstance().step(outputTime, inputs, events);
 
-		return result.toMap();
+			result.time = result.time / 1000;
+
+			return result.toMap();
+		} catch (SimulationException e)
+		{
+			throw new UndeclaredThrowableException(e);
+		}
 	}
 
 	public Map<String, Boolean> terminate()
@@ -173,7 +188,13 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Boolean> stop()
 	{
-		return new StopStruct(SimulationManager.getInstance().stopSimulation()).toMap();
+		try
+		{
+			return new StopStruct(SimulationManager.getInstance().stopSimulation()).toMap();
+		} catch (SimulationException e)
+		{
+			throw new UndeclaredThrowableException(e);
+		}
 	}
 
 	public Map<String, Double> getDesignParameter(Map<String, String> data)
@@ -204,22 +225,38 @@ public class CoSimImpl implements IDestecs
 	public Map<String, Boolean> setDesignParameters(
 			Map<String, List<Map<String, Object>>> data)
 	{
-		boolean success = false;
-		if (data.values().size() > 0)
+		try
 		{
-			Object s = data.values().iterator().next();
-			List tmp = Arrays.asList((Object[]) s);
-			success = SimulationManager.getInstance().setDesignParameters(tmp);
+			boolean success = false;
+			if (data.values().size() > 0)
+			{
+				Object s = data.values().iterator().next();
+				List tmp = Arrays.asList((Object[]) s);
+
+				success = SimulationManager.getInstance().setDesignParameters(tmp);
+
+			}
+			return new SetDesignParametersStruct(success).toMap();
+		} catch (SimulationException e)
+		{
+			throw new UndeclaredThrowableException(e);
 		}
-		return new SetDesignParametersStruct(success).toMap();
 	}
 
 	public Map<String, Boolean> setParameter(Map<String, Object> data)
 	{
-		String name = (String)data.get("name");
-		Double value=(Double)data.get("value");
-		Boolean success = SimulationManager.getInstance().setParameter(name, value);
-		return new SetParametersStruct(success).toMap();
+		String name = (String) data.get("name");
+		Double value = (Double) data.get("value");
+		Boolean success;
+		try
+		{
+			success = SimulationManager.getInstance().setParameter(name, value);
+
+			return new SetParametersStruct(success).toMap();
+		} catch (SimulationException e)
+		{
+			throw new UndeclaredThrowableException(e);
+		}
 	}
 
 	public Map<String, Boolean> setParameters(
@@ -230,6 +267,12 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Boolean> start()
 	{
-		return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
+		try
+		{
+			return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
+		} catch (SimulationException e)
+		{
+			throw new UndeclaredThrowableException(e);
+		}
 	}
 }
