@@ -29,9 +29,15 @@
       <linux icon="/org.destecs.ide.platform/icons/full/destecs.xpm"/>
       <macosx icon="/org.destecs.ide.platform/icons/full/destecs.icns"/>
       <solaris/>
-      <win useIco="true">
+      <win useIco="false">
          <ico path="/org.destecs.ide.platform/icons/full/destecs.ico"/>
-         <bmp/>
+         <bmp
+            winSmallHigh="/org.destecs.ide.platform/icons/full/win32icon/32/16/destecs.bmp"
+            winSmallLow="/org.destecs.ide.platform/icons/full/win32icon/8/16/destecs.bmp"
+            winMediumHigh="/org.destecs.ide.platform/icons/full/win32icon/32/32/destecs.bmp"
+            winMediumLow="/org.destecs.ide.platform/icons/full/win32icon/8/32/destecs.bmp"
+            winLargeHigh="/org.destecs.ide.platform/icons/full/win32icon/32/48/destecs.bmp"
+            winLargeLow="/org.destecs.ide.platform/icons/full/win32icon/8/48/destecs.bmp"/>
       </win>
    </launcher>
 
