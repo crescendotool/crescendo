@@ -23,6 +23,8 @@
 	<module>contracteditor</module>   
 	<module>core</module>
    	<module>ui</module>
+   	<module>debug</module>
+	
   </modules>
 
 <reporting>
