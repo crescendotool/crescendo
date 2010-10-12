@@ -199,7 +199,7 @@ public class coSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab 
 							//&& ((IProject) dialog.getFirstResult()).getAdapter(IVdmProject.class) != null)
 							)
 					{
-						fScenarioText.setText(((IFile)dialog.getFirstResult()).getName());
+						fScenarioText.setText(((IFile)dialog.getFirstResult()).getLocationURI().getPath());
 					}
 
 				}
