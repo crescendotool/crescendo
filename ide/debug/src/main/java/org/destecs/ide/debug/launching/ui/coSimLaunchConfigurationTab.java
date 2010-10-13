@@ -3,7 +3,6 @@ package org.destecs.ide.debug.launching.ui;
 import java.util.List;
 import java.util.Vector;
 
-
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
@@ -13,11 +12,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
@@ -35,7 +32,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
@@ -70,7 +66,6 @@ public class coSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab 
 
 	
 	private Text fProjectText;
-	
 	private Text ctPath = null;
 	private Text dtPath = null;
 	private Text contractPath = null;
@@ -102,9 +97,28 @@ public class coSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab 
 		createProjectSelection(comp);
 		createPathsSelection(comp);
 		createSimConfig(comp);
+		
+		
+		
 	}
 	
 	
+	
+	
+	private boolean projectExists() {
+		if(fProjectText.getText().equals(""))
+		{
+			return false;
+		}
+		
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText());
+		
+		return p != null;
+	}
+
+
+
+
 	private void createSimConfig(Composite parent){
 		Group group = new Group(parent, parent.getStyle());
 		group.setText("Simulation Configuration");
@@ -499,6 +513,9 @@ public class coSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab 
 			contractPath.setText(configuration.getAttribute(IDebugConstants.CONTRACT_PATH,"No Path Selected"));
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.SIMULATION_TIME,"0"));
 			fScenarioText.setText(configuration.getAttribute(IDebugConstants.SCENARIO_PATH,"No Scenario Selected"));
+			if(projectExists()){
+				selectScenarioButton.setEnabled(true);
+			}
 			
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
@@ -519,12 +536,14 @@ public class coSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab 
 	
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
-		if(fProjectText.equals("")){
+		if(fProjectText.getText().equals("")){
+			setErrorMessage("Project not set");
 			return false;
 		}
 		
-		if(fScenarioText.equals(""))
+		if(fScenarioText.getText().equals(""))
 		{
+			setErrorMessage("No scenario set");
 			return false;
 		}
 		
@@ -532,6 +551,7 @@ public class coSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab 
 			Double.parseDouble(simulationTimeText.getText());
 		}catch(NumberFormatException e)
 		{
+			setErrorMessage("Simulation time is not a number");
 			return false;
 		}
 		
