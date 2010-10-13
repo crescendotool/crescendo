@@ -4,10 +4,11 @@
 	<include name="core/**" />
 	<include name="contracteditor/**" />
 	<include name="simeng/**" />
+	
 		<!-- include name="ui/**" />
-		<include name="core/**" />
-		<include name="debug/**" />
-		<include name="help/**" /-->
+		<include name="core/**" /-->
+	<include name="debug/**" />
+		<!--include name="help/**" /-->
 		<include name="platform/**" />
 		<!--  include name="ui/**" /-->
 		<!--exclude name="**/target/" /-->
