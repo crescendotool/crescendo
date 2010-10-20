@@ -315,7 +315,7 @@ public class SimulationEngine
 	private Double simulate(Double totalSimulationTime,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 	{
-		Double initTime = 100.0;
+		Double initTime = 0.0;//100.0;
 		Double time = 0.0;
 
 		engineInfo(Simulator.ALL,"Running simulation: InitialTime="+initTime+" CurrentTime="+time);
