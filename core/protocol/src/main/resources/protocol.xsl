@@ -78,6 +78,7 @@
 		<span class="flow">
 			<xsl:value-of select="/XML-RPC_Library/methods/description"
 				disable-output-escaping="yes" />
+			<img height="700" src="protocolStateChart.png" alt="Protocol Usage State chart" />
 		</span>
 	</xsl:template>
 
