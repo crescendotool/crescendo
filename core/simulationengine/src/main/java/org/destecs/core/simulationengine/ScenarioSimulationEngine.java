@@ -28,7 +28,7 @@ public class ScenarioSimulationEngine extends SimulationEngine
 	{
 		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy);
 
-		while (!actions.isEmpty() && actions.peek().time >= nextTime)
+		while (!actions.isEmpty() && actions.peek().time <= nextTime)
 		{
 			Action action = actions.poll();
 			switch (action.targetSimulator)
