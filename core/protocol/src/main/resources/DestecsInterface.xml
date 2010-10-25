@@ -274,19 +274,21 @@ Commands that can be fired at any point:
                               <value>
                                 <int>0</int>
                               </value>
-							  <description>-1 = eventdown, 0 = event, 1 = eventup</description>
+							  <description>-1 = eventdown, 0 = event, 1 = eventup - We think this should be removed and replaced by the boolean expression if needed</description>
                             </member>
                             <member>
                               <name>sharedParameter</name>
                               <value>
                                 <string>parametername</string>
                               </value>
+                               <description>We think this should be removed</description>
                             </member>
                             <member>
                               <name>sharedVariable</name>
                               <value>
                                 <string>variablename</string>
                               </value>
+                              <description>We think this should be removed</description>
                             </member>
                           </struct>
                         </value>

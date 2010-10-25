@@ -436,6 +436,9 @@ public class SimulationEngine
 				return false;
 			}
 		}
+		
+		//TODO validate shared design parameters
+		
 		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
 		return true;

@@ -22,6 +22,7 @@ import org.destecs.core.simulationengine.senario.ScenarioParser;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.simeng.ISimengConstants;
 import org.destecs.ide.simeng.internal.core.EngineListener;
+import org.destecs.ide.simeng.internal.core.ListenerToLog;
 import org.destecs.ide.simeng.internal.core.MessageListener;
 import org.destecs.ide.simeng.internal.core.SimulationListener;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
@@ -44,7 +45,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
 
 public class CoSimLaunchConfigurationDelegate implements
-		ILaunchConfigurationDelegate {
+		ILaunchConfigurationDelegate
+{
 
 	private String dtPath = null;
 	private String ctPath = null;
@@ -55,117 +57,77 @@ public class CoSimLaunchConfigurationDelegate implements
 	private double totalSimulationTime = 0.0;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		System.out.println("Launching...");
+			ILaunch launch, IProgressMonitor monitor) throws CoreException
+	{
 
-		getSettings(configuration);
+		loadSettings(configuration);
+
+		startSimulation();
 
 	}
 
-	private void getSettings(ILaunchConfiguration configuration) {
+	private void loadSettings(ILaunchConfiguration configuration)
+	{
 
-		try {
-			contractPath = configuration.getAttribute(
-					IDebugConstants.CONTRACT_PATH, "");
-			dtPath = configuration.getAttribute(IDebugConstants.DE_MODEL_PATH,
-					"");
-			ctPath = configuration.getAttribute(IDebugConstants.CT_MODEL_PATH,
-					"");
-			scenarioPath = configuration.getAttribute(
-					IDebugConstants.SCENARIO_PATH, "");
-			sharedDesignParamPath = configuration.getAttribute(
-					IDebugConstants.SHARED_DESIGN_PARAM_PATH, "");
-			totalSimulationTime = Double.parseDouble(configuration
-					.getAttribute(IDebugConstants.SIMULATION_TIME, "0"));
+		try
+		{
+			contractPath = configuration.getAttribute(IDebugConstants.CONTRACT_PATH, "");
+			dtPath = configuration.getAttribute(IDebugConstants.DE_MODEL_PATH, "");
+			ctPath = configuration.getAttribute(IDebugConstants.CT_MODEL_PATH, "");
+			scenarioPath = configuration.getAttribute(IDebugConstants.SCENARIO_PATH, "");
+			sharedDesignParamPath = configuration.getAttribute(IDebugConstants.SHARED_DESIGN_PARAM_PATH, "");
+			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.SIMULATION_TIME, "0"));
 
-			startSimulation();
-		} catch (CoreException e) {
+		} catch (CoreException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	private void startSimulation() {
-
-		class TableUIJob extends UIJob {
-
-			final String messageViewId = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
-			final String engineViewId = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
-			final String simulationViewId = "org.destecs.ide.simeng.ui.views.SimulationView";
-			
-			public TableUIJob(String name) {
-				super(name);
-			}
-
-			private InfoTableView messageView = null;
-			private InfoTableView engineView = null;
-			private InfoTableView simulationView = null;
-
-			public InfoTableView getMessageViewTable() {
-				return messageView;
-			}
-			
-			public InfoTableView getEngineViewTable() {
-				return engineView;
-			}
-			public InfoTableView getSimulationViewTable() {
-				return simulationView;
-			}
-			
-			
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				messageView = getInfoTableView(messageViewId);
-				engineView = getInfoTableView(engineViewId);
-				simulationView = getInfoTableView(simulationViewId);
-				return new Status(IStatus.OK, "debug", "Views OK");
-			}
-		}	
-		
-		TableUIJob uiJob = new TableUIJob("Get Views");		
-		uiJob.schedule();
-		
-		while(uiJob.getResult() == null)
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		
-		final InfoTableView messageView = uiJob.getMessageViewTable();			
-		final InfoTableView engineView = uiJob.getEngineViewTable();
-		final InfoTableView simulationView = uiJob.getSimulationViewTable(); 
-
-		
-
+	private void startSimulation()
+	{
+		final List<InfoTableView> views = new Vector<InfoTableView>();
+		final ListenerToLog log = getLog();
 		Job runSimulation = null;
-		try {
+		try
+		{
 
 			SimulationEngine.eclipseEnvironment = true;
 			final SimulationEngine engine = getEngine();
 
-			UIJob listeners = new UIJob("Set Listeners") {
-				
+			UIJob listeners = new UIJob("Set Listeners")
+			{
+
 				@Override
-				public IStatus runInUIThread(IProgressMonitor monitor) {
+				public IStatus runInUIThread(IProgressMonitor monitor)
+				{
+					final String messageViewId = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
+					final String engineViewId = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
+					final String simulationViewId = "org.destecs.ide.simeng.ui.views.SimulationView";
+
+					final InfoTableView messageView = getInfoTableView(messageViewId);
+					final InfoTableView engineView = getInfoTableView(engineViewId);
+					final InfoTableView simulationView = getInfoTableView(simulationViewId);
+
+					views.add(messageView);
+					views.add(engineView);
+					views.add(simulationView);
+
 					engine.engineListeners.add(new EngineListener(engineView));
 					engine.messageListeners.add(new MessageListener(messageView));
-					engine.simulationListeners.add(new SimulationListener(
-							simulationView));
-					return new Status(IStatus.OK, "debug", "Listeners OK");
+					engine.simulationListeners.add(new SimulationListener(simulationView));
+					return new Status(IStatus.OK, IDebugConstants.PLUGIN_ID, "Listeners OK");
 				}
 			};
-			
-			listeners.schedule();
-//			engine.engineListeners.add(new EngineListener(engineView));
-//			engine.messageListeners.add(new MessageListener(messageView));
-//			engine.simulationListeners.add(new SimulationListener(
-//					simulationView));
 
-			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File(
-					dtPath)));// new
+			listeners.schedule();
+			 engine.engineListeners.add(log);
+			 engine.messageListeners.add(log);
+			 engine.simulationListeners.add(log);
+
+			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File(dtPath)));// new
 			// File("C:\\destecs\\workspace\\watertank_new\\model")));
 			engine.setDtModel(new File(dtPath));
 			engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
@@ -176,26 +138,33 @@ public class CoSimLaunchConfigurationDelegate implements
 
 			setSharedDesignParameters(engine);
 
-			runSimulation = new Job("Simulation") {
+			runSimulation = new Job("Simulation")
+			{
 
 				@Override
-				protected IStatus run(IProgressMonitor monitor) {
+				protected IStatus run(IProgressMonitor monitor)
+				{
 					final List<Throwable> exceptions = new Vector<Throwable>();
-					class SimulationRunner extends Thread {
-						public SimulationRunner() {
+					class SimulationRunner extends Thread
+					{
+						public SimulationRunner()
+						{
 							setDaemon(true);
 							setName("Simulation Engine");
 						}
 
-						public void run() {
-							ISafeRunnable runnable = new ISafeRunnable() {
+						public void run()
+						{
+							ISafeRunnable runnable = new ISafeRunnable()
+							{
 
-								public void run() throws Exception {
-									runSumulation(engine);
-
+								public void run() throws Exception
+								{
+									engine.simulate(shareadDesignParameters, totalSimulationTime);
 								}
 
-								public void handleException(Throwable e) {
+								public void handleException(Throwable e)
+								{
 									exceptions.add(e);
 								}
 							};
@@ -210,114 +179,136 @@ public class CoSimLaunchConfigurationDelegate implements
 					simulationEngineThread.start();
 
 					while (!simulationEngineThread.isInterrupted()
-							&& simulationEngineThread.isAlive()) {
+							&& simulationEngineThread.isAlive())
+					{
 						sleep(2000);
 
-						if (monitor.isCanceled()) {
+						if (monitor.isCanceled())
+						{
 							engine.forceSimulationStop();
 						}
 					}
 
-					messageView.refreshPackTable();
-//					engineView.refreshPackTable();
-//					simulationView.refreshPackTable();
+					for (InfoTableView view : views)
+					{
+						view.refreshPackTable();
+					}
+					
+					log.close();
 
-					if (exceptions.size() == 0) {
+					if (exceptions.size() == 0)
+					{
 						return Status.OK_STATUS;
-					} else {
-						for (Throwable throwable : exceptions) {
+					} else
+					{
+						for (Throwable throwable : exceptions)
+						{
 							throwable.printStackTrace();
 						}
-						return new Status(IStatus.ERROR,
-								ISimengConstants.PLUGIN_ID, "Simulation faild",
-								exceptions.get(0));
+						return new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, "Simulation faild", exceptions.get(0));
 					}
 
 				}
 
-				private void sleep(long i) {
-					try {
+				private void sleep(long i)
+				{
+					try
+					{
 						Thread.sleep(i);
-					} catch (InterruptedException e) {
+					} catch (InterruptedException e)
+					{
 						// Ignore it
 					}
 
 				}
 			};
 
-		} catch (Exception ex) {
+		} catch (Exception ex)
+		{
 			ex.printStackTrace();
-			messageView.refreshPackTable();
-			engineView.refreshPackTable();
-			simulationView.refreshPackTable();
+			for (InfoTableView view : views)
+			{
+				view.refreshPackTable();
+			}
 		}
 		runSimulation.schedule();
 
 	}
 
-	private SimulationEngine getEngine() {
+	private ListenerToLog getLog()
+	{
+		try
+		{
+			 return new ListenerToLog(new File(ctPath).getParentFile());
+		} catch (FileNotFoundException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return null;
+	}
+
+	private SimulationEngine getEngine()
+	{
 		File contractFile = new File(contractPath.trim());
 		File scenarioFile = new File(scenarioPath.trim());
-		if (scenarioPath.trim().length() > 0) {
-
+		if (scenarioPath.trim().length() > 0)
+		{
 			Scenario scenario = new ScenarioParser(scenarioFile).parse();
 			return new ScenarioSimulationEngine(contractFile, scenario);
-		} else {
-
+		} else
+		{
 			return new SimulationEngine(contractFile);
 		}
 	}
 
-	private void setSharedDesignParameters(SimulationEngine engine) {
+	private void setSharedDesignParameters(SimulationEngine engine)
+	{
 		shareadDesignParameters.clear();
 		Properties props = new Properties();
-		try {
+		try
+		{
 			props.load(new FileReader(new File(sharedDesignParamPath)));
 
-			for (Object key : props.keySet()) {
+			for (Object key : props.keySet())
+			{
 				String name = key.toString();
 				Double value = Double.parseDouble(props.getProperty(name));
-				shareadDesignParameters
-						.add(new SetDesignParametersdesignParametersStructParam(
-								name, value));
-				// shareadDesignParameters.add(new
-				// SetDesignParametersdesignParametersStructParam("maxlevel",
-				// 2.0));
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
+
 			}
 
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	private InfoTableView getInfoTableView(String id) {
+	private static InfoTableView getInfoTableView(String id)
+	{
 		IViewPart v;
-		try {
-			IWorkbenchWindow[] windows = PlatformUI.getWorkbench()
-					.getWorkbenchWindows();
-			if (windows.length > 0) {
-				v = windows[0].getActivePage().getActivePart().getSite()
-						.getPage().showView(id);
+		try
+		{
+			IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+			if (windows.length > 0)
+			{
+				v = windows[0].getActivePage().getActivePart().getSite().getPage().showView(id);
 				return (InfoTableView) v;
 			}
 			return null;
 
-		} catch (PartInitException e1) {
+		} catch (PartInitException e1)
+		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return null;
 		}
 	}
 
-	private void runSumulation(final SimulationEngine engine)
-			throws ModelPathNotValidException, MalformedURLException,
-			InvalidEndpointsExpection, InvalidSimulationLauncher,
-			FileNotFoundException {
-		engine.simulate(shareadDesignParameters, totalSimulationTime);
-	}
 }
