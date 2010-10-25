@@ -5,10 +5,10 @@ import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
-public class coSimLaunchConfigurationTabGroup extends
+public class CoSimLaunchConfigurationTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
 
-	public coSimLaunchConfigurationTabGroup() {
+	public CoSimLaunchConfigurationTabGroup() {
 		super();
 	}
 

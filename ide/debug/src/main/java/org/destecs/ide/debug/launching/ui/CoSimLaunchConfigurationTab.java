@@ -37,7 +37,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
-public class coSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
+public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		implements ILaunchConfigurationTab
 {
 
