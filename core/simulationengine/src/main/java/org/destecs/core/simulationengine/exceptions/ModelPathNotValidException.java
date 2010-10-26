@@ -1,12 +1,19 @@
 package org.destecs.core.simulationengine.exceptions;
 
+import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 
-public class ModelPathNotValidException extends Exception
+
+public class ModelPathNotValidException extends SimulationException
 {
 
-	public ModelPathNotValidException(String model)
+	public ModelPathNotValidException(Simulator simulator,String model)
 	{
-		super(model);
+		super(simulator, model);
+	}
+	
+	public ModelPathNotValidException(Simulator simulator,String message,Throwable exception)
+	{
+		super(simulator, message,exception);
 	}
 
 	/**

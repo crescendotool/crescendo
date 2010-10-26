@@ -2,10 +2,12 @@ package org.destecs.core.simulationengine;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.destecs.core.contract.Contract;
@@ -14,6 +16,7 @@ import org.destecs.core.contract.Variable;
 import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
 import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
+import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
 import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
@@ -86,11 +89,11 @@ public class SimulationEngine
 	{
 		if (model == null)
 		{
-			throw new ModelPathNotValidException("null");
+			throw new ModelPathNotValidException(Simulator.DT, "null");
 		}
 		if (!model.exists())
 		{
-			throw new ModelPathNotValidException(model.toString());
+			throw new ModelPathNotValidException(Simulator.DT, model.toString());
 		}
 		this.dtModelBase = model;
 	}
@@ -99,11 +102,11 @@ public class SimulationEngine
 	{
 		if (model == null)
 		{
-			throw new ModelPathNotValidException("null");
+			throw new ModelPathNotValidException(Simulator.CT, "null");
 		}
 		if (!model.exists() || model.isDirectory())
 		{
-			throw new ModelPathNotValidException(model.toString());
+			throw new ModelPathNotValidException(Simulator.CT, model.toString());
 		}
 		this.ctModel = model;
 	}
@@ -128,45 +131,50 @@ public class SimulationEngine
 					+ contractFile);
 		}
 
-		if (dtEndpoint == null || ctEndpoint == null)
+		if (dtEndpoint == null)
 		{
-			throw new InvalidEndpointsExpection();
+			throw new InvalidEndpointsExpection(Simulator.DT, dtEndpoint);
+		}
+
+		if (ctEndpoint == null)
+		{
+			throw new InvalidEndpointsExpection(Simulator.CT, ctEndpoint);
 		}
 
 		if (dtModelBase == null || !dtModelBase.exists())
 		{
-			throw new ModelPathNotValidException(dtModelBase.toString());
+			throw new ModelPathNotValidException(Simulator.DT, dtModelBase.toString());
 		}
 
 		if (ctModel == null || !ctModel.exists())
 		{
-			throw new ModelPathNotValidException(ctModel.toString());
+			throw new ModelPathNotValidException(Simulator.CT, ctModel.toString());
 		}
 
 		if (dtLauncher == null)
 		{
-			throw new InvalidSimulationLauncher("DT Launcher not set");
+			throw new InvalidSimulationLauncher(Simulator.DT,"Launcher not set");
 		}
 
 		if (ctLauncher == null)
 		{
-			throw new InvalidSimulationLauncher("CT Launcher not set");
+			throw new InvalidSimulationLauncher(Simulator.CT,"Launcher not set");
 		}
 	}
 
 	public void simulate(
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,
-			double totalSimulationTime) throws InvalidEndpointsExpection,
-			ModelPathNotValidException, InvalidSimulationLauncher,
+			double totalSimulationTime) throws SimulationException,
 			FileNotFoundException
 	{
 		try
 		{
 			// reset force simulation stop
 			this.forceStopSimulation = false;
-			engineInfo(Simulator.ALL, "Simulation engine type loaded: "+getClass().getName());
+			engineInfo(Simulator.ALL, "Simulation engine type loaded: "
+					+ getClass().getName());
 			validate();
-			
+
 			infoSharedDesignParameters(sharedDesignParameters);
 
 			Contract contract = null;
@@ -218,13 +226,13 @@ public class SimulationEngine
 			// validate interfaces
 			if (!valideteInterfaces(contract, dtProxy, ctProxy))
 			{
-				abort(Simulator.ALL, "Interface validation faild");
+				abort(Simulator.ALL, "Interface validation failed");
 				return;
 			}
 
 			if (!setSharedDesignParameters(Simulator.DT, dtProxy, sharedDesignParameters))
 			{
-				abort(Simulator.DT, "Setting of shared designparameters faild");
+				abort(Simulator.DT, "Setting of shared designparameters failed");
 			}
 
 			// if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
@@ -243,15 +251,15 @@ public class SimulationEngine
 				abort(Simulator.CT, "Could not start simulator");
 			}
 
-	Double finishTime=		simulate(totalSimulationTime, dtProxy, ctProxy);
+			Double finishTime = simulate(totalSimulationTime, dtProxy, ctProxy);
 
 			// stop the simulators
 
-			stop(Simulator.DT,finishTime, dtProxy);
+			stop(Simulator.DT, finishTime, dtProxy);
 			// stop(Simulator.CT,ctProxy);
 
-			terminate(Simulator.DT, finishTime,dtProxy, dtLauncher);
-			terminate(Simulator.CT, finishTime,ctProxy, ctLauncher);
+			terminate(Simulator.DT, finishTime, dtProxy, dtLauncher);
+			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
 		} finally
 		{
 			dtLauncher.kill();
@@ -265,7 +273,7 @@ public class SimulationEngine
 		sb.append("Shared Design Parameter initialized as: (");
 		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters)
 		{
-			sb.append(p.name+":="+p.value+" ");
+			sb.append(p.name + ":=" + p.value + " ");
 		}
 		sb.append(")");
 		engineInfo(Simulator.ALL, sb.toString());
@@ -273,7 +281,7 @@ public class SimulationEngine
 
 	private boolean validateSharedDesignParameters(
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,
-			Contract contract)
+			Contract contract) throws SimulationException
 	{
 		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters)
 		{
@@ -295,38 +303,52 @@ public class SimulationEngine
 		return true;
 	}
 
-	private void terminate(Simulator simulator,Double time, ProxyICoSimProtocol proxy,
-			ISimulatorLauncher launcher)
+	private void terminate(Simulator simulator, Double time,
+			ProxyICoSimProtocol proxy, ISimulatorLauncher launcher)
+			throws SimulationException
 	{
-		messageInfo(Simulator.DT, time,"terminate");
-		engineInfo(simulator, "Terminating...");
-		proxy.terminate();
+		try
+		{
+			messageInfo(simulator, time, "terminate");
+			engineInfo(simulator, "Terminating...");
+			proxy.terminate();
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "terminate faild", undeclaredException);
+		}
+
 		engineInfo(simulator, "Terminating...kill");
 		launcher.kill();
 		engineInfo(simulator, "Terminating...done");
 	}
 
-	private boolean stop(Simulator simulator, Double finishTime, ProxyICoSimProtocol proxy)
+	private boolean stop(Simulator simulator, Double finishTime,
+			ProxyICoSimProtocol proxy) throws SimulationException
 	{
-		messageInfo(simulator,finishTime, "stop");
-		return proxy.stop().success;
+		try
+		{
+			messageInfo(simulator, finishTime, "stop");
+			return proxy.stop().success;
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "stop faild", undeclaredException);
+		}
+		return false;
 	}
 
 	private Double simulate(Double totalSimulationTime,
-			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy) throws SimulationException
 	{
-		Double initTime = 0.0;//100.0;
+		Double initTime = 0.0;// 100.0;
 		Double time = 0.0;
 
-		engineInfo(Simulator.ALL,"Running simulation: InitialTime="+initTime+" CurrentTime="+time);
-		
+		engineInfo(Simulator.ALL, "Running simulation: InitialTime=" + initTime
+				+ " CurrentTime=" + time);
+
 		List<String> events = new Vector<String>();
 
 		// First initialize DT
-		beforeStep(Simulator.DT,initTime,dtProxy,ctProxy);
-		messageInfo(Simulator.DT, initTime,"step");
-		StepStruct result = dtProxy.step(initTime, new Vector<StepinputsStructParam>(), false, events);
-		simulationInfo(Simulator.DT, result);
+		StepStruct result = step(Simulator.DT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
 		while (time < totalSimulationTime)
 		{
@@ -336,28 +358,49 @@ public class SimulationEngine
 				break;
 			}
 			// Step CT
-			beforeStep(Simulator.CT,result.time,dtProxy,ctProxy);
-			messageInfo(Simulator.CT,result.time ,"step");
-			result = ctProxy.step(result.time, outputToInput(result.outputs), false, events);
-			simulationInfo(Simulator.CT, result);
+			result = step(Simulator.CT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
+
 			// Step DT
-			
-			//TODO: Problem with CT not stopping at the correct time
-			result.time=result.time+0.005;
-			
-			beforeStep(Simulator.DT,result.time,dtProxy,ctProxy);
-			messageInfo(Simulator.DT,result.time , "step");
-			result = dtProxy.step(result.time, outputToInput(result.outputs), false, events);
-			simulationInfo(Simulator.DT, result);
+
+			// TODO: Problem with CT not stopping at the correct time
+			result.time = result.time + 0.005;
+
+			result = step(Simulator.DT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
 
 			time = result.time;
 		}
 		return time;
 	}
-	
-	protected void beforeStep(Simulator nextStepEngine,Double nextTime ,ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+
+	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 	{
-		
+
+	}
+
+	public StepStruct step(Simulator simulator, ProxyICoSimProtocol dtProxy,
+			ProxyICoSimProtocol ctProxy, Double outputTime,
+			List<StepinputsStructParam> inputs, Boolean singleStep,
+			List<String> events) throws SimulationException
+	{
+		beforeStep(simulator, outputTime, dtProxy, ctProxy);
+		messageInfo(simulator, outputTime, "step");
+		StepStruct result = null;
+		try
+		{
+			if (simulator == Simulator.CT)
+			{
+				result = ctProxy.step(outputTime, inputs, singleStep, events);
+			} else if (simulator == Simulator.DT)
+			{
+				result = dtProxy.step(outputTime, inputs, singleStep, events);
+			}
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "step failed", undeclaredException);
+		}
+		simulationInfo(simulator, result);
+		return result;
 	}
 
 	public void forceSimulationStop()
@@ -377,33 +420,42 @@ public class SimulationEngine
 	}
 
 	private boolean startSimulator(Simulator simulator,
-			ProxyICoSimProtocol proxy)
+			ProxyICoSimProtocol proxy) throws SimulationException
 	{
-		messageInfo(simulator, new Double(0),"start");
-		return proxy.start().success;
+		try
+		{
+			messageInfo(simulator, new Double(0), "start");
+			return proxy.start().success;
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "start failed", undeclaredException);
+		}
+		return false;
 	}
 
 	private boolean setSharedDesignParameters(
 			Simulator simulator,
 			ProxyICoSimProtocol proxy,
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
+			throws SimulationException
 	{
-		messageInfo(simulator,new Double(0), "setDesignParameters");
-		boolean success = proxy.setDesignParameters(sharedDesignParameters).success;
-
-		return success;
+		try
+		{
+			messageInfo(simulator, new Double(0), "setDesignParameters");
+			return proxy.setDesignParameters(sharedDesignParameters).success;
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "setDesignParameters failed", undeclaredException);
+		}
+		return false;
 	}
 
 	private boolean valideteInterfaces(Contract contract,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			throws SimulationException
 	{
-		messageInfo(Simulator.DT,new Double(0), "queryInterface");
-		QueryInterfaceStruct dtInterface = dtProxy.queryInterface();
-		engineInfo(Simulator.DT, toStringInterface(dtInterface));
-
-		messageInfo(Simulator.CT,new Double(0), "queryInterface");
-		QueryInterfaceStruct ctInterface = ctProxy.queryInterface();
-		engineInfo(Simulator.CT, toStringInterface(ctInterface));
+		QueryInterfaceStruct dtInterface = queryInterface(Simulator.DT, dtProxy);
+		QueryInterfaceStruct ctInterface = queryInterface(Simulator.CT, ctProxy);
 
 		engineInfo(Simulator.ALL, "Validating interfaces...");
 		for (Variable var : contract.getControlledVariables())
@@ -436,17 +488,59 @@ public class SimulationEngine
 				return false;
 			}
 		}
-		
-		//TODO validate shared design parameters
-		
+
+		// TODO validate shared design parameters
+
 		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
 		return true;
 	}
 
+	private QueryInterfaceStruct queryInterface(Simulator simulator,
+			ProxyICoSimProtocol proxy) throws SimulationException
+	{
+		QueryInterfaceStruct intf = null;
+		try
+		{
+			messageInfo(simulator, new Double(0), "queryInterface");
+			intf = proxy.queryInterface();
+			engineInfo(simulator, toStringInterface(intf));
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "queryInterface failed", undeclaredException);
+		}
+		return intf;
+	}
+
 	private void abort(Simulator source, String reason)
+			throws SimulationException
 	{
 		engineInfo(source, "[Abort] " + reason);
+		throw new SimulationException(source, reason);
+	}
+
+	private void abort(Simulator source, String reason, Throwable throwable)
+			throws SimulationException
+	{
+		String extendedReason = "";
+		if (throwable instanceof UndeclaredThrowableException)
+		{
+			extendedReason = " => "
+					+ getXmlRpcCause((UndeclaredThrowableException) throwable);
+		}
+		engineInfo(source, "[Abort] " + reason + extendedReason);
+		throw new SimulationException(source, reason + extendedReason, throwable);
+	}
+
+	private static String getXmlRpcCause(UndeclaredThrowableException exception)
+	{
+		if (exception != null
+				&& exception.getCause() instanceof XmlRpcException)
+		{
+			XmlRpcException cause = (XmlRpcException) exception.getCause();
+			return new Integer(cause.code) + ": " + cause.getMessage();
+		}
+		return "";
 	}
 
 	private ProxyICoSimProtocol connect(URL url)
@@ -472,26 +566,46 @@ public class SimulationEngine
 	}
 
 	private boolean initialize(Simulator simulator, ProxyICoSimProtocol proxy)
+			throws SimulationException
 	{
-		messageInfo(simulator,new Double(0), "getVersion");
-		engineInfo(simulator, "Interface Version: " + proxy.getVersion());
+		try
+		{
+			messageInfo(simulator, new Double(0), "getVersion");
+			engineInfo(simulator, "Interface Version: " + proxy.getVersion());
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "getVersion failed", undeclaredException);
+		}
 
-		messageInfo(simulator,new Double(0), "initialize");
-		boolean initializedOk = proxy.initialize().success;
-		engineInfo(simulator, "Initilized ok: " + initializedOk);
-
-		return initializedOk;
+		try
+		{
+			messageInfo(simulator, new Double(0), "initialize");
+			boolean initializedOk = proxy.initialize().success;
+			engineInfo(simulator, "Initilized ok: " + initializedOk);
+			return initializedOk;
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "initialize failed", undeclaredException);
+		}
+		return false;
 	}
 
 	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
-			File model)
+			File model) throws SimulationException
 	{
-		engineInfo(simulator, "Loading model: " + model);
-		messageInfo(simulator,new Double(0), "load");
-		boolean success = proxy.load(model.getAbsolutePath()).success;
-		engineInfo(simulator, "Loading model completed with no errors: "
-				+ success);
-		return success;
+		try
+		{
+			engineInfo(simulator, "Loading model: " + model);
+			messageInfo(simulator, new Double(0), "load");
+			boolean success = proxy.load(model.getAbsolutePath()).success;
+			engineInfo(simulator, "Loading model completed with no errors: "
+					+ success);
+			return success;
+		} catch (UndeclaredThrowableException undeclaredException)
+		{
+			abort(simulator, "loading model failed", undeclaredException);
+		}
+		return false;
 	}
 
 	protected void engineInfo(Simulator simulator, String message)
@@ -502,11 +616,12 @@ public class SimulationEngine
 		}
 	}
 
-	protected void messageInfo(Simulator fromSimulator,Double time, String message)
+	protected void messageInfo(Simulator fromSimulator, Double time,
+			String message)
 	{
 		for (IMessageListener listener : messageListeners)
 		{
-			listener.from(fromSimulator, time,message);
+			listener.from(fromSimulator, time, message);
 		}
 	}
 
@@ -568,14 +683,13 @@ public class SimulationEngine
 				sb.append("|    None.\n");
 			}
 			sb.append("_____________________________");
-		}else
+		} else
 		{
 			sb.append("");
 			sb.append("Interface => ");
-			
 
 			sb.append("Design P( ");
-			
+
 			if (result.sharedDesignParameters.size() > 0)
 			{
 				for (String p : result.sharedDesignParameters)
@@ -586,9 +700,9 @@ public class SimulationEngine
 			{
 				sb.append("- ");
 			}
-			
+
 			sb.append(") Inputs( ");
-			
+
 			if (result.inputs.size() > 0)
 			{
 				for (String p : result.inputs)
@@ -599,9 +713,9 @@ public class SimulationEngine
 			{
 				sb.append("-  ");
 			}
-			
+
 			sb.append(") Outputs( ");
-			
+
 			if (result.outputs.size() > 0)
 			{
 				for (String p : result.outputs)

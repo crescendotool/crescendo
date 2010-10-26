@@ -12,9 +12,7 @@ import java.util.Vector;
 
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
-import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
-import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
-import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
+import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.core.simulationengine.senario.Scenario;
 import org.destecs.core.simulationengine.senario.ScenarioParser;
@@ -518,9 +516,8 @@ public class CoSimStarterView extends ViewPart
 	}
 
 	private void runSumulation(final SimulationEngine engine)
-			throws ModelPathNotValidException, MalformedURLException,
-			InvalidEndpointsExpection, InvalidSimulationLauncher,
-			FileNotFoundException
+			throws MalformedURLException,
+			FileNotFoundException, SimulationException
 	{
 		engine.simulate(shareadDesignParameters, totalSimulationTime);
 	}

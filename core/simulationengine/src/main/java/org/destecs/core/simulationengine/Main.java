@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
-import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
-import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
+import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.simulationengine.senario.Scenario;
@@ -59,15 +58,11 @@ public class Main
 
 	/**
 	 * @param args
-	 * @throws ModelPathNotValidException
 	 * @throws MalformedURLException
-	 * @throws InvalidSimulationLauncher
-	 * @throws InvalidEndpointsExpection
 	 * @throws FileNotFoundException
+	 * @throws SimulationException 
 	 */
-	public static void main(String[] args) throws ModelPathNotValidException,
-			MalformedURLException, InvalidEndpointsExpection,
-			InvalidSimulationLauncher, FileNotFoundException
+	public static void main(String[] args) throws MalformedURLException, FileNotFoundException, SimulationException
 	{
 		SimulationEngine engine = getEngine();
 //			new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));

@@ -1,11 +1,18 @@
 package org.destecs.core.simulationengine.exceptions;
 
-public class InvalidSimulationLauncher extends Exception
+import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+
+public class InvalidSimulationLauncher extends SimulationException
 {
 
-	public InvalidSimulationLauncher(String message)
+	public InvalidSimulationLauncher(Simulator simulator,String message)
 	{
-		super(message);
+		super(simulator,message);
+	}
+	
+	public InvalidSimulationLauncher(Simulator simulator,String message,Throwable exception)
+	{
+		super(simulator,message,exception);
 	}
 
 	/**

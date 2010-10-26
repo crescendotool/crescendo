@@ -4,23 +4,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
-import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
-import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
-import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.core.simulationengine.senario.Scenario;
 import org.destecs.core.simulationengine.senario.ScenarioParser;
 import org.destecs.ide.debug.IDebugConstants;
-import org.destecs.ide.simeng.ISimengConstants;
 import org.destecs.ide.simeng.internal.core.EngineListener;
 import org.destecs.ide.simeng.internal.core.ListenerToLog;
 import org.destecs.ide.simeng.internal.core.MessageListener;
@@ -30,9 +24,7 @@ import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
@@ -123,9 +115,9 @@ public class CoSimLaunchConfigurationDelegate implements
 			};
 
 			listeners.schedule();
-			 engine.engineListeners.add(log);
-			 engine.messageListeners.add(log);
-			 engine.simulationListeners.add(log);
+			engine.engineListeners.add(log);
+			engine.messageListeners.add(log);
+			engine.simulationListeners.add(log);
 
 			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File(dtPath)));// new
 			// File("C:\\destecs\\workspace\\watertank_new\\model")));
@@ -155,21 +147,13 @@ public class CoSimLaunchConfigurationDelegate implements
 
 						public void run()
 						{
-							ISafeRunnable runnable = new ISafeRunnable()
+							try
 							{
-
-								public void run() throws Exception
-								{
-									engine.simulate(shareadDesignParameters, totalSimulationTime);
-								}
-
-								public void handleException(Throwable e)
-								{
-									exceptions.add(e);
-								}
-							};
-
-							SafeRunner.run(runnable);
+								engine.simulate(shareadDesignParameters, totalSimulationTime);
+							} catch (Throwable e)
+							{
+								exceptions.add(e);
+							}
 						};
 
 					}
@@ -193,7 +177,7 @@ public class CoSimLaunchConfigurationDelegate implements
 					{
 						view.refreshPackTable();
 					}
-					
+
 					log.close();
 
 					if (exceptions.size() == 0)
@@ -205,7 +189,7 @@ public class CoSimLaunchConfigurationDelegate implements
 						{
 							throwable.printStackTrace();
 						}
-						return new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, "Simulation faild", exceptions.get(0));
+						return new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, "Simulation failed", exceptions.get(0));
 					}
 
 				}
@@ -239,7 +223,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	{
 		try
 		{
-			 return new ListenerToLog(new File(ctPath).getParentFile());
+			return new ListenerToLog(new File(ctPath).getParentFile());
 		} catch (FileNotFoundException e1)
 		{
 			// TODO Auto-generated catch block
