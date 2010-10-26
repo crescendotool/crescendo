@@ -2,9 +2,12 @@ package org.destecs.core.simulationengine;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
@@ -20,7 +23,10 @@ import org.destecs.protocol.structs.StepStructoutputsStruct;
 
 public class Main
 {
-	static boolean useScenario = true;
+	static boolean useScenario = false;
+	//static File base = new File("C:\\destecs\\workspace\\watertank_new");
+	static File base = new File("C:\\overture\\runtime-destecs.product\\dual_watertank");
+
 
 	public static SimulationEngine getEngine() throws ModelPathNotValidException,
 			MalformedURLException
@@ -28,19 +34,19 @@ public class Main
 		SimulationEngine engine = null;
 		if (useScenario)
 		{
-			Scenario scenario = new ScenarioParser(new File("C:\\destecs\\workspace\\watertank_new\\scenarios\\scenario1.script")).parse();
-			engine = new ScenarioSimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"), scenario );
+			Scenario scenario = new ScenarioParser(new File(base.getAbsolutePath()+"\\scenarios\\scenario1.script")).parse();
+			engine = new ScenarioSimulationEngine(new File(base,"dualwatertank.csc"), scenario );
 		} else
 		{
-			engine = new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));
+			engine = new SimulationEngine(new File(base,"dualwatertank.csc"));
 		}
 
 		engine.setDtSimulationLauncher(new VdmRtLauncher());
-		engine.setDtModel(new File("C:\\destecs\\workspace\\watertank_new\\model"));
+		engine.setDtModel(new File(base,"model"));
 		engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
 
 		engine.setCtSimulationLauncher(new Clp20SimLauncher());
-		engine.setCtModel(new File("C:\\destecs\\workspace\\watertank_new\\WaterTank.emx"));
+		engine.setCtModel(new File(base,"dualwatertank.emx"));
 		engine.setCtEndpoint(new URL("http://localhost:1580"));
 
 //		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
@@ -65,26 +71,40 @@ public class Main
 	public static void main(String[] args) throws MalformedURLException, FileNotFoundException, SimulationException
 	{
 		SimulationEngine engine = getEngine();
-//			new SimulationEngine(new File("C:\\destecs\\workspace\\watertank_new\\watertank.csc"));
-//
-//		engine.setDtSimulationLauncher(new VdmRtLauncher());
-//		engine.setDtModel(new File("C:\\destecs\\workspace\\watertank_new\\model"));
-//		engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
-//
-//		engine.setCtSimulationLauncher(new Clp20SimLauncher());
-//		engine.setCtModel(new File("C:\\destecs\\workspace\\watertank_new\\WaterTank.emx"));
-//		engine.setCtEndpoint(new URL("http://localhost:1580"));
-//
-		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", 1.0));
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
-//
-//		Listener listener = new Listener();
-//		engine.engineListeners.add(listener);
-//		engine.messageListeners.add(listener);
-//		engine.simulationListeners.add(listener);
 
-		engine.simulate(shareadDesignParameters, 5);
+		File sharedDesignParamFile =new File(base,"dualwatertank.sdp");
+		final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParamFile);
+
+		engine.simulate(shareadDesignParameters, 30);
+	}
+	
+	private static List<SetDesignParametersdesignParametersStructParam> loadSharedDesignParameters(
+			File sharedDesignParamFile)
+	{
+		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+		Properties props = new Properties();
+		try
+		{
+			props.load(new FileReader(sharedDesignParamFile));
+
+			for (Object key : props.keySet())
+			{
+				String name = key.toString();
+				Double value = Double.parseDouble(props.getProperty(name));
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
+
+			}
+
+		} catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return shareadDesignParameters;
 	}
 
 	private static class Listener implements IEngineListener, IMessageListener,

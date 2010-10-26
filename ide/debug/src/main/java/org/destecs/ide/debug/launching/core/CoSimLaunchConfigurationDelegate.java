@@ -44,7 +44,8 @@ public class CoSimLaunchConfigurationDelegate implements
 	private String ctPath = null;
 	private String contractPath = null;
 	private String scenarioPath = null;
-	private final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+	// private final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new
+	// Vector<SetDesignParametersdesignParametersStructParam>();
 	private String sharedDesignParamPath = null;
 	private double totalSimulationTime = 0.0;
 
@@ -128,7 +129,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			engine.setCtModel(new File(ctPath));
 			engine.setCtEndpoint(new URL("http://localhost:1580"));
 
-			setSharedDesignParameters(engine);
+			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(new File(sharedDesignParamPath));
 
 			runSimulation = new Job("Simulation")
 			{
@@ -246,13 +247,14 @@ public class CoSimLaunchConfigurationDelegate implements
 		}
 	}
 
-	private void setSharedDesignParameters(SimulationEngine engine)
+	private static List<SetDesignParametersdesignParametersStructParam> loadSharedDesignParameters(
+			File sharedDesignParamFile)
 	{
-		shareadDesignParameters.clear();
+		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 		Properties props = new Properties();
 		try
 		{
-			props.load(new FileReader(new File(sharedDesignParamPath)));
+			props.load(new FileReader(sharedDesignParamFile));
 
 			for (Object key : props.keySet())
 			{
@@ -271,7 +273,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		return shareadDesignParameters;
 	}
 
 	private static InfoTableView getInfoTableView(String id)
