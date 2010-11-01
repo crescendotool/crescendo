@@ -392,6 +392,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		try
 		{
+			List<String> emxFiles = new Vector<String>();
 			fListener.suspended = true;
 			IResource[] projectMembers = project.members();
 			for (IResource iResource : projectMembers)
@@ -413,7 +414,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					}
 					if (file.getFileExtension().equals("emx"))
 					{
-						ctPath.setText(file.getLocationURI().getPath());
+						emxFiles.add(file.getLocationURI().getPath());
 					}
 					if (file.getFileExtension().equals("sdp"))
 					{
@@ -421,6 +422,11 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					}
 				}
 
+			}
+			
+			if(emxFiles.size()==1)
+			{
+				ctPath.setText(emxFiles.get(0));
 			}
 
 		} catch (CoreException e)

@@ -6,16 +6,18 @@ import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
 public class CoSimLaunchConfigurationTabGroup extends
-		AbstractLaunchConfigurationTabGroup {
+		AbstractLaunchConfigurationTabGroup
+{
 
-	public CoSimLaunchConfigurationTabGroup() {
+	public CoSimLaunchConfigurationTabGroup()
+	{
 		super();
 	}
 
-	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] { 
-				new CommonTab()
-		};
+	public void createTabs(ILaunchConfigurationDialog dialog, String mode)
+	{
+		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
+				new CommonTab(), new SharedDesignParameterTab() };
 		setTabs(tabs);
 	}
 

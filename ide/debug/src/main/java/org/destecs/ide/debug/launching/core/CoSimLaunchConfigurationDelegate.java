@@ -22,6 +22,9 @@ import org.destecs.ide.simeng.internal.core.SimulationListener;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -44,10 +47,9 @@ public class CoSimLaunchConfigurationDelegate implements
 	private String ctPath = null;
 	private String contractPath = null;
 	private String scenarioPath = null;
-	// private final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new
-	// Vector<SetDesignParametersdesignParametersStructParam>();
 	private String sharedDesignParamPath = null;
 	private double totalSimulationTime = 0.0;
+	private IProject project = null;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -64,6 +66,7 @@ public class CoSimLaunchConfigurationDelegate implements
 
 		try
 		{
+			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.PROJECT_NAME, ""));
 			contractPath = configuration.getAttribute(IDebugConstants.CONTRACT_PATH, "");
 			dtPath = configuration.getAttribute(IDebugConstants.DE_MODEL_PATH, "");
 			ctPath = configuration.getAttribute(IDebugConstants.CT_MODEL_PATH, "");
@@ -111,6 +114,12 @@ public class CoSimLaunchConfigurationDelegate implements
 					engine.engineListeners.add(new EngineListener(engineView));
 					engine.messageListeners.add(new MessageListener(messageView));
 					engine.simulationListeners.add(new SimulationListener(simulationView));
+
+					for (InfoTableView view : views)
+					{
+						view.refreshPackTable();
+					}
+
 					return new Status(IStatus.OK, IDebugConstants.PLUGIN_ID, "Listeners OK");
 				}
 			};
@@ -180,6 +189,14 @@ public class CoSimLaunchConfigurationDelegate implements
 					}
 
 					log.close();
+
+					try
+					{
+						project.refreshLocal(IResource.DEPTH_INFINITE, null);
+					} catch (CoreException e)
+					{
+						// Ignore it
+					}
 
 					if (exceptions.size() == 0)
 					{
