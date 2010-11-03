@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+
+<!-- Declare launch configuration type -->
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
@@ -11,7 +13,9 @@
             public="true">
       </launchConfigurationType>
    </extension>
-   <extension
+   
+   
+   <!--extension
          point="org.eclipse.debug.ui.launchConfigurationTabs">
       <tab
             class="org.destecs.ide.debug.launching.ui.CoSimLaunchConfigurationTab"
@@ -19,15 +23,27 @@
             id="org.destecs.ide.debug.coSimLaunchTab"
             name="org.destecs.ide.debug.CoSimTab">
       </tab>
-   </extension>
+   </extension-->
+   
+   <!-- Add the launch config group to the launch dialog -->
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="org.destecs.ide.debug.launching.ui.CoSimLaunchConfigurationTabGroup"
             id="org.destecs.ide.debug.launchConfigurationTabGroup"
             type="org.destecs.ide.debug.launchConfigurationType">
+            <launchMode 
+                  mode="debug"
+                  perspective="org.eclipse.debug.ui.DebugPerspective"
+                  description="%localDestecsApplicationTabGroupDescription.debug">
+            </launchMode>
       </launchConfigurationTabGroup>
    </extension>
+   
+   <!--
+		Declare a icon for a launch config type, this is e.g. used in the
+		launch config dialog
+	-->
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
@@ -36,5 +52,61 @@
             id="org.destecs.ide.debug.launchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
+   
+   
+   
+   <!-- Shoutcut for launching project. Extends the Debug and Run context menu in the VDM Explorer -->
+ <extension point="org.eclipse.debug.ui.launchShortcuts">
+  <shortcut
+        class="org.destecs.ide.debug.ui.launchconfigurations.DestecsLaunchShortcut"
+        icon="icons/ctool16/destecs_misc.png"
+        id="org.destecs.ide.debug.ui.localDestecsShortcut"
+        label="Destecs Application"
+        modes="debug">
+     <contextualLaunch>
+           <enablement>
+             <with variable="selection">
+             <count value="1"/>
+                <iterate>
+                   <or>
+                      <adapt
+                            type="org.destecs.ide.core.resources.IDestecsProject">
+                         <!--test
+                               property="org.overture.ide.core.resources.dialect"
+                               value="VDM_PP">
+                         </test-->
+                      </adapt>
+                   </or>
+                </iterate>
+           	</with>
+           </enablement>
+  		 </contextualLaunch>
+     <configurationType
+           id="org.destecs.ide.debug.launchConfigurationType">
+     </configurationType>
+  </shortcut>
+ </extension>
+ <extension
+       point="org.eclipse.debug.ui.launchGroups">
+    <launchGroup
+          bannerImage="icons/ctool16/destecs_misc.png"
+          id="org.destecs.ide.debug.launchGroup"
+          image="icons/ctool16/destecs_misc.png"
+          label="DESTECS Launch"
+          mode="debug">
+    </launchGroup>
+ </extension>
+ 
+ <!-- Add the debug launch action set to the perspective-->
+ <extension
+       point="org.eclipse.ui.perspectiveExtensions">
+    <perspectiveExtension
+          targetID="org.destecs.ide.ui.perspective">
+       <actionSet
+             id="org.eclipse.debug.ui.launchActionSet">
+       </actionSet>
+    </perspectiveExtension>
+ </extension>
+	
 
 </plugin>

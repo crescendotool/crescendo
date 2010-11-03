@@ -66,13 +66,13 @@ public class CoSimLaunchConfigurationDelegate implements
 
 		try
 		{
-			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.PROJECT_NAME, ""));
-			contractPath = configuration.getAttribute(IDebugConstants.CONTRACT_PATH, "");
-			dtPath = configuration.getAttribute(IDebugConstants.DE_MODEL_PATH, "");
-			ctPath = configuration.getAttribute(IDebugConstants.CT_MODEL_PATH, "");
-			scenarioPath = configuration.getAttribute(IDebugConstants.SCENARIO_PATH, "");
-			sharedDesignParamPath = configuration.getAttribute(IDebugConstants.SHARED_DESIGN_PARAM_PATH, "");
-			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.SIMULATION_TIME, "0"));
+			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
+			contractPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, "");
+			dtPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "");
+			ctPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "");
+			scenarioPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, "");
+			sharedDesignParamPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH, "");
+			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 
 		} catch (CoreException e)
 		{

@@ -449,14 +449,14 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	{
 		try
 		{
-			fProjectText.setText(configuration.getAttribute(IDebugConstants.PROJECT_NAME, ""));
+			fProjectText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
-			ctPath.setText(configuration.getAttribute(IDebugConstants.CT_MODEL_PATH, "No Path Selected"));
-			dtPath.setText(configuration.getAttribute(IDebugConstants.DE_MODEL_PATH, "No Path Selected"));
-			contractPath.setText(configuration.getAttribute(IDebugConstants.CONTRACT_PATH, "No Path Selected"));
-			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.SIMULATION_TIME, "0"));
-			fScenarioText.setText(configuration.getAttribute(IDebugConstants.SCENARIO_PATH, ""));
-			fSharedDesignParamPath.setText(configuration.getAttribute(IDebugConstants.SHARED_DESIGN_PARAM_PATH, ""));
+			ctPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "No Path Selected"));
+			dtPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "No Path Selected"));
+			contractPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, "No Path Selected"));
+			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
+			fScenarioText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
+			fSharedDesignParamPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH, ""));
 			// if (getProject() == null)
 			// {
 			// selectScenarioButton.setEnabled(true);
@@ -472,13 +472,13 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
-		configuration.setAttribute(IDebugConstants.PROJECT_NAME, fProjectText.getText());
-		configuration.setAttribute(IDebugConstants.CT_MODEL_PATH, ctPath.getText());
-		configuration.setAttribute(IDebugConstants.DE_MODEL_PATH, dtPath.getText());
-		configuration.setAttribute(IDebugConstants.CONTRACT_PATH, contractPath.getText());
-		configuration.setAttribute(IDebugConstants.SIMULATION_TIME, simulationTimeText.getText());
-		configuration.setAttribute(IDebugConstants.SCENARIO_PATH, fScenarioText.getText());
-		configuration.setAttribute(IDebugConstants.SHARED_DESIGN_PARAM_PATH, fSharedDesignParamPath.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, fProjectText.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ctPath.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, dtPath.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, contractPath.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH, fSharedDesignParamPath.getText());
 	}
 
 	protected IProject getProject()
@@ -549,7 +549,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 	public String getName()
 	{
-		return "Co-Sim Launcher";
+		return "Main";
 	}
 
 }

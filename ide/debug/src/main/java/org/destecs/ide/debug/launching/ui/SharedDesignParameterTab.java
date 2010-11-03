@@ -171,11 +171,19 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 	{
 		try
 		{
-			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.PROJECT_NAME, ""));
+			String projectName=configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
+			if(projectName!=null && projectName.trim().length()>0)
+			{
+			project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			}else
+			{
+				return;
+			}
 		} catch (CoreException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return;
 		}
 
 		if (project != null)
