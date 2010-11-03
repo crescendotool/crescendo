@@ -1,4 +1,4 @@
-package org.destecs.ide.core;
+package org.destecs.ide.core.resources;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;

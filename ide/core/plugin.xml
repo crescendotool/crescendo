@@ -2,13 +2,30 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="id1"
+         id="nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="org.destecs.ide.core.DestecsProjectNature">
+               class="org.destecs.ide.core.resources.DestecsProjectNature">
          </run>
       </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.core.resources.IProject"
+            class="org.destecs.ide.core.resources.DestecsProjectAdapterFactory">
+         <adapter
+               type="org.destecs.ide.core.resources.IDestecsProject">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.destecs.ide.core.resources.IDestecsProject"
+            class="org.destecs.ide.core.resources.DestecsProjectAdapterFactory">
+         <adapter
+               type="org.eclipse.core.resources.IProject">
+         </adapter>
+      </factory>
    </extension>
 
 </plugin>
