@@ -6,6 +6,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
+import org.overture.ide.vdmrt.core.IVdmRtCoreConstants;
 
 public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 
@@ -31,7 +32,9 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 
 	private void setDestecsSettings(IProject prj) {
 		try {
+			
 			addNature(prj, IDestecsCoreConstants.NATURE);
+			addNature(prj, IVdmRtCoreConstants.NATURE) ;
 			//TODO: add builder if needed
 			
 		} catch (CoreException e) {
