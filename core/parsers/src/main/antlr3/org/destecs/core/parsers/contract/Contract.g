@@ -43,9 +43,9 @@ package org.destecs.core.parsers.contract;
     private List<String> mMessages;
     private List<RecognitionException> mExceptions = new ArrayList<RecognitionException>();
 
-    public ContractFactory getContract()
+    public Contract getContract()
     {
-        return contract;
+        return contract.getContract();
     }
   
     public boolean hasExceptions()
