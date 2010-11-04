@@ -18,6 +18,7 @@
     <module>vdm</module>
     <module>xmlrpcextensions</module>
 	<module>contract</module>
+	<module>parsers</module>
 
   
   </modules>
