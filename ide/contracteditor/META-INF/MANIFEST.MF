@@ -11,5 +11,9 @@ Bundle-SymbolicName: org.destecs.ide.contracteditor;singleton:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.overture.ide.ui;bundle-version="0.3.0"
+ org.destecs.ide.generated.simulationengine;bundle-version="1.0.0",
+ org.destecs.ide.core;bundle-version="1.0.0",
+ org.eclipse.jface.text;bundle-version="3.5.2",
+ org.eclipse.ui.editors;bundle-version="3.5.0",
+ org.eclipse.ui.ide;bundle-version="3.5.2"
 Bundle-Activator: org.destecs.ide.contracteditor.Activator

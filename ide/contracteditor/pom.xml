@@ -11,6 +11,8 @@
   <version>1.0.0</version>
  
   <packaging>source-plugin</packaging>
+  <dependencies>
+  </dependencies>
 
 
 </project>

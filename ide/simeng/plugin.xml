@@ -24,12 +24,12 @@
    
    <extension
          point="org.eclipse.ui.views">
-      <view
+      <!--view
             class="org.destecs.ide.simeng.ui.views.CoSimStarterView"
             id="org.destecs.ide.simeng.ui.cosimstarter"
             name="Co-Sim Starter"
             restorable="true">
-      </view>
+      </view-->
      
       <view
             allowMultiple="false"

@@ -9,8 +9,9 @@ Bundle-Name: org.destecs.ide.core
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.destecs.ide.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.core.resources;bundle-version="3.5.0",
- org.eclipse.core.runtime;bundle-version="3.5.0"
+Require-Bundle: org.eclipse.core.resources;bundle-version="3.5.0";visibility:=reexport,
+ org.eclipse.core.runtime;bundle-version="3.5.0";visibility:=reexport
 Export-Package: org.destecs.ide.core,
- org.destecs.ide.core.resources
+ org.destecs.ide.core.resources,
+ org.destecs.ide.core.utility
 Bundle-Activator: org.destecs.ide.core.DestecsCorePlugin
