@@ -1,4 +1,4 @@
-grammar contract;
+grammar Contract;
 
 options{
 	language=Java;
