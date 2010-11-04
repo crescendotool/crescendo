@@ -1,9 +1,11 @@
 package org.destecs.core.simulationengine;
 
 import java.io.File;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.core.simulationengine.senario.Action;
 import org.destecs.core.simulationengine.senario.Scenario;
 import org.destecs.protocol.ProxyICoSimProtocol;
@@ -25,6 +27,7 @@ public class ScenarioSimulationEngine extends SimulationEngine
 	@Override
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			throws SimulationException
 	{
 		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy);
 
@@ -36,14 +39,28 @@ public class ScenarioSimulationEngine extends SimulationEngine
 				case ALL:
 					break;
 				case CT:
-					engineInfo(Simulator.CT, "Setting parameter (Next time="+nextTime+"): "+action);
-					messageInfo(Simulator.CT,nextTime, "setParameter");
-					ctProxy.setParameter(action.variableName, action.variableValue);
+					try
+					{
+						engineInfo(Simulator.CT, "Setting parameter (Next time="
+								+ nextTime + "): " + action);
+						messageInfo(Simulator.CT, nextTime, "setParameter");
+						ctProxy.setParameter(action.variableName, action.variableValue);
+					} catch (UndeclaredThrowableException undeclaredException)
+					{
+						abort(Simulator.CT, "setParameter("+action.variableName+"="+action.variableValue+") faild", undeclaredException);
+					}
 					break;
 				case DT:
-					engineInfo(Simulator.DT, "Setting parameter (Next time="+nextTime+"): "+action);
-					messageInfo(Simulator.DT, nextTime,"setParameter");
-					dtProxy.setParameter(action.variableName, action.variableValue);
+					try
+					{
+						engineInfo(Simulator.DT, "Setting parameter (Next time="
+								+ nextTime + "): " + action);
+						messageInfo(Simulator.DT, nextTime, "setParameter");
+						dtProxy.setParameter(action.variableName, action.variableValue);
+					} catch (UndeclaredThrowableException undeclaredException)
+					{
+						abort(Simulator.DT, "setParameter("+action.variableName+"="+action.variableValue+") faild", undeclaredException);
+					}
 					break;
 
 			}

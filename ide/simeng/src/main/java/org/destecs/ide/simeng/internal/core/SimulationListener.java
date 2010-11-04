@@ -28,7 +28,7 @@ public class SimulationListener extends BaseListener implements ISimulationListe
 //		sb.append(simulator + ": ");
 		for (StepStructoutputsStruct o : result.outputs)
 		{
-			sb.append(o.name + "=" + o.value);
+			sb.append(o.name + "=" + o.value+" ");
 		}
 		
 		l.add(sb.toString());

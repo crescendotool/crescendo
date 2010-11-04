@@ -1,6 +1,9 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ import org.overturetool.vdmj.lex.LexRealToken;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
+import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
@@ -42,7 +46,6 @@ public class SimulationManager extends BasicSimulationManager
 	Thread runner;
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
-	
 
 	private CoSimStatusEnum status = CoSimStatusEnum.NOT_INITIALIZED;
 	/**
@@ -80,10 +83,10 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		return links.getOutputs();
 	}
-	
 
 	public synchronized StepStruct step(Double outputTime,
-			List<StepinputsStructParam> inputs, List<String> events) throws SimulationException
+			List<StepinputsStructParam> inputs, List<String> events)
+			throws SimulationException
 	{
 		for (StepinputsStructParam p : inputs)
 		{
@@ -113,7 +116,7 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-		throw new SimulationException("Notification of scheduler faild",e);
+			throw new SimulationException("Notification of scheduler faild", e);
 		}
 
 		this.status = CoSimStatusEnum.STEP_TAKEN;
@@ -128,7 +131,7 @@ public class SimulationManager extends BasicSimulationManager
 			} catch (ValueException e)
 			{
 				debugErr(e);
-				throw new SimulationException("Faild to get output parameter",e);
+				throw new SimulationException("Faild to get output parameter", e);
 			}
 		}
 
@@ -158,16 +161,17 @@ public class SimulationManager extends BasicSimulationManager
 					} catch (ValueException e)
 					{
 						debugErr(e);
-						throw new SimulationException("Faild to evaluate event: "+event,e);
+						throw new SimulationException("Faild to evaluate event: "
+								+ event, e);
 					}
 
 				}
 			}
 		}
-		if(!evaluated)
+		if (!evaluated)
 		{
-			debugErr("Event: "+event+" not found");
-			throw new SimulationException("Faild to find event: "+event);
+			debugErr("Event: " + event + " not found");
+			throw new SimulationException("Faild to find event: " + event);
 		}
 	}
 
@@ -206,11 +210,7 @@ public class SimulationManager extends BasicSimulationManager
 				break;
 			}
 
-			Properties.init();
-			Settings.dialect = Dialect.VDM_RT;
-			Settings.usingCmdLine = true;
-			Settings.release = Release.VDM_10;
-			controller = new VDMCO();
+			
 
 			final List<File> files = new Vector<File>();
 
@@ -229,29 +229,78 @@ public class SimulationManager extends BasicSimulationManager
 				{
 					this.status = CoSimStatusEnum.LOADED;
 					return true;
+				} else
+				{
+					final Writer result = new StringWriter();
+					final PrintWriter printWriter = new PrintWriter(result);
+					TypeChecker.printWarnings(printWriter);
+					TypeChecker.printErrors(printWriter);
+					throw new SimulationException("Type check error: "
+							+ result.toString());
 				}
 			}
 
 		} catch (Exception e)
 		{
 			debugErr(e);
-			throw new SimulationException("Faild to load model from "+path,e);
-			
+			throw new SimulationException("Faild to load model from " + path, e);
+
 		}
 
 		return false;
 	}
 
-	public Boolean initialize(/*
-							 * List<InitializeSharedParameterStructParam> sharedParameter,
-							 * List<InitializefaultsStructParam> faults
-							 */) throws SimulationException
+	public Boolean initialize() throws SimulationException
 	{
+		
+		Properties.init();
+		Settings.dialect = Dialect.VDM_RT;
+		Settings.usingCmdLine = true;
+		Settings.release = Release.VDM_10;
+		controller = new VDMCO();
+		return true;
 
-		// setSharedDesignParameters(sharedParameter);
-		//
-		// setFaults(faults);
+	}
 
+	public Boolean start() throws SimulationException
+	{
+		final List<File> files = getFiles();
+
+		// init
+		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
+		{
+			this.status = CoSimStatusEnum.INITIALIZED;
+//			return true;
+		} else
+		{
+			this.status = CoSimStatusEnum.NOT_INITIALIZED;
+//			return false;
+		}
+		
+
+		if (this.status == CoSimStatusEnum.INITIALIZED)
+		{
+			// start
+			if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
+			{
+				this.status = CoSimStatusEnum.INITIALIZED;
+				return true;
+			} else
+			{
+				this.status = CoSimStatusEnum.NOT_INITIALIZED;
+				return false;
+			}
+		} else
+		{
+			throw new SimulationException("Model must be "
+					+ CoSimStatusEnum.INITIALIZED
+					+ " before it can be started. Status = " + this.status);
+		}
+
+	}
+
+	private List<File> getFiles() throws SimulationException
+	{
 		final List<File> files = new Vector<File>();
 		try
 		{
@@ -259,102 +308,20 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if(e instanceof SimulationException)
+			if (e instanceof SimulationException)
 			{
-				throw (SimulationException)e;
+				throw (SimulationException) e;
 			}
-			throw new SimulationException("Faild to initialize, could not get sourcefiles",e);
+			throw new SimulationException("Faild to initialize, could not get sourcefiles", e);
 		}
-
-		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
-		{
-
-			runner = new Thread(new Runnable()
-			{
-				public void run()
-				{
-					if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
-					{
-						System.out.println("INIT OK");
-					} else
-					{
-						System.err.println("INIT ERROR");
-					}
-
-				}
-			});
-			runner.setDaemon(true);
-			runner.start();
-			// TODO need to catch the init errors of the interpreter here and return false if any
-
-			// for (String l : links.getOutputs())
-			// {
-			// Value v = getValue(l);
-			// try
-			// {
-			// if (v.deref().isNumeric()
-			// && v.deref().realValue(null) == 0.1)
-			// {
-			// setValue(l, new Double(0));
-			// }
-			// } catch (ValueException e)
-			// {
-			// // 
-			// e.printStackTrace();
-			// }
-			// }
-
-			this.status = CoSimStatusEnum.INITIALIZED;
-			return true;
-		} else
-		{
-			this.status = CoSimStatusEnum.NOT_INITIALIZED;
-			return false;
-		}
-
+		return files;
 	}
 
 	// private void setFaults(List<InitializefaultsStructParam> faults)
 	// {
-	// //  set faults this might need to be set from the load instead
+	// // set faults this might need to be set from the load instead
 	// }
 	//
-	// private void setSharedDesignParameters(
-	// List<InitializeSharedParameterStructParam> sharedParameter)
-	// {
-	// try
-	// {
-	// for (ClassDefinition cd : controller.getInterpreter().getClasses())
-	// {
-	// if (cd.getName().equalsIgnoreCase(interfaceClassName))
-	// {
-	// for (Definition d : cd.definitions)
-	// {
-	// if (d instanceof ValueDefinition)
-	// {
-	// // This should work but gives null list.add(d.getName());
-	// String name = ((ValueDefinition) d).pattern.toString();
-	// for (InitializeSharedParameterStructParam designParameter : sharedParameter)
-	// {
-	// if (name.equals(designParameter.name))
-	// {
-	// // ((RealLiteralExpression)((ValueDefinition) d).exp).value.value
-	// // =designParameter.value;
-	// //  cannot set value because it is final, remember that INV checks must be
-	// // performed after / during the value change
-	// }
-	// }
-	//
-	// }
-	// }
-	// }
-	// }
-	// } catch (Exception e)
-	// {
-	// //  Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
 
 	public void setMainContext(Context ctxt)
 	{
@@ -374,9 +341,10 @@ public class SimulationManager extends BasicSimulationManager
 	 * @param parameters
 	 *            A list of Maps containing (name,value) keys and name->String, value->Double
 	 * @return false if any error occur else true
-	 * @throws SimulationException 
+	 * @throws SimulationException
 	 */
-	public Boolean setDesignParameters(List<Map<String, Object>> parameters) throws SimulationException
+	public Boolean setDesignParameters(List<Map<String, Object>> parameters)
+			throws SimulationException
 	{
 		try
 		{
@@ -390,7 +358,7 @@ public class SimulationManager extends BasicSimulationManager
 					debugErr("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 					throw new SimulationException("Tried to set unlinked shared design parameter: "
-						+ parameterName);
+							+ parameterName);
 				}
 				StringPair vName = links.getBoundVariable(parameterName);
 				double newValue = (Double) parameter.get("value");
@@ -431,23 +399,24 @@ public class SimulationManager extends BasicSimulationManager
 					debugErr("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 					throw new SimulationException("Tried to set unlinked shared design parameter: "
-						+ parameterName);
+							+ parameterName);
 				}
 			}
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if(e instanceof SimulationException)
+			if (e instanceof SimulationException)
 			{
-				throw (SimulationException)e;
+				throw (SimulationException) e;
 			}
-			throw new SimulationException("Internal error in set design parameters",e);
+			throw new SimulationException("Internal error in set design parameters", e);
 		}
 
 		return true;
 	}
 
-	public Boolean setParameter(String name, Double value) throws SimulationException
+	public Boolean setParameter(String name, Double value)
+			throws SimulationException
 	{
 		try
 		{
@@ -455,11 +424,11 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if(e instanceof SimulationException)
+			if (e instanceof SimulationException)
 			{
-				throw (SimulationException)e;
+				throw (SimulationException) e;
 			}
-			throw new SimulationException("Error in set parameter",e);
+			throw new SimulationException("Error in set parameter", e);
 		}
 	}
 
@@ -473,12 +442,12 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if(e instanceof SimulationException)
+			if (e instanceof SimulationException)
 			{
-				throw (SimulationException)e;
+				throw (SimulationException) e;
 			}
-			throw new SimulationException("Could not stop the scheduler",e);
-			
+			throw new SimulationException("Could not stop the scheduler", e);
+
 		}
 	}
 }

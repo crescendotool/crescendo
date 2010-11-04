@@ -24,8 +24,11 @@ import org.destecs.protocol.structs.StepStructoutputsStruct;
 public class Main
 {
 	static boolean useScenario = false;
+	static String modelName="chessway1";//"watertank_new";//dual_watertank
 	//static File base = new File("C:\\destecs\\workspace\\watertank_new");
-	static File base = new File("C:\\overture\\runtime-destecs.product\\dual_watertank");
+	static String ws="C:\\overture\\runtime-destecs.product\\";
+	static String wsDestecs="C:\\destecs\\workspace\\";
+	static File base =new File(ws+ modelName); //new File("C:\\overture\\runtime-destecs.product\\"+modelName);
 
 
 	public static SimulationEngine getEngine() throws ModelPathNotValidException,
@@ -35,18 +38,18 @@ public class Main
 		if (useScenario)
 		{
 			Scenario scenario = new ScenarioParser(new File(base.getAbsolutePath()+"\\scenarios\\scenario1.script")).parse();
-			engine = new ScenarioSimulationEngine(new File(base,"dualwatertank.csc"), scenario );
+			engine = new ScenarioSimulationEngine(new File(base,modelName+".csc"), scenario );
 		} else
 		{
-			engine = new SimulationEngine(new File(base,"dualwatertank.csc"));
+			engine = new SimulationEngine(new File(base,modelName+".csc"));
 		}
-
+		
 		engine.setDtSimulationLauncher(new VdmRtLauncher());
 		engine.setDtModel(new File(base,"model"));
 		engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
 
 		engine.setCtSimulationLauncher(new Clp20SimLauncher());
-		engine.setCtModel(new File(base,"dualwatertank.emx"));
+		engine.setCtModel(new File(base,modelName+".emx"));
 		engine.setCtEndpoint(new URL("http://localhost:1580"));
 
 //		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
@@ -72,7 +75,7 @@ public class Main
 	{
 		SimulationEngine engine = getEngine();
 
-		File sharedDesignParamFile =new File(base,"dualwatertank.sdp");
+		File sharedDesignParamFile =new File(base,modelName+".sdp");
 		final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParamFile);
 
 		engine.simulate(shareadDesignParameters, 30);
@@ -136,9 +139,9 @@ public class Main
 			sb.append(simulator + ": ");
 			for (StepStructoutputsStruct o : result.outputs)
 			{
-				sb.append(o.name + "=" + o.value);
+				sb.append(o.name + "=" + o.value+" ");
 			}
-			System.out.println(sb.toString()+"\t\t"+result.time);
+			System.out.println(sb.toString()+"\t\t\t"+result.time);
 		}
 
 	}

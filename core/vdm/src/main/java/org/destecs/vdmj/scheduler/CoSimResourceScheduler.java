@@ -58,7 +58,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 				{
 					long d = resource.getMinimumTimestep();
 
-					if (d < minstep)
+					if (d  < minstep)
 					{
 						minstep = d;
 					}
@@ -67,6 +67,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 			if (idle && minstep >= 0 && minstep < Long.MAX_VALUE)
 			{
+//				System.out.println("Min step "+ minstep + " - Time: "+SystemClock.getWallTime());
 				if(canAdvanceSimulationTime(minstep))
 				{
 					SystemClock.advance(minstep);
@@ -79,6 +80,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 				idle = false;
 			}
+			
 		}
 		while (!idle && main.getRunState() != RunState.COMPLETE);
 

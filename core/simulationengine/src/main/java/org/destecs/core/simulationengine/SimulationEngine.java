@@ -153,12 +153,12 @@ public class SimulationEngine
 
 		if (dtLauncher == null)
 		{
-			throw new InvalidSimulationLauncher(Simulator.DT,"Launcher not set");
+			throw new InvalidSimulationLauncher(Simulator.DT, "Launcher not set");
 		}
 
 		if (ctLauncher == null)
 		{
-			throw new InvalidSimulationLauncher(Simulator.CT,"Launcher not set");
+			throw new InvalidSimulationLauncher(Simulator.CT, "Launcher not set");
 		}
 	}
 
@@ -183,57 +183,36 @@ public class SimulationEngine
 				contract = new Parser(contractFile).parse();
 			} catch (Exception e)
 			{
-				abort(Simulator.ALL, "Could not parse contract");
+				abort(Simulator.ALL, "Could not parse contract "
+						+ contractFile.getAbsolutePath());
 				return;
 			}
 
 			// validate shared design parameters
-			if (!validateSharedDesignParameters(sharedDesignParameters, contract))
-			{
-				abort(Simulator.ALL, "Validation of shared designparameters faild.");
-			}
+			validateSharedDesignParameters(sharedDesignParameters, contract);
 
 			// launch the simulators
 			engineInfo(Simulator.DT, "Launching");
 			dtLauncher.launch();
 
 			// connect to the simulators
-			ProxyICoSimProtocol dtProxy = connect(dtEndpoint);
+			ProxyICoSimProtocol dtProxy = connect(Simulator.DT,dtEndpoint);
 
-			if (!initialize(Simulator.DT, dtProxy))
-			{
-				abort(Simulator.DT, "Could not initialize");
-			}
+			initialize(Simulator.DT, dtProxy);
 
-			ProxyICoSimProtocol ctProxy = connect(ctEndpoint);
+			ProxyICoSimProtocol ctProxy = connect(Simulator.CT,ctEndpoint);
 
-			if (!initialize(Simulator.CT, ctProxy))
-			{
-				abort(Simulator.CT, "Could not initialize");
-			}
+			initialize(Simulator.CT, ctProxy);
 
 			// load the models
-			if (!loadModel(Simulator.DT, dtProxy, dtModelBase))
-			{
-				abort(Simulator.DT, "Could not load model");
-			}
+			loadModel(Simulator.DT, dtProxy, dtModelBase);
 
-			if (!loadModel(Simulator.CT, ctProxy, ctModel))
-			{
-				abort(Simulator.CT, "Could not load model");
-			}
+			loadModel(Simulator.CT, ctProxy, ctModel);
 
 			// validate interfaces
-			if (!valideteInterfaces(contract, dtProxy, ctProxy))
-			{
-				abort(Simulator.ALL, "Interface validation failed");
-				return;
-			}
+			valideteInterfaces(contract, dtProxy, ctProxy);
 
-			if (!setSharedDesignParameters(Simulator.DT, dtProxy, sharedDesignParameters))
-			{
-				abort(Simulator.DT, "Setting of shared designparameters failed");
-			}
+			setSharedDesignParameters(Simulator.DT, dtProxy, sharedDesignParameters);
 
 			// if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
 			// {
@@ -241,15 +220,9 @@ public class SimulationEngine
 			// }
 
 			// start simulation
-			if (!startSimulator(Simulator.DT, dtProxy))
-			{
-				abort(Simulator.DT, "Could not start simulator");
-			}
+			startSimulator(Simulator.DT, dtProxy);
 
-			if (!startSimulator(Simulator.CT, ctProxy))
-			{
-				abort(Simulator.CT, "Could not start simulator");
-			}
+			startSimulator(Simulator.CT, ctProxy);
 
 			Double finishTime = simulate(totalSimulationTime, dtProxy, ctProxy);
 
@@ -337,7 +310,8 @@ public class SimulationEngine
 	}
 
 	private Double simulate(Double totalSimulationTime,
-			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy) throws SimulationException
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			throws SimulationException
 	{
 		Double initTime = 0.0;// 100.0;
 		Double time = 0.0;
@@ -363,7 +337,15 @@ public class SimulationEngine
 			// Step DT
 
 			// TODO: Problem with CT not stopping at the correct time
-			result.time = result.time + 0.005;
+			//result.time = result.time + 0.005;
+			if(time >= result.time)
+			{
+				result.time = time + (1*Math.pow(10,-9));
+				engineInfo(Simulator.ALL, "Applying time fix of 1 ns to time: "+time+" => "+result.time);
+				messageInfo(Simulator.ALL, time,"time fix of 1 ns to time: "+time+" => "+result.time);
+				System.out.println("Applying time fix of 1 ns to time: "+time+" => "+result.time);
+			}
+			//result.time = result.time + (10*Math.pow(10,-9));
 
 			result = step(Simulator.DT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
 
@@ -374,6 +356,7 @@ public class SimulationEngine
 
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			throws SimulationException
 	{
 
 	}
@@ -397,7 +380,10 @@ public class SimulationEngine
 			}
 		} catch (UndeclaredThrowableException undeclaredException)
 		{
-			abort(simulator, "step failed", undeclaredException);
+			abort(simulator, "step failed(time = " + outputTime + " inputs=["
+					+ inputs.toString().replaceAll("\n", ", ")
+					+ "], singleStep = " + singleStep + ", events = " + events
+					+ ")", undeclaredException);
 		}
 		simulationInfo(simulator, result);
 		return result;
@@ -428,8 +414,10 @@ public class SimulationEngine
 			return proxy.start().success;
 		} catch (UndeclaredThrowableException undeclaredException)
 		{
-			abort(simulator, "start failed", undeclaredException);
+			abort(simulator, "Could not start simulator", undeclaredException);
 		}
+		abort(simulator, "Could not start simulator");
+
 		return false;
 	}
 
@@ -445,8 +433,12 @@ public class SimulationEngine
 			return proxy.setDesignParameters(sharedDesignParameters).success;
 		} catch (UndeclaredThrowableException undeclaredException)
 		{
-			abort(simulator, "setDesignParameters failed", undeclaredException);
+			abort(simulator, "setDesignParameters failed: "
+					+ sharedDesignParameters.toString().replaceAll("\n", " , "), undeclaredException);
 		}
+		abort(simulator, "setDesignParameters failed: "
+				+ sharedDesignParameters.toString().replaceAll("\n", " , "));
+
 		return false;
 	}
 
@@ -469,7 +461,7 @@ public class SimulationEngine
 			}
 			if (!ctInterface.inputs.contains(var.name))
 			{
-				abort(Simulator.DT, "Missing-input controlled variable: " + var);
+				abort(Simulator.CT, "Missing-input controlled variable: " + var);
 				return false;
 			}
 		}
@@ -484,12 +476,37 @@ public class SimulationEngine
 			}
 			if (!ctInterface.outputs.contains(var.name))
 			{
-				abort(Simulator.DT, "Missing-output monitored variable: " + var);
+				abort(Simulator.CT, "Missing-output monitored variable: " + var);
 				return false;
 			}
 		}
 
 		// TODO validate shared design parameters
+		//validate shared design parameters
+//		if(contract.getSharedDesignParameters().size()!= dtInterface.sharedDesignParameters.size())
+//		{
+//			abort(Simulator.DT, "Count of shared design parameters do not match: Contract("+ contract.getSharedDesignParameters()+") actual ("+dtInterface.sharedDesignParameters+")");
+//		}
+//		
+//		if(contract.getSharedDesignParameters().size()!= ctInterface.sharedDesignParameters.size())
+//		{
+//			abort(Simulator.CT, "Count of shared design parameters do not match: Contract("+ contract.getSharedDesignParameters()+") actual ("+ctInterface.sharedDesignParameters+")");
+//		}
+//		
+//		for (Variable var : contract.getSharedDesignParameters())
+//		{
+//			if (!dtInterface.sharedDesignParameters.contains(var.name))
+//			{
+//				abort(Simulator.DT, "Missing-shared design parameter: " + var);
+//				return false;
+//
+//			}
+//			if (!ctInterface.sharedDesignParameters.contains(var.name))
+//			{
+//				abort(Simulator.CT, "Missing-shared design parameter: " + var);
+//				return false;
+//			}
+//		}
 
 		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
@@ -512,14 +529,14 @@ public class SimulationEngine
 		return intf;
 	}
 
-	private void abort(Simulator source, String reason)
+	protected void abort(Simulator source, String reason)
 			throws SimulationException
 	{
 		engineInfo(source, "[Abort] " + reason);
 		throw new SimulationException(source, reason);
 	}
 
-	private void abort(Simulator source, String reason, Throwable throwable)
+	protected void abort(Simulator source, String reason, Throwable throwable)
 			throws SimulationException
 	{
 		String extendedReason = "";
@@ -543,8 +560,10 @@ public class SimulationEngine
 		return "";
 	}
 
-	private ProxyICoSimProtocol connect(URL url)
+	private ProxyICoSimProtocol connect(Simulator simulator,URL url) throws SimulationException
 	{
+		ProxyICoSimProtocol protocolProxy = null;
+		try{
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		config.setServerURL(url);
 
@@ -560,8 +579,11 @@ public class SimulationEngine
 
 		ICoSimProtocol protocol = (ICoSimProtocol) factory.newInstance(ICoSimProtocol.class);
 
-		ProxyICoSimProtocol protocolProxy = new ProxyICoSimProtocol(protocol);
-
+		 protocolProxy = new ProxyICoSimProtocol(protocol);
+		}catch(Exception e)
+		{
+			abort(simulator, "Connect faild to: "+ url, e);
+		}
 		return protocolProxy;
 	}
 
@@ -587,6 +609,7 @@ public class SimulationEngine
 		{
 			abort(simulator, "initialize failed", undeclaredException);
 		}
+		abort(simulator, "Could not initialize");
 		return false;
 	}
 
@@ -603,8 +626,10 @@ public class SimulationEngine
 			return success;
 		} catch (UndeclaredThrowableException undeclaredException)
 		{
-			abort(simulator, "loading model failed", undeclaredException);
+			abort(simulator, "Could not load model: " + model.getAbsolutePath(), undeclaredException);
 		}
+		abort(simulator, "Could not load model: " + model.getAbsolutePath());
+
 		return false;
 	}
 

@@ -30,7 +30,7 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 
 	public void from(Simulator simulator, Double time, String messageName)
 	{
-		message.log(pad(10,simulator.toString())+ " , "+pad(25, messageName)+ " , "+ time.toString());	
+		message.log(pad(10,simulator.toString())+ " , "+pad(75, messageName)+ " , "+ time.toString());	
 	}
 	
 	private String pad(int c, String data)

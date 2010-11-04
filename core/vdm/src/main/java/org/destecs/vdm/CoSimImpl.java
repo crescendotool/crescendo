@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
-import org.destecs.protocol.structs.InitializeStruct;
 import org.destecs.protocol.structs.LoadStruct;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.SetDesignParametersStruct;
@@ -21,6 +21,7 @@ import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.protocol.structs.StopStruct;
 import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.protocol.structs.UnLoadStruct;
+import org.overturetool.vdmj.scheduler.SystemClock;
 
 @SuppressWarnings("unchecked")
 public class CoSimImpl implements IDestecs
@@ -40,29 +41,13 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Boolean> initialize()
 	{
-		// List<InitializeSharedParameterStructParam> SharedParameter = new
-		// Vector<InitializeSharedParameterStructParam>();
-		// if (data.keySet().contains("SharedParameter"))
-		// {
-		// Object tmpL0 = data.get("SharedParameter");
-		// for (Object m : (Object[]) tmpL0)
-		// {
-		// SharedParameter.add(new InitializeSharedParameterStructParam((Map<String, Object>) m));
-		// }
-		// }
-		//
-		// List<InitializefaultsStructParam> faults = new Vector<InitializefaultsStructParam>();
-		// if (data.keySet().contains("faults"))
-		// {
-		// Object tmpL0 = data.get("faults");
-		// for (Object m : (Object[]) tmpL0)
-		// {
-		// faults.add(new InitializefaultsStructParam((Map<String, Integer>) m));
-		// }
-		// }
-		//
-		// return new InitializeStruct(SimulationManager.getInstance().initialize(SharedParameter, faults)).toMap();
-		return new InitializeStruct(true).toMap();
+		try
+		{
+			return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
+		} catch (SimulationException e)
+		{
+			throw new UndeclaredThrowableException(e);
+		}
 	}
 
 	public Map<String, Boolean> load(Map<String, String> data)
@@ -117,7 +102,6 @@ public class CoSimImpl implements IDestecs
 	public Map<String, Object> step(Map<String, Object> data)
 	{
 		Double outputTime = (Double) data.get("outputTime");
-		outputTime = outputTime * 1000;
 
 		List tmp = Arrays.asList((Object[]) data.get("inputs"));
 
@@ -147,9 +131,10 @@ public class CoSimImpl implements IDestecs
 		StepStruct result;
 		try
 		{
+			outputTime = new Double(SystemClock.timeToInternal(TimeUnit.seconds, outputTime));
 			result = SimulationManager.getInstance().step(outputTime, inputs, events);
 
-			result.time = result.time / 1000;
+			result.time = SystemClock.internalToTime(TimeUnit.seconds, result.time.longValue());
 
 			return result.toMap();
 		} catch (SimulationException e)
@@ -269,7 +254,7 @@ public class CoSimImpl implements IDestecs
 	{
 		try
 		{
-			return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
+			return new StartStruct(SimulationManager.getInstance().start()).toMap();
 		} catch (SimulationException e)
 		{
 			throw new UndeclaredThrowableException(e);
