@@ -130,6 +130,7 @@ BOOL_VAL
 
 COMMENT
     :   '--' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
+    |   '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
     |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
     | 'design_parameters' {$channel=HIDDEN;}
     | 'variables' {$channel=HIDDEN;}
