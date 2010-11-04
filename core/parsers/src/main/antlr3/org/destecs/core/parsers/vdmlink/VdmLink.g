@@ -11,6 +11,15 @@ tokens{
   EVENT = 'vdm.events';
 }
 
+@header {
+package org.destecs.core.parsers.vdmlink;
+
+}
+
+@lexer::header{  
+package org.destecs.core.parsers.vdmlink;
+} 
+
 WS  :   ( ' '
         | '\t'
         | '\r'
@@ -28,14 +37,14 @@ COMMENT
     ;
 
 start 
-    : (link | interface)* EOF
+    : (link | intf)* EOF
     ;
     
 link
     : ID '=' ID '.' ID
     ;
 
-interface
+intf
     : OUTPUT '=' idList
     | INPUT '=' idList
     | SHARED '=' idList

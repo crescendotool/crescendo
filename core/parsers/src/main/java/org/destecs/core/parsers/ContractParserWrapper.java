@@ -1,24 +1,27 @@
 package org.destecs.core.parsers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.destecs.core.contract.Contract;
-import org.destecs.core.contract.ContractFactory;
-import org.destecs.core.parsers.contract.contractLexer;
-import org.destecs.core.parsers.contract.contractParser;
+import org.destecs.core.parsers.contract.ContractLexer;
+import org.destecs.core.parsers.contract.ContractParser;
 
-public class ContractParserWrapper extends contractParser
+public class ContractParserWrapper 
 {
-	public Contract parse(File file)
+	
+	ContractParser parser =null;
+	
+	public Contract parse(File file) throws IOException
 	{
 		ANTLRFileStream input = new ANTLRFileStream(file.getAbsolutePath());
-		contractLexer lexer = new contractLexer(input);
+		ContractLexer lexer = new ContractLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		contractParser parser = new contractParser(tokens);
+		parser = new ContractParser(tokens);
 		parser.enableErrorMessageCollection(true);
 
 		try
@@ -34,13 +37,22 @@ public class ContractParserWrapper extends contractParser
 				}
 			} else
 			{
-				ContractFactory c = parser.getContract();
-				return c.getContract();
+				return parser.getContract();
 			}
 		} catch (RecognitionException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	public boolean hasErrors()
+	{
+		if(parser!=null)
+		{
+			return parser.hasExceptions();
+		}
+		return false;
 	}
 }

@@ -25,6 +25,7 @@ tokens {
 @header {
 package org.destecs.core.parsers.contract;
 
+import org.destecs.core.contract.Contract;
 import org.destecs.core.contract.Variable;
 import org.destecs.core.contract.Variable.VariableType;
 import org.destecs.core.contract.Variable.DataType;

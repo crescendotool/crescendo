@@ -11,8 +11,9 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.destecs.core.contract.Contract;
-import org.destecs.core.contract.Parser;
+
 import org.destecs.core.contract.Variable;
+import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
 import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
@@ -180,7 +181,7 @@ public class SimulationEngine
 			Contract contract = null;
 			try
 			{
-				contract = new Parser(contractFile).parse();
+				contract = new ContractParserWrapper().parse(contractFile);
 			} catch (Exception e)
 			{
 				abort(Simulator.ALL, "Could not parse contract "
