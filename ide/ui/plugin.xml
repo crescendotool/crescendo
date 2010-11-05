@@ -50,6 +50,14 @@
             </contentExtension>
          </includes>
       </viewerContentBinding>
+      <viewerActionBinding
+            viewerId="org.destecs.ide.ui.destecsExplorer">
+         <includes>
+            <actionExtension
+                  pattern="org.eclipse.ui.navigator.resources.*">
+            </actionExtension>
+         </includes>
+      </viewerActionBinding>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
@@ -89,11 +97,6 @@
             wizardId="org.destecs.ide.ui.newProjectWizard">
          <enablement></enablement>
       </commonWizard>
-      <actionProvider
-            class="org.eclipse.ui.internal.navigator.resources.actions.ResourceMgmtActionProvider"
-            id="org.eclipse.ui.navigator.resources.ResourceMgmtActions">
-         <enablement></enablement>
-      </actionProvider>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
