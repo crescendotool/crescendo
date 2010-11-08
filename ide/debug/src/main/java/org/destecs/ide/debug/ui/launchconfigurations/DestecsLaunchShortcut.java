@@ -27,15 +27,17 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.progress.IProgressService;
 
-
-public abstract class DestecsLaunchShortcut implements ILaunchShortcut2
+public class DestecsLaunchShortcut implements ILaunchShortcut2
 {
 	/**
 	 * Returns the type of configuration this shortcut is applicable to.
 	 * 
 	 * @return the type of configuration this shortcut is applicable to
 	 */
-	protected abstract ILaunchConfigurationType getConfigurationType();
+	protected ILaunchConfigurationType getConfigurationType()
+	{
+		return getLaunchManager().getLaunchConfigurationType(IDebugConstants.ATTR_DESTECS_PROGRAM);
+	}
 
 	/**
 	 * Creates and returns a new configuration based on the specified type.
@@ -73,21 +75,29 @@ public abstract class DestecsLaunchShortcut implements ILaunchShortcut2
 	 * 
 	 * @return type selection dialog title
 	 */
-	protected abstract String getTypeSelectionTitle();
+	protected  String getTypeSelectionTitle()
+	{
+		return "Select DESTECS Application";
+	}
 
 	/**
 	 * Returns an error message to use when the editor does not contain a type that can be launched.
 	 * 
 	 * @return error message when editor cannot be launched
 	 */
-	protected abstract String getEditorEmptyMessage();
+	protected String getEditorEmptyMessage(){
+		return "Editor does not contain a main type";
+	}
 
 	/**
 	 * Returns an error message to use when the selection does not contain a type that can be launched.
 	 * 
 	 * @return error message when selection cannot be launched
 	 */
-	protected abstract String getSelectionEmptyMessage();
+	protected  String getSelectionEmptyMessage()
+	{
+		return "Selection does not contain a launchable operation or function type";
+	}
 
 	IProject project = null;
 
