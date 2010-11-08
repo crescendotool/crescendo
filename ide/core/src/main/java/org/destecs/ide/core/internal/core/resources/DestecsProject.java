@@ -1,44 +1,55 @@
 package org.destecs.ide.core.internal.core.resources;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import org.destecs.ide.core.DestecsCorePlugin;
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 
-
-
 public class DestecsProject implements
-		org.destecs.ide.core.resources.IDestecsProject {
+		org.destecs.ide.core.resources.IDestecsProject
+{
 
 	private static ArrayList<IProject> loadedProjects = new ArrayList<IProject>();
-	
+
 	public final IProject project;
 
-	public DestecsProject(IProject project) {
-		this.project = project;
+	public DestecsProject(IProject project)
+	{
+		this.project = project;createStructure();
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Object getAdapter(Class adapter) {
+	public Object getAdapter(Class adapter)
+	{
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
 
-	public static boolean isDestecsProject(IProject project) {
+	public static boolean isDestecsProject(IProject project)
+	{
 
-		try {
-			if (project.hasNature(IDestecsCoreConstants.NATURE)) {
+		try
+		{
+			if (project.hasNature(IDestecsCoreConstants.NATURE))
+			{
 				return true;
 			}
-		} catch (CoreException e) {
+		} catch (CoreException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -47,17 +58,20 @@ public class DestecsProject implements
 	}
 
 	public synchronized static Object createProject(String projectName,
-			URI location) {
+			URI location)
+	{
 		Assert.isNotNull(projectName);
 		Assert.isTrue(projectName.trim().length() > 0);
 
 		IProject project = createBaseProject(projectName, location);
-		try {
+		try
+		{
 			addNature(project, IDestecsCoreConstants.NATURE);
 
 			//String[] paths = { };//"parent/child1-1/child2", "parent/child1-2/child2/child3" }; //$NON-NLS-1$ //$NON-NLS-2$
 			// addToProjectStructure(project, paths);
-		} catch (CoreException e) {
+		} catch (CoreException e)
+		{
 			// VdmCore.log("VdmProject createProject", e);
 			project = null;
 		}
@@ -66,8 +80,10 @@ public class DestecsProject implements
 	}
 
 	public static void addNature(IProject project, String nature)
-			throws CoreException {
-		if (!project.hasNature(nature)) {
+			throws CoreException
+	{
+		if (!project.hasNature(nature))
+		{
 			IProjectDescription description = project.getDescription();
 			String[] prevNatures = description.getNatureIds();
 			String[] newNatures = new String[prevNatures.length + 1];
@@ -79,7 +95,7 @@ public class DestecsProject implements
 			project.setDescription(description, monitor);
 		}
 	}
-	
+
 	/**
 	 * Just do the basics: create a basic project.
 	 * 
@@ -119,47 +135,111 @@ public class DestecsProject implements
 		return newProject;
 	}
 
-	private static IProject checkLoaded(IProject project){
-		for (IProject p : loadedProjects) {
-			if(p.getName().equals(project.getName())){
+	private static IProject checkLoaded(IProject project)
+	{
+		for (IProject p : loadedProjects)
+		{
+			if (p.getName().equals(project.getName()))
+			{
 				return p;
 			}
 		}
 		return null;
 	}
-	
+
 	public synchronized static IDestecsProject createProject(IProject project)
 	{
-		
+
 		IProject c = checkLoaded(project);
-		
-		if(c != null)
+
+		if (c != null)
 		{
 			return (IDestecsProject) c;
-		}
-		else
+		} else
 		{
 			IDestecsProject destecsProject = new DestecsProject(project);
 			return destecsProject;
 		}
-		
-		
-//		if (ResourceManager.getInstance().hasProject(project))
-//			return ResourceManager.getInstance().getProject(project);
-//		else
-//		{
-//			try
-//			{
-//				IDestecsProject destecsProject = new DestecsProject(project);
-//				return ResourceManager.getInstance().addProject(destecsProject);
-//			} catch (Exception e)
-//			{
-//				
-//				DestecsCorePlugin.log("VdmModelManager createProject", e);
-//				
-//				return null;
-//			}
-//		}
+
+		// if (ResourceManager.getInstance().hasProject(project))
+		// return ResourceManager.getInstance().getProject(project);
+		// else
+		// {
+		// try
+		// {
+		// IDestecsProject destecsProject = new DestecsProject(project);
+		// return ResourceManager.getInstance().addProject(destecsProject);
+		// } catch (Exception e)
+		// {
+		//				
+		// DestecsCorePlugin.log("VdmModelManager createProject", e);
+		//				
+		// return null;
+		// }
+		// }
 	}
+
+	public IFolder getOutputFolder()
+	{
+		return this.project.getFolder("output");
+	}
+
+	public List<IFile> getScenarioFiles() throws CoreException
+	{
+		List<IFile> files = new Vector<IFile>();
+		for (IResource resource : getScenarioFolder().members())
+		{
+			if(resource instanceof IFile)
+			{
+				files.add((IFile) resource);
+			}
+		}
+		return files;
+	}
+
+	public IFolder getScenarioFolder()
+	{
+		return this.project.getFolder("scenarios");
+	}
+
+	public IFile getSharedDesignParameterFile()
+	{
+		return this.project.getFile("configuration/debug.sdp");
+	}
+
+	public IFile getVdmLinkFile()
+	{
+		return this.project.getFile("configuration/vdm.link");
+	}
+	
+	public IFolder getVdmModelFolder()
+	{
+		return this.project.getFolder("model");
+	}
+
+	public IFile getContractFile()
+	{
+		return this.project.getFile("configuration/"+this.project.getName()+".csc");
+	}
+
+	public void createStructure()
+	{
+		File root = this.project.getLocation().toFile();
+
+		new File(root, "model").mkdirs();
+		new File(root, "output").mkdirs();
+		new File(root, "scenarios").mkdirs();
+		new File(root, "configuration").mkdirs();
+
+		try
+		{
+			this.project.refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (CoreException e)
+		{
+			// Ignore it
+		}
+	}
+
+	
 
 }
