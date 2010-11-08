@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CharStream;
 import org.antlr.runtime.EarlyExitException;
 import org.antlr.runtime.FailedPredicateException;
 import org.antlr.runtime.MismatchedNotSetException;
@@ -17,7 +20,6 @@ import org.antlr.runtime.Parser;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.UnwantedTokenException;
-import org.destecs.core.parsers.contract.ContractParser;
 
 public abstract class ParserWrapper<T>
 {
@@ -70,9 +72,19 @@ public abstract class ParserWrapper<T>
 	
 	List<IError> errors = new Vector<IError>();
 
-	public abstract T parse(File file) throws IOException;
+	protected abstract T internalParse(File source, CharStream input) throws IOException;
+	
+	public T parse(File source) throws IOException
+	{
+		ANTLRFileStream input = new ANTLRFileStream(source.getAbsolutePath());
+		return internalParse(source,input);
+	}
 
-	public abstract T parse(File source, String data) throws IOException;
+	public T parse(File source, String data) throws IOException
+	{
+		ANTLRStringStream input = new ANTLRStringStream(data);
+		return internalParse(source,input);
+	}
 		
 	protected synchronized void addErrors(File source,List<RecognitionException> exps)
 	{
