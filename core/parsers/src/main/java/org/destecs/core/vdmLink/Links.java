@@ -1,14 +1,7 @@
 package org.destecs.core.vdmLink;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
 
 public class Links {
 	private final Map<String, StringPair> link;

@@ -181,11 +181,16 @@ public class SimulationEngine
 			Contract contract = null;
 			try
 			{
-				contract = new ContractParserWrapper().parse(contractFile);
+				ContractParserWrapper parser =new ContractParserWrapper(); 
+				contract = parser.parse(contractFile);
+				if(parser.hasErrors())
+				{
+					throw new Exception("Invalid Contract - parse errors");
+				}
 			} catch (Exception e)
 			{
 				abort(Simulator.ALL, "Could not parse contract "
-						+ contractFile.getAbsolutePath());
+						+ contractFile.getAbsolutePath(),e);
 				return;
 			}
 

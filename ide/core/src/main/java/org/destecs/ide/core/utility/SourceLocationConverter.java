@@ -33,6 +33,7 @@ public class SourceLocationConverter
 			{
 				this.codeLineLengths[i] = sum;
 				sum += this.codeLines[i].length() + 1;
+				
 			}
 		}
 
@@ -41,19 +42,10 @@ public class SourceLocationConverter
 			if (lineNumber > 0 && codeLines.length > lineNumber)
 			{
 				String codeLine = codeLines[lineNumber];
-//				char[] charLine = codeLine.toCharArray();
 				int start = codeLineLengths[lineNumber];
 				int end = start + codeLine.length();
 
-				// TODO if tab is not 4 characters.
-//				for (char c : charLine)
-//				{
-//					if (c == '\t')
-//					{
-//						start -= 3;
-//						end -= 3;
-//					}
-//				}
+
 				return new int[] { start, end };
 			} else
 				return new int[] { 0, 0 };
@@ -64,7 +56,7 @@ public class SourceLocationConverter
 	
 	public SourceLocationConverter(char[] content)
 	{
-		this.content = new String(content);
+		this.content = new String(content).replaceAll("\r\n", "\n");
 		this.model = new CodeModel(this.content);
 	}
 	

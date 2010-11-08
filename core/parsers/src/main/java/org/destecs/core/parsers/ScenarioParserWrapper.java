@@ -9,24 +9,24 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.destecs.core.contract.Contract;
-import org.destecs.core.parsers.contract.ContractLexer;
-import org.destecs.core.parsers.contract.ContractParser;
+import org.destecs.core.parsers.scenario.ScenarioLexer;
+import org.destecs.core.parsers.scenario.ScenarioParser;
+import org.destecs.core.scenario.Scenario;
 
-public class ContractParserWrapper extends ParserWrapper<Contract>
+public class ScenarioParserWrapper extends ParserWrapper<Scenario>
 {
-	public Contract parse(File source) throws IOException
+			public Scenario parse(File source) throws IOException
 	{
 		ANTLRFileStream input = new ANTLRFileStream(source.getAbsolutePath());
-		ContractLexer lexer = new ContractLexer(input);
+		ScenarioLexer lexer = new ScenarioLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ContractParser thisParser =new ContractParser(tokens);;
+		ScenarioParser thisParser = new ScenarioParser(tokens);
 		parser=thisParser;
 		thisParser.enableErrorMessageCollection(true);
 
 		try
 		{
-			thisParser.contract();
+			thisParser.start();
 			if (thisParser.hasExceptions())
 			{
 
@@ -34,28 +34,28 @@ public class ContractParserWrapper extends ParserWrapper<Contract>
 				addErrors(source, exps);
 			} else
 			{
-				return thisParser.getContract();
+				return thisParser.getScenario();
 			}
 		} catch (RecognitionException errEx)
 		{
 			errEx.printStackTrace();
-			addError(new ParseError(source, errEx.line, errEx.charPositionInLine, getErrorMessage(errEx, parser.getTokenNames())));
+			addError(new ParseError(source, errEx.line, errEx.charPositionInLine, getErrorMessage(errEx, thisParser.getTokenNames())));
 		}
 		return null;
 	}
 
-	public Contract parse(File source, String data) throws IOException
+	public Scenario parse(File source, String data) throws IOException
 	{
 		ANTLRStringStream input = new ANTLRStringStream(data);
-		ContractLexer lexer = new ContractLexer(input);
+		ScenarioLexer lexer = new ScenarioLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ContractParser thisParser = new ContractParser(tokens);
+		ScenarioParser thisParser = new ScenarioParser(tokens);
 		parser = thisParser;
 		thisParser.enableErrorMessageCollection(true);
 
 		try
 		{
-			thisParser.contract();
+			thisParser.start();
 			if (thisParser.hasExceptions())
 			{
 
@@ -63,12 +63,12 @@ public class ContractParserWrapper extends ParserWrapper<Contract>
 				addErrors(source, exps);
 			} else
 			{
-				return thisParser.getContract();
+				return thisParser.getScenario();
 			}
 		} catch (RecognitionException errEx)
 		{
 			errEx.printStackTrace();
-			addError(new ParseError(source, errEx.line, errEx.charPositionInLine, getErrorMessage(errEx, parser.getTokenNames())));
+			addError(new ParseError(source, errEx.line, errEx.charPositionInLine, getErrorMessage(errEx, thisParser.getTokenNames())));
 		}
 		return null;
 	}

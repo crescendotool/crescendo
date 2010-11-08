@@ -1,7 +1,6 @@
 package org.destecs.core.scenario;
 
 import java.util.List;
-import java.util.Vector;
 
 public class Scenario
 {

@@ -6,27 +6,26 @@ import java.util.List;
 import java.util.Vector;
 
 import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.destecs.core.contract.Contract;
-import org.destecs.core.parsers.contract.ContractLexer;
-import org.destecs.core.parsers.contract.ContractParser;
+import org.destecs.core.parsers.vdmlink.VdmLinkLexer;
+import org.destecs.core.parsers.vdmlink.VdmLinkParser;
+import org.destecs.core.vdmLink.Links;
 
-public class ContractParserWrapper extends ParserWrapper<Contract>
+public class VdmLinkParserWrapper extends ParserWrapper<Links>
 {
-	public Contract parse(File source) throws IOException
+	public Links parse(File source) throws IOException
 	{
 		ANTLRFileStream input = new ANTLRFileStream(source.getAbsolutePath());
-		ContractLexer lexer = new ContractLexer(input);
+		VdmLinkLexer lexer = new VdmLinkLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ContractParser thisParser =new ContractParser(tokens);;
-		parser=thisParser;
+		VdmLinkParser thisParser = new VdmLinkParser(tokens);
+		parser = thisParser;
 		thisParser.enableErrorMessageCollection(true);
 
 		try
 		{
-			thisParser.contract();
+			thisParser.start();
 			if (thisParser.hasExceptions())
 			{
 
@@ -34,7 +33,7 @@ public class ContractParserWrapper extends ParserWrapper<Contract>
 				addErrors(source, exps);
 			} else
 			{
-				return thisParser.getContract();
+				return thisParser.getLinks();
 			}
 		} catch (RecognitionException errEx)
 		{
@@ -44,18 +43,18 @@ public class ContractParserWrapper extends ParserWrapper<Contract>
 		return null;
 	}
 
-	public Contract parse(File source, String data) throws IOException
+	public Links parse(File source, String data) throws IOException
 	{
-		ANTLRStringStream input = new ANTLRStringStream(data);
-		ContractLexer lexer = new ContractLexer(input);
+		ANTLRFileStream input = new ANTLRFileStream(source.getAbsolutePath());
+		VdmLinkLexer lexer = new VdmLinkLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ContractParser thisParser = new ContractParser(tokens);
+		VdmLinkParser thisParser = new VdmLinkParser(tokens);
 		parser = thisParser;
 		thisParser.enableErrorMessageCollection(true);
 
 		try
 		{
-			thisParser.contract();
+			thisParser.start();
 			if (thisParser.hasExceptions())
 			{
 
@@ -63,7 +62,7 @@ public class ContractParserWrapper extends ParserWrapper<Contract>
 				addErrors(source, exps);
 			} else
 			{
-				return thisParser.getContract();
+				return thisParser.getLinks();
 			}
 		} catch (RecognitionException errEx)
 		{
