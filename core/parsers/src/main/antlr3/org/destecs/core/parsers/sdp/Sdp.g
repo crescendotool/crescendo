@@ -1,42 +1,33 @@
-grammar VdmLink;
+grammar Sdp;
 
 options {
   language = Java;
 }
 
-tokens{
-  OUTPUT = 'vdm.outputs';
-  INPUT = 'vdm.inputs';
-  SHARED = 'vdm.sdp';
-  EVENT = 'vdm.events';
-}
-
 @header {
-package org.destecs.core.parsers.vdmlink;
+package org.destecs.core.parsers.sdp;
 
-import org.destecs.core.vdmLink.LinksFactory;
-import org.destecs.core.vdmLink.StringPair;
-import org.destecs.core.vdmLink.Links;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import org.destecs.core.sdp.SdpFactory;
+import java.lang.Integer;
 }
 
 @lexer::header{  
-package org.destecs.core.parsers.vdmlink;
-}
+package org.destecs.core.parsers.sdp;
+} 
 
-@members{
+@members {
     private boolean mMessageCollectionEnabled = false;
     private boolean mHasErrors = false;
-    private LinksFactory links = new LinksFactory();
+    private SdpFactory sdps = new SdpFactory();
     private List<String> mMessages;
     private List<RecognitionException> mExceptions = new ArrayList<RecognitionException>();
 
-      
-    public Links getLinks(){
-        return links.getLinks();
+    public HashMap getSdps()
+    {
+        return sdps.getSdps();
     }
-      
+  
     public boolean hasExceptions()
     {
         return mExceptions.size() > 0;
@@ -110,7 +101,13 @@ package org.destecs.core.parsers.vdmlink;
     public boolean hasErrors() {
         return mHasErrors;
     }
-} 
+}
+
+
+BOOL_VAL 
+  : 'true'
+  | 'false'
+  ;
 
 WS  :   ( ' '
         | '\t'
@@ -119,42 +116,47 @@ WS  :   ( ' '
         ) {$channel=HIDDEN;}
     ;
 
-ID  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
-    ;
-    
 COMMENT
     :   '--' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
     |   '//' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
     |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+    | 'design_parameters' {$channel=HIDDEN;}
+    | 'variables' {$channel=HIDDEN;}
+    | 'events' {$channel=HIDDEN;}
+    ;
+  
+ID  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
 
-start 
-    : (link | intf)* EOF ';'
+INT : '0'..'9'+
     ;
+
+FLOAT
+    :   ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
+    |   '.' ('0'..'9')+ EXPONENT?
+    |   ('0'..'9')+ EXPONENT
+    ;
+
+fragment
+EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
     
-link
-    : a=ID '=' b=ID '.' c=ID
-    { links.addLink($a.text, new StringPair($b.text,$c.text)); }
-    ;
+start : def EOF;
 
-intf
-    : OUTPUT '=' r=idList
-    {links.addOutputs(r);}
-    | INPUT '=' r=idList
-    {links.addInputs(r);}
-    | SHARED '=' r=idList
-    {links.addSDPs(r);}
-    | EVENT '=' r=idList
-    {links.addEvents(r);}
-    ;
+def   : ID '=' v=value ';'
+      { if(v != null)
+          sdps.addSdp($ID.text, v);
+      } 
+      ;
 
-idList returns [List<String> ids]
-@init{
-  ids = new ArrayList<String>();
-} 
-    : a=ID {$ids.add($a.text);} (',' b=ID {$ids.add($b.text);} )*
-    
-    ;
-    
-
-
+value returns [Object value]
+      : BOOL_VAL
+      { $value = Boolean.valueOf($BOOL_VAL.text);
+      }
+      | INT 
+      { $value = Integer.parseInt($INT.text);
+      }
+      | FLOAT
+      { $value = Double.parseDouble($FLOAT.text);
+      }
+      ;
+      

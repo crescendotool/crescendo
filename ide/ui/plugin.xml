@@ -60,13 +60,14 @@
          <includes>
             <actionExtension
                   pattern="org.eclipse.ui.navigator.resources.*">
-            </actionExtension>
+            </actionExtension>           
          </includes>
       </viewerActionBinding>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
+            activeByDefault="true"
             contentProvider="org.destecs.ide.ui.navigator.DestecsContentProvider"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.destecsNavigatorContent"
@@ -101,17 +102,24 @@
                policy="InvokeAlwaysRegardlessOfSuppressedExt"
                suppressedExtensionId="org.eclipse.team.ui.resourceContent">
          </override>
-         <actionProvider
-               class="org.eclipse.ui.internal.navigator.resources.actions.EditActionProvider"
-               id="org.eclipse.ui.navigator.resources.actions.EditActions">
+        <actionProvider
+               class="org.eclipse.ui.internal.navigator.resources.actions.EditActionProvider">
+               <enablement>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+               </adapt>
+            </enablement>
          </actionProvider>
          <actionProvider
-               class="org.eclipse.ui.internal.navigator.resources.actions.RefactorActionProvider"
-               id="org.eclipse.ui.navigator.resources.actions.RefactorActions">
+               class="org.eclipse.ui.internal.navigator.resources.actions.RefactorActionProvider">
+               <enablement>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+               </adapt>
+            </enablement>
          </actionProvider>
          <actionProvider
-               class="org.eclipse.ui.internal.navigator.resources.actions.WorkManagementActionProvider"
-               id="org.eclipse.ui.navigator.resources.WorkManagementActionProvider">
+               class="org.eclipse.ui.internal.navigator.resources.actions.WorkManagementActionProvider">
             <enablement>
                <adapt
                      type="org.eclipse.core.resources.IResource">
@@ -119,8 +127,7 @@
             </enablement>
          </actionProvider>
          <actionProvider
-               class="org.eclipse.ui.internal.navigator.resources.actions.ResourceMgmtActionProvider"
-               id="org.eclipse.ui.navigator.resources.ResourceMgmtActions">
+               class="org.eclipse.ui.internal.navigator.resources.actions.ResourceMgmtActionProvider">
             <enablement>
                <or>
                   <adapt
@@ -135,6 +142,17 @@
                </or>
             </enablement>
          </actionProvider>
+         <commonSorter
+               class="org.eclipse.ui.views.navigator.ResourceSorter"
+               id="org.eclipse.ui.navigator.resources.sorters.defaultSorter.destecs">
+            <parentExpression>
+               <or>
+                  <adapt
+                        type="org.eclipse.core.resources.IResource">
+                  </adapt>
+               </or>
+            </parentExpression>
+         </commonSorter> 
       </navigatorContent>
       <commonWizard
             type="new"

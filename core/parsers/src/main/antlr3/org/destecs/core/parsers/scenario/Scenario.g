@@ -112,8 +112,8 @@ package org.destecs.core.parsers.scenario;
 
 
 COMMENT
-    :   '--' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
-    |   '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
+    :   '--' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
+    |   '//' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
     |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
     ;
     
@@ -140,7 +140,7 @@ start : action* EOF
       ;
       
 action 
-      : t=FLOAT simType '.' ID ASSIGN v=FLOAT 
+      : t=FLOAT simType '.' ID ASSIGN v=FLOAT ';'
       { scenario.addAction(
         new Action(
           Double.parseDouble($t.text),

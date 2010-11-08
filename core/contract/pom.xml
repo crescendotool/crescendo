@@ -31,6 +31,13 @@
 				</executions>
 			</plugin>
   	</plugins>
- </build>  
+ </build>
+<dependencies>
+	<dependency>
+		<groupId>org.destecs.core</groupId>
+		<artifactId>parsers</artifactId>
+		<version>1.0.0</version>
+	</dependency>
+</dependencies>  
  
 </project>
