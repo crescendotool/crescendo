@@ -206,7 +206,7 @@
             default="true"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
-            name="DESTECS Contract Editor">
+            name="Contract Editor">
       </editor>
       
       <editor
