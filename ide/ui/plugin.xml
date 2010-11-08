@@ -185,5 +185,46 @@
             natureId="org.destecs.ide.core.nature">
       </image>
    </extension>
+   
+   
+   <!-- Editors -->
+   <extension
+         point="org.eclipse.ui.editors">
+         
+      <editor
+            class="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditor"
+            default="true"
+            extensions="csc, vdm.link"
+            icon="icons/cview16/contract_file_tsk.gif"
+            id="org.destecs.ide.contracteditor.editor.impl.CoSimulationMultipageEditor"
+            name="Co-Simulation Editor">
+      </editor>
+         
+         
+      <editor
+            class="org.destecs.ide.ui.editor.impl.ContractEditor"
+            default="true"
+            icon="icons/cview16/contract_file_tsk.gif"
+            id="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
+            name="DESTECS Contract Editor">
+      </editor>
+      
+      <editor
+            class="org.destecs.ide.ui.editor.impl.VdmLinkEditor"
+            default="true"
+            icon="icons/cview16/contract_file_tsk.gif"
+            id="org.destecs.ide.contracteditor.editor.core.VdmLinkEditor"
+            name="VDM-Link Editor">
+      </editor>
+      
+      <editor
+            class="org.destecs.ide.ui.editor.impl.ScenarioEditor"
+            default="true"
+            extensions="script"
+            icon="icons/cview16/contract_file_tsk.gif"
+            id="org.destecs.ide.contracteditor.editor.core.ScenarioEditor"
+            name="Scenario Editor">
+      </editor>
+   </extension>
 
 </plugin>

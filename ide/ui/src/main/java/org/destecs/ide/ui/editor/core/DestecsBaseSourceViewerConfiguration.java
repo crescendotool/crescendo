@@ -10,8 +10,10 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+
 
 public abstract class DestecsBaseSourceViewerConfiguration extends
 SourceViewerConfiguration
@@ -100,4 +102,14 @@ SourceViewerConfiguration
 	}
 	
 	protected abstract ITokenScanner getCodeScaner(DestecsColorProvider colorProvider);
+	
+	/*
+	 * @see SourceViewerConfiguration#getAnnotationHover(ISourceViewer)
+	 */
+	@Override
+	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer)
+	{
+
+		return new DestecsAnnotationHover(false);
+	}
 }
