@@ -12,4 +12,6 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_SIMULATION_TIME = "DESTECS_LAUNCH_CONFIG_SIMULATION_TIME".toLowerCase();
 //	public static final String NO_PROJECT = "__NO_PROJECT_SELECTED__";
 	public static final String DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH = "DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH".toLowerCase();
+
+	public static final String ATTR_DESTECS_PROGRAM = "org.destecs.ide.debug.launchConfigurationType";
 }
