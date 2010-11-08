@@ -1,7 +1,7 @@
 package org.destecs.ide.ui.editor.impl;
 
 import org.destecs.core.parsers.ParserWrapper;
-import org.destecs.core.parsers.ScenarioParserWrapper;
+import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.ide.ui.editor.core.BaseCodeScanner;
 import org.destecs.ide.ui.editor.core.BaseReconcilingStrategy;
 import org.destecs.ide.ui.editor.core.DestecsBaseSourceViewerConfiguration;
@@ -11,40 +11,40 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.ui.editors.text.TextEditor;
 
-public class ScenarioEditor extends TextEditor
+public class SdpEditor extends TextEditor
 {
-	public class ScenarioSourceViewerConfiguration extends
+	public class SdpSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
 	{
 
 		@Override
 		protected ITokenScanner getCodeScaner(DestecsColorProvider colorProvider)
 		{
-			return new ScenarioCodeScanner(colorProvider);
+			return new SdpCodeScanner(colorProvider);
 		}
 
 		@Override
 		protected IReconcilingStrategy getReconcilingStrategy()
 		{
-			return new ScenarioReconcilingStrategy();
+			return new SdpReconcilingStrategy();
 		}
 
 	}
 	
-	public class ScenarioReconcilingStrategy extends BaseReconcilingStrategy
+	public class SdpReconcilingStrategy extends BaseReconcilingStrategy
 	{
 		@SuppressWarnings("unchecked")
 		@Override
 		protected ParserWrapper getParser()
 		{
-			return new ScenarioParserWrapper();
+			return new SdpParserWrapper();
 		}
 	}
 
-	public class ScenarioCodeScanner extends BaseCodeScanner
+	public class SdpCodeScanner extends BaseCodeScanner
 	{
 
-		public ScenarioCodeScanner(DestecsColorProvider provider)
+		public SdpCodeScanner(DestecsColorProvider provider)
 		{
 			super(provider);
 		}
@@ -58,7 +58,7 @@ public class ScenarioEditor extends TextEditor
 		@Override
 		protected String[] getKeywords()
 		{
-			return new String[] { "DT","CT" };
+			return new String[] {  };
 		}
 
 		@Override
@@ -69,7 +69,7 @@ public class ScenarioEditor extends TextEditor
 
 	}
 
-	public ScenarioEditor()
+	public SdpEditor()
 	{
 		super();
 		setDocumentProvider(new DestecsDocumentProvider());
@@ -79,12 +79,12 @@ public class ScenarioEditor extends TextEditor
 	protected void initializeEditor()
 	{
 		super.initializeEditor();
-		setSourceViewerConfiguration(getScenarioSourceViewerConfiguration());
+		setSourceViewerConfiguration(getSdpSourceViewerConfiguration());
 	}
 
-	public ScenarioSourceViewerConfiguration getScenarioSourceViewerConfiguration()
+	public SdpSourceViewerConfiguration getSdpSourceViewerConfiguration()
 	{
-		return new ScenarioSourceViewerConfiguration();
+		return new SdpSourceViewerConfiguration();
 	}
 
 }

@@ -2,7 +2,7 @@
 	<fileset dir="../">
 	<include name="ui/**" />
 	<include name="core/**" />
-	<include name="contracteditor/**" />
+	<--include name="contracteditor/**" /-->
 	<include name="simeng/**" />
 	
 		<!-- include name="ui/**" />

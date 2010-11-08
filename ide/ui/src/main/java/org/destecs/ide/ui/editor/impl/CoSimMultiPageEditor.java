@@ -1,6 +1,9 @@
 package org.destecs.ide.ui.editor.impl;
 
 import java.io.ByteArrayInputStream;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.eclipse.core.resources.IFile;
@@ -14,12 +17,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -47,11 +47,13 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 	private TextEditor editor;
 
 	/** The font chosen in page 1. */
-	private Font font;
+	
 
 	/** The text widget used in page 2. */
 	private StyledText text;
 
+	
+	final Map<IFile,Integer> handingFiles = new Hashtable<IFile,Integer>();
 	/**
 	 * Creates a multi-page editor example.
 	 */
@@ -61,6 +63,18 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
 
+	public Set<IFile> getHandingFiles()
+	{
+		return this.handingFiles.keySet();
+	}
+	
+	public void setActivePage(IFile file)
+	{
+		if(handingFiles.containsKey(file))
+		{
+			setActivePage(handingFiles.get(file));
+		}
+	}
 	/**
 	 * Creates page 0 of the multi-page editor, which contains a text editor.
 	 */
@@ -118,12 +132,17 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 	 */
 	protected void createPages()
 	{
-		IFile inputFile =(IFile) getEditorInput().getAdapter(IFile.class);
+		IFile contractFile=getProject().getContractFile();
+		handingFiles.put(contractFile,0);
+		createPage0(createEditorInput(contractFile));
 		
+		IFile vdmLinkFile=getProject().getVdmLinkFile();
+		handingFiles.put(vdmLinkFile,1);
+		createPage1(createEditorInput(vdmLinkFile));
 		
-		createPage0(createEditorInput(getProject().getContractFile()));
-		createPage1(createEditorInput(getProject().getVdmLinkFile()));
 		createPage2();
+		
+		IFile inputFile =(IFile) getEditorInput().getAdapter(IFile.class);
 		
 		if(inputFile.equals(getProject().getContractFile()))
 		{
@@ -275,45 +294,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		}
 	}
 
-	/**
-	 * Sets the font related data to be applied to the text in page 2.
-	 */
-	void setFont()
-	{
-		FontDialog fontDialog = new FontDialog(getSite().getShell());
-		fontDialog.setFontList(text.getFont().getFontData());
-		FontData fontData = fontDialog.open();
-		if (fontData != null)
-		{
-			if (font != null)
-				font.dispose();
-			font = new Font(text.getDisplay(), fontData);
-			text.setFont(font);
-		}
-	}
 
-	/**
-	 * Sorts the words in page 0, and shows them in page 2.
-	 */
-	// void sortWords()
-	// {
-	//
-	// String editorText = editor.getDocumentProvider().getDocument(editor.getEditorInput()).get();
-	//
-	// StringTokenizer tokenizer = new StringTokenizer(editorText, " \t\n\r\f!@#\u0024%^&*()-_=+`~[]{};:'\",.<>/?|\\");
-	// ArrayList editorWords = new ArrayList();
-	// while (tokenizer.hasMoreTokens())
-	// {
-	// editorWords.add(tokenizer.nextToken());
-	// }
-	//
-	// Collections.sort(editorWords, Collator.getInstance());
-	// StringWriter displayText = new StringWriter();
-	// for (int i = 0; i < editorWords.size(); i++)
-	// {
-	// displayText.write(((String) editorWords.get(i)));
-	// displayText.write(System.getProperty("line.separator"));
-	// }
-	// text.setText(displayText.toString());
-	// }
+
+
 }

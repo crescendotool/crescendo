@@ -58,13 +58,13 @@ public class VdmLinkEditor extends TextEditor
 		@Override
 		protected String[] getKeywords()
 		{
-			return new String[] {  };
+			return new String[] { "vdm.outputs","vdm.inputs","vdm.events","vdm.sdp" };
 		}
 
 		@Override
 		protected String[] getTypeWords()
 		{
-			return new String[] { "true", "false"};
+			return new String[] { };
 		}
 
 	}

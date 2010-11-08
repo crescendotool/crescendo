@@ -180,7 +180,7 @@
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
-            icon="icons/ctool16/destecs_misc.png"
+            icon="icons/ovr16/destecs_ovr.gif"
             id="org.destecs.ide.ui.image"
             natureId="org.destecs.ide.core.nature">
       </image>
@@ -197,6 +197,7 @@
             extensions="csc, vdm.link"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.impl.CoSimulationMultipageEditor"
+            matchingStrategy="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditorMatchingStrategy"
             name="Co-Simulation Editor">
       </editor>
          

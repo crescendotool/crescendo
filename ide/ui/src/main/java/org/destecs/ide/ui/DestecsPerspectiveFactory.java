@@ -1,6 +1,5 @@
 package org.destecs.ide.ui;
 
-import org.destecs.ide.simeng.ui.views.CoSimStarterView;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;

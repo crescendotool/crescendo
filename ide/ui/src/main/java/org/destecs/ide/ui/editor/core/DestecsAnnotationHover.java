@@ -66,6 +66,7 @@ public class DestecsAnnotationHover extends DefaultAnnotationHover {
 		return getAnnotationsAtLine(model, document, lineNumber);
 		}
 	
+	@SuppressWarnings("unchecked")
 	private List<Annotation> getAnnotationsAtLine(IAnnotationModel model,
 			IDocument document, int lineNumber) {
 		List<Annotation> result = new ArrayList<Annotation>();
