@@ -52,6 +52,11 @@ public class Contract
 		return filterVariables(VariableType.SharedDesignParameter);
 	}
 	
+	public List<String> getEvents()
+	{
+		return events;
+	}
+	
 	@Override
 	public String toString()
 	{

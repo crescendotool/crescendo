@@ -27,5 +27,18 @@
          </adapter>
       </factory>
    </extension>
+   <extension
+         id="org.destecs.ide.core.builder"
+         name="DESTECS Project builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            callOnEmptyDelta="true"
+            hasNature="false"
+            isConfigurable="false">
+         <run
+               class="org.destecs.ide.core.internal.builder.IncrementalProjectBuilder">
+         </run>
+      </builder>
+   </extension>
 
 </plugin>
