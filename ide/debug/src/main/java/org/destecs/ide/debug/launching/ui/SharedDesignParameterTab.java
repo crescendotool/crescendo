@@ -3,12 +3,11 @@ package org.destecs.ide.debug.launching.ui;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.List;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.HashMap;
 
+import org.destecs.core.parsers.SdpParserWrapper;
+import org.destecs.ide.core.utility.FileUtility;
 import org.destecs.ide.debug.IDebugConstants;
-import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -37,42 +36,41 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 {
 	class WidgetListener implements ModifyListener, SelectionListener
 	{
-		
+
 		public void modifyText(ModifyEvent e)
 		{
-//			if(!suspended)
+			// if(!suspended)
 			{
-			// validatePage();
-			updateLaunchConfigurationDialog();
+				// validatePage();
+				updateLaunchConfigurationDialog();
 			}
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
-//			if(!suspended)
+			// if(!suspended)
 			{
-			/* do nothing */
+				/* do nothing */
 			}
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
-//			if(!suspended)
+			// if(!suspended)
 			{
-			// fOperationText.setEnabled(!fdebugInConsole.getSelection());
+				// fOperationText.setEnabled(!fdebugInConsole.getSelection());
 
-			updateLaunchConfigurationDialog();
+				updateLaunchConfigurationDialog();
 			}
 		}
 	}
-	
-	
+
 	private IProject project;
 	private IFile sdpFile;
 	private Table table;
-	private List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+	private HashMap<String, Object> shareadDesignParameters = new HashMap<String, Object>();
 	private WidgetListener fListener = new WidgetListener();
-	
+
 	public void createControl(Composite parent)
 	{
 		Composite comp = new Composite(parent, SWT.NONE);
@@ -82,7 +80,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		comp.setFont(parent.getFont());
 
 		// parent.setLayout(new GridLayout());
-		table = new Table(comp, SWT.FULL_SELECTION|SWT.VIRTUAL);// SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
+		table = new Table(comp, SWT.FULL_SELECTION | SWT.VIRTUAL);// SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		// table.setItemCount(10);
 
 		table.setLinesVisible(true);
@@ -137,29 +135,31 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 					}
 				});
 				newEditor.addModifyListener(fListener);
-				
+
 				newEditor.selectAll();
 				newEditor.setFocus();
 				editor.setEditor(newEditor, item, EDITABLECOLUMN);
-				
+
 			}
 		});
-		
-		
+
 		populate();
 	}
 
 	private void populate()
 	{
 		table.removeAll();
-		for (SetDesignParametersdesignParametersStructParam p : shareadDesignParameters)
+		if (shareadDesignParameters != null)
 		{
-			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0, p.name);
-			item.setText(1, p.value.toString());
+			for (String p : shareadDesignParameters.keySet())
+			{
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, p);
+				item.setText(1, shareadDesignParameters.get(p).toString());
+			}
 		}
 		// table.redraw();
-		
+
 	}
 
 	public String getName()
@@ -171,11 +171,11 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 	{
 		try
 		{
-			String projectName=configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
-			if(projectName!=null && projectName.trim().length()>0)
+			String projectName = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
+			if (projectName != null && projectName.trim().length() > 0)
 			{
-			project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-			}else
+				project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			} else
 			{
 				return;
 			}
@@ -218,19 +218,20 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 
 	private void populateTable(IFile sdpFile2)
 	{
-		shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		Properties props = new Properties();
+		shareadDesignParameters = new HashMap<String, Object>();
+
 		try
 		{
 			sdpFile2.refreshLocal(IResource.DEPTH_ONE, null);
-			props.load(sdpFile2.getContents());
+			// props.load(sdpFile2.getContents());
+			shareadDesignParameters = new SdpParserWrapper().parse(sdpFile2.getLocation().toFile(), new String(FileUtility.getCharContent(FileUtility.getContent(sdpFile2))));
 
-			for (Object key : props.keySet())
-			{
-				String name = key.toString();
-				Double value = Double.parseDouble(props.getProperty(name));
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
-			}
+			// for (Object key : result.keySet())
+			// {
+			// // String name = key.toString();
+			// // Double value = Double.parseDouble(props.getProperty(name));
+			// shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
+			// }
 
 			if (table != null)
 			{
@@ -244,14 +245,13 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		}
 	}
 
-	
 	@Override
 	public String getId()
 	{
-	
+
 		return "org.destecs.ide.debug.launching.ui.SharedDesignParameterTab";
 	}
-	
+
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		Writer out;
@@ -285,7 +285,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig)
 	{

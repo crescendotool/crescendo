@@ -14,4 +14,8 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH = "DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH".toLowerCase();
 
 	public static final String ATTR_DESTECS_PROGRAM = "org.destecs.ide.debug.launchConfigurationType";
+
+	public static final String MESSAGE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
+	public static final String ENGINE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
+	public static final String SIMULATION_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationView";
 }

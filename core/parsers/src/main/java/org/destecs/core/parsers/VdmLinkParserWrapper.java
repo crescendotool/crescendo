@@ -9,7 +9,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.destecs.core.parsers.vdmlink.VdmLinkLexer;
 import org.destecs.core.parsers.vdmlink.VdmLinkParser;
-import org.destecs.core.vdmLink.Links;
+import org.destecs.core.vdmlink.Links;
 
 public class VdmLinkParserWrapper extends ParserWrapper<Links>
 {
@@ -17,6 +17,7 @@ public class VdmLinkParserWrapper extends ParserWrapper<Links>
 			throws IOException
 	{
 		VdmLinkLexer lexer = new VdmLinkLexer(data);
+		super.lexer = this.lexer;
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		VdmLinkParser thisParser = new VdmLinkParser(tokens);
 		parser = thisParser;

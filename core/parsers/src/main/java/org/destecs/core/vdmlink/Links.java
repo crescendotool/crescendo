@@ -1,4 +1,4 @@
-package org.destecs.core.vdmLink;
+package org.destecs.core.vdmlink;
 
 import java.util.List;
 import java.util.Map;

@@ -2,18 +2,18 @@ package org.destecs.ide.debug.launching.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.Vector;
 
+import org.destecs.core.parsers.ScenarioParserWrapper;
+import org.destecs.core.parsers.SdpParserWrapper;
+import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
-import org.destecs.core.simulationengine.senario.Scenario;
-import org.destecs.core.simulationengine.senario.ScenarioParser;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.simeng.internal.core.EngineListener;
 import org.destecs.ide.simeng.internal.core.ListenerToLog;
@@ -99,9 +99,9 @@ public class CoSimLaunchConfigurationDelegate implements
 				@Override
 				public IStatus runInUIThread(IProgressMonitor monitor)
 				{
-					final String messageViewId = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
-					final String engineViewId = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
-					final String simulationViewId = "org.destecs.ide.simeng.ui.views.SimulationView";
+					final String messageViewId = IDebugConstants.MESSAGE_VIEW_ID;
+					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
+					final String simulationViewId = IDebugConstants.SIMULATION_VIEW_ID;
 
 					final InfoTableView messageView = getInfoTableView(messageViewId);
 					final InfoTableView engineView = getInfoTableView(engineViewId);
@@ -250,13 +250,13 @@ public class CoSimLaunchConfigurationDelegate implements
 		return null;
 	}
 
-	private SimulationEngine getEngine()
+	private SimulationEngine getEngine() throws IOException
 	{
 		File contractFile = new File(contractPath.trim());
 		File scenarioFile = new File(scenarioPath.trim());
 		if (scenarioPath.trim().length() > 0)
 		{
-			Scenario scenario = new ScenarioParser(scenarioFile).parse();
+			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
 			return new ScenarioSimulationEngine(contractFile, scenario);
 		} else
 		{
@@ -265,31 +265,26 @@ public class CoSimLaunchConfigurationDelegate implements
 	}
 
 	private static List<SetDesignParametersdesignParametersStructParam> loadSharedDesignParameters(
-			File sharedDesignParamFile)
+			File sharedDesignParamFile) throws Exception
 	{
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		Properties props = new Properties();
-		try
+
+		HashMap<String, Object> result = new SdpParserWrapper().parse(sharedDesignParamFile);
+
+		for (Object key : result.keySet())
 		{
-			props.load(new FileReader(sharedDesignParamFile));
-
-			for (Object key : props.keySet())
+			String name = key.toString();
+			if (result.get(name) instanceof Double)
 			{
-				String name = key.toString();
-				Double value = Double.parseDouble(props.getProperty(name));
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
-
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, (Double) result.get(name)));
+			} else
+			{
+				throw new Exception("Design parameter type not supported by protocol: "
+						+ name);
 			}
 
-		} catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 		return shareadDesignParameters;
 	}
 

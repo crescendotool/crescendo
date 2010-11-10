@@ -10,7 +10,8 @@ import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.IError;
 import org.destecs.core.parsers.ParserWrapper;
 import org.destecs.core.parsers.VdmLinkParserWrapper;
-import org.destecs.core.vdmLink.Links;
+import org.destecs.core.vdmlink.Links;
+
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.core.utility.FileUtility;

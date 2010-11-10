@@ -1,9 +1,8 @@
-package org.destecs.ide.debug.core;
+package org.destecs.ide.debug;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;

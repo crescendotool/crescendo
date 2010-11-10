@@ -1,4 +1,4 @@
-package org.destecs.core.vdmLink;
+package org.destecs.core.vdmlink;
 
 public class StringPair
 {

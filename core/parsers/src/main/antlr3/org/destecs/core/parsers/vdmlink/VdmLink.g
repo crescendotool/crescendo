@@ -14,9 +14,9 @@ tokens{
 @header {
 package org.destecs.core.parsers.vdmlink;
 
-import org.destecs.core.vdmLink.LinksFactory;
-import org.destecs.core.vdmLink.StringPair;
-import org.destecs.core.vdmLink.Links;
+import org.destecs.core.vdmlink.LinksFactory;
+import org.destecs.core.vdmlink.StringPair;
+import org.destecs.core.vdmlink.Links;
 import java.util.ArrayList;
 import java.util.List;
 }

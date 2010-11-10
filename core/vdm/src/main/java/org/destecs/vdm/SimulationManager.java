@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.destecs.core.parsers.VdmLinkParserWrapper;
+import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
-import org.destecs.vdm.links.Links;
-import org.destecs.vdm.links.StringPair;
+
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.EventThread;
 import org.overturetool.vdmj.ExitStatus;
@@ -206,7 +207,7 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			for (File linkFile : getFiles(path, linkFileExtension))
 			{
-				links = Links.load(linkFile);
+				links = new VdmLinkParserWrapper().parse(linkFile);//Links.load(linkFile);
 				break;
 			}
 

@@ -5,9 +5,10 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.destecs.core.scenario.Action;
+import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
-import org.destecs.core.simulationengine.senario.Action;
-import org.destecs.core.simulationengine.senario.Scenario;
+
 import org.destecs.protocol.ProxyICoSimProtocol;
 
 public class ScenarioSimulationEngine extends SimulationEngine

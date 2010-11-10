@@ -4,19 +4,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.destecs.core.parsers.ScenarioParserWrapper;
+import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
-import org.destecs.core.simulationengine.senario.Scenario;
-import org.destecs.core.simulationengine.senario.ScenarioParser;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
@@ -32,12 +31,12 @@ public class Main
 
 
 	public static SimulationEngine getEngine() throws ModelPathNotValidException,
-			MalformedURLException
+			IOException
 	{
 		SimulationEngine engine = null;
 		if (useScenario)
 		{
-			Scenario scenario = new ScenarioParser(new File(base.getAbsolutePath()+"\\scenarios\\scenario1.script")).parse();
+			Scenario scenario = new ScenarioParserWrapper().parse(new File(base.getAbsolutePath()+"\\scenarios\\scenario1.script"));
 			engine = new ScenarioSimulationEngine(new File(base,modelName+".csc"), scenario );
 		} else
 		{
@@ -67,11 +66,10 @@ public class Main
 
 	/**
 	 * @param args
-	 * @throws MalformedURLException
-	 * @throws FileNotFoundException
 	 * @throws SimulationException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws MalformedURLException, FileNotFoundException, SimulationException
+	public static void main(String[] args) throws SimulationException, IOException
 	{
 		SimulationEngine engine = getEngine();
 

@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
-import org.destecs.vdm.links.Links;
-import org.destecs.vdm.links.StringPair;
+
+
+import org.destecs.core.vdmlink.Links;
+import org.destecs.core.vdmlink.StringPair;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.overturetool.vdmj.definitions.SystemDefinition;
@@ -64,7 +66,7 @@ public abstract class BasicSimulationManager
 	}
 	
 	private static final boolean DEBUG = false;
-	protected static Links links = new Links();
+	protected static Links links =null;
 	protected VDMCO controller = null;
 	protected CoSimResourceScheduler scheduler = null;
 	protected boolean interpreterRunning = false;
