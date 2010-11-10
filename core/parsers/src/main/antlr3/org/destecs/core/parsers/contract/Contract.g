@@ -6,20 +6,15 @@ options{
 
 tokens {
 	CONTRACT = 'contract';
-	//DESIGN_PARAMETERS = 'design_parameters';
-	DESIGN_PARAMETER = 'design_parameter';
-	//VARIABLES = 'variables';
+	DESIGN_PARAMETER = 'shared_design_parameter';
+	SDP = 'sdp';
 	MONITORED = 'monitored';
 	CONTROLLED = 'controlled';
 	REAL = 'real';
 	BOOL = 'bool';
-	//EVENTS = 'events';
 	EVENT = 'event';
 	END = 'end';
 	ASSIGN = ':=';
-//	BODYDEF = 'BODYDEF';
-//	TRUE = 'true';
-//	FALSE = 'false';
 }
 
 @header {
@@ -284,6 +279,8 @@ body
 
 parameters 
 	: DESIGN_PARAMETER t=type ID ';' 
+	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null)); }
+	| SDP t=type ID ';' 
 	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null)); }
 	;
 

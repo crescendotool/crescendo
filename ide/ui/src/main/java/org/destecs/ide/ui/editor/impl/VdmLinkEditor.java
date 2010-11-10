@@ -58,7 +58,7 @@ public class VdmLinkEditor extends TextEditor
 		@Override
 		protected String[] getKeywords()
 		{
-			return new String[] { "vdm.outputs","vdm.inputs","vdm.events","vdm.sdp" };
+			return new String[] { "vdm_outputs","vdm_inputs","vdm_events","vdm_sdp" };
 		}
 
 		@Override

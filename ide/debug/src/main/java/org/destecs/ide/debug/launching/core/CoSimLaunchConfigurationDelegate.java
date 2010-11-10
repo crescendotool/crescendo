@@ -47,7 +47,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	private String ctPath = null;
 	private String contractPath = null;
 	private String scenarioPath = null;
-	private String sharedDesignParamPath = null;
+	private String sharedDesignParam = null;
 	private double totalSimulationTime = 0.0;
 	private IProject project = null;
 
@@ -71,7 +71,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			dtPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "");
 			ctPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "");
 			scenarioPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, "");
-			sharedDesignParamPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH, "");
+			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 
 		} catch (CoreException e)
@@ -138,7 +138,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			engine.setCtModel(new File(ctPath));
 			engine.setCtEndpoint(new URL("http://localhost:1580"));
 
-			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(new File(sharedDesignParamPath));
+			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
 
 			runSimulation = new Job("Simulation")
 			{
@@ -265,11 +265,11 @@ public class CoSimLaunchConfigurationDelegate implements
 	}
 
 	private static List<SetDesignParametersdesignParametersStructParam> loadSharedDesignParameters(
-			File sharedDesignParamFile) throws Exception
+			String sharedDesignParamData) throws Exception
 	{
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
-		HashMap<String, Object> result = new SdpParserWrapper().parse(sharedDesignParamFile);
+		HashMap<String, Object> result = new SdpParserWrapper().parse(new File("memory"),sharedDesignParamData);
 
 		for (Object key : result.keySet())
 		{

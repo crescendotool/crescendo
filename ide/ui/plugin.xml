@@ -225,7 +225,7 @@
       <editor
             class="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditor"
             default="true"
-            extensions="csc, vdm.link"
+            extensions="csc,vdm.link"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.impl.CoSimulationMultipageEditor"
             matchingStrategy="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditorMatchingStrategy"

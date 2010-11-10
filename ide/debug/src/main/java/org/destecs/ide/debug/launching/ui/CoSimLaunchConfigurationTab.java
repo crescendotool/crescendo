@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
+import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
@@ -44,30 +46,31 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	class WidgetListener implements ModifyListener, SelectionListener
 	{
 		public boolean suspended = false;
+
 		public void modifyText(ModifyEvent e)
 		{
-			if(!suspended)
+			if (!suspended)
 			{
-			// validatePage();
-			updateLaunchConfigurationDialog();
+				// validatePage();
+				updateLaunchConfigurationDialog();
 			}
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
-			if(!suspended)
+			if (!suspended)
 			{
-			/* do nothing */
+				/* do nothing */
 			}
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
-			if(!suspended)
+			if (!suspended)
 			{
-			// fOperationText.setEnabled(!fdebugInConsole.getSelection());
+				// fOperationText.setEnabled(!fdebugInConsole.getSelection());
 
-			updateLaunchConfigurationDialog();
+				updateLaunchConfigurationDialog();
 			}
 		}
 	}
@@ -75,13 +78,13 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	private Text fProjectText;
 	private Text ctPath = null;
 	private Text dtPath = null;
-	private Text contractPath = null;
+//	private Text contractPath = null;
 	// private Text scenarioPath = null;
-	private Text fSharedDesignParamPath = null;
-//	private double totalSimulationTime = 5;
+//	private Text fSharedDesignParamPath = null;
+	// private double totalSimulationTime = 5;
 	Button selectScenarioButton;
 
-//	private IProject project = null;
+	// private IProject project = null;
 	private Text simulationTimeText = null;
 
 	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
@@ -124,7 +127,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		gd = new GridData(GridData.BEGINNING);
 		label.setLayoutData(gd);
 
-		fScenarioText = new Text(group, SWT.SINGLE | SWT.BORDER);
+		fScenarioText = new Text(group, SWT.SINGLE | SWT.BORDER|SWT.READ_ONLY);
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		fScenarioText.setLayoutData(gd);
@@ -219,7 +222,8 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					new Double(simulationTimeText.getText());
 				} catch (Exception e)
 				{
-					setErrorMessage("Simulation time is not valid: "+simulationTimeText.getText());
+					setErrorMessage("Simulation time is not valid: "
+							+ simulationTimeText.getText());
 				}
 			}
 		});
@@ -263,26 +267,26 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		ctPath.setEditable(false);
 
 		// Contract Line
-		Label contractLabel = new Label(group, SWT.NONE);
-		contractLabel.setText("Contract Path:");
-		contractPath = new Text(group, SWT.BORDER);
-		gridData = new GridData();
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-		contractPath.setLayoutData(gridData);
-		contractPath.setText("Insert Contract path here");
-		contractPath.setEditable(false);
+		// Label contractLabel = new Label(group, SWT.NONE);
+		// contractLabel.setText("Contract Path:");
+		// contractPath = new Text(group, SWT.BORDER);
+		// gridData = new GridData();
+		// gridData.horizontalAlignment = SWT.FILL;
+		// gridData.grabExcessHorizontalSpace = true;
+		// contractPath.setLayoutData(gridData);
+		// contractPath.setText("Insert Contract path here");
+		// contractPath.setEditable(false);
 
 		// Shared Design Parameters Line
-		Label sharedDesignParamLabel = new Label(group, SWT.NONE);
-		sharedDesignParamLabel.setText("Shared Design Parameters Path:");
-		fSharedDesignParamPath = new Text(group, SWT.BORDER);
-		gridData = new GridData();
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-		fSharedDesignParamPath.setLayoutData(gridData);
-		// sharedDesignParamPath.setText("Insert Shared Design Parameters path here");
-		fSharedDesignParamPath.setEditable(false);
+		// Label sharedDesignParamLabel = new Label(group, SWT.NONE);
+		// sharedDesignParamLabel.setText("Shared Design Parameters Path:");
+		// fSharedDesignParamPath = new Text(group, SWT.BORDER);
+		// gridData = new GridData();
+		// gridData.horizontalAlignment = SWT.FILL;
+		// gridData.grabExcessHorizontalSpace = true;
+		// fSharedDesignParamPath.setLayoutData(gridData);
+		// // sharedDesignParamPath.setText("Insert Shared Design Parameters path here");
+		// fSharedDesignParamPath.setEditable(false);
 
 	}
 
@@ -306,7 +310,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		gd = new GridData(GridData.BEGINNING);
 		label.setLayoutData(gd);
 
-		fProjectText = new Text(group, SWT.SINGLE | SWT.BORDER);
+		fProjectText = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		fProjectText.setLayoutData(gd);
@@ -344,9 +348,15 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 						{
 							for (Object object : arr)
 							{
-								if (object instanceof IProject)
+								try
 								{
-									elements.add(object);
+									if (object instanceof IProject && ((IProject)object).hasNature(IDestecsCoreConstants.NATURE))
+									{
+										elements.add(object);
+									}
+								} catch (CoreException e)
+								{
+									//Ignore it
 								}
 							}
 							return elements.toArray();
@@ -372,9 +382,9 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					{
 						IProject project = ((IProject) dialog.getFirstResult());
 						setProjectAndsearchModels(project);
-						
+
 						// selectScenarioButton.setEnabled(true);
-						
+
 					}
 
 				}
@@ -410,7 +420,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					IFile file = (IFile) iResource;
 					if (file.getFileExtension().equals("csc"))
 					{
-						contractPath.setText(file.getLocationURI().getPath());
+						// contractPath.setText(file.getLocationURI().getPath());
 					}
 					if (file.getFileExtension().equals("emx"))
 					{
@@ -418,13 +428,13 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					}
 					if (file.getFileExtension().equals("sdp"))
 					{
-						fSharedDesignParamPath.setText(file.getLocationURI().getPath());
+//						fSharedDesignParamPath.setText(file.getLocationURI().getPath());
 					}
 				}
 
 			}
-			
-			if(emxFiles.size()==1)
+
+			if (emxFiles.size() == 1)
 			{
 				ctPath.setText(emxFiles.get(0));
 			}
@@ -433,7 +443,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally
+		} finally
 		{
 			fListener.suspended = false;
 		}
@@ -453,10 +463,11 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 			ctPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "No Path Selected"));
 			dtPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "No Path Selected"));
-			contractPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, "No Path Selected"));
+			// contractPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH,
+			// "No Path Selected"));
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			fScenarioText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
-			fSharedDesignParamPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH, ""));
+
 			// if (getProject() == null)
 			// {
 			// selectScenarioButton.setEnabled(true);
@@ -472,16 +483,21 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
+		if (getProject() != null )
+		{
+			IDestecsProject p = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
+			configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, p.getContractFile().getLocationURI().getPath());
+		}
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, fProjectText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ctPath.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, dtPath.getText());
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, contractPath.getText());
+
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM_PATH, fSharedDesignParamPath.getText());
+
 	}
 
-	protected IProject getProject()
+	public IProject getProject()
 	{
 		if (fProjectText != null && fProjectText.getText().length() > 0)
 		{
@@ -514,15 +530,15 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			setErrorMessage("DT model path not valid");
 		}
-		if (!new File(contractPath.getText()).exists())
-		{
-			setErrorMessage("Contract path not valid");
-		}
-
-		if (!new File(fSharedDesignParamPath.getText()).exists())
-		{
-			setErrorMessage("Shared design parameters path not valid");
-		}
+//		if (!new File(contractPath.getText()).exists())
+//		{
+//			setErrorMessage("Contract path not valid");
+//		}
+//
+//		if (!new File(fSharedDesignParamPath.getText()).exists())
+//		{
+//			setErrorMessage("Shared design parameters path not valid");
+//		}
 
 		if (fScenarioText.getText().length() > 0
 				&& !new File(fScenarioText.getText()).exists())
@@ -532,10 +548,10 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		try
 		{
-			if(Double.parseDouble(simulationTimeText.getText())<=0)
-					{
+			if (Double.parseDouble(simulationTimeText.getText()) <= 0)
+			{
 				setErrorMessage("Simulation time not set");
-					}
+			}
 		} catch (NumberFormatException e)
 		{
 			setErrorMessage("Simulation time is not a number");

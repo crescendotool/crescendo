@@ -52,13 +52,13 @@ public class ContractEditor extends TextEditor
 		@Override
 		protected String[] getCommentWords()
 		{
-			return new String[] { "design_parameters", "variables", "events" };
+			return new String[] {  };
 		}
 
 		@Override
 		protected String[] getKeywords()
 		{
-			return new String[] { "contract", "end", "design_parameter",
+			return new String[] { "contract", "end", "sdp","shared_design_parameter",
 					"real", "monitored", "controlled", "event", "bool",
 					"false", "true" };
 		}

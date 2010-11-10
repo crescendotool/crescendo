@@ -16,6 +16,7 @@ public abstract class BaseReconcilingStrategy implements IReconcilingStrategy
 {
 	private DestecsDocument currentDocument;
 
+	@SuppressWarnings("unchecked")
 	public void reconcile(IRegion partition)
 	{
 		if (currentDocument != null)

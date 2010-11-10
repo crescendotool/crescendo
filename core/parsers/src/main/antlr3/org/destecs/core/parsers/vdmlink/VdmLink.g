@@ -5,10 +5,10 @@ options {
 }
 
 tokens{
-  OUTPUT = 'vdm.outputs';
-  INPUT = 'vdm.inputs';
-  SHARED = 'vdm.sdp';
-  EVENT = 'vdm.events';
+  OUTPUT = 'vdm_outputs';
+  INPUT = 'vdm_inputs';
+  SHARED = 'vdm_sdp';
+  EVENT = 'vdm_events';
 }
 
 @header {

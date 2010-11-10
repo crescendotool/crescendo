@@ -1,21 +1,20 @@
 package org.destecs.ide.debug.launching.ui;
 
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
+import org.destecs.core.contract.Contract;
+import org.destecs.core.contract.Variable;
+import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
-import org.destecs.ide.core.utility.FileUtility;
+import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.IDebugConstants;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.ModifyEvent;
@@ -25,6 +24,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
@@ -65,16 +65,31 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		}
 	}
 
-	private IProject project;
-	private IFile sdpFile;
 	private Table table;
-	private HashMap<String, Object> shareadDesignParameters = new HashMap<String, Object>();
+
 	private WidgetListener fListener = new WidgetListener();
+	private HashMap<String, Object> sdps;
 
 	public void createControl(Composite parent)
 	{
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
+
+		Button defaultsButton = createPushButton(comp, "Synchronize with contract", null);
+		defaultsButton.addSelectionListener(new SelectionListener()
+		{
+
+			public void widgetSelected(SelectionEvent e)
+			{
+				synchronizeDefaults();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
@@ -149,13 +164,13 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 	private void populate()
 	{
 		table.removeAll();
-		if (shareadDesignParameters != null)
+		if (sdps != null)
 		{
-			for (String p : shareadDesignParameters.keySet())
+			for (String p : sdps.keySet())
 			{
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, p);
-				item.setText(1, shareadDesignParameters.get(p).toString());
+				item.setText(1, sdps.get(p).toString());
 			}
 		}
 		// table.redraw();
@@ -169,73 +184,21 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 
 	public void initializeFrom(ILaunchConfiguration configuration)
 	{
+		SdpParserWrapper parser = new SdpParserWrapper();
+
+		String data;
 		try
 		{
-			String projectName = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
-			if (projectName != null && projectName.trim().length() > 0)
-			{
-				project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-			} else
-			{
-				return;
-			}
-		} catch (CoreException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
+			data = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 
-		if (project != null)
-		{
-			IResource[] projectMembers;
-			try
+			if (data != null)
 			{
-				projectMembers = project.members();
+				sdps = parser.parse(new File("memory"), data);
 
-				for (IResource iResource : projectMembers)
+				if (table != null)
 				{
-					if (iResource instanceof IFile)
-					{
-						IFile file = (IFile) iResource;
-
-						if (file.getFileExtension().equals("sdp"))
-						{
-							sdpFile = file;
-							populateTable(sdpFile);
-						}
-					}
-
+					populate();
 				}
-			} catch (CoreException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	private void populateTable(IFile sdpFile2)
-	{
-		shareadDesignParameters = new HashMap<String, Object>();
-
-		try
-		{
-			sdpFile2.refreshLocal(IResource.DEPTH_ONE, null);
-			// props.load(sdpFile2.getContents());
-			shareadDesignParameters = new SdpParserWrapper().parse(sdpFile2.getLocation().toFile(), new String(FileUtility.getCharContent(FileUtility.getContent(sdpFile2))));
-
-			// for (Object key : result.keySet())
-			// {
-			// // String name = key.toString();
-			// // Double value = Double.parseDouble(props.getProperty(name));
-			// shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
-			// }
-
-			if (table != null)
-			{
-				populate();
 			}
 
 		} catch (Exception e)
@@ -243,47 +206,141 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 	@Override
 	public String getId()
 	{
-
 		return "org.destecs.ide.debug.launching.ui.SharedDesignParameterTab";
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
-		Writer out;
-		try
-		{
-			out = new OutputStreamWriter(new FileOutputStream(sdpFile.getLocation().toFile()));
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, getSdpsSyntax());
+	}
 
-			try
-			{
-				for (TableItem item : table.getItems())
-				{
-					if (item.getText().trim().length() > 0)
-					{
-						out.write(item.getText(0) + "=" + item.getText(1)
-								+ "\n");
-					}
-				}
-			} finally
-			{
-				out.close();
-			}
-		} catch (Exception e)
+	private String getSdpsSyntax()
+	{
+		StringBuilder sb = new StringBuilder();
+		for (TableItem item : table.getItems())
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (item.getText(0).trim().length() > 0
+					&& item.getText(1).trim().length() > 0)
+			{
+				sb.append(item.getText(0) + "=" + item.getText(1) + ";");
+			}
 		}
+		return sb.toString();
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
-		// TODO Auto-generated method stub
+	}
 
+	public void setDefaults()
+	{
+		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
+		{
+			if (tab instanceof CoSimLaunchConfigurationTab)
+			{
+				CoSimLaunchConfigurationTab cosimLaunchTab = (CoSimLaunchConfigurationTab) tab;
+				IProject project = cosimLaunchTab.getProject();
+				if (project != null)
+				{
+					ContractParserWrapper parser = new ContractParserWrapper();
+					IDestecsProject dproject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
+
+					Contract contract;
+					try
+					{
+						File file = dproject.getContractFile().getLocation().toFile();
+						if (!file.exists())
+						{
+							return;
+						}
+						contract = parser.parse(file);
+						sdps = new HashMap<String, Object>();
+						for (Variable var : contract.getSharedDesignParameters())
+						{
+							sdps.put(var.name, "0.0");
+						}
+						if (table != null)
+						{
+							populate();
+						}
+						return;
+					} catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+	}
+
+	private void synchronizeDefaults()
+	{
+		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
+		{
+			if (tab instanceof CoSimLaunchConfigurationTab)
+			{
+				CoSimLaunchConfigurationTab cosimLaunchTab = (CoSimLaunchConfigurationTab) tab;
+				IProject project = cosimLaunchTab.getProject();
+				if (project != null)
+				{
+					ContractParserWrapper parser = new ContractParserWrapper();
+					IDestecsProject dproject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
+
+					Contract contract;
+					try
+					{
+						File file = dproject.getContractFile().getLocation().toFile();
+						if (!file.exists())
+						{
+							return;
+						}
+						contract = parser.parse(file);
+						sdps = new HashMap<String, Object>();
+						for (Variable var : contract.getSharedDesignParameters())
+						{
+							String[] existing = getItemIfPresent(var.name);
+							if (existing == null)
+							{
+								sdps.put(var.name, "0.0");
+							} else if (existing.length >= 2)
+							{
+								sdps.put(existing[0], existing[1]);
+							}
+						}
+						if (table != null)
+						{
+							populate();
+						}
+						return;
+					} catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private String[] getItemIfPresent(String name)
+	{
+		for (TableItem item : table.getItems())
+		{
+			if (item.getText(0).trim().equalsIgnoreCase(name.trim()))
+			{
+				return new String[] { item.getText(0), item.getText(1) };
+			}
+		}
+
+		return null;
 	}
 
 	@Override
