@@ -22,7 +22,6 @@ Require-Bundle: org.destecs.ide.simeng;bundle-version="1.0.0",
  org.destecs.ide.generated.simulationengine;bundle-version="1.0.0",
  org.eclipse.ui.navigator.resources;bundle-version="3.4.200"
 Bundle-Activator: org.destecs.ide.ui.DestecsUIPlugin
-Import-Package: org.eclipse.ui.wizards.newresource
 Export-Package: org.destecs.ide.ui,
  org.destecs.ide.ui.editor.core,
  org.destecs.ide.ui.editor.syntax,

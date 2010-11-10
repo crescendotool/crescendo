@@ -159,17 +159,6 @@
                </or>
             </enablement>
          </actionProvider>
-         <commonSorter
-               class="org.eclipse.ui.views.navigator.ResourceSorter"
-               id="org.eclipse.ui.navigator.resources.sorters.defaultSorter.destecs">
-            <parentExpression>
-               <or>
-                  <adapt
-                        type="org.eclipse.core.resources.IResource">
-                  </adapt>
-               </or>
-            </parentExpression>
-         </commonSorter>
          <commonWizard
                type="new"
                wizardId="org.destecs.ide.ui.newContract">
@@ -178,26 +167,23 @@
                   <adapt
                         type="org.destecs.ide.core.resources.IDestecsProject">
                   </adapt>
-                  <adapt
-                        type="org.eclipse.core.resources.IFolder">
-                  </adapt>
-               </or>
-            </enablement>
+               </or></enablement>
          </commonWizard>
          <commonWizard
-               type="import"
-               wizardId="org.destecs.ide.ui.commonWizard2">
+               type="new"
+               wizardId="org.destecs.ide.ui.newScenario">
             <enablement>
                <or>
                   <adapt
                         type="org.destecs.ide.core.resources.IDestecsProject">
                   </adapt>
-                  <adapt
-                        type="org.eclipse.core.resources.IFolder">
-                  </adapt>
-               </or>
-            </enablement>
+               </or></enablement>
          </commonWizard>
+         <dropAssistant
+               class="org.eclipse.ui.navigator.resources.ResourceDropAdapterAssistant"
+               id="org.destecs.ide.ui.dropAssistant">
+            <possibleDropTargets></possibleDropTargets>
+         </dropAssistant>
       </navigatorContent>
       <commonWizard
             type="new"
