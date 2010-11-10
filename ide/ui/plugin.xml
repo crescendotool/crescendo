@@ -257,6 +257,15 @@
             id="org.destecs.ide.contracteditor.editor.core.ScenarioEditor"
             name="Scenario Editor">
       </editor>
+      
+      <editor
+            class="org.destecs.ide.ui.editor.impl.SdpEditor"
+            default="true"
+            extensions="sdp"
+            icon="icons/cview16/contract_file_tsk.gif"
+            id="org.destecs.ide.contracteditor.editor.core.SdpEditor"
+            name="Shared Design Parameter Editor">
+      </editor>
    </extension>
 
 </plugin>
