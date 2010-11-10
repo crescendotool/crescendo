@@ -10,7 +10,9 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.EarlyExitException;
 import org.antlr.runtime.FailedPredicateException;
+import org.antlr.runtime.Lexer;
 import org.antlr.runtime.MismatchedNotSetException;
+import org.antlr.runtime.MismatchedRangeException;
 import org.antlr.runtime.MismatchedSetException;
 import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.MismatchedTreeNodeException;
@@ -69,6 +71,7 @@ public abstract class ParserWrapper<T>
 	}
 
 	protected Parser parser;
+	protected Lexer lexer;
 	
 	List<IError> errors = new Vector<IError>();
 
@@ -111,6 +114,42 @@ public abstract class ParserWrapper<T>
 		return errors;
 	}
 	
+	public String getErrorMessageLexer(RecognitionException e, String[] tokenNames) {
+		String msg = null;
+		if ( e instanceof MismatchedTokenException ) {
+			MismatchedTokenException mte = (MismatchedTokenException)e;
+			msg = "mismatched character "+lexer.getCharErrorDisplay(e.c)+" expecting "+lexer.getCharErrorDisplay(mte.expecting);
+		}
+		else if ( e instanceof NoViableAltException ) {
+			NoViableAltException nvae = (NoViableAltException)e;
+			// for development, can add "decision=<<"+nvae.grammarDecisionDescription+">>"
+			// and "(decision="+nvae.decisionNumber+") and
+			// "state "+nvae.stateNumber
+			msg = "no viable alternative at character "+lexer.getCharErrorDisplay(e.c);
+		}
+		else if ( e instanceof EarlyExitException ) {
+			EarlyExitException eee = (EarlyExitException)e;
+			// for development, can add "(decision="+eee.decisionNumber+")"
+			msg = "required (...)+ loop did not match anything at character "+lexer.getCharErrorDisplay(e.c);
+		}
+		else if ( e instanceof MismatchedNotSetException ) {
+			MismatchedNotSetException mse = (MismatchedNotSetException)e;
+			msg = "mismatched character "+lexer.getCharErrorDisplay(e.c)+" expecting set "+mse.expecting;
+		}
+		else if ( e instanceof MismatchedSetException ) {
+			MismatchedSetException mse = (MismatchedSetException)e;
+			msg = "mismatched character "+lexer.getCharErrorDisplay(e.c)+" expecting set "+mse.expecting;
+		}
+		else if ( e instanceof MismatchedRangeException ) {
+			MismatchedRangeException mre = (MismatchedRangeException)e;
+			msg = "mismatched character "+lexer.getCharErrorDisplay(e.c)+" expecting set "+
+			lexer.getCharErrorDisplay(mre.a)+".."+lexer.getCharErrorDisplay(mre.b);
+		}
+		else {
+			msg = getErrorMessage(e, tokenNames);
+		}
+		return msg;
+	}
 	
 	protected String getErrorMessage(RecognitionException e, String[] tokenNames) {
 		String msg = e.getMessage();

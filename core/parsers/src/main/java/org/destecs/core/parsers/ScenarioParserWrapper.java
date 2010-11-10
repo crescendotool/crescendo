@@ -13,26 +13,28 @@ import org.destecs.core.scenario.Scenario;
 
 public class ScenarioParserWrapper extends ParserWrapper<Scenario>
 {
-	protected Scenario internalParse(File source, CharStream data) throws IOException
+	protected Scenario internalParse(File source, CharStream data)
+			throws IOException
 	{
 		ScenarioLexer lexer = new ScenarioLexer(data);
-					CommonTokenStream tokens = new CommonTokenStream(lexer);
-					ScenarioParser thisParser = new ScenarioParser(tokens);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		super.lexer = this.lexer;
+		ScenarioParser thisParser = new ScenarioParser(tokens);
 		parser = thisParser;
-		
-		lexer.enableErrorMessageCollection(true);		
+
+		lexer.enableErrorMessageCollection(true);
 		thisParser.enableErrorMessageCollection(true);
 		try
 		{
 			thisParser.start();
-			
-			if(lexer.hasExceptions())
+
+			if (lexer.hasExceptions())
 			{
 				List<RecognitionException> exps = thisParser.getExceptions();
 				addErrors(source, exps);
 				return null;
 			}
-			
+
 			if (thisParser.hasExceptions())
 			{
 

@@ -14,26 +14,28 @@ import org.destecs.core.parsers.sdp.SdpParser;
 public class SdpParserWrapper extends ParserWrapper<HashMap<String, Object>>
 {
 	@SuppressWarnings("unchecked")
-	protected HashMap<String, Object> internalParse(File source, CharStream data) throws IOException
+	protected HashMap<String, Object> internalParse(File source, CharStream data)
+			throws IOException
 	{
 		SdpLexer lexer = new SdpLexer(data);
-					CommonTokenStream tokens = new CommonTokenStream(lexer);
-					SdpParser thisParser = new SdpParser(tokens);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		super.lexer = this.lexer;
+		SdpParser thisParser = new SdpParser(tokens);
 		parser = thisParser;
-		
-		lexer.enableErrorMessageCollection(true);		
+
+		lexer.enableErrorMessageCollection(true);
 		thisParser.enableErrorMessageCollection(true);
 		try
 		{
 			thisParser.start();
-			
-			if(lexer.hasExceptions())
+
+			if (lexer.hasExceptions())
 			{
 				List<RecognitionException> exps = thisParser.getExceptions();
 				addErrors(source, exps);
 				return null;
 			}
-			
+
 			if (thisParser.hasExceptions())
 			{
 
