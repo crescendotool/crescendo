@@ -33,7 +33,7 @@ public abstract class BaseReconcilingStrategy implements IReconcilingStrategy
 					{
 						IError e = (IError) err;
 						System.out.println(e);
-						FileUtility.addMarker(currentDocument.getFile(), e.getMessage(), e.getLine()+1, e.getCharPositionInLine()+1, IMarker.SEVERITY_ERROR,currentDocument.get());
+						FileUtility.addMarker(currentDocument.getFile(), e.getMessage(), e.getLine(), e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, currentDocument.get());
 					}
 				}
 

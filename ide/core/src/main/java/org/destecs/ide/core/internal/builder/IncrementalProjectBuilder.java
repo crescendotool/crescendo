@@ -49,7 +49,7 @@ public class IncrementalProjectBuilder extends
 			VdmLinkParserWrapper vdmLinkParser = new VdmLinkParserWrapper();
 			Links vdmlinks = (Links) parse(vdmLinkParser, project.getVdmLinkFile());
 
-			if (!typeCheck(project.getVdmLinkFile(),vdmlinks, contract))
+			if (!typeCheck(project.getVdmLinkFile(), vdmlinks, contract))
 			{
 				return null;
 			}
@@ -68,7 +68,7 @@ public class IncrementalProjectBuilder extends
 		boolean faild = false;
 		List<String> tmp = new Vector<String>();
 
-		//check outputs
+		// check outputs
 		tmp.addAll(vdmlinks.getOutputs());
 		for (Variable var : contract.getControlledVariables())
 		{
@@ -77,27 +77,29 @@ public class IncrementalProjectBuilder extends
 				addError(file, "Missing-output controlled variable: " + var);
 				faild = true;
 			}
-			
-			if(!vdmlinks.getLinks().containsKey(var.name))
+
+			if (!vdmlinks.getLinks().containsKey(var.name))
 			{
-				addError(file, "Missing-output controlled variable link: " + var);
+				addError(file, "Missing-output controlled variable link: "
+						+ var);
 				faild = true;
 			}
-			
-			if(tmp.contains(var.name))
+
+			if (tmp.contains(var.name))
 			{
 				tmp.remove(var.name);
 			}
 		}
-		
-		if(tmp.size()>0)
+
+		if (tmp.size() > 0)
 		{
-			addError(file, "Too many outputs defined; no usage found for: "+tmp);
+			addError(file, "Too many outputs defined; no usage found for: "
+					+ tmp);
 			faild = true;
 		}
 		tmp.clear();
 
-		//check inputs
+		// check inputs
 		tmp.addAll(vdmlinks.getInputs());
 		for (Variable var : contract.getMonitoredVariables())
 		{
@@ -106,54 +108,56 @@ public class IncrementalProjectBuilder extends
 				addError(file, "Missing-input monitored variable: " + var);
 				faild = true;
 			}
-			if(!vdmlinks.getLinks().containsKey(var.name))
+			if (!vdmlinks.getLinks().containsKey(var.name))
 			{
 				addError(file, "Missing-input monitored variable link: " + var);
 				faild = true;
 			}
-			
-			if(tmp.contains(var.name))
+
+			if (tmp.contains(var.name))
 			{
 				tmp.remove(var.name);
 			}
 		}
-		
-		if(tmp.size()>0)
+
+		if (tmp.size() > 0)
 		{
-			addError(file, "Too many inputs defined; no usage found for: "+tmp);
+			addError(file, "Too many inputs defined; no usage found for: "
+					+ tmp);
 			faild = true;
 		}
 		tmp.clear();
-		
+
 		// check events
 		tmp.addAll(vdmlinks.getEvents());
 		for (String event : contract.getEvents())
 		{
-			if(!vdmlinks.getEvents().contains(event))
+			if (!vdmlinks.getEvents().contains(event))
 			{
 				addError(file, "Missing-event: " + event);
 				faild = true;
 			}
-			
-			if(!vdmlinks.getLinks().containsKey(event))
+
+			if (!vdmlinks.getLinks().containsKey(event))
 			{
 				addError(file, "Missing-event link: " + event);
 				faild = true;
 			}
-			
-			if(tmp.contains(event))
+
+			if (tmp.contains(event))
 			{
 				tmp.remove(event);
 			}
 		}
-		
-		if(tmp.size()>0)
+
+		if (tmp.size() > 0)
 		{
-			addError(file, "Too many events defined; no usage found for: "+tmp);
+			addError(file, "Too many events defined; no usage found for: "
+					+ tmp);
 			faild = true;
 		}
 		tmp.clear();
-		
+
 		return !faild;
 	}
 
@@ -226,7 +230,7 @@ public class IncrementalProjectBuilder extends
 			{
 				IError e = (IError) err;
 				System.out.println(e);
-				FileUtility.addMarker(file, e.getMessage(), e.getLine() + 1, e.getCharPositionInLine() + 1, IMarker.SEVERITY_ERROR, FileUtility.getCharContent(FileUtility.getContent(file)).toString());
+				FileUtility.addMarker(file, e.getMessage(), e.getLine(), e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, FileUtility.getCharContent(FileUtility.getContent(file)).toString());
 			}
 			throw new Exception("Parse errors in " + file);
 		} else

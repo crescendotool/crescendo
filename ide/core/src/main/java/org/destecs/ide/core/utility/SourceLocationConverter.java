@@ -2,8 +2,6 @@ package org.destecs.ide.core.utility;
 
 import java.util.List;
 
-
-
 public class SourceLocationConverter
 {
 	String content;
@@ -19,10 +17,9 @@ public class SourceLocationConverter
 		{
 			init(code);
 		}
-		 
-		
-		
-		private void init(String code){
+
+		private void init(String code)
+		{
 			this.codeLines = code.split("\n");
 			int count = this.codeLines.length;
 
@@ -33,65 +30,61 @@ public class SourceLocationConverter
 			{
 				this.codeLineLengths[i] = sum;
 				sum += this.codeLines[i].length() + 1;
-				
 			}
 		}
 
 		public int[] getBounds(int lineNumber)
 		{
+			lineNumber -= 1;
 			if (lineNumber > 0 && codeLines.length > lineNumber)
 			{
 				String codeLine = codeLines[lineNumber];
 				int start = codeLineLengths[lineNumber];
 				int end = start + codeLine.length();
 
-
 				return new int[] { start, end };
 			} else
 				return new int[] { 0, 0 };
 		}
+
+		public int getLineCount()
+		{
+			return this.codeLines.length;
+		}
 	}
 
-	
-	
 	public SourceLocationConverter(char[] content)
 	{
 		this.content = new String(content).replaceAll("\r\n", "\n");
 		this.model = new CodeModel(this.content);
 	}
-	
-	public SourceLocationConverter(List<Character> content) {
+
+	public SourceLocationConverter(List<Character> content)
+	{
 		this.content = new String(FileUtility.getCharContent(content));
 		this.model = new CodeModel(this.content);
 	}
 
-	
-//	public int getStartPos(LexLocation location)
-//	{
-//		return this.convert(location.startLine, location.startPos -1);
-//	}
-//	
-//	public int getEndPos(LexLocation location)
-//	{
-//		return this.convert(location.endLine, location.endPos -1);
-//	}
-	
-	
 	public int getStartPos(int line, int col)
 	{
 		return this.convert(line, col);
 	}
-	
+
 	public int getEndPos(int line, int col)
 	{
 		return this.convert(line, col);
+
 	}
-	
-	
+
 	public int convert(int line, int offset)
 	{
-		int[] bounds = this.model.getBounds(line - 1);
+		int[] bounds = this.model.getBounds(line);
 		return bounds[0] + offset;
+	}
+
+	public int getLineCount()
+	{
+		return this.model.getLineCount();
 	}
 
 	public int length()

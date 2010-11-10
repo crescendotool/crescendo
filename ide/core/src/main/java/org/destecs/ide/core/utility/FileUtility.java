@@ -60,9 +60,12 @@ public class FileUtility
 			IMarker[] markers = file.findMarkers(IMarker.PROBLEM, false, IResource.DEPTH_INFINITE);
 			for (IMarker marker : markers)
 			{
-				if (marker.getAttribute(IMarker.MESSAGE) != null &&marker.getAttribute(IMarker.MESSAGE).equals(message)
-						&& marker.getAttribute(IMarker.SEVERITY)!=null && marker.getAttribute(IMarker.SEVERITY).equals(severity)
-						&& marker.getAttribute(IMarker.LINE_NUMBER)!=null && marker.getAttribute(IMarker.LINE_NUMBER).equals(lineNumber))
+				if (marker.getAttribute(IMarker.MESSAGE) != null
+						&& marker.getAttribute(IMarker.MESSAGE).equals(message)
+						&& marker.getAttribute(IMarker.SEVERITY) != null
+						&& marker.getAttribute(IMarker.SEVERITY).equals(severity)
+						&& marker.getAttribute(IMarker.LINE_NUMBER) != null
+						&& marker.getAttribute(IMarker.LINE_NUMBER).equals(lineNumber))
 					return;
 
 			}
@@ -80,21 +83,24 @@ public class FileUtility
 			DestecsCorePlugin.log("FileUtility addMarker", e);
 		}
 	}
-	
+
 	public static void addMarker(IFile file, String message, int lineNumber,
-			int columnNumber, int severity,String content)
+			int columnNumber, int severity, String content)
 	{
 		try
 		{
 			if (file == null)
 				return;
-			lineNumber -= 1;
+			// lineNumber -= 1;
 			IMarker[] markers = file.findMarkers(IMarker.PROBLEM, false, IResource.DEPTH_INFINITE);
 			for (IMarker marker : markers)
 			{
-				if (marker.getAttribute(IMarker.MESSAGE) != null &&marker.getAttribute(IMarker.MESSAGE).equals(message)
-						&& marker.getAttribute(IMarker.SEVERITY)!=null && marker.getAttribute(IMarker.SEVERITY).equals(severity)
-						&& marker.getAttribute(IMarker.LINE_NUMBER)!=null && marker.getAttribute(IMarker.LINE_NUMBER).equals(lineNumber))
+				if (marker.getAttribute(IMarker.MESSAGE) != null
+						&& marker.getAttribute(IMarker.MESSAGE).equals(message)
+						&& marker.getAttribute(IMarker.SEVERITY) != null
+						&& marker.getAttribute(IMarker.SEVERITY).equals(severity)
+						&& marker.getAttribute(IMarker.LINE_NUMBER) != null
+						&& marker.getAttribute(IMarker.LINE_NUMBER).equals(lineNumber))
 					return;
 
 			}
@@ -105,8 +111,15 @@ public class FileUtility
 			marker.setAttribute(IMarker.LOCATION, "line: " + lineNumber);
 
 			SourceLocationConverter converter = new SourceLocationConverter(content.toCharArray());
-			marker.setAttribute(IMarker.CHAR_START, converter.getStartPos(lineNumber, columnNumber));
-			marker.setAttribute(IMarker.CHAR_END, converter.getEndPos(lineNumber, columnNumber));
+			if (lineNumber == 0 && columnNumber == -1)
+			{
+				marker.setAttribute(IMarker.LINE_NUMBER, converter.getLineCount());
+				marker.setAttribute(IMarker.LOCATION, "line: " + converter.getLineCount());
+			} else
+			{
+				marker.setAttribute(IMarker.CHAR_START, converter.getStartPos(lineNumber, columnNumber));
+				marker.setAttribute(IMarker.CHAR_END, converter.getEndPos(lineNumber, columnNumber));
+			}
 		} catch (CoreException e)
 		{
 			DestecsCorePlugin.log("FileUtility addMarker", e);

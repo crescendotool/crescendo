@@ -235,7 +235,7 @@
          
       <editor
             class="org.destecs.ide.ui.editor.impl.ContractEditor"
-            default="true"
+            default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
             name="Contract Editor">
@@ -243,7 +243,7 @@
       
       <editor
             class="org.destecs.ide.ui.editor.impl.VdmLinkEditor"
-            default="true"
+            default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.VdmLinkEditor"
             name="VDM-Link Editor">
