@@ -16,7 +16,6 @@ public abstract class BaseReconcilingStrategy implements IReconcilingStrategy
 {
 	private DestecsDocument currentDocument;
 
-	@SuppressWarnings("unchecked")
 	public void reconcile(IRegion partition)
 	{
 		if (currentDocument != null)
@@ -31,8 +30,7 @@ public abstract class BaseReconcilingStrategy implements IReconcilingStrategy
 				{
 					for (Object err : parser.getErrors())
 					{
-						IError e = (IError) err;
-						System.out.println(e);
+						IError e = (IError) err;						
 						FileUtility.addMarker(currentDocument.getFile(), e.getMessage(), e.getLine(), e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, currentDocument.get());
 					}
 				}
