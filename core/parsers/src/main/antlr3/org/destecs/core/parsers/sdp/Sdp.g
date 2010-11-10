@@ -222,7 +222,7 @@ FLOAT
 fragment
 EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
     
-start : def EOF;
+start : def* EOF;
 
 def   : ID '=' v=value ';'
       { if(v != null)
