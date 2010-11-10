@@ -13,12 +13,29 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
+            category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.wizards.DestecsNewWizard"
             finalPerspective="org.destecs.ide.ui.perspective"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.newProjectWizard"
             name="DESTECS Project"
             project="true">
+      </wizard>
+      <wizard
+            category="org.destecs.ide.ui.category"
+            class="org.destecs.ide.ui.wizards.NewContractWizard"
+            id="org.destecs.ide.ui.newContract"
+            name="DESTECS New Contract">
+      </wizard>
+      <category
+            id="org.destecs.ide.ui.category"
+            name="DESTECS">
+      </category>
+      <wizard
+            category="org.destecs.ide.ui.category"
+            class="org.destecs.ide.ui.wizards.NewScenarioWizard"
+            id="org.destecs.ide.ui.newScenario"
+            name="DESTECS New Scenario">
       </wizard>
    </extension>
    <extension
@@ -152,7 +169,35 @@
                   </adapt>
                </or>
             </parentExpression>
-         </commonSorter> 
+         </commonSorter>
+         <commonWizard
+               type="new"
+               wizardId="org.destecs.ide.ui.newContract">
+            <enablement>
+               <or>
+                  <adapt
+                        type="org.destecs.ide.core.resources.IDestecsProject">
+                  </adapt>
+                  <adapt
+                        type="org.eclipse.core.resources.IFolder">
+                  </adapt>
+               </or>
+            </enablement>
+         </commonWizard>
+         <commonWizard
+               type="import"
+               wizardId="org.destecs.ide.ui.commonWizard2">
+            <enablement>
+               <or>
+                  <adapt
+                        type="org.destecs.ide.core.resources.IDestecsProject">
+                  </adapt>
+                  <adapt
+                        type="org.eclipse.core.resources.IFolder">
+                  </adapt>
+               </or>
+            </enablement>
+         </commonWizard>
       </navigatorContent>
       <commonWizard
             type="new"

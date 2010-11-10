@@ -12,7 +12,6 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.destecs.ide.simeng;bundle-version="1.0.0",
  org.eclipse.ui;bundle-version="3.5.2",
  org.eclipse.core.runtime;bundle-version="3.5.0",
- org.eclipse.ui.navigator;bundle-version="3.4.2",
  org.eclipse.ui.navigator;bundle-version="3.4.2";visibility:=reexport,
  org.destecs.ide.core;bundle-version="1.0.0",
  org.eclipse.core.resources;bundle-version="3.5.0",
@@ -20,7 +19,8 @@ Require-Bundle: org.destecs.ide.simeng;bundle-version="1.0.0",
  org.eclipse.jface.text;bundle-version="3.5.2",
  org.eclipse.ui.editors;bundle-version="3.5.0",
  org.eclipse.ui.ide;bundle-version="3.5.2",
- org.destecs.ide.generated.simulationengine;bundle-version="1.0.0"
+ org.destecs.ide.generated.simulationengine;bundle-version="1.0.0",
+ org.eclipse.ui.navigator.resources;bundle-version="3.4.200"
 Bundle-Activator: org.destecs.ide.ui.DestecsUIPlugin
 Import-Package: org.eclipse.ui.wizards.newresource
 Export-Package: org.destecs.ide.ui,
