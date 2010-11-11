@@ -43,7 +43,7 @@ import org.overturetool.vdmj.values.ValueList;
 public class SimulationManager extends BasicSimulationManager
 {
 	private final static String specFileExtension = "vdmrt";
-	private final static String linkFileExtension = "vdmlink";
+	private final static String linkFileName = "vdm.link";
 	Thread runner;
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
@@ -205,11 +205,20 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		try
 		{
-			for (File linkFile : getFiles(path, linkFileExtension))
+			File linkFile =new File(new File(path.getParentFile(),"configuration"), linkFileName);
+			if(!linkFile.exists())
 			{
-				links = new VdmLinkParserWrapper().parse(linkFile);//Links.load(linkFile);
-				break;
+				throw new SimulationException("The VDM link file does not exist: "+linkFile);
 			}
+			VdmLinkParserWrapper linksParser =new VdmLinkParserWrapper();
+			links = linksParser.parse(linkFile);//Links.load(linkFile);
+			
+			if(links== null || linksParser.hasErrors())
+			{
+				throw new SimulationException("Faild to parse vdm links");
+			}
+			
+			
 
 			
 
@@ -217,7 +226,7 @@ public class SimulationManager extends BasicSimulationManager
 
 			files.addAll(getFiles(path, specFileExtension));
 
-			controller.setLogFile(new File(path, "logFile.logrt"));
+			controller.setLogFile(new File(new File(path.getParentFile(),"output"), "logFile.logrt"));
 			controller.setScript(script);
 
 			ExitStatus status = controller.parse(files);

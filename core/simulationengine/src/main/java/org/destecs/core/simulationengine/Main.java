@@ -37,10 +37,10 @@ public class Main
 		if (useScenario)
 		{
 			Scenario scenario = new ScenarioParserWrapper().parse(new File(base.getAbsolutePath()+"\\scenarios\\scenario1.script"));
-			engine = new ScenarioSimulationEngine(new File(base,modelName+".csc"), scenario );
+			engine = new ScenarioSimulationEngine(new File(base,"configuration\\"+modelName+".csc"), scenario );
 		} else
 		{
-			engine = new SimulationEngine(new File(base,modelName+".csc"));
+			engine = new SimulationEngine(new File(base,"configuration\\"+modelName+".csc"));
 		}
 		
 		engine.setDtSimulationLauncher(new VdmRtLauncher());
@@ -83,28 +83,28 @@ public class Main
 			File sharedDesignParamFile)
 	{
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		Properties props = new Properties();
-		try
-		{
-			props.load(new FileReader(sharedDesignParamFile));
-
-			for (Object key : props.keySet())
-			{
-				String name = key.toString();
-				Double value = Double.parseDouble(props.getProperty(name));
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
-
-			}
-
-		} catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		Properties props = new Properties();
+//		try
+//		{
+//			props.load(new FileReader(sharedDesignParamFile));
+//
+//			for (Object key : props.keySet())
+//			{
+//				String name = key.toString();
+//				Double value = Double.parseDouble(props.getProperty(name));
+//				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value));
+//
+//			}
+//
+//		} catch (FileNotFoundException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return shareadDesignParameters;
 	}
 
