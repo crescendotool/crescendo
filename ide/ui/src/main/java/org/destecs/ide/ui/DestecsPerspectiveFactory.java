@@ -17,6 +17,7 @@ public class DestecsPerspectiveFactory implements IPerspectiveFactory {
 //		IFolderLayout mainArea = layout.createFolder("main", IPageLayout.TOP, 0.70f,editorArea);
 //		mainArea.addView("org.eclipse.ui.editorss");
 		IFolderLayout bottomArea = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.60f,editorArea);
+		bottomArea.addView(IPageLayout.ID_PROBLEM_VIEW);
 		bottomArea.addView(InfoTableView.SIMULATION_MESSAGES_VIEW_ID);
 		
 		IFolderLayout projectExplorerFolder = layout.createFolder("left", IPageLayout.LEFT, 0.20f,editorArea);

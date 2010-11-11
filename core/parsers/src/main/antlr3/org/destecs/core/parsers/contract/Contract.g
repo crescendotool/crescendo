@@ -211,9 +211,6 @@ COMMENT
     :   '--' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
     |   '//' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
     |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
-    | 'design_parameters' {$channel=HIDDEN;}
-    | 'variables' {$channel=HIDDEN;}
-    | 'events' {$channel=HIDDEN;}
     ;
 	
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*

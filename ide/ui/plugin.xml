@@ -19,13 +19,8 @@
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.newProjectWizard"
             name="DESTECS Project"
+            preferredPerspectives="org.destecs.ide.ui.perspective"
             project="true">
-      </wizard>
-      <wizard
-            category="org.destecs.ide.ui.category"
-            class="org.destecs.ide.ui.wizards.NewContractWizard"
-            id="org.destecs.ide.ui.newContract"
-            name="DESTECS New Contract">
       </wizard>
       <category
             id="org.destecs.ide.ui.category"
@@ -33,9 +28,19 @@
       </category>
       <wizard
             category="org.destecs.ide.ui.category"
-            class="org.destecs.ide.ui.wizards.NewScenarioWizard"
+            class="org.destecs.ide.ui.wizards.ScenarioNewWizard"
             id="org.destecs.ide.ui.newScenario"
             name="DESTECS New Scenario">
+      </wizard>
+      <primaryWizard
+            id="org.destecs.ide.ui.newProjectWizard">
+      </primaryWizard>
+      <wizard
+            category="org.destecs.ide.ui.category"
+            class="org.destecs.ide.ui.wizards.ContractNewWizard"
+            icon="icons/cview16/contract_file_tsk.gif"
+            id="org.destecs.ide.ui.newContract"
+            name="DESTECS New Contract">
       </wizard>
    </extension>
    <extension
@@ -184,15 +189,7 @@
                id="org.destecs.ide.ui.dropAssistant">
             <possibleDropTargets></possibleDropTargets>
          </dropAssistant>
-      </navigatorContent>
-      <commonWizard
-            type="new"
-            wizardId="org.destecs.ide.ui.newProjectWizard">
-         <enablement></enablement>
-      </commonWizard>
-      <commonFilter
-            activeByDefault="true"
-            description="Filters Start with Dot"
+      </n
             id="org.eclipse.ui.navigator.resources.filters.startsWithDot"
             name="Filters Start with Dot">
          <filterExpression>
@@ -266,6 +263,31 @@
             id="org.destecs.ide.contracteditor.editor.core.SdpEditor"
             name="Shared Design Parameter Editor">
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.destecs.ide.ui.category"
+            defaultHandler="org.destecs.ide.ui.commands.NewContractCommand"
+            id="org.destecs.ide.ui.commands.newContract"
+            name="New Contract">
+      </command>
+      <category
+            id="org.destecs.ide.ui.category"
+            name="DESTECS">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.destecs.ide.ui.destecsExplorer?after=new">
+         <command
+               commandId="org.destecs.ide.ui.commands.newContract"
+               label="NEW CONTRACT"
+               style="push">
+         </command>
+      </menuContribution>
    </extension>
 
 </plugin>
