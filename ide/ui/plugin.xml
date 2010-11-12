@@ -189,7 +189,16 @@
                id="org.destecs.ide.ui.dropAssistant">
             <possibleDropTargets></possibleDropTargets>
          </dropAssistant>
-      </n
+      </navigatorContent>
+
+      <commonWizard
+            type="new"
+            wizardId="org.destecs.ide.ui.newProjectWizard">
+         <enablement></enablement>
+      </commonWizard>
+      <commonFilter
+            activeByDefault="true"
+            description="Filters Start with Dot"
             id="org.eclipse.ui.navigator.resources.filters.startsWithDot"
             name="Filters Start with Dot">
          <filterExpression>
