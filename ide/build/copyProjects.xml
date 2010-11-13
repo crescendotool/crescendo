@@ -1,23 +1,23 @@
 <copy todir="${buildDirectory}/plugins">
 	<fileset dir="../">
-	<include name="ui/**" />
-	<include name="core/**" />
-	<--include name="contracteditor/**" /-->
-	<include name="simeng/**" />
-	
+		<include name="ui/**" />
+		<include name="core/**" />
+		<!--include name="contracteditor/**" /-->
+		<include name="simeng/**" />
+
 		<!-- include name="ui/**" />
 		<include name="core/**" /-->
-	<include name="debug/**" />
+		<include name="debug/**" />
 		<!--include name="help/**" /-->
 		<include name="platform/**" />
 		<!--  include name="ui/**" /-->
 		<!--exclude name="**/target/" /-->
 	</fileset>
-	<!--fileset dir="../plugins/">
-		<include name="**" />
-		<exclude name="**/idedebughelper/" />
-		<exclude name="**/proofsupport/" />
-	</fileset-->
+	<!--
+		fileset dir="../plugins/"> <include name="**" /> <exclude
+		name="**/idedebughelper/" /> <exclude name="**/proofsupport/" />
+		</fileset
+	-->
 </copy>
 
 
@@ -50,7 +50,7 @@
 	</filterchain>
 </copy>
 
-<!-- generated -->
+	<!-- generated -->
 <copy todir="${buildDirectory}/plugins/destecs.generated.simulationengine">
 	<fileset dir="../generated/simulationengine">
 		<exclude name="**/target/" />
