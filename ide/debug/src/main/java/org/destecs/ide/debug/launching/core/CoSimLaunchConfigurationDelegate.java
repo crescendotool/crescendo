@@ -241,7 +241,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	{
 		try
 		{
-			return new ListenerToLog(new File(ctPath).getParentFile());
+			return new ListenerToLog(new File(new File(ctPath).getParentFile(),"output"));
 		} catch (FileNotFoundException e1)
 		{
 			// TODO Auto-generated catch block
