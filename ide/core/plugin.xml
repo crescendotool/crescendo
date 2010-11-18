@@ -9,6 +9,12 @@
                class="org.destecs.ide.core.resources.DestecsProjectNature">
          </run>
       </runtime>
+      <builder
+            id="org.destecs.ide.core.builder">
+      </builder>
+      <requires-nature
+            id="org.overture.ide.vdmrt.core.nature">
+      </requires-nature>
    </extension>
    <extension
          point="org.eclipse.core.runtime.adapters">
@@ -33,7 +39,7 @@
          point="org.eclipse.core.resources.builders">
       <builder
             callOnEmptyDelta="true"
-            hasNature="false"
+            hasNature="true"
             isConfigurable="false">
          <run
                class="org.destecs.ide.core.internal.builder.IncrementalProjectBuilder">

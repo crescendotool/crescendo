@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+
+<!-- 
+	DESTECS Perspective 
+-->
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -10,6 +14,10 @@
             name="DESTECS">
       </perspective>
    </extension>
+   
+<!-- 
+	New Wizards
+-->
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
@@ -43,6 +51,10 @@
             name="DESTECS New Contract">
       </wizard>
    </extension>
+   
+<!-- 
+	DESTECS Explorer
+-->
    <extension
          point="org.eclipse.ui.views">
       <view
@@ -58,6 +70,8 @@
             name="DESTECS">
       </category>
    </extension>
+   
+<!-- Navigator viewer -->
    <extension
          point="org.eclipse.ui.navigator.viewer">
       <viewerContentBinding
@@ -86,6 +100,8 @@
          </includes>
       </viewerActionBinding>
    </extension>
+   
+<!-- Navigator content -->
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
@@ -224,7 +240,9 @@
    </extension>
    
    
-   <!-- Editors -->
+<!-- 
+	Editors
+-->
    <extension
          point="org.eclipse.ui.editors">
          
@@ -273,6 +291,10 @@
             name="Shared Design Parameter Editor">
       </editor>
    </extension>
+   
+<!-- 
+	New contract  command
+-->
    <extension
          point="org.eclipse.ui.commands">
       <command
@@ -286,6 +308,10 @@
             name="DESTECS">
       </category>
    </extension>
+   
+<!-- 
+	Menus
+-->
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution

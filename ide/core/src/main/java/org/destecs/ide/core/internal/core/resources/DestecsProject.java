@@ -44,7 +44,7 @@ public class DestecsProject implements
 
 		try
 		{
-			if (project.hasNature(IDestecsCoreConstants.NATURE))
+			if (project!=null && project.isAccessible() && project.isOpen() && project.hasNature(IDestecsCoreConstants.NATURE))
 			{
 				return true;
 			}
