@@ -12,10 +12,12 @@
   <name>Core Tools</name>
   
   <modules>
-	<module>protocol</module>
-  	<module>simulationengine</module>
-	<module>vdm</module>
-	<module>xmlrpcextensions</module>
+    <module>protocol</module>
+    
+    <module>simulationengine</module>
+    <module>vdm</module>
+    <module>xmlrpcextensions</module>
+	
 	<module>parsers</module>
   </modules>
   <dependencies>
