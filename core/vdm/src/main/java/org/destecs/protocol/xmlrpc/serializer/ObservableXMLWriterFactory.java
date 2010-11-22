@@ -17,7 +17,7 @@ public class ObservableXMLWriterFactory extends DefaultXMLWriterFactory
 		return super.getXmlWriter(pConfig, new CustomOut(pStream));	
 	}
 
-	public class CustomOut extends OutputStream
+	public static class CustomOut extends OutputStream
 	{
 		OutputStream out;
 

@@ -32,10 +32,25 @@ public class Action implements Comparable<Action>
 	public Double time;
 	public String variableName;
 	public Double variableValue;
+	
+	
 	public int compareTo(Action o)
 	{
 		return this.time.compareTo(o.time);
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		return super.equals(obj);
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return super.hashCode();
+	}
+	
 	
 	@Override
 	public String toString()
@@ -45,10 +60,11 @@ public class Action implements Comparable<Action>
 	
 	private static String pad(String text,int size)
 	{
-		while (text.length()<size)
+		StringBuffer sb = new StringBuffer(text);
+		while (sb.length()<size)
 		{
-			text+=" ";	
+			sb.append(" ");	
 		}
-		return text;
+		return sb.toString();
 	}
 }

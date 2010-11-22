@@ -113,7 +113,7 @@ public class DestecsProject implements
 			IProjectDescription desc = newProject.getWorkspace().newProjectDescription(newProject.getName());
 
 			if (location != null
-					|| ResourcesPlugin.getWorkspace().getRoot().getLocationURI().equals(location))
+					&& ResourcesPlugin.getWorkspace().getRoot().getLocationURI().equals(location))
 			{
 				projectLocation = null;
 			}

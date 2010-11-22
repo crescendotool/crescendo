@@ -2,7 +2,6 @@ package org.destecs.vdmj.scheduler;
 
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.runtime.Context;
-import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.CPUResource;
 import org.overturetool.vdmj.scheduler.ISchedulableThread;
 import org.overturetool.vdmj.scheduler.RunState;
@@ -15,30 +14,29 @@ public class EventThread implements ISchedulableThread
 	private long tid = 0;
 	public EventThread(Thread t)
 	{
-		//this.tid =BasicSchedulableThread.nextThreadID();
+		//Not used
 		this.thread = t;
 	}
 	public void duration(long pause, Context ctxt, LexLocation location)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public CPUResource getCPUResource()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return null;
 	}
 
 	public long getDurationEnd()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return 0;
 	}
 
 	public long getId()
 	{
-		return 4;//tid;
+		return tid;
 	}
 
 	public String getName()
@@ -48,19 +46,19 @@ public class EventThread implements ISchedulableThread
 
 	public ObjectValue getObject()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return null;
 	}
 
 	public RunState getRunState()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return null;
 	}
 
 	public long getSwapInBy()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return 0;
 	}
 
@@ -71,116 +69,103 @@ public class EventThread implements ISchedulableThread
 
 	public long getTimestep()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return 0;
 	}
 
 	public void inOuterTimestep(boolean b)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public boolean inOuterTimestep()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return false;
 	}
 
 	public boolean isActive()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return false;
 	}
 
 	public boolean isAlive()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return false;
 	}
 
 	public boolean isPeriodic()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return false;
 	}
 
 	public boolean isVirtual()
 	{
-		// TODO Auto-generated method stub
+		//Not used
 		return false;
 	}
 
 	public void locking(Context ctxt, LexLocation location)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void run()
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void runslice(long slice)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void setName(String name)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void setSignal(Signal sig)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void setState(RunState newstate)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void setSwapInBy(long swapInBy)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void setTimestep(long step)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void start()
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void step(Context ctxt, LexLocation location)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void suspendOthers()
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 	public void waiting(Context ctxt, LexLocation location)
 	{
-		// TODO Auto-generated method stub
-		
+		//Not used
 	}
 
 }

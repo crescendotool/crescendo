@@ -23,7 +23,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Long nextSimulationStop = new Long(0);
+	private Long nextSimulationStop = Long.valueOf(0);
 	
 	private boolean forceStop = false;
 	
@@ -115,7 +115,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 		SchedulableThread.signalAll(Signal.TERMINATE);
 	}
 
-	private boolean canAdvanceSimulationTime(long minstep)
+	private synchronized boolean canAdvanceSimulationTime(long minstep)
 	{
 		if(SystemClock.getWallTime()+minstep <= nextSimulationStop)
 		{
@@ -123,9 +123,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 		}else
 		{
 			//We have reached the allowed simulation time
-			synchronized (nextSimulationStop)
-			{
-				nextSimulationStop = SimulationManager.getInstance().waitForStep(minstep);
+							nextSimulationStop = SimulationManager.getInstance().waitForStep(minstep);
 				if(SystemClock.getWallTime()+minstep <= nextSimulationStop)
 				{
 					return true;
@@ -133,7 +131,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 				{
 					return false;
 				}
-			}
+			
 			
 		}
 		

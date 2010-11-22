@@ -16,19 +16,19 @@ public class ScenarioParserWrapper extends ParserWrapper<Scenario>
 	protected Scenario internalParse(File source, CharStream data)
 			throws IOException
 	{
-		ScenarioLexer lexer = new ScenarioLexer(data);
+		super.lexer = new ScenarioLexer(data);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		super.lexer = this.lexer;
+		
 		ScenarioParser thisParser = new ScenarioParser(tokens);
 		parser = thisParser;
 
-		lexer.enableErrorMessageCollection(true);
+		((ScenarioLexer)lexer).enableErrorMessageCollection(true);
 		thisParser.enableErrorMessageCollection(true);
 		try
 		{
 			thisParser.start();
 
-			if (lexer.hasExceptions())
+			if (((ScenarioLexer)lexer).hasExceptions())
 			{
 				List<RecognitionException> exps = thisParser.getExceptions();
 				addErrors(source, exps);

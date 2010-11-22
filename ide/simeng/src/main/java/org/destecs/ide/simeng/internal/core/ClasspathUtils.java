@@ -79,7 +79,11 @@ public class ClasspathUtils {
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (BundleException e) {
+			final String msg = NLS.bind(PLUGIN_LOCATION_ERROR, bundleId);
+			System.out.println(msg);
+		} catch (IOException e)
+		{
 			final String msg = NLS.bind(PLUGIN_LOCATION_ERROR, bundleId);
 			System.out.println(msg);
 		}

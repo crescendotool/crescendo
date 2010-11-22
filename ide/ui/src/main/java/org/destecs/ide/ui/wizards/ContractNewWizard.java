@@ -21,4 +21,15 @@ public class ContractNewWizard extends AbstractNewFileWizard implements INewWiza
 		return "configuration";
 	}
 
+	@Override
+	protected String getFileTemplate(String fileName)
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("contract ");
+		sb.append(fileName);
+		sb.append("\n\n");
+		sb.append("end ");
+		sb.append(fileName);
+		return sb.toString();
+	}
 }

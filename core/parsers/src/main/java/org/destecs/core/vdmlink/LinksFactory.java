@@ -8,15 +8,11 @@ import java.util.Map;
 
 public class LinksFactory {
 
-	boolean valid = true;
-	
 	private Map<String, StringPair> link = new Hashtable<String, StringPair>();
 	private List<String> outputs = new ArrayList<String>();
 	private List<String> inputs = new ArrayList<String>();
 	private List<String> events = new ArrayList<String>();
-	private List<String> sdp = new ArrayList<String>();
-
-	
+	private List<String> sdp = new ArrayList<String>();	
 	
 	public void addEvents(List<String> names){
 		events.addAll(names);
@@ -35,9 +31,9 @@ public class LinksFactory {
 	}
 	
 	public void addLink(String name, StringPair pair){
-		if(link.containsKey(name)){
-			valid = false;
-		}
+//		if(link.containsKey(name)){
+//			valid = false;
+//		}
 		link.put(name, pair);
 	}
 	

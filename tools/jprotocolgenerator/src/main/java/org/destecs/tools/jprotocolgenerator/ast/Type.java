@@ -4,7 +4,7 @@ public class Type implements ITypeNode
 {
 	@SuppressWarnings("unchecked")
 	public Class type;
-	private final String unknown = "_ERROR_UNKNOWN_TYPE_";
+	private final static String unknown = "_ERROR_UNKNOWN_TYPE_";
 
 	@SuppressWarnings("unchecked")
 	public Type(Class class1)

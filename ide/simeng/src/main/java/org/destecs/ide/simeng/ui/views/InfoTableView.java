@@ -31,12 +31,13 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	public static String SIMULATION_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationView";
 	public static String SIMULATION_ENGINE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
 	public static String SIMULATION_MESSAGES_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
+	
+	private final Object lock = new Object();
 	// private Action actionSetProvedFilter;
 
-	
-	public int elementCount=200;
+	public int elementCount = 200;
 
-	class ViewContentProvider implements IStructuredContentProvider
+	static class ViewContentProvider implements IStructuredContentProvider
 	{
 		public void inputChanged(Viewer v, Object oldInput, Object newInput)
 		{
@@ -59,7 +60,7 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 	}
 
-	class ViewLabelProvider extends LabelProvider implements
+	static class ViewLabelProvider extends LabelProvider implements
 			ITableLabelProvider
 	{
 
@@ -85,35 +86,7 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 			return null;
 		}
 
-		// public Image getColumnImage(Object obj, int index)
-		// {
-		// if (index == 3)
-		// {
-		// return getImage(obj);
-		// }
-		// return null;
-		// }
-
-		// @Override
-		// public Image getImage(Object obj)
-		// {
-		// ProofObligation data = (ProofObligation) obj;
-		//
-		// String imgPath = "icons/cview16/unproved.png";
-		//
-		// if (data.status == POStatus.PROVED)
-		// imgPath = "icons/cview16/proved.png";
-		// else if (data.status == POStatus.TRIVIAL)
-		// imgPath = "icons/cview16/trivial.png";
-		//
-		// return Activator.getImageDescriptor(imgPath).createImage();
-		// }
-
 	}
-
-	// class IdSorter extends ViewerSorter
-	// {
-	// }
 
 	/**
 	 * The constructor.
@@ -121,8 +94,6 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	public InfoTableView()
 	{
 	}
-
-	
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize it.
@@ -135,7 +106,7 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		// test setup columns...
 		TableLayout layout = new TableLayout();
 		layout.addColumnData(new ColumnWeightData(20, true));
-		
+
 		layout.addColumnData(new ColumnWeightData(100, true));
 
 		// layout.addColumnData(new ColumnWeightData(60, false));
@@ -156,30 +127,26 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
-	
+
 		viewer.setInput(dataSource);
 	}
-	
+
 	public void addColumn(String name)
 	{
 		for (TableColumn tc : viewer.getTable().getColumns())
 		{
-			if(tc.getText().equals(name))
+			if (tc.getText().equals(name))
 			{
 				return;
 			}
 		}
-		((TableLayout)viewer.getTable().getLayout()).addColumnData(new ColumnWeightData(60, false));
-		
+		((TableLayout) viewer.getTable().getLayout()).addColumnData(new ColumnWeightData(60, false));
+
 		TableColumn column2 = new TableColumn(viewer.getTable(), SWT.LEFT);
 		column2.setText(name);
-		column2.setToolTipText("Show "+name);
+		column2.setToolTipText("Show " + name);
 		refreshPackTable();
 	}
-
-	
-
-
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -191,35 +158,36 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	}
 
 	Boolean isUpdating = false;
+
 	public void refreshList()
 	{
-		if(isUpdating)
+		if (isUpdating)
 		{
 			return;
 		}
-		synchronized (isUpdating)
+		synchronized (lock)
 		{
 			isUpdating = true;
 		}
-		
+
 		display.asyncExec(new Runnable()
 		{
 
 			public void run()
 			{
 				viewer.refresh();
-				viewer.getTable().select(viewer.getTable().getItemCount()-1);
+				viewer.getTable().select(viewer.getTable().getItemCount() - 1);
 				viewer.getTable().showSelection();
-				synchronized (isUpdating)
+				synchronized (lock)
 				{
 					isUpdating = false;
 				}
 			}
 
 		});
-		
+
 	}
-	
+
 	public void packColumns()
 	{
 		display.asyncExec(new Runnable()
@@ -238,12 +206,12 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 	public synchronized void setDataList(final List<String> data)
 	{
-		while(dataSource.size()>elementCount)
+		while (dataSource.size() > elementCount)
 		{
 			dataSource.remove(0);
 		}
 		dataSource.add(data);
-		//refreshList();
+		// refreshList();
 	}
 
 	public void refreshPackTable()
@@ -265,12 +233,11 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	public synchronized void resetBuffer()
 	{
 		dataSource.clear();
-		//refreshList();
+		// refreshList();
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)
 	{
-		
 
 	}
 }

@@ -13,7 +13,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 
 public class ScenarioEditor extends TextEditor
 {
-	public class ScenarioSourceViewerConfiguration extends
+	public static class ScenarioSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
 	{
 
@@ -31,7 +31,7 @@ public class ScenarioEditor extends TextEditor
 
 	}
 	
-	public class ScenarioReconcilingStrategy extends BaseReconcilingStrategy
+	public static class ScenarioReconcilingStrategy extends BaseReconcilingStrategy
 	{
 		@SuppressWarnings("unchecked")
 		@Override
@@ -41,7 +41,7 @@ public class ScenarioEditor extends TextEditor
 		}
 	}
 
-	public class ScenarioCodeScanner extends BaseCodeScanner
+	public static class ScenarioCodeScanner extends BaseCodeScanner
 	{
 
 		public ScenarioCodeScanner(DestecsColorProvider provider)

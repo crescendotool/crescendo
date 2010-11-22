@@ -33,7 +33,13 @@ public class CachedLogFileWriter
 	public void setLogfile(PrintWriter out)
 	{
 		dump(true); // Write out and close previous
-		logfile = out;
+		setInternalLogFile(out);
+		
+	}
+	
+	private synchronized void setInternalLogFile(PrintWriter out)
+	{
+		logfile = out;	
 	}
 
 	public int getLogSize()

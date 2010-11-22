@@ -16,19 +16,19 @@ public class VdmLinkParserWrapper extends ParserWrapper<Links>
 	protected Links internalParse(File source, CharStream data)
 			throws IOException
 	{
-		VdmLinkLexer lexer = new VdmLinkLexer(data);
-		super.lexer = this.lexer;
+		super.lexer = new VdmLinkLexer(data);
+		
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		VdmLinkParser thisParser = new VdmLinkParser(tokens);
 		parser = thisParser;
 
-		lexer.enableErrorMessageCollection(true);
+		((VdmLinkLexer)lexer).enableErrorMessageCollection(true);
 		thisParser.enableErrorMessageCollection(true);
 		try
 		{
 			thisParser.start();
 
-			if (lexer.hasExceptions())
+			if (((VdmLinkLexer)lexer).hasExceptions())
 			{
 				List<RecognitionException> exps = thisParser.getExceptions();
 				addErrors(source, exps);

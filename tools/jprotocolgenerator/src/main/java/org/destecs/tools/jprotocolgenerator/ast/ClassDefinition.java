@@ -61,8 +61,8 @@ public class ClassDefinition extends IInterface
 				+ "> data = new Hashtable<String," + ((MapType)toMapMethod.returnType).valueType.toSource()
 				+ ">();");
 
-		Integer count = new Integer(0);
-		boolean first = true;
+		Integer count = Integer.valueOf(0);
+//		boolean first = true;
 		for (Field f : fields)
 		{
 			

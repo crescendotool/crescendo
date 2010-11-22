@@ -142,15 +142,9 @@ public class SimulationEngine
 			throw new InvalidEndpointsExpection(Simulator.CT, ctEndpoint);
 		}
 
-		if (dtModelBase == null || !dtModelBase.exists())
-		{
-			throw new ModelPathNotValidException(Simulator.DT, dtModelBase.toString());
-		}
+		checkModel(Simulator.DT,dtModelBase);
 
-		if (ctModel == null || !ctModel.exists())
-		{
-			throw new ModelPathNotValidException(Simulator.CT, ctModel.toString());
-		}
+		checkModel(Simulator.CT,ctModel);
 
 		if (dtLauncher == null)
 		{
@@ -160,6 +154,16 @@ public class SimulationEngine
 		if (ctLauncher == null)
 		{
 			throw new InvalidSimulationLauncher(Simulator.CT, "Launcher not set");
+		}
+	}
+
+	private void checkModel(Simulator simulator, File model) throws ModelPathNotValidException
+	{
+		if (model == null )
+		{
+			throw new ModelPathNotValidException(simulator, "null");
+		}else if(!ctModel.exists()){
+			throw new ModelPathNotValidException(simulator, "null");
 		}
 	}
 
@@ -561,7 +565,7 @@ public class SimulationEngine
 				&& exception.getCause() instanceof XmlRpcException)
 		{
 			XmlRpcException cause = (XmlRpcException) exception.getCause();
-			return new Integer(cause.code) + ": " + cause.getMessage();
+			return Integer.valueOf(cause.code) + ": " + cause.getMessage();
 		}
 		return "";
 	}

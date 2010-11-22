@@ -33,14 +33,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 public class DestecsScenarioWizardPageCreation extends WizardPage {
 
-	class WidgetListener implements ModifyListener, SelectionListener
+	static class WidgetListener implements ModifyListener, SelectionListener
 	{
 		public boolean suspended = false;
 
@@ -72,12 +71,12 @@ public class DestecsScenarioWizardPageCreation extends WizardPage {
 		}
 	}
 	
-	private IStructuredSelection fStructuredSelection = null;
-	private IProject project = null;
-	private boolean validSelection = false;
+//	private IStructuredSelection fStructuredSelection = null;
+//	private IProject project = null;
+//	private boolean validSelection = false;
 	private Text fProjectText;
 	private String fProjectName = null;
-	private WidgetListener fListener = new WidgetListener();
+//	private WidgetListener fListener = new WidgetListener();
 	private String fType;
 	private String fName;
 	
@@ -89,7 +88,7 @@ public class DestecsScenarioWizardPageCreation extends WizardPage {
 	public DestecsScenarioWizardPageCreation(String string,
 			IStructuredSelection fStructuredSelection,String type, String name) {
 		super(string);
-		this.fStructuredSelection = fStructuredSelection;
+//		this.fStructuredSelection = fStructuredSelection;
 		this.fType = type;
 		this.fName = name;
 		
@@ -100,9 +99,9 @@ public class DestecsScenarioWizardPageCreation extends WizardPage {
 			IDestecsProject dp = (IDestecsProject) p.getAdapter(IDestecsProject.class);
 			
 			if(dp != null){
-				this.project = p;
+//				this.project = p;
 				this.fProjectName = p.getName();
-				this.validSelection = true;
+//				this.validSelection = true;
 				updatePage();
 			}
 		}
@@ -302,11 +301,11 @@ public class DestecsScenarioWizardPageCreation extends WizardPage {
 	}
 	
 	
-	private static Button createPushButton(Composite parent, String label, String tooltip, Image image) {
-		Button button = createPushButton(parent, label, image);
-		button.setToolTipText(tooltip);
-		return button;
-	}
+//	private static Button createPushButton(Composite parent, String label, String tooltip, Image image) {
+//		Button button = createPushButton(parent, label, image);
+//		button.setToolTipText(tooltip);
+//		return button;
+//	}
 	
 	private static Button createPushButton(Composite parent, String label, Image image) {
 		Button button = new Button(parent, SWT.PUSH);

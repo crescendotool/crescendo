@@ -248,6 +248,7 @@
          
       <editor
             class="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
             extensions="csc,vdm.link"
             icon="icons/cview16/contract_file_tsk.gif"
@@ -259,6 +260,7 @@
          
       <editor
             class="org.destecs.ide.ui.editor.impl.ContractEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
@@ -267,6 +269,7 @@
       
       <editor
             class="org.destecs.ide.ui.editor.impl.VdmLinkEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.VdmLinkEditor"
@@ -275,6 +278,7 @@
       
       <editor
             class="org.destecs.ide.ui.editor.impl.ScenarioEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
             extensions="script"
             icon="icons/cview16/contract_file_tsk.gif"
@@ -284,6 +288,7 @@
       
       <editor
             class="org.destecs.ide.ui.editor.impl.SdpEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
             extensions="sdp"
             icon="icons/cview16/contract_file_tsk.gif"
@@ -295,7 +300,7 @@
 <!-- 
 	New contract  command
 -->
-   <extension
+   <!--extension
          point="org.eclipse.ui.commands">
       <command
             categoryId="org.destecs.ide.ui.category"
@@ -307,12 +312,12 @@
             id="org.destecs.ide.ui.category"
             name="DESTECS">
       </category>
-   </extension>
+   </extension-->
    
 <!-- 
 	Menus
 -->
-   <extension
+   <!--extension
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
@@ -323,6 +328,6 @@
                style="push">
          </command>
       </menuContribution>
-   </extension>
+   </extension-->
 
 </plugin>

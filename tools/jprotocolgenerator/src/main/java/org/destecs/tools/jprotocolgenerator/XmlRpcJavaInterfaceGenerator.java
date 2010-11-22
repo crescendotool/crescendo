@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.Assert;
 
@@ -26,6 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class XmlRpcJavaInterfaceGenerator
 {
@@ -61,8 +63,11 @@ public class XmlRpcJavaInterfaceGenerator
 	/**
 	 * @param args
 	 *            xml definition file (required), interface name, packagename ,output folder
+	 * @throws ParserConfigurationException 
+	 * @throws IOException 
+	 * @throws SAXException 
 	 */
-	public static void main(String[] args)
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
 	{
 		String interfaceName = null;
 		String outputFolder = null;
@@ -70,8 +75,7 @@ public class XmlRpcJavaInterfaceGenerator
 		StringBuffer sb = new StringBuffer();
 		IInterface interfaceNode = new IInterface();
 		String outputFileName = "";
-		try
-		{
+		
 			String packageName = "org.destecs.protocol";
 			String xmlFilePath = args[0];
 
@@ -141,10 +145,7 @@ public class XmlRpcJavaInterfaceGenerator
 			sb.append("\n}");
 			sb = new StringBuffer();
 			sb.append(interfaceNode.toSource());
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		
 
 //		System.out.println(sb.toString());
 //
@@ -647,11 +648,12 @@ public class XmlRpcJavaInterfaceGenerator
 	
 	public static String padToWidth(String name,char padChar,int length)
 	{
-		while(name.length()<length)
+		StringBuilder sb = new StringBuilder(name);
+		while(sb.length()<length)
 		{
-			name +=padChar;
+			sb.append(padChar);
 		}
-		return name;
+		return sb.toString();
 	}
 
 	public static StringBuffer getNodePath(Node node)

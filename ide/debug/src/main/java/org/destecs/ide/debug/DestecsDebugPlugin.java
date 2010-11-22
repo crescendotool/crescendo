@@ -52,8 +52,8 @@ public class DestecsDebugPlugin extends AbstractUIPlugin {
 	
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		ILaunchManager launchManager = DebugPlugin.getDefault()
-				.getLaunchManager();
+//		ILaunchManager launchManager = DebugPlugin.getDefault()
+//				.getLaunchManager();
 //		launchManager.addLaunchListener(DebugConsoleManager.getInstance());
 //		launchManager.addLaunchListener(VdmDebugLogManager.getInstance());
 

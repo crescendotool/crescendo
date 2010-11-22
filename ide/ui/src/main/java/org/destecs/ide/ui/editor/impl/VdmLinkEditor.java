@@ -13,7 +13,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 
 public class VdmLinkEditor extends TextEditor
 {
-	public class VdmLinkSourceViewerConfiguration extends
+	public static class VdmLinkSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
 	{
 
@@ -31,7 +31,7 @@ public class VdmLinkEditor extends TextEditor
 
 	}
 	
-	public class VdmLinkReconcilingStrategy extends BaseReconcilingStrategy
+	public static class VdmLinkReconcilingStrategy extends BaseReconcilingStrategy
 	{
 		@SuppressWarnings("unchecked")
 		@Override
@@ -41,7 +41,7 @@ public class VdmLinkEditor extends TextEditor
 		}
 	}
 
-	public class VdmLinkCodeScanner extends BaseCodeScanner
+	public static class VdmLinkCodeScanner extends BaseCodeScanner
 	{
 
 		public VdmLinkCodeScanner(DestecsColorProvider provider)

@@ -66,19 +66,19 @@ public abstract class BasicSimulationManager
 	}
 	
 	private static final boolean DEBUG = false;
-	protected static Links links =null;
+	protected Links links =null;
 	protected VDMCO controller = null;
 	protected CoSimResourceScheduler scheduler = null;
 	protected boolean interpreterRunning = false;
 	
-	protected Long nextTimeStep = new Long(0);
-	protected Long nextSchedulableActionTime = new Long(0);
+	protected Long nextTimeStep = Long.valueOf(0);
+	protected Long nextSchedulableActionTime =  Long.valueOf(0);
 	
 	protected final LexLocation coSimLocation = new LexLocation(new File("SimulationInterface"), "SimulationInterface", 0, 0, 0, 0);
 	protected final Context coSimCtxt = new Context(coSimLocation, "SimulationInterface", null);
 	
 	
-	public void register(CoSimResourceScheduler scheduler)
+	public synchronized void register(CoSimResourceScheduler scheduler)
 	{
 		this.scheduler = scheduler;
 	}

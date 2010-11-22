@@ -113,11 +113,12 @@ public class Main
 	{
 		private String pad(String text, int count)
 		{
-			while (text.length() < count)
+			StringBuffer buf = new StringBuffer(text);
+			while (buf.length() < count)
 			{
-				text += " ";
+				buf.append(" ");
 			}
-			return text;
+			return buf.toString();
 		}
 
 		public void info(Simulator simulator, String message)

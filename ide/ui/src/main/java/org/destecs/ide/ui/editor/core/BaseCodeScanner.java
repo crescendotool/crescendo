@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.RGB;
 
 public abstract class BaseCodeScanner extends RuleBasedScanner
 {
-	public class ContractWordDetector implements IWordDetector {
+	public static class ContractWordDetector implements IWordDetector {
 
 		/*
 		 * (non-Javadoc) Method declared on IWordDetector.
@@ -55,7 +55,7 @@ public abstract class BaseCodeScanner extends RuleBasedScanner
 
 	}
 	
-	public class WhitespaceDetector implements IWhitespaceDetector {
+	public static class WhitespaceDetector implements IWhitespaceDetector {
 
 		public boolean isWhitespace(char c) {
 

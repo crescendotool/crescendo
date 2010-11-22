@@ -35,11 +35,12 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 	
 	private String pad(int c, String data)
 	{
-		while(data.length()<c)
+		StringBuffer sb = new StringBuffer(data);
+		while(sb.length()<c)
 		{
-			data +=" ";
+			sb.append(" ");
 		}
-		return data;
+		return sb.toString();
 	}
 
 	public void stepInfo(Simulator simulator, StepStruct result)

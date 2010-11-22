@@ -16,19 +16,19 @@ public class ContractParserWrapper extends ParserWrapper<Contract>
 	protected Contract internalParse(File source, CharStream data)
 			throws IOException
 	{
-		ContractLexer lexer = new ContractLexer(data);
+		super.lexer = new ContractLexer(data);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		super.lexer = this.lexer;
+		
 		ContractParser thisParser = new ContractParser(tokens);
 		parser = thisParser;
 
-		lexer.enableErrorMessageCollection(true);
+		((ContractLexer)lexer).enableErrorMessageCollection(true);
 		thisParser.enableErrorMessageCollection(true);
 		try
 		{
 			thisParser.contract();
 
-			if (lexer.hasExceptions())
+			if (((ContractLexer)lexer).hasExceptions())
 			{
 				List<RecognitionException> exps = thisParser.getExceptions();
 				addErrors(source, exps);

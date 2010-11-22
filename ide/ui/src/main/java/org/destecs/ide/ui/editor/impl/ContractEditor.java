@@ -13,7 +13,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 
 public class ContractEditor extends TextEditor
 {
-	public class DestecsContractSourceViewerConfiguration extends
+	public static class DestecsContractSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
 	{
 
@@ -31,7 +31,7 @@ public class ContractEditor extends TextEditor
 
 	}
 	
-	public class ContractReconcilingStrategy extends BaseReconcilingStrategy
+	public static class ContractReconcilingStrategy extends BaseReconcilingStrategy
 	{
 		@SuppressWarnings("unchecked")
 		@Override
@@ -41,7 +41,7 @@ public class ContractEditor extends TextEditor
 		}
 	}
 
-	public class DestecsContractCodeScanner extends BaseCodeScanner
+	public static class DestecsContractCodeScanner extends BaseCodeScanner
 	{
 
 		public DestecsContractCodeScanner(DestecsColorProvider provider)

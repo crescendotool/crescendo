@@ -13,7 +13,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 
 public class SdpEditor extends TextEditor
 {
-	public class SdpSourceViewerConfiguration extends
+	public static class SdpSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
 	{
 
@@ -31,7 +31,7 @@ public class SdpEditor extends TextEditor
 
 	}
 	
-	public class SdpReconcilingStrategy extends BaseReconcilingStrategy
+	public static class SdpReconcilingStrategy extends BaseReconcilingStrategy
 	{
 		@SuppressWarnings("unchecked")
 		@Override
@@ -41,7 +41,7 @@ public class SdpEditor extends TextEditor
 		}
 	}
 
-	public class SdpCodeScanner extends BaseCodeScanner
+	public static class SdpCodeScanner extends BaseCodeScanner
 	{
 
 		public SdpCodeScanner(DestecsColorProvider provider)

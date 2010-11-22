@@ -224,7 +224,7 @@ public class CoSimLaunchConfigurationDelegate implements
 
 				}
 			};
-
+			runSimulation.schedule();
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
@@ -233,8 +233,6 @@ public class CoSimLaunchConfigurationDelegate implements
 				view.refreshPackTable();
 			}
 		}
-		runSimulation.schedule();
-
 	}
 
 	private ListenerToLog getLog()

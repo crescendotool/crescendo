@@ -44,7 +44,7 @@ public class SimulationManager extends BasicSimulationManager
 {
 	private final static String specFileExtension = "vdmrt";
 	private final static String linkFileName = "vdm.link";
-	Thread runner;
+	//Thread runner;
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
 
@@ -52,7 +52,7 @@ public class SimulationManager extends BasicSimulationManager
 	/**
 	 * A handle to the unique Singleton instance.
 	 */
-	static private SimulationManager _instance = null;
+	static private volatile SimulationManager _instance = null;
 
 	/**
 	 * @return The unique instance of this class.

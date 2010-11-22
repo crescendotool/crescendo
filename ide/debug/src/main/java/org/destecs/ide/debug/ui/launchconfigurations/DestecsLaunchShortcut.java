@@ -116,7 +116,7 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 	private void searchAndLaunch(Object[] scope, String mode,
 			String selectTitle, String emptyMessage)
 	{
-		Object[] types = null;
+//		Object[] types = null;
 
 		try
 		{
@@ -141,10 +141,10 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 			return;
 		}
 //		Object type = null;
-		if (types == null || types.length == 0)
-		{
-			MessageDialog.openError(getShell(), LauncherMessages.VdmLaunchShortcut_1, emptyMessage);
-		}
+//		if (types == null || types.length == 0)
+//		{
+//			MessageDialog.openError(getShell(), LauncherMessages.VdmLaunchShortcut_1, emptyMessage);
+//		}
 //		else if (types.length > 1)
 //		{
 //			type = chooseType(types, selectTitle);
@@ -353,11 +353,11 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 		// IEditorInput input = editor.getEditorInput();
 		// IJavaElement je = (IJavaElement) input.getAdapter(IJavaElement.class);
 		// TODO get ISourceUnit from editor
-		Object je = null;
-		if (je != null)
-		{
-			searchAndLaunch(new Object[] { je }, mode, getTypeSelectionTitle(), getEditorEmptyMessage());
-		}
+//		Object je = null;
+//		if (je != null)
+//		{
+//			searchAndLaunch(new Object[] { je }, mode, getTypeSelectionTitle(), getEditorEmptyMessage());
+//		}
 	}
 
 	public void launch(ISelection selection, String mode)

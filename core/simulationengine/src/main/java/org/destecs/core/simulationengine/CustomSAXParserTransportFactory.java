@@ -27,7 +27,7 @@ public class CustomSAXParserTransportFactory extends
 		return new XmlRpcSun15HttpTransportCustomSAXReader(this.getClient());
 	}
 
-	public class XmlRpcSun15HttpTransportCustomSAXReader extends
+	public static class XmlRpcSun15HttpTransportCustomSAXReader extends
 			XmlRpcSun15HttpTransport
 	{
 

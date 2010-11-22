@@ -1,6 +1,5 @@
 package org.destecs.ide.ui.wizards;
 
-
 import java.util.List;
 import java.util.Vector;
 
@@ -33,12 +32,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
-public class DestecsWizardPageCreation extends WizardPage {
+public class DestecsWizardPageCreation extends WizardPage
+{
 
 	class WidgetListener implements ModifyListener, SelectionListener
 	{
@@ -48,8 +47,8 @@ public class DestecsWizardPageCreation extends WizardPage {
 		{
 			if (!suspended)
 			{
-				// validatePage();
-				//updateLaunchConfigurationDialog();
+				// updatePage();
+				// updateLaunchConfigurationDialog();
 			}
 		}
 
@@ -67,79 +66,95 @@ public class DestecsWizardPageCreation extends WizardPage {
 			{
 				// fOperationText.setEnabled(!fdebugInConsole.getSelection());
 
-				//updateLaunchConfigurationDialog();
+				// updateLaunchConfigurationDialog();
 			}
 		}
 	}
-	
-	private IStructuredSelection fStructuredSelection = null;
-	private IProject project = null;
-	private boolean validSelection = false;
+
+	// private IStructuredSelection fStructuredSelection = null;
+	// private IProject project = null;
+	// private boolean validSelection = false;
 	private Text fProjectText;
 	private String fProjectName = null;
 	private WidgetListener fListener = new WidgetListener();
 	private String fType;
 	private String fName;
-	
-	protected DestecsWizardPageCreation(String pageName) {
+	private Text fFileText;
+	private IStructuredSelection fStructuredSelection;
+	private boolean fFileNameEditable;
+	private String initialFileName;
+
+	protected DestecsWizardPageCreation(String pageName)
+	{
 		super(pageName);
-		
+
 	}
 
 	public DestecsWizardPageCreation(String string,
-			IStructuredSelection fStructuredSelection,String type, String name) {
+			IStructuredSelection fStructuredSelection, String type,
+			String name, boolean fileNameEditable, String initialFileName)
+	{
 		super(string);
-		this.fStructuredSelection = fStructuredSelection;
+		// this.fStructuredSelection = fStructuredSelection;
 		this.fType = type;
 		this.fName = name;
+		this.fStructuredSelection = fStructuredSelection;
+		this.fFileNameEditable = fileNameEditable;
+		this.initialFileName = initialFileName;
 		
-		Object o = fStructuredSelection.getFirstElement();
-		
-		if(o != null && o instanceof IProject){
-			IProject p = (IProject) o;			
-			IDestecsProject dp = (IDestecsProject) p.getAdapter(IDestecsProject.class);
-			
-			if(dp != null){
-				this.project = p;
-				this.fProjectName = p.getName();
-				this.validSelection = true;
-				updatePage();
-			}
+		if(fStructuredSelection.getFirstElement() instanceof IProject)
+		{
+			this.fProjectName =((IProject) fStructuredSelection.getFirstElement()).getName();
 		}
-		
+
 	}
 
-	public String getProjectName(){
+	public String getProjectName()
+	{
 		return this.fProjectName;
 	}
-	
-	private void updatePage() {		
-		if(fProjectName == null){
+
+	public String getFileName()
+	{
+		return this.fFileText.getText();
+	}
+
+	private void updatePage()
+	{
+		if (fProjectName == null)
+		{
 			return;
 		}
-		
+
 		IWorkspaceRoot ws = ResourcesPlugin.getWorkspace().getRoot();
 		IProject p = ws.getProject(fProjectName);
 		IFolder f = p.getFolder("configuration");
-		
-		if(f != null){			
-			IFile file = f.getFile(p.getName()+"."+this.fType);
-			if(file.exists()){
+
+		if (f != null)
+		{
+			IFile file = f.getFile(p.getName() + "." + this.fType);
+			if (file.exists())
+			{
 				setErrorMessage(fName + " already exists");
+			} else
+			{
+				setErrorMessage(null);
+				setMessage(fName + " is going to be created in configuration/"
+						+ p.getName() + "." + fType);
 			}
-			else{
-				setErrorMessage(null);		
-				setMessage(fName + " is going to be created in configuration/"+p.getName()+"."+fType);
-			}
+		} else
+		{
+			setErrorMessage(null);
+
+			setMessage(fName + "is going to be created in configuration/"
+					+ p.getName() + "." + fType);
 		}
-		else{
-			setErrorMessage(null);	
-			
-			setMessage(fName + "is going to be created in configuration/"+p.getName()+"."+fType);
+
+		if (fFileText.getText().trim().length() == 0)
+		{
+			setErrorMessage("A file name must be specified.");
 		}
-		
-		
-		
+
 	}
 
 	private void createProjectSelection(Composite parent)
@@ -163,8 +178,9 @@ public class DestecsWizardPageCreation extends WizardPage {
 		label.setLayoutData(gd);
 
 		fProjectText = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
-		
-		if(this.fProjectName != null){
+
+		if (this.fProjectName != null)
+		{
 			fProjectText.setText(this.fProjectName);
 		}
 		gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -205,13 +221,14 @@ public class DestecsWizardPageCreation extends WizardPage {
 							{
 								try
 								{
-									if (object instanceof IProject && ((IProject)object).hasNature(IDestecsCoreConstants.NATURE))
+									if (object instanceof IProject
+											&& ((IProject) object).hasNature(IDestecsCoreConstants.NATURE))
 									{
 										elements.add(object);
 									}
 								} catch (CoreException e)
 								{
-									//Ignore it
+									// Ignore it
 								}
 							}
 							return elements.toArray();
@@ -237,8 +254,8 @@ public class DestecsWizardPageCreation extends WizardPage {
 					{
 						IProject project = ((IProject) dialog.getFirstResult());
 						setProject(project);
-						
-						//setProjectAndsearchModels(project);
+
+						// setProjectAndsearchModels(project);
 
 						// selectScenarioButton.setEnabled(true);
 
@@ -247,103 +264,126 @@ public class DestecsWizardPageCreation extends WizardPage {
 				}
 			}
 
-			
 		});
+
+		Group groupFile = new Group(parent, parent.getStyle());
+		groupFile.setText("Project");
+		GridData gdFile = new GridData(GridData.FILL_HORIZONTAL);
+
+		groupFile.setLayoutData(gdFile);
+
+		GridLayout layoutFile = new GridLayout();
+		layoutFile.makeColumnsEqualWidth = false;
+		layoutFile.numColumns = 2;
+		groupFile.setLayout(layoutFile);
+
+		// editParent = group;
+
+		Label labelFile = new Label(groupFile, SWT.MIN);
+		labelFile.setText("Name:");
+		gdFile = new GridData(GridData.BEGINNING);
+		labelFile.setLayoutData(gdFile);
+
+		fFileText = new Text(groupFile, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+		fFileText.setEditable(fFileNameEditable);
+		if (initialFileName != null)
+		{
+			fFileText.setText(initialFileName);
+		}
+		gdFile = new GridData(GridData.FILL_HORIZONTAL);
+		fFileText.setLayoutData(gdFile);
+		fFileText.addModifyListener(fListener);
+
+		Object o = fStructuredSelection.getFirstElement();
+
+		if (o != null && o instanceof IProject)
+		{
+			IProject p = (IProject) o;
+			IDestecsProject dp = (IDestecsProject) p.getAdapter(IDestecsProject.class);
+
+			if (dp != null)
+			{
+				// this.project = p;
+				this.fProjectName = p.getName();
+				// this.validSelection = true;
+				updatePage();
+			}
+		}
 	}
 
-	private void setProject(IProject project) {
-		this.fProjectName= project.getName();
+	private void setProject(IProject project)
+	{
+		this.fProjectName = project.getName();
 		this.fProjectText.setText(fProjectName);
 		updatePage();
-		
+
 	}
-	
-	public void createControl(Composite parent) {
+
+	public void createControl(Composite parent)
+	{
 		Composite composite = new Composite(parent, SWT.NONE);
 
-		setControl(composite);
-		// PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(),
-		// IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
 		composite.setLayout(new GridLayout(1, true));
 		composite.setFont(parent.getFont());
 		createProjectSelection(composite);
-		
-//		GridLayout gl = new GridLayout();
-//		gl.numColumns = 3;
-//		composite.setLayout(gl);
-//		
-//		GridData gd = new GridData();
-//		gd.horizontalAlignment = GridData.BEGINNING;
-//		composite.setLayoutData(gd);
-//		
-//		Label selectedProject = new Label(composite,SWT.MIN);
-//		selectedProject.setText("Selected Project:");
-//		
-//		Label selectedProjectName = new Label(composite,SWT.MIN);
-//		if(this.project == null){
-//			selectedProjectName.setText("None");
-//		}
-//		else{
-//			selectedProjectName.setText(this.project.getName());
-//		}
-//		
-//		
-//		
-		
-		
 		setControl(composite);
 	}
 
-	
 	@Override
-	public boolean isPageComplete() {
+	public boolean isPageComplete()
+	{
 		System.out.println("Is page complete run...");
 		return super.isPageComplete();
 	}
-	
-	
-	private static Button createPushButton(Composite parent, String label, String tooltip, Image image) {
-		Button button = createPushButton(parent, label, image);
-		button.setToolTipText(tooltip);
-		return button;
-	}
-	
-	private static Button createPushButton(Composite parent, String label, Image image) {
+
+	// private static Button createPushButton(Composite parent, String label, String tooltip, Image image) {
+	// Button button = createPushButton(parent, label, image);
+	// button.setToolTipText(tooltip);
+	// return button;
+	// }
+
+	private static Button createPushButton(Composite parent, String label,
+			Image image)
+	{
 		Button button = new Button(parent, SWT.PUSH);
 		button.setFont(parent.getFont());
-		if (image != null) {
+		if (image != null)
+		{
 			button.setImage(image);
 		}
-		if (label != null) {
+		if (label != null)
+		{
 			button.setText(label);
 		}
 		GridData gd = new GridData();
-		button.setLayoutData(gd);	
+		button.setLayoutData(gd);
 		setButtonDimensionHint(button);
-		return button;	
-	}	
-	
-	private static void setButtonDimensionHint(Button button) {
+		return button;
+	}
+
+	private static void setButtonDimensionHint(Button button)
+	{
 		Assert.isNotNull(button);
-		Object gd= button.getLayoutData();
-		if (gd instanceof GridData) {
-			((GridData)gd).widthHint= getButtonWidthHint(button);	
-			((GridData)gd).horizontalAlignment = GridData.FILL;	 
+		Object gd = button.getLayoutData();
+		if (gd instanceof GridData)
+		{
+			((GridData) gd).widthHint = getButtonWidthHint(button);
+			((GridData) gd).horizontalAlignment = GridData.FILL;
 		}
 	}
-	
-	private static int getButtonWidthHint(Button button) {
-		/*button.setFont(JFaceResources.getDialogFont());*/
-		PixelConverter converter= new PixelConverter(button);
-		int widthHint= converter.convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+
+	private static int getButtonWidthHint(Button button)
+	{
+		/* button.setFont(JFaceResources.getDialogFont()); */
+		PixelConverter converter = new PixelConverter(button);
+		int widthHint = converter.convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
 		return Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
 	}
 
-	public void setType(String type) {
+	public void setType(String type)
+	{
 		this.fType = type;
-		
+
 	}
-	
-	
-	
+
 }
