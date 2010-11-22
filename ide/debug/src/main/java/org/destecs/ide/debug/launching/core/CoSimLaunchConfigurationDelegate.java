@@ -163,6 +163,7 @@ public class CoSimLaunchConfigurationDelegate implements
 							} catch (Throwable e)
 							{
 								exceptions.add(e);
+								log.flush();
 							}
 						};
 
@@ -180,6 +181,7 @@ public class CoSimLaunchConfigurationDelegate implements
 						if (monitor.isCanceled())
 						{
 							engine.forceSimulationStop();
+							log.flush();
 						}
 					}
 

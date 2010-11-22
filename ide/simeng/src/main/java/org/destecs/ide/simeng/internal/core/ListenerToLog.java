@@ -66,4 +66,11 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 		message.dump(true);
 		simulation.dump(true);
 	}
+	
+	public void flush()
+	{
+		engine.dump(false);
+		message.dump(false);
+		simulation.dump(false);
+	}
 }

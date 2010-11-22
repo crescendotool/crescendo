@@ -28,6 +28,7 @@ import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexRealToken;
+import org.overturetool.vdmj.messages.RTLogger;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
@@ -447,6 +448,7 @@ public class SimulationManager extends BasicSimulationManager
 		try
 		{
 			scheduler.stop();
+			RTLogger.dump(true);
 			notify();
 			return true;
 		} catch (Exception e)
