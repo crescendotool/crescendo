@@ -54,13 +54,13 @@ public class ScenarioSimulationEngine extends SimulationEngine
 				case DT:
 					try
 					{
-						engineInfo(Simulator.DT, "Setting parameter (Next time="
+						engineInfo(Simulator.DE, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
-						messageInfo(Simulator.DT, nextTime, "setParameter");
+						messageInfo(Simulator.DE, nextTime, "setParameter");
 						dtProxy.setParameter(action.variableName, action.variableValue);
 					} catch (UndeclaredThrowableException undeclaredException)
 					{
-						abort(Simulator.DT, "setParameter("+action.variableName+"="+action.variableValue+") faild", undeclaredException);
+						abort(Simulator.DE, "setParameter("+action.variableName+"="+action.variableValue+") faild", undeclaredException);
 					}
 					break;
 

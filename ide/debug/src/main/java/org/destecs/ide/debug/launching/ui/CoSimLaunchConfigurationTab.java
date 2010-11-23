@@ -77,7 +77,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 	private Text fProjectText;
 	private Text ctPath = null;
-	private Text dtPath = null;
+	private Text dePath = null;
 //	private Text contractPath = null;
 	// private Text scenarioPath = null;
 //	private Text fSharedDesignParamPath = null;
@@ -244,16 +244,16 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		parent.setLayout(new GridLayout(1, false));
 
-		// DT Line
-		Label dtLabel = new Label(group, SWT.NONE);
-		dtLabel.setText("DT Path:");
-		dtPath = new Text(group, SWT.BORDER);
+		// DE Line
+		Label deLabel = new Label(group, SWT.NONE);
+		deLabel.setText("DE Path:");
+		dePath = new Text(group, SWT.BORDER);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = true;
-		dtPath.setLayoutData(gridData);
-		dtPath.setText("Insert DT model path here");
-		dtPath.setEditable(false);
+		dePath.setLayoutData(gridData);
+		dePath.setText("Insert DE model path here");
+		dePath.setEditable(false);
 
 		// CT Line
 		Label ctLabel = new Label(group, SWT.NONE);
@@ -413,7 +413,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					String fName = folder.getName();
 					if (fName.equals("model"))
 					{
-						dtPath.setText(folder.getLocationURI().getPath());
+						dePath.setText(folder.getLocationURI().getPath());
 					}
 				} else if (iResource instanceof IFile)
 				{
@@ -462,7 +462,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			fProjectText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
 			ctPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "No Path Selected"));
-			dtPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "No Path Selected"));
+			dePath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "No Path Selected"));
 			// contractPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH,
 			// "No Path Selected"));
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
@@ -490,7 +490,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		}
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, fProjectText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ctPath.getText());
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, dtPath.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, dePath.getText());
 
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
@@ -526,9 +526,9 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			setErrorMessage("CT model path not valid");
 		}
-		if (!new File(dtPath.getText()).exists())
+		if (!new File(dePath.getText()).exists())
 		{
-			setErrorMessage("DT model path not valid");
+			setErrorMessage("DE model path not valid");
 		}
 //		if (!new File(contractPath.getText()).exists())
 //		{

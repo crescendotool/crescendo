@@ -31,7 +31,7 @@ public class SimulationEngine
 {
 	public enum Simulator
 	{
-		DT("VDM-RT"), CT("20-Sim"), ALL("All");
+		DE("VDM-RT"), CT("20-Sim"), ALL("All");
 
 		private String name;
 
@@ -90,11 +90,11 @@ public class SimulationEngine
 	{
 		if (model == null)
 		{
-			throw new ModelPathNotValidException(Simulator.DT, "null");
+			throw new ModelPathNotValidException(Simulator.DE, "null");
 		}
 		if (!model.exists())
 		{
-			throw new ModelPathNotValidException(Simulator.DT, model.toString());
+			throw new ModelPathNotValidException(Simulator.DE, model.toString());
 		}
 		this.dtModelBase = model;
 	}
@@ -134,7 +134,7 @@ public class SimulationEngine
 
 		if (dtEndpoint == null)
 		{
-			throw new InvalidEndpointsExpection(Simulator.DT, dtEndpoint);
+			throw new InvalidEndpointsExpection(Simulator.DE, dtEndpoint);
 		}
 
 		if (ctEndpoint == null)
@@ -142,13 +142,13 @@ public class SimulationEngine
 			throw new InvalidEndpointsExpection(Simulator.CT, ctEndpoint);
 		}
 
-		checkModel(Simulator.DT,dtModelBase);
+		checkModel(Simulator.DE,dtModelBase);
 
 		checkModel(Simulator.CT,ctModel);
 
 		if (dtLauncher == null)
 		{
-			throw new InvalidSimulationLauncher(Simulator.DT, "Launcher not set");
+			throw new InvalidSimulationLauncher(Simulator.DE, "Launcher not set");
 		}
 
 		if (ctLauncher == null)
@@ -202,27 +202,27 @@ public class SimulationEngine
 			validateSharedDesignParameters(sharedDesignParameters, contract);
 
 			// launch the simulators
-			engineInfo(Simulator.DT, "Launching");
+			engineInfo(Simulator.DE, "Launching");
 			dtLauncher.launch();
 
 			// connect to the simulators
-			ProxyICoSimProtocol dtProxy = connect(Simulator.DT,dtEndpoint);
+			ProxyICoSimProtocol dtProxy = connect(Simulator.DE,dtEndpoint);
 
-			initialize(Simulator.DT, dtProxy);
+			initialize(Simulator.DE, dtProxy);
 
 			ProxyICoSimProtocol ctProxy = connect(Simulator.CT,ctEndpoint);
 
 			initialize(Simulator.CT, ctProxy);
 
 			// load the models
-			loadModel(Simulator.DT, dtProxy, dtModelBase);
+			loadModel(Simulator.DE, dtProxy, dtModelBase);
 
 			loadModel(Simulator.CT, ctProxy, ctModel);
 
 			// validate interfaces
 			valideteInterfaces(contract, dtProxy, ctProxy);
 
-			setSharedDesignParameters(Simulator.DT, dtProxy, sharedDesignParameters);
+			setSharedDesignParameters(Simulator.DE, dtProxy, sharedDesignParameters);
 
 			// if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
 			// {
@@ -230,7 +230,7 @@ public class SimulationEngine
 			// }
 
 			// start simulation
-			startSimulator(Simulator.DT, dtProxy);
+			startSimulator(Simulator.DE, dtProxy);
 
 			startSimulator(Simulator.CT, ctProxy);
 
@@ -238,10 +238,10 @@ public class SimulationEngine
 
 			// stop the simulators
 
-			stop(Simulator.DT, finishTime, dtProxy);
+			stop(Simulator.DE, finishTime, dtProxy);
 			// stop(Simulator.CT,ctProxy);
 
-			terminate(Simulator.DT, finishTime, dtProxy, dtLauncher);
+			terminate(Simulator.DE, finishTime, dtProxy, dtLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
 		} finally
 		{
@@ -332,7 +332,7 @@ public class SimulationEngine
 		List<String> events = new Vector<String>();
 
 		// First initialize DT
-		StepStruct result = step(Simulator.DT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
+		StepStruct result = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
 		while (time < totalSimulationTime)
 		{
@@ -357,7 +357,7 @@ public class SimulationEngine
 			}
 			//result.time = result.time + (10*Math.pow(10,-9));
 
-			result = step(Simulator.DT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
+			result = step(Simulator.DE, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
 
 			time = result.time;
 		}
@@ -384,7 +384,7 @@ public class SimulationEngine
 			if (simulator == Simulator.CT)
 			{
 				result = ctProxy.step(outputTime, inputs, singleStep, events);
-			} else if (simulator == Simulator.DT)
+			} else if (simulator == Simulator.DE)
 			{
 				result = dtProxy.step(outputTime, inputs, singleStep, events);
 			}
@@ -456,7 +456,7 @@ public class SimulationEngine
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 			throws SimulationException
 	{
-		QueryInterfaceStruct dtInterface = queryInterface(Simulator.DT, dtProxy);
+		QueryInterfaceStruct dtInterface = queryInterface(Simulator.DE, dtProxy);
 		QueryInterfaceStruct ctInterface = queryInterface(Simulator.CT, ctProxy);
 
 		engineInfo(Simulator.ALL, "Validating interfaces...");
@@ -464,7 +464,7 @@ public class SimulationEngine
 		{
 			if (!dtInterface.outputs.contains(var.name))
 			{
-				abort(Simulator.DT, "Missing-output controlled variable: "
+				abort(Simulator.DE, "Missing-output controlled variable: "
 						+ var);
 				return false;
 
@@ -480,7 +480,7 @@ public class SimulationEngine
 		{
 			if (!dtInterface.inputs.contains(var.name))
 			{
-				abort(Simulator.DT, "Missing-input monitored variable: " + var);
+				abort(Simulator.DE, "Missing-input monitored variable: " + var);
 				return false;
 
 			}

@@ -7,7 +7,7 @@ options {
 
 tokens{
   CT = 'CT';
-  DT = 'DT';
+  DE = 'DE';
   ASSIGN = ':=';
 }
 
@@ -236,6 +236,6 @@ action
       ; 
 
 simType 
-      : DT
+      : DE
       | CT
       ;
