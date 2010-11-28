@@ -224,10 +224,7 @@ public class SimulationEngine
 
 			setSharedDesignParameters(Simulator.DE, dtProxy, sharedDesignParameters);
 
-			// if(!setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters))
-			// {
-			// terminate(Simulator.CT);
-			// }
+			//TODO: setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters);
 
 			// start simulation
 			startSimulator(Simulator.DE, dtProxy);
