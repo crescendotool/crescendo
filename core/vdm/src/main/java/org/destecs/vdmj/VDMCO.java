@@ -10,7 +10,7 @@ import org.destecs.vdmj.runtime.CoSimClassInterpreter;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.VDMRT;
 import org.overturetool.vdmj.messages.Console;
-import org.overturetool.vdmj.messages.RTLogger;
+import org.overturetool.vdmj.messages.rtlog.RTLogger;
 import org.overturetool.vdmj.runtime.ClassInterpreter;
 import org.overturetool.vdmj.runtime.ContextException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
