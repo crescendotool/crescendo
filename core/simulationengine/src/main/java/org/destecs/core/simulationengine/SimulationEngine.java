@@ -344,16 +344,15 @@ public class SimulationEngine
 			// Step DT
 
 			// TODO: Problem with CT not stopping at the correct time
-			//result.time = result.time + 0.005;
-			if(time >= result.time)
-			{
-				result.time = time + (1*Math.pow(10,-9));
-				engineInfo(Simulator.ALL, "Applying time fix of 1 ns to time: "+time+" => "+result.time);
-				messageInfo(Simulator.ALL, time,"time fix of 1 ns to time: "+time+" => "+result.time);
-				System.out.println("Applying time fix of 1 ns to time: "+time+" => "+result.time);
-			}
-			//result.time = result.time + (10*Math.pow(10,-9));
-
+			
+//			if(time >= result.time)
+//			{
+//				result.time = time + (1*Math.pow(10,-9));
+//				engineInfo(Simulator.ALL, "Applying time fix of 1 ns to time: "+time+" => "+result.time);
+//				messageInfo(Simulator.ALL, time,"time fix of 1 ns to time: "+time+" => "+result.time);
+//				System.out.println("Applying time fix of 1 ns to time: "+time+" => "+result.time);
+//			}
+			
 			result = step(Simulator.DE, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
 
 			time = result.time;
