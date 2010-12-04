@@ -29,6 +29,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
@@ -44,10 +45,10 @@ public class CoSimLaunchConfigurationDelegate implements
 		ILaunchConfigurationDelegate
 {
 
-	private String dtPath = null;
-	private String ctPath = null;
-	private String contractPath = null;
-	private String scenarioPath = null;
+	private File dtFile = null;
+	private File ctFile = null;
+	private File contractFile = null;
+	private File scenarioFile = null;
 	private String sharedDesignParam = null;
 	private double totalSimulationTime = 0.0;
 	private IProject project = null;
@@ -62,16 +63,28 @@ public class CoSimLaunchConfigurationDelegate implements
 
 	}
 
+	private File getFileFromPath(IProject project, String path){
+		
+		IResource r = project.findMember(new Path(path));
+		
+		if(r != null && !r.equals(project)){
+			return r.getLocation().toFile();
+		}
+		return null;
+	}
+	
 	private void loadSettings(ILaunchConfiguration configuration)
 	{
 
 		try
 		{
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
-			contractPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, "");
-			dtPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "");
-			ctPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "");
-			scenarioPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, "");
+			
+			
+			contractFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
+			dtFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
+			ctFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
+			scenarioFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 
@@ -130,13 +143,13 @@ public class CoSimLaunchConfigurationDelegate implements
 			engine.messageListeners.add(log);
 			engine.simulationListeners.add(log);
 
-			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(new File(dtPath)));// new
+			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile));// new
 			// File("C:\\destecs\\workspace\\watertank_new\\model")));
-			engine.setDtModel(new File(dtPath));
+			engine.setDtModel(dtFile);
 			engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
 
 			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(new File(ctPath)));
-			engine.setCtModel(new File(ctPath));
+			engine.setCtModel(ctFile);
 			engine.setCtEndpoint(new URL("http://localhost:1580"));
 
 			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
@@ -242,7 +255,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	{
 		try
 		{
-			return new ListenerToLog(new File(new File(ctPath).getParentFile(),"output"));
+			return new ListenerToLog(new File(ctFile.getParentFile(),"output"));
 		} catch (FileNotFoundException e1)
 		{
 			// TODO Auto-generated catch block
@@ -253,9 +266,9 @@ public class CoSimLaunchConfigurationDelegate implements
 
 	private SimulationEngine getEngine() throws IOException
 	{
-		File contractFile = new File(contractPath.trim());
-		File scenarioFile = new File(scenarioPath.trim());
-		if (scenarioPath.trim().length() > 0)
+		
+		
+		if (scenarioFile != null)
 		{
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
 			return new ScenarioSimulationEngine(contractFile, scenario);

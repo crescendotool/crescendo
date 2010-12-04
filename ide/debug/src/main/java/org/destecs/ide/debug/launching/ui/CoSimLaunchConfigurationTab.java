@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -194,7 +195,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					// && ((IProject) dialog.getFirstResult()).getAdapter(IVdmProject.class) != null)
 					)
 					{
-						fScenarioText.setText(((IFile) dialog.getFirstResult()).getLocationURI().getPath());
+						fScenarioText.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
 					}
 
 				}
@@ -413,7 +414,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					String fName = folder.getName();
 					if (fName.equals("model"))
 					{
-						dePath.setText(folder.getLocationURI().getPath());
+						dePath.setText(folder.getProjectRelativePath().toString());
 					}
 				} else if (iResource instanceof IFile)
 				{
@@ -424,7 +425,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					}
 					if (file.getFileExtension().equals("emx"))
 					{
-						emxFiles.add(file.getLocationURI().getPath());
+						emxFiles.add(file.getProjectRelativePath().toString());
 					}
 					if (file.getFileExtension().equals("sdp"))
 					{
@@ -486,7 +487,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		if (getProject() != null )
 		{
 			IDestecsProject p = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
-			configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, p.getContractFile().getLocationURI().getPath());
+			configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, p.getContractFile().getProjectRelativePath().toString());
 		}
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, fProjectText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ctPath.getText());
@@ -522,11 +523,12 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			return false;
 		}
 
-		if (!new File(ctPath.getText()).exists())
+		
+		if (project.findMember(new Path(ctPath.getText())) == null)
 		{
 			setErrorMessage("CT model path not valid");
 		}
-		if (!new File(dePath.getText()).exists())
+		if (project.findMember(new Path(dePath.getText())) == null)
 		{
 			setErrorMessage("DE model path not valid");
 		}
@@ -541,7 +543,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 //		}
 
 		if (fScenarioText.getText().length() > 0
-				&& !new File(fScenarioText.getText()).exists())
+				&& project.findMember(new Path(fScenarioText.getText())) == null)
 		{
 			setErrorMessage("Scenario path not valid");
 		}
