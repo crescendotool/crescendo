@@ -3,6 +3,7 @@ package org.destecs.ide.debug.launching.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
-import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.ide.simeng.internal.core.EngineListener;
@@ -52,6 +53,8 @@ public class CoSimLaunchConfigurationDelegate implements
 	private String sharedDesignParam = null;
 	private double totalSimulationTime = 0.0;
 	private IProject project = null;
+	private URL deUrl = null;
+	private URL ctUrl = null;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -63,35 +66,41 @@ public class CoSimLaunchConfigurationDelegate implements
 
 	}
 
-	private File getFileFromPath(IProject project, String path){
-		
+	private File getFileFromPath(IProject project, String path)
+	{
+
 		IResource r = project.findMember(new Path(path));
-		
-		if(r != null && !r.equals(project)){
+
+		if (r != null && !r.equals(project))
+		{
 			return r.getLocation().toFile();
 		}
 		return null;
 	}
-	
+
 	private void loadSettings(ILaunchConfiguration configuration)
 	{
 
 		try
 		{
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
-			
-			
-			contractFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
-			dtFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
-			ctFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
-			scenarioFile = getFileFromPath(project,configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
+
+			contractFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
+			dtFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
+			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
+			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 
+			deUrl = new URL(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT));
+			ctUrl = new URL(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT));
+			
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Faild to load launch configuration attributes", e);
+		} catch (MalformedURLException e)
+		{
+			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
 		}
 
 	}
@@ -144,13 +153,13 @@ public class CoSimLaunchConfigurationDelegate implements
 			engine.simulationListeners.add(log);
 
 			engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile));// new
-			// File("C:\\destecs\\workspace\\watertank_new\\model")));
-			engine.setDtModel(dtFile);
-			engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
 
-			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(new File(ctPath)));
+			engine.setDtModel(dtFile);
+			engine.setDtEndpoint(deUrl);
+
+			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
 			engine.setCtModel(ctFile);
-			engine.setCtEndpoint(new URL("http://localhost:1580"));
+			engine.setCtEndpoint(ctUrl);
 
 			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
 
@@ -255,7 +264,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	{
 		try
 		{
-			return new ListenerToLog(new File(ctFile.getParentFile(),"output"));
+			return new ListenerToLog(new File(ctFile.getParentFile(), "output"));
 		} catch (FileNotFoundException e1)
 		{
 			// TODO Auto-generated catch block
@@ -266,8 +275,7 @@ public class CoSimLaunchConfigurationDelegate implements
 
 	private SimulationEngine getEngine() throws IOException
 	{
-		
-		
+
 		if (scenarioFile != null)
 		{
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
@@ -283,7 +291,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	{
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
-		HashMap<String, Object> result = new SdpParserWrapper().parse(new File("memory"),sharedDesignParamData);
+		HashMap<String, Object> result = new SdpParserWrapper().parse(new File("memory"), sharedDesignParamData);
 
 		for (Object key : result.keySet())
 		{

@@ -17,9 +17,9 @@ public class CoSimLaunchConfigurationTabGroup extends
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode)
 	{
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				new CoSimLaunchConfigurationTab(), new CommonTab()
-				,new SharedDesignParameterTab()
-				};
+				new CoSimLaunchConfigurationTab(),
+				new SharedDesignParameterTab(), new SimulatorConnectionTab(),
+				new CommonTab() };
 		setTabs(tabs);
 	}
 

@@ -1,6 +1,8 @@
 package org.destecs.vdm;
 
-public class SimulationException extends Exception
+import java.io.Serializable;
+
+public class SimulationException extends Exception implements Serializable
 {
 	/**
 	 * 

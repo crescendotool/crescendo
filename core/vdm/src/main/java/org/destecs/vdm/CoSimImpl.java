@@ -257,6 +257,7 @@ public class CoSimImpl implements IDestecs
 			return new StartStruct(SimulationManager.getInstance().start()).toMap();
 		} catch (SimulationException e)
 		{
+			e.printStackTrace();
 			throw new UndeclaredThrowableException(e);
 		}
 	}

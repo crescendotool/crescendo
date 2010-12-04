@@ -19,18 +19,17 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-@SuppressWarnings("deprecation")
 public class DestecsDebugPlugin extends AbstractUIPlugin {
 
 	private static DestecsDebugPlugin fgPlugin;
 	protected Map<RGB, Color> fColorTable = new HashMap<RGB, Color>(10);
 	public static final int INTERNAL_ERROR = 120;
 
-	public static final String PLUGIN_ID = "org.overture.ide.debug.core";
+	public static final String PLUGIN_ID = IDebugConstants.PLUGIN_ID;
 
 	public static boolean DEBUG = true;
 
-	private static final String LOCALHOST = "127.0.0.1"; //$NON-NLS-1$
+
 
 	public DestecsDebugPlugin() {
 
@@ -72,7 +71,7 @@ public class DestecsDebugPlugin extends AbstractUIPlugin {
 
 		IDebugTarget[] targets = launchManager.getDebugTargets();
 		for (int i = 0; i < targets.length; i++) {
-			IDebugTarget target = targets[i];
+			//IDebugTarget target = targets[i];
 //			if (target instanceof VdmDebugTarget) {
 //				((VdmDebugTarget) target).shutdown();
 //			}

@@ -1,6 +1,5 @@
 package org.destecs.ide.debug.launching.ui;
 
-import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
