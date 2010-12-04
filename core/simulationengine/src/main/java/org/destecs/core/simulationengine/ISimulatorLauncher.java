@@ -2,7 +2,7 @@ package org.destecs.core.simulationengine;
 
 public interface ISimulatorLauncher
 {
-	public void launch();
+	public boolean launch();
 
 	public void kill();
 }

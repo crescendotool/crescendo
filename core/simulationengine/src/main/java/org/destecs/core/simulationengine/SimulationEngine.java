@@ -142,9 +142,9 @@ public class SimulationEngine
 			throw new InvalidEndpointsExpection(Simulator.CT, ctEndpoint);
 		}
 
-		checkModel(Simulator.DE,dtModelBase);
+		checkModel(Simulator.DE, dtModelBase);
 
-		checkModel(Simulator.CT,ctModel);
+		checkModel(Simulator.CT, ctModel);
 
 		if (dtLauncher == null)
 		{
@@ -157,12 +157,14 @@ public class SimulationEngine
 		}
 	}
 
-	private void checkModel(Simulator simulator, File model) throws ModelPathNotValidException
+	private void checkModel(Simulator simulator, File model)
+			throws ModelPathNotValidException
 	{
-		if (model == null )
+		if (model == null)
 		{
 			throw new ModelPathNotValidException(simulator, "null");
-		}else if(!ctModel.exists()){
+		} else if (!ctModel.exists())
+		{
 			throw new ModelPathNotValidException(simulator, "null");
 		}
 	}
@@ -185,16 +187,16 @@ public class SimulationEngine
 			Contract contract = null;
 			try
 			{
-				ContractParserWrapper parser =new ContractParserWrapper(); 
+				ContractParserWrapper parser = new ContractParserWrapper();
 				contract = parser.parse(contractFile);
-				if(parser.hasErrors())
+				if (parser.hasErrors())
 				{
 					throw new Exception("Invalid Contract - parse errors");
 				}
 			} catch (Exception e)
 			{
 				abort(Simulator.ALL, "Could not parse contract "
-						+ contractFile.getAbsolutePath(),e);
+						+ contractFile.getAbsolutePath(), e);
 				return;
 			}
 
@@ -202,15 +204,16 @@ public class SimulationEngine
 			validateSharedDesignParameters(sharedDesignParameters, contract);
 
 			// launch the simulators
-			engineInfo(Simulator.DE, "Launching");
-			dtLauncher.launch();
+			launchSimulator(Simulator.DE, dtLauncher);
+
+			launchSimulator(Simulator.CT, ctLauncher);
 
 			// connect to the simulators
-			ProxyICoSimProtocol dtProxy = connect(Simulator.DE,dtEndpoint);
+			ProxyICoSimProtocol dtProxy = connect(Simulator.DE, dtEndpoint);
 
 			initialize(Simulator.DE, dtProxy);
 
-			ProxyICoSimProtocol ctProxy = connect(Simulator.CT,ctEndpoint);
+			ProxyICoSimProtocol ctProxy = connect(Simulator.CT, ctEndpoint);
 
 			initialize(Simulator.CT, ctProxy);
 
@@ -222,27 +225,42 @@ public class SimulationEngine
 			// validate interfaces
 			valideteInterfaces(contract, dtProxy, ctProxy);
 
+			// set SDPs
 			setSharedDesignParameters(Simulator.DE, dtProxy, sharedDesignParameters);
-
-			//TODO: setSharedDesignParameters(Simulator.CT,ctProxy,sharedDesignParameters);
+			setSharedDesignParameters(Simulator.CT, ctProxy, sharedDesignParameters);
 
 			// start simulation
 			startSimulator(Simulator.DE, dtProxy);
-
 			startSimulator(Simulator.CT, ctProxy);
 
 			Double finishTime = simulate(totalSimulationTime, dtProxy, ctProxy);
 
 			// stop the simulators
-
 			stop(Simulator.DE, finishTime, dtProxy);
-			// stop(Simulator.CT,ctProxy);
+			//TODO: stop(Simulator.CT, finishTime, ctProxy);
 
 			terminate(Simulator.DE, finishTime, dtProxy, dtLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
 		} finally
 		{
 			dtLauncher.kill();
+			ctLauncher.kill();
+		}
+	}
+
+	private void launchSimulator(Simulator simulator,
+			ISimulatorLauncher launcher) throws SimulationException
+	{
+		engineInfo(simulator, "Launching");
+		try
+		{
+			if (!launcher.launch())
+			{
+				abort(simulator, "Failed to launch simulator");
+			}
+		} catch (Exception e)
+		{
+			abort(simulator, "Failed to launch simulator", e);
 		}
 	}
 
@@ -342,17 +360,6 @@ public class SimulationEngine
 			result = step(Simulator.CT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
 
 			// Step DT
-
-			// TODO: Problem with CT not stopping at the correct time
-			
-//			if(time >= result.time)
-//			{
-//				result.time = time + (1*Math.pow(10,-9));
-//				engineInfo(Simulator.ALL, "Applying time fix of 1 ns to time: "+time+" => "+result.time);
-//				messageInfo(Simulator.ALL, time,"time fix of 1 ns to time: "+time+" => "+result.time);
-//				System.out.println("Applying time fix of 1 ns to time: "+time+" => "+result.time);
-//			}
-			
 			result = step(Simulator.DE, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
 
 			time = result.time;
@@ -436,14 +443,19 @@ public class SimulationEngine
 		try
 		{
 			messageInfo(simulator, new Double(0), "setDesignParameters");
+			StringBuffer sb = new StringBuffer();
+			sb.append("Setting sdp's: ");
+			sb.append(getSdpString(sharedDesignParameters));
+
+			engineInfo(simulator, sb.toString());
 			return proxy.setDesignParameters(sharedDesignParameters).success;
 		} catch (UndeclaredThrowableException undeclaredException)
 		{
 			abort(simulator, "setDesignParameters failed: "
-					+ sharedDesignParameters.toString().replaceAll("\n", " , "), undeclaredException);
+					+ getSdpString(sharedDesignParameters), undeclaredException);
 		}
 		abort(simulator, "setDesignParameters failed: "
-				+ sharedDesignParameters.toString().replaceAll("\n", " , "));
+				+ getSdpString(sharedDesignParameters));
 
 		return false;
 	}
@@ -488,31 +500,33 @@ public class SimulationEngine
 		}
 
 		// TODO validate shared design parameters
-		//validate shared design parameters
-//		if(contract.getSharedDesignParameters().size()!= dtInterface.sharedDesignParameters.size())
-//		{
-//			abort(Simulator.DT, "Count of shared design parameters do not match: Contract("+ contract.getSharedDesignParameters()+") actual ("+dtInterface.sharedDesignParameters+")");
-//		}
-//		
-//		if(contract.getSharedDesignParameters().size()!= ctInterface.sharedDesignParameters.size())
-//		{
-//			abort(Simulator.CT, "Count of shared design parameters do not match: Contract("+ contract.getSharedDesignParameters()+") actual ("+ctInterface.sharedDesignParameters+")");
-//		}
-//		
-//		for (Variable var : contract.getSharedDesignParameters())
-//		{
-//			if (!dtInterface.sharedDesignParameters.contains(var.name))
-//			{
-//				abort(Simulator.DT, "Missing-shared design parameter: " + var);
-//				return false;
-//
-//			}
-//			if (!ctInterface.sharedDesignParameters.contains(var.name))
-//			{
-//				abort(Simulator.CT, "Missing-shared design parameter: " + var);
-//				return false;
-//			}
-//		}
+		// validate shared design parameters
+		// if(contract.getSharedDesignParameters().size()!= dtInterface.sharedDesignParameters.size())
+		// {
+		// abort(Simulator.DT, "Count of shared design parameters do not match: Contract("+
+		// contract.getSharedDesignParameters()+") actual ("+dtInterface.sharedDesignParameters+")");
+		// }
+		//		
+		// if(contract.getSharedDesignParameters().size()!= ctInterface.sharedDesignParameters.size())
+		// {
+		// abort(Simulator.CT, "Count of shared design parameters do not match: Contract("+
+		// contract.getSharedDesignParameters()+") actual ("+ctInterface.sharedDesignParameters+")");
+		// }
+		//		
+		// for (Variable var : contract.getSharedDesignParameters())
+		// {
+		// if (!dtInterface.sharedDesignParameters.contains(var.name))
+		// {
+		// abort(Simulator.DT, "Missing-shared design parameter: " + var);
+		// return false;
+		//
+		// }
+		// if (!ctInterface.sharedDesignParameters.contains(var.name))
+		// {
+		// abort(Simulator.CT, "Missing-shared design parameter: " + var);
+		// return false;
+		// }
+		// }
 
 		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
@@ -566,29 +580,31 @@ public class SimulationEngine
 		return "";
 	}
 
-	private ProxyICoSimProtocol connect(Simulator simulator,URL url) throws SimulationException
+	private ProxyICoSimProtocol connect(Simulator simulator, URL url)
+			throws SimulationException
 	{
 		ProxyICoSimProtocol protocolProxy = null;
-		try{
-		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		config.setServerURL(url);
-
-		XmlRpcClient client = new XmlRpcClient();
-		client.setConfig(config);
-
-		if (SimulationEngine.eclipseEnvironment)
+		try
 		{
-			client.setTransportFactory(new CustomSAXParserTransportFactory(client));
-		}
-		// add factory for annotations for generated protocol
-		AnnotationClientFactory factory = new AnnotationClientFactory(client);
+			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+			config.setServerURL(url);
 
-		ICoSimProtocol protocol = (ICoSimProtocol) factory.newInstance(ICoSimProtocol.class);
+			XmlRpcClient client = new XmlRpcClient();
+			client.setConfig(config);
 
-		 protocolProxy = new ProxyICoSimProtocol(protocol);
-		}catch(Exception e)
+			if (SimulationEngine.eclipseEnvironment)
+			{
+				client.setTransportFactory(new CustomSAXParserTransportFactory(client));
+			}
+			// add factory for annotations for generated protocol
+			AnnotationClientFactory factory = new AnnotationClientFactory(client);
+
+			ICoSimProtocol protocol = (ICoSimProtocol) factory.newInstance(ICoSimProtocol.class);
+
+			protocolProxy = new ProxyICoSimProtocol(protocol);
+		} catch (Exception e)
 		{
-			abort(simulator, "Connect faild to: "+ url, e);
+			abort(simulator, "Connect faild to: " + url, e);
 		}
 		return protocolProxy;
 	}
@@ -719,13 +735,13 @@ public class SimulationEngine
 			sb.append("");
 			sb.append("Interface => ");
 
-			sb.append("Design P( ");
+			sb.append("SDP( ");
 
 			if (result.sharedDesignParameters.size() > 0)
 			{
 				for (String p : result.sharedDesignParameters)
 				{
-					sb.append("" + p/* p.name + " : " + p.value */+ " ");
+					sb.append("" + p/* p.name + " : " + p.value */+ ", ");
 				}
 			} else
 			{
@@ -738,7 +754,7 @@ public class SimulationEngine
 			{
 				for (String p : result.inputs)
 				{
-					sb.append("" + p /* p.name + " : " + p.value */+ " ");
+					sb.append("" + p /* p.name + " : " + p.value */+ ", ");
 				}
 			} else
 			{
@@ -751,7 +767,7 @@ public class SimulationEngine
 			{
 				for (String p : result.outputs)
 				{
-					sb.append("" + p/* p.name + " : " + p.value */+ " ");
+					sb.append("" + p/* p.name + " : " + p.value */+ ", ");
 				}
 			} else
 			{
@@ -760,5 +776,23 @@ public class SimulationEngine
 			sb.append(")");
 		}
 		return (sb.toString());
+	}
+
+	private static String getSdpString(
+			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("[");
+		for (SetDesignParametersdesignParametersStructParam sdp : sharedDesignParameters)
+		{
+			sb.append(sdp.name + " = " + sdp.value);
+			sb.append(", ");
+		}
+		if (sb.toString().endsWith(", "))
+		{
+			sb = sb.delete(sb.length() - 2, sb.length());
+		}
+		sb.append("]");
+		return sb.toString().trim();
 	}
 }

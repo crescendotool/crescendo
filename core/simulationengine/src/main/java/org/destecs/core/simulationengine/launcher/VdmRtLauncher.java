@@ -7,10 +7,10 @@ public class VdmRtLauncher implements ISimulatorLauncher
 
 	public void kill()
 	{
-		
+
 	}
 
-	public void launch()
+	public boolean launch()
 	{
 		System.out.println("Please launch VDM-RT co-sim now... waiting for 5 seconds");
 		try
@@ -19,7 +19,7 @@ public class VdmRtLauncher implements ISimulatorLauncher
 		} catch (InterruptedException e)
 		{
 		}
-		
+		return true;
 	}
 
 }

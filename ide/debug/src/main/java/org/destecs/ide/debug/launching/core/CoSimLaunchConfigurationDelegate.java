@@ -15,6 +15,7 @@ import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.ide.simeng.internal.core.EngineListener;
 import org.destecs.ide.simeng.internal.core.ListenerToLog;
 import org.destecs.ide.simeng.internal.core.MessageListener;
@@ -134,7 +135,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			engine.setDtModel(new File(dtPath));
 			engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
 
-			engine.setCtSimulationLauncher(new Clp20SimLauncher());
+			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(new File(ctPath)));
 			engine.setCtModel(new File(ctPath));
 			engine.setCtEndpoint(new URL("http://localhost:1580"));
 

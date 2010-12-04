@@ -29,7 +29,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 
 	}
 
-	public void launch()
+	public boolean launch()
 	{
 		List<String> commandList = new ArrayList<String>();
 		commandList.add(0, "java");
@@ -45,6 +45,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			
 			new ProcessConsolePrinter(p.getInputStream()).start();
 			new ProcessConsolePrinter(p.getErrorStream()).start();
+			return true;
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
@@ -54,6 +55,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		return false;
 	}
 
 	private String getArgumentString(List<String> args)
