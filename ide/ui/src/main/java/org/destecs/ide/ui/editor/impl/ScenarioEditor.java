@@ -58,7 +58,7 @@ public class ScenarioEditor extends TextEditor
 		@Override
 		protected String[] getKeywords()
 		{
-			return new String[] { "DT","CT" };
+			return new String[] { "DE","CT" };
 		}
 
 		@Override

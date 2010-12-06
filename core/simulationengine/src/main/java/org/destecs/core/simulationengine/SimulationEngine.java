@@ -357,10 +357,10 @@ public class SimulationEngine
 				break;
 			}
 			// Step CT
-			result = step(Simulator.CT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
+			result = step(Simulator.CT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, result.events);
 
 			// Step DT
-			result = step(Simulator.DE, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, events);
+			result = step(Simulator.DE, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, result.events);
 
 			time = result.time;
 		}
