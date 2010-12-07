@@ -288,6 +288,7 @@ variables
 
 events	
   : EVENT ID ';' 
+  {contract.addEvent($ID.text);}
   
 	;	
 
