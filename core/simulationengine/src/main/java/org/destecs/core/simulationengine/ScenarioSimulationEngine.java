@@ -51,7 +51,7 @@ public class ScenarioSimulationEngine extends SimulationEngine
 						abort(Simulator.CT, "setParameter("+action.variableName+"="+action.variableValue+") faild", undeclaredException);
 					}
 					break;
-				case DT:
+				case DE:
 					try
 					{
 						engineInfo(Simulator.DE, "Setting parameter (Next time="
