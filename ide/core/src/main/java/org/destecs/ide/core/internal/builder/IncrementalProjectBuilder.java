@@ -221,10 +221,12 @@ public class IncrementalProjectBuilder extends
 	@SuppressWarnings("unchecked")
 	protected Object parse(ParserWrapper parser, IFile file) throws Exception
 	{
-		FileUtility.deleteMarker(file, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
-
 		Object result = parser.parse(file.getLocation().toFile());
+		
+		if (file == null || !file.exists()|| !file.isAccessible())
+			return result;
 
+		FileUtility.deleteMarker(file, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
 		if (parser.hasErrors())
 		{
 			for (Object err : parser.getErrors())

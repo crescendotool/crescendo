@@ -4,7 +4,7 @@ public class Action implements Comparable<Action>
 {
 	public enum Simulator
 	{
-		DT("VDM-RT"), CT("20-Sim"), ALL("All");
+		DE("VDM-RT"), CT("20-Sim"), ALL("All");
 
 		private String name;
 

@@ -63,7 +63,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return false;
+		return true;//TODO ignors return 
 	}
 
 	private String getArgumentString(List<String> args)
