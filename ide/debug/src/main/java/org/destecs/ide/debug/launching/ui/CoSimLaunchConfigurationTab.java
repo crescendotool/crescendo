@@ -38,6 +38,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.overture.ide.core.IVdmModel;
+import org.overture.ide.core.resources.IVdmProject;
+import org.overture.ide.ui.utility.VdmTypeCheckerUi;
 
 public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		implements ILaunchConfigurationTab
@@ -83,6 +86,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 //	private Text fSharedDesignParamPath = null;
 	// private double totalSimulationTime = 5;
 	Button selectScenarioButton;
+	private Button checkBoxRemoteDebug = null;
 
 	// private IProject project = null;
 	private Text simulationTimeText = null;
@@ -92,6 +96,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	private WidgetListener fListener = new WidgetListener();
 
 	private Text fScenarioText;
+	private Button selectCtPathButton;
 
 	public void createControl(Composite parent)
 	{
@@ -227,6 +232,11 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 				}
 			}
 		});
+		
+		checkBoxRemoteDebug = new Button(group, SWT.CHECK);
+		checkBoxRemoteDebug.setText("Remote debug");
+		checkBoxRemoteDebug.setSelection(false);
+		checkBoxRemoteDebug.addSelectionListener(fListener);
 	}
 
 	private void createPathsSelection(Composite parent)
@@ -239,54 +249,101 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		GridLayout layout = new GridLayout();
 		layout.makeColumnsEqualWidth = false;
-		layout.numColumns = 1;
+		layout.numColumns = 3;
 		group.setLayout(layout);
 
-		parent.setLayout(new GridLayout(1, false));
+//		parent.setLayout(new GridLayout(1, false));
 
 		// DE Line
 		Label deLabel = new Label(group, SWT.NONE);
 		deLabel.setText("DE Path:");
-		dePath = new Text(group, SWT.BORDER);
+		dePath = new Text(group, SWT.BORDER | SWT.READ_ONLY);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = true;
 		dePath.setLayoutData(gridData);
 		dePath.setText("Insert DE model path here");
-		dePath.setEditable(false);
+		 createPushButton(group, "Browse...", null).setEnabled(false);
+		
 
 		// CT Line
-		Label ctLabel = new Label(group, SWT.NONE);
+		Label ctLabel = new Label(group, SWT.MIN);
 		ctLabel.setText("CT Path:");
-		ctPath = new Text(group, SWT.BORDER);
-		gridData = new GridData();
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-		ctPath.setLayoutData(gridData);
-		ctPath.setText("Insert CT model path here");
-		ctPath.setEditable(false);
+		gd = new GridData(GridData.BEGINNING);
+		ctLabel.setLayoutData(gd);
+		
+		ctPath = new Text(group,  SWT.SINGLE | SWT.BORDER|SWT.READ_ONLY);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		ctPath.setLayoutData(gd);
+		ctPath.addModifyListener(fListener);
+		
+		selectCtPathButton = createPushButton(group, "Browse...", null);
+//		selectCtPathButton.setEnabled(false);
+		selectCtPathButton.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				class CtModelContentProvider extends
+						BaseWorkbenchContentProvider
+				{
+					@Override
+					public boolean hasChildren(Object element)
+					{
+						if (element instanceof IProject)
+						{
+							return super.hasChildren(element);
+						} else
+						{
+							return super.hasChildren(element);
+						}
+					}
 
-		// Contract Line
-		// Label contractLabel = new Label(group, SWT.NONE);
-		// contractLabel.setText("Contract Path:");
-		// contractPath = new Text(group, SWT.BORDER);
-		// gridData = new GridData();
-		// gridData.horizontalAlignment = SWT.FILL;
-		// gridData.grabExcessHorizontalSpace = true;
-		// contractPath.setLayoutData(gridData);
-		// contractPath.setText("Insert Contract path here");
-		// contractPath.setEditable(false);
+					@SuppressWarnings("unchecked")
+					@Override
+					public Object[] getElements(Object element)
+					{
+						List elements = new Vector();
+						Object[] arr = super.getElements(element);
+						if (arr != null)
+						{
+							for (Object object : arr)
+							{
+								if (object instanceof IFile)
+								{
+									IFile f = (IFile) object;
+									if (f.getFullPath().getFileExtension().equals("emx"))
+									{
+										elements.add(f);
+									}
+								}
+							}
+							return elements.toArray();
+						}
+						return null;
+					}
 
-		// Shared Design Parameters Line
-		// Label sharedDesignParamLabel = new Label(group, SWT.NONE);
-		// sharedDesignParamLabel.setText("Shared Design Parameters Path:");
-		// fSharedDesignParamPath = new Text(group, SWT.BORDER);
-		// gridData = new GridData();
-		// gridData.horizontalAlignment = SWT.FILL;
-		// gridData.grabExcessHorizontalSpace = true;
-		// fSharedDesignParamPath.setLayoutData(gridData);
-		// // sharedDesignParamPath.setText("Insert Shared Design Parameters path here");
-		// fSharedDesignParamPath.setEditable(false);
+				}
+				;
+				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new CtModelContentProvider());
+				dialog.setTitle("20-Sim Model Selection");
+				dialog.setMessage("Select a 20-Sim Model:");
+				dialog.setComparator(new ViewerComparator());
+				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText()).getFolder("model_ct"));
+
+				if (dialog.open() == Window.OK)
+				{
+					if (dialog.getFirstResult() != null
+					// && dialog.getFirstResult() instanceof IProject
+					// && ((IProject) dialog.getFirstResult()).getAdapter(IVdmProject.class) != null)
+					)
+					{
+						ctPath.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
+					}
+
+				}
+			}
+		});
 
 	}
 
@@ -381,10 +438,15 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					)
 					{
 						IProject project = ((IProject) dialog.getFirstResult());
-						setProjectAndsearchModels(project);
-
-						// selectScenarioButton.setEnabled(true);
-
+						if (project == null)
+						{
+							// Show error
+							return;
+						}
+						
+						IDestecsProject dproject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
+						dePath.setText(dproject.getVdmModelFolder().getProjectRelativePath().toString());
+						fProjectText.setText(project.getName());
 					}
 
 				}
@@ -392,63 +454,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		});
 	}
 
-	private void setProjectAndsearchModels(IProject project)
-	{
-		if (project == null)
-		{
-			// Show error
-			return;
-		}
 
-		try
-		{
-			List<String> emxFiles = new Vector<String>();
-			fListener.suspended = true;
-			IResource[] projectMembers = project.members();
-			for (IResource iResource : projectMembers)
-			{
-				if (iResource instanceof IFolder)
-				{
-					IFolder folder = (IFolder) iResource;
-					String fName = folder.getName();
-					if (fName.equals("model"))
-					{
-						dePath.setText(folder.getProjectRelativePath().toString());
-					}
-				} else if (iResource instanceof IFile)
-				{
-					IFile file = (IFile) iResource;
-					if (file.getFileExtension().equals("csc"))
-					{
-						// contractPath.setText(file.getLocationURI().getPath());
-					}
-					if (file.getFileExtension().equals("emx"))
-					{
-						emxFiles.add(file.getProjectRelativePath().toString());
-					}
-					if (file.getFileExtension().equals("sdp"))
-					{
-//						fSharedDesignParamPath.setText(file.getLocationURI().getPath());
-					}
-				}
-
-			}
-
-			if (emxFiles.size() == 1)
-			{
-				ctPath.setText(emxFiles.get(0));
-			}
-
-		} catch (CoreException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally
-		{
-			fListener.suspended = false;
-		}
-		fProjectText.setText(project.getName());
-	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
@@ -468,10 +474,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			fScenarioText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 
-			// if (getProject() == null)
-			// {
-			// selectScenarioButton.setEnabled(true);
-			// }
+			checkBoxRemoteDebug.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false));
 
 		} catch (CoreException e)
 		{
@@ -495,6 +498,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
 
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, checkBoxRemoteDebug.getSelection());
 	}
 
 	public IProject getProject()
@@ -520,6 +524,17 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			selectScenarioButton.setEnabled(false);
 			return false;
+		}
+		
+		IVdmProject vdmProject = (IVdmProject) getProject().getAdapter(IVdmProject.class);
+		IVdmModel model = vdmProject.getModel();
+		if (!model.isTypeCorrect())
+		{
+			if (!VdmTypeCheckerUi.typeCheck(getShell(), vdmProject))
+			{
+				setErrorMessage("Type errors in Model");
+				return false;
+			}
 		}
 
 		

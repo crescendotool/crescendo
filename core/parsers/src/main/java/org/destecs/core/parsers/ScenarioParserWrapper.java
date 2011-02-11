@@ -30,7 +30,7 @@ public class ScenarioParserWrapper extends ParserWrapper<Scenario>
 
 			if (((ScenarioLexer)lexer).hasExceptions())
 			{
-				List<RecognitionException> exps = thisParser.getExceptions();
+				List<RecognitionException> exps = ((ScenarioLexer)lexer).getExceptions();
 				addErrors(source, exps);
 				return null;
 			}

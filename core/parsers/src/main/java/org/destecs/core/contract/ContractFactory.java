@@ -7,7 +7,7 @@ import org.destecs.core.contract.Variable.VariableType;
 
 public class ContractFactory {
 
-	private String name = null;
+//	private String name = null;
 	private List<Variable> variables = null;
 	private List<String> events = null;
 	
@@ -16,9 +16,9 @@ public class ContractFactory {
 		this.events = new ArrayList<String>();
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}	
+//	public void setName(String name) {
+//		this.name = name;
+//	}	
 	
 	public void addVariable(Variable var ){
 		this.variables.add(var);
@@ -33,7 +33,7 @@ public class ContractFactory {
 	{
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("contract "+name+"\n");
+//		sb.append("contract "+name+"\n");
 		
 		for (String event : events)
 		{
@@ -51,12 +51,12 @@ public class ContractFactory {
 			
 		}
 		
-		sb.append("end "+name+"\n");
+//		sb.append("end "+name+"\n");
 		return sb.toString();
 	}
 	
 	public Contract getContract(){
-		Contract contract = new Contract(this.name,this.variables,this.events);
+		Contract contract = new Contract(this.variables,this.events);
 		return contract;	
 	}
 

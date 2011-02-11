@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.destecs.vdm.DBGPReaderCoSim;
 import org.destecs.vdmj.runtime.CoSimClassInterpreter;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.VDMRT;
@@ -80,34 +81,37 @@ public class VDMCO extends VDMRT
 		{
 			ExitStatus status = null;
 			boolean finished = false;
-			
+
 			public AsyncInterpreterExecutionThread()
 			{
-			setDaemon(true);
-			setName("Async interpreter thread - runs scheduler");
+				setDaemon(true);
+				setName("Async interpreter thread - runs scheduler");
 			}
+
 			@Override
 			public void run()
 			{
-
 				try
 				{
 					InitThread iniThread = new InitThread(this);
 					BasicSchedulableThread.setInitialThread(iniThread);
-//					ExitStatus status;
+					// ExitStatus status;
 
 					if (script != null)
 					{
 						status = ExitStatus.EXIT_OK;
 						finished = true;
-						println(interpreter.execute(script, null).toString());
-						
+						String host="localhost";
+						int port=10000;
+						String ideKey="1";
+						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, port, ideKey, interpreter, script, null);
+						interpreter.init(dbgpreader);
+						dbgpreader.startup(null);
+//						println(interpreter.execute(script, null).toString());
+
 					} else
 					{
 						status = ExitStatus.EXIT_ERRORS;
-//						infoln("Interpreter started");
-//						CommandReader reader = new ClassCommandReader(interpreter, "> ");
-//						status = reader.run(filenames);
 					}
 
 					if (logfile != null)
@@ -115,8 +119,8 @@ public class VDMCO extends VDMRT
 						RTLogger.dump(true);
 						infoln("RT events dumped to " + logfile);
 					}
-					finished=true;
-					return ;
+					finished = true;
+					return;
 				} catch (ContextException e)
 				{
 					println("Execution: " + e);
@@ -125,36 +129,38 @@ public class VDMCO extends VDMRT
 				{
 					println("Execution: " + e);
 				}
-				
+
 				status = ExitStatus.EXIT_ERRORS;
-				finished=true;
-				return ;
+				finished = true;
+				return;
 			}
-			
+
 			public boolean isFinished()
 			{
 				return finished;
 			}
+
 			public ExitStatus getExitStatus()
 			{
 				return status;
 			}
-		};
+		}
+		;
 		AsyncInterpreterExecutionThread runner = new AsyncInterpreterExecutionThread();
-		
+
 		runner.start();
-		
-		while(!runner.isFinished())
+
+		while (!runner.isFinished())
 		{
 			try
 			{
 				Thread.sleep(100);
 			} catch (InterruptedException e)
 			{
-				//Ignore it
+				// Ignore it
 			}
 		}
-		
+
 		return runner.getExitStatus();
 	}
 

@@ -8,13 +8,13 @@ import org.destecs.core.contract.Variable.VariableType;
 
 public class Contract
 {
-	public final String name;
-	//public final List<Variable> sharedDesignParameters = new Vector<Variable>();
+//	public final String name;
+	
 	private final List<Variable> variables;
 	private final List<String> events;
 	
-	public Contract(String name, List<Variable> variables, List<String> events) {
-		this.name = name;
+	public Contract( List<Variable> variables, List<String> events) {
+//		this.name = name;
 		this.variables = variables;
 		this.events = events;
 	}
@@ -62,7 +62,7 @@ public class Contract
 	{
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("contract "+name+"\n");
+//		sb.append("contract "+name+"\n");
 		
 		for (String event : events)
 		{
@@ -74,7 +74,7 @@ public class Contract
 			sb.append(var.type.syntaxName+" "+ var.dataType+ " "+ var.name+ " := "+ var.value+";\n");
 		}
 		
-		sb.append("end "+name+"\n");
+//		sb.append("end "+name+"\n");
 		return sb.toString();
 	}
 }

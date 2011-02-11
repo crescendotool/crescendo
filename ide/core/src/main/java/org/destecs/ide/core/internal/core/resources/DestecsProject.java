@@ -214,19 +214,20 @@ public class DestecsProject implements
 	
 	public IFolder getVdmModelFolder()
 	{
-		return this.project.getFolder("model");
+		return this.project.getFolder("model_de");
 	}
 
 	public IFile getContractFile()
 	{
-		return this.project.getFile("configuration/"+this.project.getName()+".csc");
+		return this.project.getFile("configuration/contract.csc");
 	}
 
 	public void createStructure()
 	{
 		File root = this.project.getLocation().toFile();
 
-		new File(root, "model").mkdirs();
+		new File(root, "model_de").mkdirs();
+		new File(root, "model_ct").mkdirs();
 		new File(root, "output").mkdirs();
 		new File(root, "scenarios").mkdirs();
 		new File(root, "configuration").mkdirs();

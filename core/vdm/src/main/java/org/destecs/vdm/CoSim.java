@@ -30,15 +30,8 @@ public class CoSim
 	public static void main(String[] args) throws ServletException,
 			IOException, XmlRpcException
 	{
-		// XmlRpcServlet servlet = new XmlRpcServlet();
-		//
-		// ServletWebServer webServer = new ServletWebServer(servlet, port);
-		//
-		// webServer.start();
-
 		WebServer webServer = new WebServer(port);
 
-		// webServer.getXmlRpcServer().setXMLWriterFactory(new ObservableXMLWriterFactory());
 		if (!DEBUG)
 		{
 			webServer.getXmlRpcServer().setWorkerFactory(new XmlRpcWorkerFactoryDestecs(webServer.getXmlRpcServer()));

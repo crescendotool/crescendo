@@ -41,7 +41,8 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 			}else
 			{
 				List<String> commandList = new ArrayList<String>();
-				commandList.add("explorer");
+//				commandList.add("explorer");
+				commandList.add("cmd.exe /C");
 				commandList.add(toPlatformPath(this.model.getAbsolutePath()));
 				p = Runtime.getRuntime().exec(getArgumentString(commandList), null, model.getParentFile());
 				
@@ -63,7 +64,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return true;//TODO ignors return 
+		return false;//TODO ignors return 
 	}
 
 	private String getArgumentString(List<String> args)

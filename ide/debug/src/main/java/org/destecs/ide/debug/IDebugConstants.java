@@ -13,6 +13,7 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM = "DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_DE_ENDPOINT = "DESTECS_LAUNCH_CONFIG_DE_ENDPOINT".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_CT_ENDPOINT = "DESTECS_LAUNCH_CONFIG_CT_ENDPOINT".toLowerCase();
+	public static final String DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG = "DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG".toLowerCase();
 
 	
 	public static final String ATTR_DESTECS_PROGRAM = "org.destecs.ide.debug.launchConfigurationType";

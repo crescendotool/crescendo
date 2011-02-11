@@ -264,8 +264,9 @@ UNICODE_ESC
 
 
 contract 
-	: CONTRACT a=ID body* END ID EOF 
-	{ contract.setName($a.getText()); }
+//	: CONTRACT a=ID body* END ID EOF 
+//	{ contract.setName($a.getText()); }
+	: body* EOF 
 	;
 	
 body 

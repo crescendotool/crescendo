@@ -349,7 +349,7 @@ public class SimulationEngine
 		// First initialize DT
 		StepStruct result = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
-		while (time < totalSimulationTime)
+		while (time <= totalSimulationTime)
 		{
 			if (forceStopSimulation)
 			{

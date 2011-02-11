@@ -23,10 +23,10 @@ import org.destecs.protocol.structs.StepStructoutputsStruct;
 public class Main
 {
 	static boolean useScenario = false;
-	static String modelName="chessway1";//"watertank_new";//dual_watertank
+	static String modelName="Watertank";//"watertank_new";//dual_watertank
 	//static File base = new File("C:\\destecs\\workspace\\watertank_new");
 	static String ws="C:\\overture\\runtime-destecs.product\\";
-	static String wsDestecs="C:\\destecs\\workspace\\";
+	//static String wsDestecs="C:\\destecs\\workspace\\";
 	static File base =new File(ws+ modelName); //new File("C:\\overture\\runtime-destecs.product\\"+modelName);
 
 
@@ -105,6 +105,10 @@ public class Main
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+		
+//		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", 1.0));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
 		return shareadDesignParameters;
 	}
 

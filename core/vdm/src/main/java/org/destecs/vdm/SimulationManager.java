@@ -262,11 +262,13 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	public Boolean initialize() throws SimulationException
-	{
-		
+	{	
 		Properties.init();
+		Properties.parser_tabstop = 1;
+		
 		Settings.dialect = Dialect.VDM_RT;
-		Settings.usingCmdLine = true;
+		Settings.usingCmdLine = false;
+		Settings.usingDBGP= true;
 		Settings.release = Release.VDM_10;
 		controller = new VDMCO();
 		return true;
@@ -281,11 +283,9 @@ public class SimulationManager extends BasicSimulationManager
 		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
 		{
 			this.status = CoSimStatusEnum.INITIALIZED;
-//			return true;
 		} else
 		{
 			this.status = CoSimStatusEnum.NOT_INITIALIZED;
-//			return false;
 		}
 		
 

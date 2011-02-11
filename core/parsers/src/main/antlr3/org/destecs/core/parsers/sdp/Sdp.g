@@ -210,13 +210,13 @@ COMMENT
 ID  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
 
-INT : '0'..'9'+
+INT : ('-')? '0'..'9'+
     ;
 
 FLOAT
-    :   ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
-    |   '.' ('0'..'9')+ EXPONENT?
-    |   ('0'..'9')+ EXPONENT
+    :  ('-')? ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
+    |  ('-')? '.' ('0'..'9')+ EXPONENT?
+    |  ('-')? ('0'..'9')+ EXPONENT
     ;
 
 fragment
@@ -224,7 +224,7 @@ EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
     
 start : def* EOF;
 
-def   : ID '=' v=value ';'
+def   : ID ':=' v=value ';'
       { if(v != null)
           sdps.addSdp($ID.text, v);
       } 

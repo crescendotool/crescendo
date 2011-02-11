@@ -30,7 +30,7 @@ public class VdmLinkParserWrapper extends ParserWrapper<Links>
 
 			if (((VdmLinkLexer)lexer).hasExceptions())
 			{
-				List<RecognitionException> exps = thisParser.getExceptions();
+				List<RecognitionException> exps = ((VdmLinkLexer)lexer).getExceptions();
 				addErrors(source, exps);
 				return null;
 			}

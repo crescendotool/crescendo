@@ -30,7 +30,7 @@ public class ContractParserWrapper extends ParserWrapper<Contract>
 
 			if (((ContractLexer)lexer).hasExceptions())
 			{
-				List<RecognitionException> exps = thisParser.getExceptions();
+				List<RecognitionException> exps = ((ContractLexer)lexer).getExceptions();
 				addErrors(source, exps);
 				return null;
 			}

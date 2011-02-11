@@ -228,7 +228,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 			if (item.getText(0).trim().length() > 0
 					&& item.getText(1).trim().length() > 0)
 			{
-				sb.append(item.getText(0) + "=" + item.getText(1) + ";");
+				sb.append(item.getText(0) + ":=" + item.getText(1) + ";");
 			}
 		}
 		return sb.toString();
@@ -303,7 +303,12 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 							return;
 						}
 						contract = parser.parse(file);
+						
 						sdps = new HashMap<String, Object>();
+						if(contract == null)
+						{
+							return;
+						}
 						for (Variable var : contract.getSharedDesignParameters())
 						{
 							String[] existing = getItemIfPresent(var.name);
