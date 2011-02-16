@@ -2,6 +2,7 @@ package org.destecs.ide.simeng.internal.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -14,10 +15,12 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 {
 	private Process p;
 	private File dir;
+	private final Integer port;
 
-	public VdmRtBundleLauncher(File dir)
+	public VdmRtBundleLauncher(File dir, Integer port)
 	{
 		this.dir = dir;
+		this.port = port;
 	}
 
 	public void kill()
@@ -40,6 +43,8 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 
 			commandList.add(3, ISimengConstants.VDM_ENGINE_CLASS);
 			// commandList.addAll(1, getVmArguments(preferences));
+			commandList.add("-p");
+			commandList.add(port.toString());
 
 			p = Runtime.getRuntime().exec(getArgumentString(commandList), null, dir);
 			
@@ -130,6 +135,35 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 		{
 			return path.replace(" ", "\\ ");
 		}
+	}
+	
+	/**
+	 * Returns a free port number on localhost, or -1 if unable to find a free port.
+	 * 
+	 * @return a free port number on localhost, or -1 if unable to find a free port
+	 */
+	public static Integer getFreePort()
+	{
+		ServerSocket socket = null;
+		try
+		{
+			socket = new ServerSocket(0);
+			return socket.getLocalPort();
+		} catch (IOException e)
+		{
+		} finally
+		{
+			if (socket != null)
+			{
+				try
+				{
+					socket.close();
+				} catch (IOException e)
+				{
+				}
+			}
+		}
+		return -1;
 	}
 
 }

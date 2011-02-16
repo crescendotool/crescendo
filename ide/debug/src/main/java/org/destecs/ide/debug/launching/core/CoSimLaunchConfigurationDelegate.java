@@ -101,7 +101,19 @@ public class CoSimLaunchConfigurationDelegate implements
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 
-			deUrl = new URL(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT));
+			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
+			if (deUrlString.length() == 0)
+			{
+				Integer freePort = VdmRtBundleLauncher.getFreePort();
+				if(freePort==-1)
+				{
+				throw new Exception("No free port found for DE launch");	
+				}
+				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", freePort.toString()));
+			} else
+			{
+				deUrl = new URL(deUrlString);
+			}
 			ctUrl = new URL(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT));
 
 			remoteDebug = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false);
@@ -109,6 +121,9 @@ public class CoSimLaunchConfigurationDelegate implements
 		{
 			DestecsDebugPlugin.logError("Faild to load launch configuration attributes", e);
 		} catch (MalformedURLException e)
+		{
+			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
+		} catch (Exception e)
 		{
 			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
 		}
@@ -164,9 +179,10 @@ public class CoSimLaunchConfigurationDelegate implements
 
 			if (!remoteDebug)
 			{
-				engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile));// new
+				engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile, deUrl.getPort()));// new
 			} else
 			{
+				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", Integer.valueOf(8080).toString()));
 				engine.setDtSimulationLauncher(new VdmRtLauncher(5000));
 			}
 
@@ -208,15 +224,16 @@ public class CoSimLaunchConfigurationDelegate implements
 										ILaunchConfiguration vdmLaunchConfig = getVdmLaunchConfig();
 										try
 										{
-//											final IVdmProject vdmProject = (IVdmProject) project.getAdapter(IVdmProject.class);
-//											final Shell shell = Display.getDefault().getActiveShell();
-//											shell.getDisplay().syncExec(new Runnable()
-//											{
-//												public void run()
-//												{
-//													VdmTypeCheckerUi.typeCheck(shell, vdmProject);
-//												}
-//											});
+											// final IVdmProject vdmProject = (IVdmProject)
+											// project.getAdapter(IVdmProject.class);
+											// final Shell shell = Display.getDefault().getActiveShell();
+											// shell.getDisplay().syncExec(new Runnable()
+											// {
+											// public void run()
+											// {
+											// VdmTypeCheckerUi.typeCheck(shell, vdmProject);
+											// }
+											// });
 											vdmLaunchConfig.launch("debug", null);
 										} catch (CoreException e)
 										{
@@ -339,7 +356,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	{
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
-		 SdpParserWrapper parser = new SdpParserWrapper();
+		SdpParserWrapper parser = new SdpParserWrapper();
 		HashMap<String, Object> result = parser.parse(new File("memory"), sharedDesignParamData);
 
 		for (Object key : result.keySet())
@@ -351,16 +368,16 @@ public class CoSimLaunchConfigurationDelegate implements
 			} else if (result.get(name) instanceof Integer)
 			{
 				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, ((Integer) result.get(name)).doubleValue()));
-			}else if (result.get(name) instanceof Boolean)
+			} else if (result.get(name) instanceof Boolean)
 			{
 				boolean r = ((Boolean) result.get(name)).booleanValue();
 				Double val = Double.valueOf(0);
-				if(r)
+				if (r)
 				{
-					val =  Double.valueOf(1);
+					val = Double.valueOf(1);
 				}
 				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, val));
-			}else
+			} else
 			{
 				throw new Exception("Design parameter type not supported by protocol: "
 						+ name);

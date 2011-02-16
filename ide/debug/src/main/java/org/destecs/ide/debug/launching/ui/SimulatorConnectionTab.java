@@ -119,11 +119,11 @@ public class SimulatorConnectionTab extends AbstractLaunchConfigurationTab
 		try
 		{
 			String url = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
-			if(url.length()==0)
-			{
-				url = IDebugConstants.DEFAULT_DE_ENDPOINT;
-			}
-			deUrl.setText(url);
+//			if(url.length()==0)
+//			{
+//				url = IDebugConstants.DEFAULT_DE_ENDPOINT;
+//			}
+//			deUrl.setText(url);
 			
 			 url = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, "");
 			if(url.length()==0)
@@ -154,19 +154,19 @@ public class SimulatorConnectionTab extends AbstractLaunchConfigurationTab
 	public boolean isValid(ILaunchConfiguration launchConfig)
 	{
 		setErrorMessage(null);
-		try
-		{
-			if(deUrl.getText().length()<=0)
-			{
-				setErrorMessage("DE URL not set");
-				return false;
-			}
-			new URL(deUrl.getText());
-		} catch (Exception e)
-		{
-			setErrorMessage("DE URL not valid");
-		}
-		
+//		try
+//		{
+//			if(deUrl.getText().length()<=0)
+//			{
+//				setErrorMessage("DE URL not set");
+//				return false;
+//			}
+//			new URL(deUrl.getText());
+//		} catch (Exception e)
+//		{
+//			setErrorMessage("DE URL not valid");
+//		}
+//		
 		try
 		{
 			if(ctUrl.getText().length()<=0)

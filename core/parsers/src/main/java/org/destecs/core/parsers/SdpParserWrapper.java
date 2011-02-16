@@ -32,7 +32,7 @@ public class SdpParserWrapper extends ParserWrapper<HashMap<String, Object>>
 			if (((SdpLexer)lexer).hasExceptions())
 			{
 				List<RecognitionException> exps = ((SdpLexer)lexer).getExceptions();
-				addErrors(source, exps);
+				addErrorsLexer(source, exps);
 				return null;
 			}
 
@@ -40,7 +40,7 @@ public class SdpParserWrapper extends ParserWrapper<HashMap<String, Object>>
 			{
 
 				List<RecognitionException> exps = thisParser.getExceptions();
-				addErrors(source, exps);
+				addErrorsParser(source, exps);
 			} else
 			{
 				return thisParser.getSdps();

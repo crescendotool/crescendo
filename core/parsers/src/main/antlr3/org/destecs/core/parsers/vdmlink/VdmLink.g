@@ -223,13 +223,13 @@ link
     ;
 
 intf
-    : OUTPUT '=' r=idList
+    : OUTPUT '=' r=idList 
     {links.addOutputs(r);}
-    | INPUT '=' r=idList
+    | INPUT '=' r=idList 
     {links.addInputs(r);}
-    | SHARED '=' r=idList
+    | SHARED '=' r=idList 
     {links.addSDPs(r);}
-    | EVENT '=' r=idList
+    | EVENT '=' r=idList 
     {links.addEvents(r);}
     ;
 

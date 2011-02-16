@@ -89,7 +89,7 @@ public abstract class ParserWrapper<T>
 		return internalParse(source,input);
 	}
 		
-	protected synchronized void addErrors(File source,List<RecognitionException> exps)
+	protected synchronized void addErrorsParser(File source,List<RecognitionException> exps)
 	{
 		for (RecognitionException errEx : exps)
 		{
@@ -97,7 +97,13 @@ public abstract class ParserWrapper<T>
 		}
 	}
 	
-	
+	protected synchronized void addErrorsLexer(File source,List<RecognitionException> exps)
+	{
+		for (RecognitionException errEx : exps)
+		{
+			addError(new ParseError(source, errEx.line, errEx.charPositionInLine, getErrorMessageLexer(errEx, parser.getTokenNames())));
+		}
+	}
 	
 	protected synchronized void addError(IError err)
 	{

@@ -18,7 +18,7 @@ import org.destecs.protocol.ICoSimProtocol;
  */
 public class CoSim
 {
-	private static final int port = 8080;
+	private static int port = 8080;
 	private static final boolean DEBUG = false;
 
 	/**
@@ -30,6 +30,16 @@ public class CoSim
 	public static void main(String[] args) throws ServletException,
 			IOException, XmlRpcException
 	{
+		if (args.length > 1 && args[0].equals("-p"))
+		{
+			try
+			{
+				port = Integer.parseInt(args[1]);
+			} catch (Exception e)
+			{
+				System.err.println("Parse error of port number");
+			}
+		}
 		WebServer webServer = new WebServer(port);
 
 		if (!DEBUG)
