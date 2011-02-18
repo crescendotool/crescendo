@@ -18,6 +18,7 @@ import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.ide.simeng.internal.core.EngineListener;
 import org.destecs.ide.simeng.internal.core.ListenerToLog;
@@ -66,12 +67,13 @@ public class CoSimLaunchConfigurationDelegate implements
 	private URL deUrl = null;
 	private URL ctUrl = null;
 	private boolean remoteDebug = false;
+	private DestecsDebugTarget target;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{
 		loadSettings(configuration);
-
+		target = new DestecsDebugTarget(launch);
 		startSimulation();
 	}
 
@@ -89,7 +91,6 @@ public class CoSimLaunchConfigurationDelegate implements
 
 	private void loadSettings(ILaunchConfiguration configuration)
 	{
-
 		try
 		{
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
@@ -179,7 +180,8 @@ public class CoSimLaunchConfigurationDelegate implements
 
 			if (!remoteDebug)
 			{
-				engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile, deUrl.getPort()));// new
+				File libSearchRoot = new File(project.getLocation().toFile(), "lib");
+				engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile, deUrl.getPort(),libSearchRoot));// new
 			} else
 			{
 				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", Integer.valueOf(8080).toString()));
@@ -286,6 +288,8 @@ public class CoSimLaunchConfigurationDelegate implements
 					{
 						// Ignore it
 					}
+					
+					target.setTerminated(true);
 
 					if (exceptions.size() == 0)
 					{
