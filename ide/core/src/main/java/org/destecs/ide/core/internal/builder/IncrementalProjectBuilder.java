@@ -39,6 +39,10 @@ public class IncrementalProjectBuilder extends
 
 		try
 		{
+			if(!project.getContractFile().exists())
+			{
+				return null;
+			}
 			ContractParserWrapper contractParser = new ContractParserWrapper();
 			Contract contract = (Contract) parse(contractParser, project.getContractFile());
 
@@ -47,6 +51,10 @@ public class IncrementalProjectBuilder extends
 				return null;
 			}
 
+			if(!project.getVdmLinkFile().exists())
+			{
+				return null;
+			}
 			VdmLinkParserWrapper vdmLinkParser = new VdmLinkParserWrapper();
 			Links vdmlinks = (Links) parse(vdmLinkParser, project.getVdmLinkFile());
 
