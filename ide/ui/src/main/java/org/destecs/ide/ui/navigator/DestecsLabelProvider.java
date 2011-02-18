@@ -1,5 +1,7 @@
 package org.destecs.ide.ui.navigator;
 
+import org.destecs.ide.ui.DestecsPluginImages;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -11,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.internal.util.Util;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.navigator.IDescriptionProvider;
+import org.overture.ide.core.resources.IVdmProject;
 
 @SuppressWarnings("restriction")
 public class DestecsLabelProvider extends LabelProvider implements ILabelProvider, IDescriptionProvider {
@@ -36,6 +39,20 @@ public class DestecsLabelProvider extends LabelProvider implements ILabelProvide
         ImageDescriptor descriptor = adapter.getImageDescriptor(element);
         if (descriptor == null) {
             return null;
+        }
+
+      //Adds package icon to folder if the folder is in the build path
+        if(element instanceof IFolder)
+        {
+        	IFolder folder = (IFolder) element;
+        	IVdmProject project = (IVdmProject) folder.getProject().getAdapter(IVdmProject.class);
+        	if(project.getModelBuildPath().contains(folder))
+        	{
+        		descriptor = DestecsPluginImages.getDescriptor(DestecsPluginImages.IMG_OBJS_PACKFRAG_ROOT);
+        	}else if(project.getModelBuildPath().getOutput()!=null && project.getModelBuildPath().getOutput().equals(folder))
+        	{
+        		descriptor = DestecsPluginImages.getDescriptor(DestecsPluginImages.IMG_OBJS_CLASSFOLDER);
+        	}
         }
 
         //add any annotations to the image descriptor

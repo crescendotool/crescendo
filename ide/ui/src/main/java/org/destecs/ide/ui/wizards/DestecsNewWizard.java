@@ -5,12 +5,15 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.resources.IDestecsProject;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.overture.ide.core.resources.IVdmProject;
 import org.overture.ide.vdmrt.core.IVdmRtCoreConstants;
@@ -48,6 +51,13 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 			addNature(prj, IDestecsCoreConstants.NATURE);
 			addBuilder(prj, IDestecsCoreConstants.BUILDER_ID, null, null);
 			
+			IDestecsProject dp = (IDestecsProject) prj.getAdapter(IDestecsProject.class);
+			p.getModelBuildPath().add(dp.getVdmModelFolder());
+			p.getModelBuildPath().remove(prj);
+			p.getModelBuildPath().save();
+			p.getModelBuildPath().setOutput(dp.getOutputFolder());
+			p.getModel().clean();
+			prj.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 			//TODO: add builder if needed
 			
 		} catch (CoreException e) {

@@ -35,4 +35,9 @@ public class DestecsUIPlugin extends AbstractUIPlugin {
 		
 	}
 
+	public static void logErrorMessage(String message) {
+		getDefault().getLog().log(new Status(IStatus.ERROR,IDestecsUiConstants.PLUGIN_ID,message));
+
+	}
+
 }
