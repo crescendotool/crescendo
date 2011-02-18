@@ -16,11 +16,13 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 	private Process p;
 	private File dir;
 	private final Integer port;
+	private File libSearchRoot;
 
-	public VdmRtBundleLauncher(File dir, Integer port)
+	public VdmRtBundleLauncher(File dir, Integer port,File libSearchRoot)
 	{
 		this.dir = dir;
 		this.port = port;
+		this.libSearchRoot=libSearchRoot;
 	}
 
 	public void kill()
@@ -82,17 +84,17 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 		// get the bundled class path of the debugger
 		ClasspathUtils.collectClasspath(new String[] { ISimengConstants.VDM_ENGINE_BUNDLE_ID }, entries);
 		// get the class path for all jars in the project lib folder
-		// File lib = new File(project.getLocation().toFile(), "lib");
-		// if (lib.exists() && lib.isDirectory())
-		// {
-		// for (File f : getAllFiles(lib))
-		// {
-		// if (f.getName().toLowerCase().endsWith(".jar"))
-		// {
-		// entries.add(toPlatformPath(f.getAbsolutePath()));
-		// }
-		// }
-		// }
+		 File lib = libSearchRoot;//new File(project.getLocation().toFile(), "lib");
+		 if (lib.exists() && lib.isDirectory())
+		 {
+		 for (File f : getAllFiles(lib))
+		 {
+		 if (f.getName().toLowerCase().endsWith(".jar"))
+		 {
+		 entries.add(toPlatformPath(f.getAbsolutePath()));
+		 }
+		 }
+		 }
 
 		if (entries.size() > 0)
 		{
@@ -111,6 +113,23 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 
 		}
 		return commandList;
+	}
+	
+	private static List<File> getAllFiles(File file)
+	{
+		List<File> files = new Vector<File>();
+		if (file.isDirectory())
+		{
+			for (File f : file.listFiles())
+			{
+				files.addAll(getAllFiles(f));
+			}
+
+		} else
+		{
+			files.add(file);
+		}
+		return files;
 	}
 
 	private String getCpSeperator()
