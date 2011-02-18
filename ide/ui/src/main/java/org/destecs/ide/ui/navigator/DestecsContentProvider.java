@@ -56,7 +56,7 @@ public class DestecsContentProvider extends BaseWorkbenchContentProvider
 
 		};
 
-		job.schedule();
+//		job.schedule();
 
 	}
 
