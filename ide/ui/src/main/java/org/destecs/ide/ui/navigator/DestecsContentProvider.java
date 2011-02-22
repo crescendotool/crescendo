@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.PlatformUI;
@@ -30,35 +29,32 @@ public class DestecsContentProvider extends BaseWorkbenchContentProvider
 	private TreeViewer fViewer;
 	private static final Object[] NO_CHILDREN = {};
 
-	public void resourceChanged(IResourceChangeEvent event) {
-		UIJob job = new UIJob(PlatformUI.getWorkbench().getDisplay(),
-				"Navigator Update (DestecsNavigatorContent)") {
-
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				try {
-					TreeViewer viewer = fViewer;
-					if (!viewer.getControl().isDisposed()) {
-						TreePath[] treePaths = viewer.getExpandedTreePaths();
-						viewer.refresh();
-						viewer.setExpandedTreePaths(treePaths);
-					}
-					return Status.OK_STATUS;
-				} catch (Exception e) {
-					DestecsUIPlugin.log(e);
-					return new Status(
-							IStatus.ERROR,
-							IDestecsUiConstants.PLUGIN_ID,
-							"Error in Navigator Update (DestecsNavigatorContent)",
-							e);
+	private UIJob jobNavigatorRefresh = new UIJob(PlatformUI.getWorkbench().getDisplay(), "Navigator Update (DestecsNavigatorContent)")
+	{
+		@Override
+		public IStatus runInUIThread(IProgressMonitor monitor)
+		{
+			try
+			{
+				TreeViewer viewer = fViewer;
+				if (!viewer.getControl().isDisposed())
+				{
+					viewer.refresh();
 				}
+				return Status.OK_STATUS;
+			} catch (Exception e)
+			{
+				DestecsUIPlugin.log(e);
+				return new Status(IStatus.ERROR, IDestecsUiConstants.PLUGIN_ID, "Error in Navigator Update (DestecsNavigatorContent)", e);
 			}
+		}
+	};
 
-		};
-
-//		job.schedule();
-
+	public void resourceChanged(IResourceChangeEvent event)
+	{
+		jobNavigatorRefresh.schedule();
 	}
+	
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput)

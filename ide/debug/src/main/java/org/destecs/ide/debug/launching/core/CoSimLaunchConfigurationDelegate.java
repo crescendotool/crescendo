@@ -43,15 +43,11 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
-import org.overture.ide.core.resources.IVdmProject;
-import org.overture.ide.ui.utility.VdmTypeCheckerUi;
 
 public class CoSimLaunchConfigurationDelegate implements
 		ILaunchConfigurationDelegate
@@ -289,6 +285,7 @@ public class CoSimLaunchConfigurationDelegate implements
 						// Ignore it
 					}
 					
+					monitor.done();
 					target.setTerminated(true);
 
 					if (exceptions.size() == 0)
