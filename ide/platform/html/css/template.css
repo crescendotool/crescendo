@@ -8,7 +8,7 @@ html, body, form, fieldset {
 
 body {
 	color: #000000;
-	background: #FFFFFF;
+	background: #333;
 	font-family: Arial, Helvetica, sans-serif;
 	line-height: 150%;
 	align: center;
@@ -943,7 +943,7 @@ div.buttonheading {
 .ja-headermask {
 	width: 602px;
 	display: block;
-	background: url(../images/header-mask.png) no-repeat top right;
+	/*background: url(../images/header-mask.png) no-repeat top right;*/
 	height: 80px;
 	position: absolute;
 	top: 0;
@@ -964,7 +964,7 @@ h1.logo, h1.logo-text {
 h1.logo a {
 	width: 414px;
 	display: block;
-	background: url(../images/logo.gif) no-repeat;
+	/*background: url(../images/logo.gif) no-repeat;*/
 	height: 80px;
 	position: relative;
 	z-index: 100;
