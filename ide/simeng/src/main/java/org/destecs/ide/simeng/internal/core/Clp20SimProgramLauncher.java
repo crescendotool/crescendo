@@ -27,17 +27,17 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 //		}
 	}
 
-	public boolean launch()
+	public Process launch()
 	{
 		if(!isWindowsPlatform())
 		{
-			return true; // not supported
+			return null; // not supported
 		}
 		try
 		{
 			if(WindowsUtils.isProcessRunning(processName))
 			{
-				return true; // 20-sim is already running
+				return null; // 20-sim is already running
 			}else
 			{
 				List<String> commandList = new ArrayList<String>();
@@ -56,7 +56,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 				{
 					//ignore it
 				}
-				return true;
+				return p;
 			}
 					
 		} catch (IOException e)
@@ -64,7 +64,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return false;//TODO ignors return 
+		return null;//TODO ignors return 
 	}
 
 	private String getArgumentString(List<String> args)
@@ -94,6 +94,16 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 		{
 			return path.replace(" ", "\\ ");
 		}
+	}
+
+	public boolean isRunning()
+	{
+		return false;//We don't know
+	}
+
+	public String getName()
+	{
+		return processName;
 	}
 
 }

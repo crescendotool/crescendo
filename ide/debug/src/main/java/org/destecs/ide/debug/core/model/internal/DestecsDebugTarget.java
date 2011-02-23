@@ -1,6 +1,8 @@
 package org.destecs.ide.debug.core.model.internal;
 
+import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IMarkerDelta;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
@@ -12,16 +14,18 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.ITerminate;
 import org.eclipse.debug.core.model.IThread;
 
-
 public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 {
 
 	private ILaunch launch;
 	private boolean isTerminated;
+	final private IProject project;
+	private CoSimulationThread simulationThread;
 
-	public DestecsDebugTarget(ILaunch launch)
+	public DestecsDebugTarget(ILaunch launch, IProject project)
 	{
 		this.launch = launch;
+		this.project = project;
 	}
 
 	public String getName() throws DebugException
@@ -36,7 +40,7 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 
 	public IThread[] getThreads() throws DebugException
 	{
-		return null;
+		return new IThread[0];
 	}
 
 	public boolean hasThreads() throws DebugException
@@ -61,44 +65,46 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 
 	public String getModelIdentifier()
 	{
-		return null;
+		return IDebugConstants.PLUGIN_ID;
 	}
 
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter)
 	{
-		if (adapter == IDebugElement.class) {
+		if (adapter == IDebugElement.class)
+		{
 			return this;
 		}
 
 		/*
-		 * Not implemented currently
-		 * 
-		 * if (adapter == IStepFilters.class) { return getDebugTarget(); }
+		 * Not implemented currently if (adapter == IStepFilters.class) { return getDebugTarget(); }
 		 */
 
-		if (adapter == IDebugTarget.class) {
+		if (adapter == IDebugTarget.class)
+		{
 			return getDebugTarget();
 		}
 
-		if (adapter == ITerminate.class) {
+		if (adapter == ITerminate.class)
+		{
 			return getDebugTarget();
 		}
 
-//		if (adapter == IVdmDebugTarget.class) {
-//			return getVdmDebugTarget();
-//		}
+		// if (adapter == IVdmDebugTarget.class) {
+		// return getVdmDebugTarget();
+		// }
 
-		if (adapter == ILaunch.class) {
+		if (adapter == ILaunch.class)
+		{
 			return getLaunch();
 		}
-		
+
 		return super.getAdapter(adapter);
 	}
 
 	public boolean canTerminate()
 	{
-		return false;
+		return !this.isTerminated;
 	}
 
 	public boolean isTerminated()
@@ -108,7 +114,14 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 
 	public void terminate() throws DebugException
 	{
-
+		this.isTerminated = true;
+		
+		if(simulationThread != null)
+		{
+			simulationThread.stopSimulation();
+		}
+		
+		DebugEventHelper.fireTerminateEvent(this);
 	}
 
 	public boolean canResume()
@@ -177,11 +190,14 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 		return false;
 	}
 
-	public void setTerminated(boolean terminated)
+	public IProject getProject()
 	{
-		this.isTerminated = terminated;
-		DebugEventHelper.fireTerminateEvent(this);
-		DebugEventHelper.fireChangeEvent(this);
+		return project;
+	}
+
+	public void setCoSimulationThread(CoSimulationThread simThread)
+	{
+		this.simulationThread = simThread;
 	}
 
 }

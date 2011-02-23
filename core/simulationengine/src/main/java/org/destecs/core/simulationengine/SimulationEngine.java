@@ -2,6 +2,7 @@ package org.destecs.core.simulationengine;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
 import java.util.List;
@@ -66,6 +67,8 @@ public class SimulationEngine
 	public final List<IEngineListener> engineListeners = new Vector<IEngineListener>();
 	public final List<IMessageListener> messageListeners = new Vector<IMessageListener>();
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
+
+	private final List<IProcessCreationListener> processCreationListeners = new Vector<IProcessCreationListener>();
 
 	private final File contractFile;
 
@@ -237,13 +240,39 @@ public class SimulationEngine
 
 			// stop the simulators
 			stop(Simulator.DE, finishTime, dtProxy);
-			//TODO: stop(Simulator.CT, finishTime, ctProxy);
+			// TODO: stop(Simulator.CT, finishTime, ctProxy);
 
 			terminate(Simulator.DE, finishTime, dtProxy, dtLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
 		} finally
 		{
+			if (dtLauncher.isRunning() || ctLauncher.isRunning())
+			{
+				sleep();
+				shutdownSimulators();
+			}
+		}
+	}
+
+	private static void sleep()
+	{
+		try
+		{
+			Thread.sleep(1000);
+		} catch (InterruptedException e)
+		{
+			// ignore it
+		}
+	}
+
+	public void shutdownSimulators()
+	{
+		if (dtLauncher.isRunning())
+		{
 			dtLauncher.kill();
+		}
+		if (ctLauncher.isRunning())
+		{
 			ctLauncher.kill();
 		}
 	}
@@ -254,11 +283,9 @@ public class SimulationEngine
 		engineInfo(simulator, "Launching");
 		try
 		{
-			if (!launcher.launch())
-			{
-				abort(simulator, "Failed to launch simulator");
-			}
-		} catch (Exception e)
+			processCreated(launcher.getName(), launcher.launch());
+
+		} catch (IOException e)
 		{
 			abort(simulator, "Failed to launch simulator", e);
 		}
@@ -588,6 +615,7 @@ public class SimulationEngine
 		{
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(url);
+			config.setReplyTimeout(5000);// 5 sec time out
 
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
@@ -678,6 +706,23 @@ public class SimulationEngine
 		for (ISimulationListener listener : simulationListeners)
 		{
 			listener.stepInfo(fromSimulator, result);
+		}
+	}
+
+	public synchronized void addProcessCreationListener(
+			IProcessCreationListener listener)
+	{
+		processCreationListeners.add(listener);
+	}
+
+	protected synchronized void processCreated(String name, Process p)
+	{
+		if (p != null)
+		{
+			for (IProcessCreationListener listener : processCreationListeners)
+			{
+				listener.processCreated(name, p);
+			}
 		}
 	}
 

@@ -10,7 +10,7 @@ public class Clp20SimLauncher implements ISimulatorLauncher
 
 	}
 
-	public boolean launch()
+	public Process launch()
 	{
 		System.out.println("Please launch CLP co-sim now with the model loaded... waiting for 5 seconds");
 		try
@@ -19,7 +19,20 @@ public class Clp20SimLauncher implements ISimulatorLauncher
 		} catch (InterruptedException e)
 		{
 		}
-		return true;
+		return null;
+	}
+
+	/**
+	 * 
+	 */
+	public boolean isRunning()
+	{
+		return false;
+	}
+
+	public String getName()
+	{
+		return "20-Sim";
 	}
 
 }

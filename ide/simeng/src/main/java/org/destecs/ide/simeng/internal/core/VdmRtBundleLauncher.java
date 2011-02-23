@@ -18,11 +18,11 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 	private final Integer port;
 	private File libSearchRoot;
 
-	public VdmRtBundleLauncher(File dir, Integer port,File libSearchRoot)
+	public VdmRtBundleLauncher(File dir, Integer port, File libSearchRoot)
 	{
 		this.dir = dir;
 		this.port = port;
-		this.libSearchRoot=libSearchRoot;
+		this.libSearchRoot = libSearchRoot;
 	}
 
 	public void kill()
@@ -34,7 +34,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 
 	}
 
-	public boolean launch()
+	public Process launch()
 	{
 		List<String> commandList = new ArrayList<String>();
 		commandList.add(0, "java");
@@ -49,10 +49,10 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			commandList.add(port.toString());
 
 			p = Runtime.getRuntime().exec(getArgumentString(commandList), null, dir);
-			
+
 			new ProcessConsolePrinter(p.getInputStream()).start();
 			new ProcessConsolePrinter(p.getErrorStream()).start();
-			return true;
+			return p;
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
@@ -62,7 +62,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 
 	private String getArgumentString(List<String> args)
@@ -71,7 +71,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 		for (String string : args)
 		{
 			executeString.append(string);
-			executeString.append( " ");
+			executeString.append(" ");
 		}
 		return executeString.toString().trim();
 
@@ -84,17 +84,17 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 		// get the bundled class path of the debugger
 		ClasspathUtils.collectClasspath(new String[] { ISimengConstants.VDM_ENGINE_BUNDLE_ID }, entries);
 		// get the class path for all jars in the project lib folder
-		 File lib = libSearchRoot;//new File(project.getLocation().toFile(), "lib");
-		 if (lib.exists() && lib.isDirectory())
-		 {
-		 for (File f : getAllFiles(lib))
-		 {
-		 if (f.getName().toLowerCase().endsWith(".jar"))
-		 {
-		 entries.add(toPlatformPath(f.getAbsolutePath()));
-		 }
-		 }
-		 }
+		File lib = libSearchRoot;// new File(project.getLocation().toFile(), "lib");
+		if (lib.exists() && lib.isDirectory())
+		{
+			for (File f : getAllFiles(lib))
+			{
+				if (f.getName().toLowerCase().endsWith(".jar"))
+				{
+					entries.add(f.getAbsolutePath());
+				}
+			}
+		}
 
 		if (entries.size() > 0)
 		{
@@ -104,17 +104,17 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			{
 				if (cp.toLowerCase().replace("\"", "").trim().endsWith(".jar"))
 				{
-					classPath.append( toPlatformPath(cp));
-					classPath.append( getCpSeperator());
+					classPath.append(toPlatformPath(cp));
+					classPath.append(getCpSeperator());
 				}
 			}
-			classPath.deleteCharAt( classPath.length() - 1);
+			classPath.deleteCharAt(classPath.length() - 1);
 			commandList.add(classPath.toString().trim());
 
 		}
 		return commandList;
 	}
-	
+
 	private static List<File> getAllFiles(File file)
 	{
 		List<File> files = new Vector<File>();
@@ -155,7 +155,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			return path.replace(" ", "\\ ");
 		}
 	}
-	
+
 	/**
 	 * Returns a free port number on localhost, or -1 if unable to find a free port.
 	 * 
@@ -183,6 +183,23 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			}
 		}
 		return -1;
+	}
+
+	public boolean isRunning()
+	{
+		try
+		{
+			p.exitValue();
+			return false;
+		} catch (IllegalThreadStateException e)
+		{
+			return true;
+		}
+	}
+
+	public String getName()
+	{
+		return ISimengConstants.VDM_ENGINE_CLASS;
 	}
 
 }

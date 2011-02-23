@@ -21,7 +21,7 @@ public class VdmRtLauncher implements ISimulatorLauncher
 
 	}
 
-	public boolean launch()
+	public Process launch()
 	{
 		System.out.println("Please launch VDM-RT co-sim now... waiting for 5 seconds");
 		try
@@ -31,7 +31,17 @@ public class VdmRtLauncher implements ISimulatorLauncher
 		} catch (InterruptedException e)
 		{
 		}
-		return true;
+		return null;
+	}
+
+	public boolean isRunning()
+	{
+		return false;
+	}
+	
+	public String getName()
+	{
+		return "VDMJ-CoSimulation";
 	}
 
 }

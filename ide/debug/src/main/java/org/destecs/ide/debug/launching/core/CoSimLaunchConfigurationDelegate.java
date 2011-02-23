@@ -12,12 +12,14 @@ import java.util.Vector;
 import org.destecs.core.parsers.ScenarioParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.core.scenario.Scenario;
+import org.destecs.core.simulationengine.IProcessCreationListener;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.debug.core.model.internal.CoSimulationThread;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.ide.simeng.internal.core.EngineListener;
@@ -64,12 +66,15 @@ public class CoSimLaunchConfigurationDelegate implements
 	private URL ctUrl = null;
 	private boolean remoteDebug = false;
 	private DestecsDebugTarget target;
+	private ILaunch launch;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{
 		loadSettings(configuration);
-		target = new DestecsDebugTarget(launch);
+		this.launch = launch;
+		target = new DestecsDebugTarget(launch, project);
+		this.launch.addDebugTarget(target);
 		startSimulation();
 	}
 
@@ -102,9 +107,9 @@ public class CoSimLaunchConfigurationDelegate implements
 			if (deUrlString.length() == 0)
 			{
 				Integer freePort = VdmRtBundleLauncher.getFreePort();
-				if(freePort==-1)
+				if (freePort == -1)
 				{
-				throw new Exception("No free port found for DE launch");	
+					throw new Exception("No free port found for DE launch");
 				}
 				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", freePort.toString()));
 			} else
@@ -131,7 +136,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	{
 		final List<InfoTableView> views = new Vector<InfoTableView>();
 		final ListenerToLog log = getLog();
-		Job runSimulation = null;
+
 		try
 		{
 
@@ -177,7 +182,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			if (!remoteDebug)
 			{
 				File libSearchRoot = new File(project.getLocation().toFile(), "lib");
-				engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile, deUrl.getPort(),libSearchRoot));// new
+				engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile, deUrl.getPort(), libSearchRoot));// new
 			} else
 			{
 				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", Integer.valueOf(8080).toString()));
@@ -191,130 +196,40 @@ public class CoSimLaunchConfigurationDelegate implements
 			engine.setCtModel(ctFile);
 			engine.setCtEndpoint(ctUrl);
 
+			engine.addProcessCreationListener(new IProcessCreationListener()
+			{
+				public void processCreated(String name, Process p)
+				{
+					launch.addProcess(DebugPlugin.newProcess(launch, p, name));
+				}
+			});
+
 			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
 
-			runSimulation = new Job("Simulation")
+			Job vdm = new Job("launch vdm")
 			{
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor)
 				{
-					final List<Throwable> exceptions = new Vector<Throwable>();
-					class SimulationRunner extends Thread
-					{
-						public SimulationRunner()
-						{
-							setDaemon(true);
-							setName("Simulation Engine");
-						}
-
-						public void run()
-						{
-							try
-							{
-								Job vdmlaunch = new Job("VDM launch")
-								{
-
-									@Override
-									protected IStatus run(
-											IProgressMonitor monitor)
-									{
-										ILaunchConfiguration vdmLaunchConfig = getVdmLaunchConfig();
-										try
-										{
-											// final IVdmProject vdmProject = (IVdmProject)
-											// project.getAdapter(IVdmProject.class);
-											// final Shell shell = Display.getDefault().getActiveShell();
-											// shell.getDisplay().syncExec(new Runnable()
-											// {
-											// public void run()
-											// {
-											// VdmTypeCheckerUi.typeCheck(shell, vdmProject);
-											// }
-											// });
-											vdmLaunchConfig.launch("debug", null);
-										} catch (CoreException e)
-										{
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-										return Status.OK_STATUS;
-									}
-
-								};
-								vdmlaunch.schedule();
-
-								engine.simulate(shareadDesignParameters, totalSimulationTime);
-							} catch (Throwable e)
-							{
-								exceptions.add(e);
-								log.flush();
-							}
-						}
-
-					}
-
-					Thread simulationEngineThread = new SimulationRunner();
-
-					simulationEngineThread.start();
-
-					while (!simulationEngineThread.isInterrupted()
-							&& simulationEngineThread.isAlive())
-					{
-						sleep(2000);
-
-						if (monitor.isCanceled())
-						{
-							engine.forceSimulationStop();
-							log.flush();
-						}
-					}
-
-					for (InfoTableView view : views)
-					{
-						view.refreshPackTable();
-					}
-
-					log.close();
-
 					try
 					{
-						project.refreshLocal(IResource.DEPTH_INFINITE, null);
+						ILaunchConfiguration vdmLaunchConfig = getVdmLaunchConfig();
+						ILaunch vdmLaunch = vdmLaunchConfig.launch("debug", null);
+						launch.addDebugTarget(vdmLaunch.getDebugTarget());
 					} catch (CoreException e)
 					{
-						// Ignore it
+						return new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, "Faild to launch VDM-RT debug", e);
 					}
-					
-					monitor.done();
-					target.setTerminated(true);
-
-					if (exceptions.size() == 0)
-					{
-						return Status.OK_STATUS;
-					} else
-					{
-						for (Throwable throwable : exceptions)
-						{
-							throwable.printStackTrace();
-						}
-						return new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, "Simulation failed", exceptions.get(0));
-					}
-
-				}
-
-				private void sleep(long i)
-				{
-					try
-					{
-						Thread.sleep(i);
-					} catch (InterruptedException e)
-					{
-						// Ignore it
-					}
-
+					return Status.OK_STATUS;
 				}
 			};
-			runSimulation.schedule();
+			vdm.schedule();
+
+			CoSimulationThread simThread = new CoSimulationThread(engine, log, shareadDesignParameters, totalSimulationTime, target, views);
+			target.setCoSimulationThread(simThread);
+			simThread.start();
+
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
@@ -410,6 +325,18 @@ public class CoSimLaunchConfigurationDelegate implements
 		}
 	}
 
+	public static void sleep(long i)
+	{
+		try
+		{
+			Thread.sleep(i);
+		} catch (InterruptedException e)
+		{
+			// Ignore it
+		}
+
+	}
+
 	private ILaunchConfiguration getVdmLaunchConfig()
 	{
 		// ILaunchConfiguration config = null;
@@ -431,12 +358,12 @@ public class CoSimLaunchConfigurationDelegate implements
 
 			final String VDM_LAUNCH_CONFIG_DEFAULT = "vdm_launch_config_default";
 
-			final String VDM_LAUNCH_CONFIG_IS_TRACE = "vdm_launch_config_is_trace";
+//			final String VDM_LAUNCH_CONFIG_IS_TRACE = "vdm_launch_config_is_trace";
 
-			final String VDM_LAUNCH_CONFIG_REMOTE_CONTROL = "vdm_launch_config_remote_control_class";
+//			final String VDM_LAUNCH_CONFIG_REMOTE_CONTROL = "vdm_launch_config_remote_control_class";
 			final String VDM_LAUNCH_CONFIG_CREATE_COVERAGE = "vdm_launch_config_create_coverage";
 			final String VDM_LAUNCH_CONFIG_REMOTE_DEBUG = "vdm_launch_config_remote_debug";
-			final String VDM_LAUNCH_CONFIG_VM_MEMORY_OPTION = "vdm_launch_config_memory_option";
+//			final String VDM_LAUNCH_CONFIG_VM_MEMORY_OPTION = "vdm_launch_config_memory_option";
 			final String VDM_LAUNCH_CONFIG_ENABLE_LOGGING = "vdm_launch_config_enable_logging";
 
 			wc.setAttribute(VDM_LAUNCH_CONFIG_PROJECT, project.getName());
