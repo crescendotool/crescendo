@@ -213,8 +213,12 @@ FLOAT
     |   '.' ('0'..'9')+ EXPONENT?
     |   ('0'..'9')+ EXPONENT
     ;
+        
+NEGATIVE    
+    : ('-') (FLOAT|INT)
+    ;
     
-
+    
     
 fragment
 EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
@@ -230,7 +234,7 @@ start : action* EOF
       ;
       
 action 
-      : t=(FLOAT|INT) simType '.' ID ASSIGN v=(FLOAT|INT) ';'
+      : t=(FLOAT|INT) simType '.' ID ASSIGN v=(NEGATIVE|FLOAT|INT) ';'
       { scenario.addAction(
         new Action(
           Double.parseDouble($t.text),
