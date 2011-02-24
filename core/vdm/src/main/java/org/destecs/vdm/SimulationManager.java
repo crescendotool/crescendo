@@ -265,6 +265,7 @@ public class SimulationManager extends BasicSimulationManager
 	{	
 		Properties.init();
 		Properties.parser_tabstop = 1;
+		//Properties.rt_duration_transactions = true; //TODO
 		
 		Settings.dialect = Dialect.VDM_RT;
 		Settings.usingCmdLine = false;

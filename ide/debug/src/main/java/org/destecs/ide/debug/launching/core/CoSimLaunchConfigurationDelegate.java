@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -50,6 +51,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
+import org.omg.CosNaming.IstringHelper;
 
 public class CoSimLaunchConfigurationDelegate implements
 		ILaunchConfigurationDelegate
@@ -237,6 +239,19 @@ public class CoSimLaunchConfigurationDelegate implements
 			{
 				view.refreshPackTable();
 			}
+			try
+			{
+				if (target != null)
+				{
+					target.terminate();
+				} else
+				{
+					launch.terminate();
+				}
+			} catch (DebugException e)
+			{
+				DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Error launching",e));
+			}
 		}
 	}
 
@@ -358,12 +373,12 @@ public class CoSimLaunchConfigurationDelegate implements
 
 			final String VDM_LAUNCH_CONFIG_DEFAULT = "vdm_launch_config_default";
 
-//			final String VDM_LAUNCH_CONFIG_IS_TRACE = "vdm_launch_config_is_trace";
+			// final String VDM_LAUNCH_CONFIG_IS_TRACE = "vdm_launch_config_is_trace";
 
-//			final String VDM_LAUNCH_CONFIG_REMOTE_CONTROL = "vdm_launch_config_remote_control_class";
+			// final String VDM_LAUNCH_CONFIG_REMOTE_CONTROL = "vdm_launch_config_remote_control_class";
 			final String VDM_LAUNCH_CONFIG_CREATE_COVERAGE = "vdm_launch_config_create_coverage";
 			final String VDM_LAUNCH_CONFIG_REMOTE_DEBUG = "vdm_launch_config_remote_debug";
-//			final String VDM_LAUNCH_CONFIG_VM_MEMORY_OPTION = "vdm_launch_config_memory_option";
+			// final String VDM_LAUNCH_CONFIG_VM_MEMORY_OPTION = "vdm_launch_config_memory_option";
 			final String VDM_LAUNCH_CONFIG_ENABLE_LOGGING = "vdm_launch_config_enable_logging";
 
 			wc.setAttribute(VDM_LAUNCH_CONFIG_PROJECT, project.getName());
