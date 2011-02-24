@@ -203,16 +203,15 @@ COMMENT
 ID  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
 
-TIME 
+
+INT : ('0'..'9')
+    ;
+
+
+FLOAT
     :   ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
     |   '.' ('0'..'9')+ EXPONENT?
     |   ('0'..'9')+ EXPONENT
-    ;
-
-FLOAT
-    :   ('-')? ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
-    |   ('-')? '.' ('0'..'9')+ EXPONENT?
-    |   ('-')? ('0'..'9')+ EXPONENT
     ;
     
 
@@ -231,7 +230,7 @@ start : action* EOF
       ;
       
 action 
-      : t=TIME simType '.' ID ASSIGN v=FLOAT ';'
+      : t=(FLOAT|INT) simType '.' ID ASSIGN v=(FLOAT|INT) ';'
       { scenario.addAction(
         new Action(
           Double.parseDouble($t.text),
