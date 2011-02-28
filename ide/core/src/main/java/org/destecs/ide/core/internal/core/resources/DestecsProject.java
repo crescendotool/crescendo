@@ -8,7 +8,9 @@ import java.util.Vector;
 
 import org.destecs.ide.core.DestecsCorePlugin;
 import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.internal.core.ResourceManager;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -20,13 +22,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 
+
 public class DestecsProject implements
 		org.destecs.ide.core.resources.IDestecsProject
 {
 
-	private static ArrayList<IProject> loadedProjects = new ArrayList<IProject>();
+	private final static List<IDestecsProject> loadedProjects = new ArrayList<IDestecsProject>();
 
 	public final IProject project;
+	private final DestecsModel model = new DestecsModel();
 
 	public DestecsProject(IProject project)
 	{
@@ -135,48 +139,28 @@ public class DestecsProject implements
 		return newProject;
 	}
 
-	private static IProject checkLoaded(IProject project)
-	{
-		for (IProject p : loadedProjects)
-		{
-			if (p.getName().equals(project.getName()))
-			{
-				return p;
-			}
-		}
-		return null;
-	}
+	
 
 	public synchronized static IDestecsProject createProject(IProject project)
 	{
 
-		IProject c = checkLoaded(project);
-
-		if (c != null)
+		if (ResourceManager.getInstance().hasProject(project))
+			return ResourceManager.getInstance().getProject(project);
+		else
 		{
-			return (IDestecsProject) c;
-		} else
-		{
-			IDestecsProject destecsProject = new DestecsProject(project);
-			return destecsProject;
+			try
+			{
+				IDestecsProject vdmProject = new DestecsProject(project);
+				return ResourceManager.getInstance().addProject(vdmProject);
+			} catch (Exception e)
+			{
+				if (DestecsCorePlugin.DEBUG)
+				{
+					DestecsCorePlugin.log("createProject", e);
+				}
+				return null;
+			}
 		}
-
-		// if (ResourceManager.getInstance().hasProject(project))
-		// return ResourceManager.getInstance().getProject(project);
-		// else
-		// {
-		// try
-		// {
-		// IDestecsProject destecsProject = new DestecsProject(project);
-		// return ResourceManager.getInstance().addProject(destecsProject);
-		// } catch (Exception e)
-		// {
-		//				
-		// DestecsCorePlugin.log("VdmModelManager createProject", e);
-		//				
-		// return null;
-		// }
-		// }
 	}
 
 	public IFolder getOutputFolder()
@@ -241,6 +225,14 @@ public class DestecsProject implements
 		}
 	}
 
-	
+	public DestecsModel getModel()
+	{
+		return model;
+	}
+
+	public String getName()
+	{
+		return this.project.getName();
+	}
 
 }

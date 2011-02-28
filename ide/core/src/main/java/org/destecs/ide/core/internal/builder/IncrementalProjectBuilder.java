@@ -13,6 +13,7 @@ import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.Links;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.core.utility.FileUtility;
 import org.eclipse.core.resources.IFile;
@@ -36,11 +37,12 @@ public class IncrementalProjectBuilder extends
 		}
 
 		IDestecsProject project = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
-
+		final DestecsModel model = project.getModel();
 		try
 		{
-			if(!project.getContractFile().exists())
+			if (!project.getContractFile().exists())
 			{
+				model.setContract(null);
 				return null;
 			}
 			ContractParserWrapper contractParser = new ContractParserWrapper();
@@ -48,11 +50,14 @@ public class IncrementalProjectBuilder extends
 
 			if (!typeCheck(project.getContractFile(), contract))
 			{
+				model.setContract(null);
 				return null;
 			}
+			model.setContract(contract);
 
-			if(!project.getVdmLinkFile().exists())
+			if (!project.getVdmLinkFile().exists())
 			{
+				model.setLinks(null);
 				return null;
 			}
 			VdmLinkParserWrapper vdmLinkParser = new VdmLinkParserWrapper();
@@ -60,13 +65,16 @@ public class IncrementalProjectBuilder extends
 
 			if (!typeCheck(project.getVdmLinkFile(), vdmlinks, contract))
 			{
+				model.setLinks(null);
 				return null;
 			}
+
+			model.setLinks(vdmlinks);
 
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
-			 e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 		return null;
@@ -230,8 +238,8 @@ public class IncrementalProjectBuilder extends
 	protected Object parse(ParserWrapper parser, IFile file) throws Exception
 	{
 		Object result = parser.parse(file.getLocation().toFile());
-		
-		if (file == null || !file.exists()|| !file.isAccessible())
+
+		if (file == null || !file.exists() || !file.isAccessible())
 			return result;
 
 		FileUtility.deleteMarker(file, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);

@@ -24,4 +24,8 @@ public interface IDestecsProject extends IAdaptable
 	IFolder getOutputFolder();
 	
 	void createStructure();
+	
+	DestecsModel getModel();
+	
+	String getName();
 }

@@ -237,9 +237,9 @@ link
         links.addOutput($a.text);
       }
       
-      if(s.equalsIgnoreCase("event"))
+      if(s.equalsIgnoreCase("input"))
       {
-        links.addEvent($a.text);
+        links.addInput($a.text);
       }
       
       if(s.equalsIgnoreCase("sdp"))
