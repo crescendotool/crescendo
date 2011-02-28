@@ -231,7 +231,7 @@ link
     intf a=ID '=' b=ID '.' c=ID ';'
     { 
       links.addLink($a.text, new StringPair($b.text,$c.text));
-      String s = $a.text;
+      String s = $intf.text;
       if(s.equalsIgnoreCase("output"))
       {
         links.addOutput($a.text);
