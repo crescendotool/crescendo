@@ -50,6 +50,7 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 			p.setBuilder(Release.DEFAULT);
 			addNature(prj, IDestecsCoreConstants.NATURE);
 			addBuilder(prj, IDestecsCoreConstants.BUILDER_ID, null, null);
+			addBuilder(prj, "org.destecs.ide.vdmmetadatabuilder.builder", null, null);
 			
 			IDestecsProject dp = (IDestecsProject) prj.getAdapter(IDestecsProject.class);
 			p.getModelBuildPath().add(dp.getVdmModelFolder());
