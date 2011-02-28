@@ -14,16 +14,33 @@ public class LinksFactory {
 	private List<String> events = new ArrayList<String>();
 	private List<String> sdp = new ArrayList<String>();	
 	
+	
+	public void addEvent(String name){
+		events.add(name);
+	}
+	
 	public void addEvents(List<String> names){
 		events.addAll(names);
+	}
+	
+	public void addOutput(String name){
+		outputs.add(name);
 	}
 	
 	public void addOutputs(List<String> names){
 		outputs.addAll(names);
 	}
 	
+	public void addInput(String name){
+		inputs.add(name);
+	}
+	
 	public void addInputs(List<String> names){
 		inputs.addAll(names);
+	}
+	
+	public void addSDP(String name){
+		sdp.add(name);
 	}
 	
 	public void addSDPs(List<String> names){

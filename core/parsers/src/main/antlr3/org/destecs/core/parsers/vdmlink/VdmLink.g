@@ -5,10 +5,10 @@ options {
 }
 
 tokens{
-  OUTPUT = 'vdm_outputs';
-  INPUT = 'vdm_inputs';
-  SHARED = 'vdm_sdp';
-  EVENT = 'vdm_events';
+  OUTPUT = 'output';
+  INPUT = 'input';
+  SHARED = 'sdp';
+  EVENT = 'event';
 }
 
 @header {
@@ -217,21 +217,54 @@ start
     : ((link | intf) ';')* EOF 
     ;
     
+intf 
+    : OUTPUT 
+    | INPUT
+    | SHARED
+    | EVENT
+    ; 
+    
 link
-    : a=ID '=' b=ID '.' c=ID
-    { links.addLink($a.text, new StringPair($b.text,$c.text)); }
+    :  intf a=ID '=' b=ID '.' c=ID
+    { 
+      links.addLink($a.text, new StringPair($b.text,$c.text));
+      String s = $a.text;
+      if(s.equalsIgnoreCase("output"))
+      {
+        links.addOutput($a.text);
+      }
+      
+      if(s.equalsIgnoreCase("event"))
+      {
+        links.addEvent($a.text);
+      }
+      
+      if(s.equalsIgnoreCase("sdp"))
+      {
+        links.addSDP($a.text);
+      }
+      
+      if(s.equalsIgnoreCase("event"))
+      {
+        links.addEvent($a.text);
+      }
+    
+    }
     ;
 
-intf
-    : OUTPUT '=' r=idList 
-    {links.addOutputs(r);}
-    | INPUT '=' r=idList 
-    {links.addInputs(r);}
-    | SHARED '=' r=idList 
-    {links.addSDPs(r);}
-    | EVENT '=' r=idList 
-    {links.addEvents(r);}
-    ;
+
+  
+
+//intf
+//    : OUTPUT '=' r=idList 
+//    {links.addOutputs(r);}
+//    | INPUT '=' r=idList 
+//    {links.addInputs(r);}
+//    | SHARED '=' r=idList 
+//    {links.addSDPs(r);}
+//    | EVENT '=' r=idList 
+//    {links.addEvents(r);}
+//    ;
 
 idList returns [List<String> ids]
 @init{
