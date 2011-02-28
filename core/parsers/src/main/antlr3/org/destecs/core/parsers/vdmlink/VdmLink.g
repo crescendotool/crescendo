@@ -9,6 +9,7 @@ tokens{
   INPUT = 'input';
   SHARED = 'sdp';
   EVENT = 'event';
+  MODEL = 'model';
 }
 
 @header {
@@ -214,18 +215,20 @@ COMMENT
     ;
 
 start 
-    : ((link | intf) ';')* EOF 
+    : link* EOF 
     ;
     
-intf 
-    : OUTPUT 
-    | INPUT
-    | SHARED
-    | EVENT
-    ; 
+intf
+    : OUTPUT  
+    | INPUT  
+    | SHARED 
+    | EVENT 
+    | MODEL
+    ;  
     
 link
-    :  intf a=ID '=' b=ID '.' c=ID
+    :  
+    intf a=ID '=' b=ID '.' c=ID ';'
     { 
       links.addLink($a.text, new StringPair($b.text,$c.text));
       String s = $a.text;
@@ -247,32 +250,25 @@ link
       if(s.equalsIgnoreCase("event"))
       {
         links.addEvent($a.text);
-      }
-    
+      }    
+      
+      
     }
+    
     ;
 
 
   
 
-//intf
-//    : OUTPUT '=' r=idList 
-//    {links.addOutputs(r);}
-//    | INPUT '=' r=idList 
-//    {links.addInputs(r);}
-//    | SHARED '=' r=idList 
-//    {links.addSDPs(r);}
-//    | EVENT '=' r=idList 
-//    {links.addEvents(r);}
-//    ;
 
-idList returns [List<String> ids]
-@init{
-  ids = new ArrayList<String>();
-} 
-    : a=ID {$ids.add($a.text);} (',' b=ID {$ids.add($b.text);} )*
-    
-    ;
-    
+
+//idList returns [List<String> ids]
+//@init{
+//  ids = new ArrayList<String>();
+//} 
+//    : a=ID {$ids.add($a.text);} (',' b=ID {$ids.add($b.text);} )*
+//    
+//    ;
+//    
 
 
