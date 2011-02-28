@@ -11,7 +11,7 @@ public class DestecsCorePlugin extends Plugin {
 	public static final boolean DEBUG = true;
 	private static DestecsCorePlugin plugin;
 
-	/*
+	/* 
 	 * (non-Javadoc)
 	 * 
 	 * @see

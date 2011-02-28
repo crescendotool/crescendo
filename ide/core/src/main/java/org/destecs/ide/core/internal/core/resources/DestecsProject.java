@@ -36,7 +36,7 @@ public class DestecsProject implements
 	{
 		this.project = project;createStructure();
 	}
-
+ 
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter)
 	{

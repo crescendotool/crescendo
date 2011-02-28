@@ -20,7 +20,7 @@ public class DestecsProjectNature implements IProjectNature {
 	public void configure() throws CoreException {
 		// TODO Auto-generated method stub
 		
-	}
+	 }
 
 	public void deconfigure() throws CoreException {
 		// TODO Auto-generated method stub

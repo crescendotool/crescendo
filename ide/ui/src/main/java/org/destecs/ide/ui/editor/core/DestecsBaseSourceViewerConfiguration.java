@@ -26,11 +26,11 @@ SourceViewerConfiguration
 	
 	
 
-	@Override
-	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer)
-	{
-		return null;
-	}
+//	@Override
+//	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer)
+//	{
+//		return null;
+//	}
 
 	@Override
 	public String[] getDefaultPrefixes(ISourceViewer sourceViewer,

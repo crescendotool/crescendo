@@ -16,7 +16,7 @@ public class DestecsModel
 	}
 	
 	public synchronized Links getLinks()
-	{
+	{ 
 		return links;
 	}
 	

@@ -40,7 +40,7 @@ public class ResourceManager implements IResourceChangeListener
 	 * @return The unique instance of this class.
 	 */
 	static public ResourceManager getInstance()
-	{
+	{ 
 		if (null == _instance)
 		{
 			_instance = new ResourceManager();

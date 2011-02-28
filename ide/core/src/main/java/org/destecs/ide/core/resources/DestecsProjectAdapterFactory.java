@@ -22,7 +22,7 @@ public class DestecsProjectAdapterFactory implements IAdapterFactory {
 				}
 			}
 		}
-		
+	 	
 		
 		
 		if(adapterType == IProject.class)

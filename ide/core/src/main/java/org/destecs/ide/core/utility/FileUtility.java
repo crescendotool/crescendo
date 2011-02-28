@@ -32,7 +32,7 @@ public class FileUtility
 					return;
 
 			}
-			IMarker marker = file.createMarker(IMarker.PROBLEM);
+	 		IMarker marker = file.createMarker(IMarker.PROBLEM);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			marker.setAttribute(IMarker.SOURCE_ID, IDestecsCoreConstants.PLUGIN_ID);

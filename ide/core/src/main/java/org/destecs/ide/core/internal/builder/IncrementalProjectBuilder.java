@@ -63,7 +63,7 @@ public class IncrementalProjectBuilder extends
 			VdmLinkParserWrapper vdmLinkParser = new VdmLinkParserWrapper();
 			Links vdmlinks = (Links) parse(vdmLinkParser, project.getVdmLinkFile());
 
-			if (!typeCheck(project.getVdmLinkFile(), vdmlinks, contract))
+ 			if (!typeCheck(project.getVdmLinkFile(), vdmlinks, contract))
 			{
 				model.setLinks(null);
 				return null;
