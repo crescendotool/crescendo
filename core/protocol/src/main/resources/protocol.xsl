@@ -7,7 +7,7 @@
 		<html>
 			<head>
 				<title>Protocol Definition</title>
-				<link rel="stylesheet" href="protocol.css" />
+				<link rel="stylesheet" href="https://destecs.svn.sourceforge.net/svnroot/destecs/trunk/core/protocol/src/main/resources/protocol.css" />
 			</head>
 			<body>
 				<xsl:call-template name="topLevel" />
