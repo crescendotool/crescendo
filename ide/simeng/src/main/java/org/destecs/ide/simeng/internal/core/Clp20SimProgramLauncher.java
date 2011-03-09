@@ -11,6 +11,7 @@ import org.destecs.ide.simeng.internal.util.WindowsUtils;
 public class Clp20SimProgramLauncher implements ISimulatorLauncher
 {
 	static final String processName = "20sim.exe";
+	private static final int RETRIES = 10;
 	private Process p;
 	private File model;
 
@@ -21,50 +22,69 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 
 	public void kill()
 	{
-//		if (p != null)
-//		{
-//			p.destroy();
-//		}
+
 	}
 
 	public Process launch()
 	{
-		if(!isWindowsPlatform())
+		if (!isWindowsPlatform())
 		{
 			return null; // not supported
 		}
+		
 		try
 		{
-			if(WindowsUtils.isProcessRunning(processName))
+			if (WindowsUtils.isProcessRunning(processName))
 			{
 				return null; // 20-sim is already running
-			}else
+			} else
 			{
 				List<String> commandList = new ArrayList<String>();
-//				commandList.add("explorer");
+				// commandList.add("explorer");
 				commandList.add("cmd.exe /C");
 				commandList.add(toPlatformPath(this.model.getAbsolutePath()));
 				p = Runtime.getRuntime().exec(getArgumentString(commandList), null, model.getParentFile());
-				
+
 				new ProcessConsolePrinter(p.getInputStream()).start();
 				new ProcessConsolePrinter(p.getErrorStream()).start();
-				
-				try
-				{
-					Thread.sleep(5000);
-				} catch (InterruptedException e)
-				{
-					//ignore it
-				}
+
+				sleep(5000);
 				return p;
 			}
-					
+
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//ignore it
 		}
-		return null;//TODO ignors return 
+
+		for (int i = 0; i < RETRIES; i++)
+		{
+			try
+			{
+				if (WindowsUtils.isProcessRunning(processName))
+				{
+					return null;
+				}else
+				{
+					sleep(2000);
+				}
+			} catch (IOException e)
+			{
+				//ignore it
+			}
+		}
+		return null;// TODO ignors return
+	}
+
+	private void sleep(int millis)
+	{
+		try
+		{
+			Thread.sleep(millis);
+		} catch (InterruptedException e)
+		{
+			// ignore it
+		}
 	}
 
 	private String getArgumentString(List<String> args)
@@ -73,12 +93,11 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 		for (String string : args)
 		{
 			executeString.append(string);
-			executeString.append( " ");
+			executeString.append(" ");
 		}
 		return executeString.toString().trim();
 
 	}
-
 
 	public static boolean isWindowsPlatform()
 	{
@@ -98,7 +117,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 
 	public boolean isRunning()
 	{
-		return false;//We don't know
+		return false;// We don't know
 	}
 
 	public String getName()
