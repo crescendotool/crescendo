@@ -189,7 +189,10 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 	{
 		try
 		{
-			p.exitValue();
+			if(p!=null)
+			{
+				p.exitValue();
+			}
 			return false;
 		} catch (IllegalThreadStateException e)
 		{
