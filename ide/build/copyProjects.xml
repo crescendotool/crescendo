@@ -10,6 +10,7 @@
 		<include name="debug/**" />
 		<!--include name="help/**" /-->
 		<include name="platform/**" />
+		<include name="vdmmetadatabuilder/**" />
 		<!--  include name="ui/**" /-->
 		<!--exclude name="**/target/" /-->
 	</fileset>
