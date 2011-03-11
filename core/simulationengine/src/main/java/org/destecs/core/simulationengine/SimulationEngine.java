@@ -67,6 +67,8 @@ public class SimulationEngine
 	public final List<IEngineListener> engineListeners = new Vector<IEngineListener>();
 	public final List<IMessageListener> messageListeners = new Vector<IMessageListener>();
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
+	
+	private final List<XmlRpcClient> clients= new Vector<XmlRpcClient>();
 
 	private final List<IProcessCreationListener> processCreationListeners = new Vector<IProcessCreationListener>();
 
@@ -219,6 +221,15 @@ public class SimulationEngine
 			ProxyICoSimProtocol ctProxy = connect(Simulator.CT, ctEndpoint);
 
 			initialize(Simulator.CT, ctProxy);
+			
+			//Turn off timeout, simulators may be slow at loading the model which should not cause a timeout. Instead they should try to load and report an error if they fail.
+			for (XmlRpcClient client : clients)
+			{
+				if(client.getClientConfig() instanceof XmlRpcClientConfigImpl)
+				{
+					((XmlRpcClientConfigImpl)client.getClientConfig()).setReplyTimeout(0);
+				}
+			}
 
 			// load the models
 			loadModel(Simulator.DE, dtProxy, dtModelBase);
@@ -624,6 +635,8 @@ public class SimulationEngine
 			{
 				client.setTransportFactory(new CustomSAXParserTransportFactory(client));
 			}
+			
+			clients.add(client);
 			// add factory for annotations for generated protocol
 			AnnotationClientFactory factory = new AnnotationClientFactory(client);
 
