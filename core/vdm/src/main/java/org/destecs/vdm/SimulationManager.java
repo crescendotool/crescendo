@@ -45,7 +45,7 @@ public class SimulationManager extends BasicSimulationManager
 {
 	private final static String specFileExtension = "vdmrt";
 	private final static String linkFileName = "vdm.link";
-	//Thread runner;
+	// Thread runner;
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
 
@@ -206,29 +206,29 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		try
 		{
-			File linkFile =new File(new File(path.getParentFile(),"configuration"), linkFileName);
-			if(!linkFile.exists())
+			File linkFile = new File(new File(path.getParentFile(), "configuration"), linkFileName);
+			if (!linkFile.exists())
 			{
-				throw new SimulationException("The VDM link file does not exist: "+linkFile);
+				throw new SimulationException("The VDM link file does not exist: "
+						+ linkFile);
 			}
-			VdmLinkParserWrapper linksParser =new VdmLinkParserWrapper();
-			links = linksParser.parse(linkFile);//Links.load(linkFile);
-			
-			if(links== null || linksParser.hasErrors())
+			VdmLinkParserWrapper linksParser = new VdmLinkParserWrapper();
+			links = linksParser.parse(linkFile);// Links.load(linkFile);
+
+			if (links == null || linksParser.hasErrors())
 			{
 				throw new SimulationException("Faild to parse vdm links");
 			}
-			
-			
-
-			
 
 			final List<File> files = new Vector<File>();
 
 			files.addAll(getFiles(path, specFileExtension));
 
-			controller.setLogFile(new File(new File(path.getParentFile(),"output"), "logFile.logrt"));
+			File outputFolder = new File(path.getParentFile(), "output");
+			
+			controller.setLogFile(new File(outputFolder, "logFile.logrt"));
 			controller.setScript(script);
+			Settings.DGBPbaseDir = path.getParentFile();
 
 			ExitStatus status = controller.parse(files);
 
@@ -262,14 +262,14 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	public Boolean initialize() throws SimulationException
-	{	
+	{
 		Properties.init();
 		Properties.parser_tabstop = 1;
-		//Properties.rt_duration_transactions = true; //TODO
-		
+		Properties.rt_duration_transactions = true;
+
 		Settings.dialect = Dialect.VDM_RT;
 		Settings.usingCmdLine = false;
-		Settings.usingDBGP= true;
+		Settings.usingDBGP = true;
 		Settings.release = Release.VDM_10;
 		controller = new VDMCO();
 		return true;
@@ -288,7 +288,6 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			this.status = CoSimStatusEnum.NOT_INITIALIZED;
 		}
-		
 
 		if (this.status == CoSimStatusEnum.INITIALIZED)
 		{

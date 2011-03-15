@@ -46,6 +46,7 @@ public class CoSimImpl implements IDestecs
 			return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
 		} catch (SimulationException e)
 		{
+			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -59,7 +60,7 @@ public class CoSimImpl implements IDestecs
 			return new LoadStruct(SimulationManager.getInstance().load(new File(path))).toMap();
 		} catch (SimulationException e)
 		{
-			e.printStackTrace();
+			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -140,6 +141,7 @@ public class CoSimImpl implements IDestecs
 			return result.toMap();
 		} catch (SimulationException e)
 		{
+			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -179,6 +181,7 @@ public class CoSimImpl implements IDestecs
 			return new StopStruct(SimulationManager.getInstance().stopSimulation()).toMap();
 		} catch (SimulationException e)
 		{
+			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -225,6 +228,7 @@ public class CoSimImpl implements IDestecs
 			return new SetDesignParametersStruct(success).toMap();
 		} catch (SimulationException e)
 		{
+			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -241,6 +245,7 @@ public class CoSimImpl implements IDestecs
 			return new SetParametersStruct(success).toMap();
 		} catch (SimulationException e)
 		{
+			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -258,7 +263,7 @@ public class CoSimImpl implements IDestecs
 			return new StartStruct(SimulationManager.getInstance().start()).toMap();
 		} catch (SimulationException e)
 		{
-			e.printStackTrace();
+			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
