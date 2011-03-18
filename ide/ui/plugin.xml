@@ -280,10 +280,20 @@
             class="org.destecs.ide.ui.editor.impl.ScenarioEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
-            extensions="script"
+            extensions="scenario"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScenarioEditor"
             name="Scenario Editor">
+      </editor>
+      
+      <editor
+            class="org.destecs.ide.ui.editor.impl.ScriptEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            default="true"
+            extensions="script"
+            icon="icons/cview16/contract_file_tsk.gif"
+            id="org.destecs.ide.contracteditor.editor.core.ScriptEditor"
+            name="Script Editor">
       </editor>
       
       <editor
