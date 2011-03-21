@@ -25,6 +25,10 @@
    	<module>ui</module>
    	<module>debug</module>
 <module>vdmmetadatabuilder</module>
+
+<!-- test-->
+<module>modelmanagement</module>
+
 	
   </modules>
 
