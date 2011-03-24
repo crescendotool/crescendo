@@ -3,21 +3,25 @@ package org.destecs.ide.simeng.internal.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.destecs.core.simulationengine.IEngineListener;
 import org.destecs.core.simulationengine.IMessageListener;
 import org.destecs.core.simulationengine.ISimulationListener;
+import org.destecs.core.simulationengine.IVariableSyncListener;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 
-public class ListenerToLog implements IEngineListener, IMessageListener, ISimulationListener
+public class ListenerToLog implements IEngineListener, IMessageListener, ISimulationListener,IVariableSyncListener
 {
 	private final File base;
 	
 	final private CachedLogFileWriter engine =new CachedLogFileWriter();
 	final private CachedLogFileWriter message=new CachedLogFileWriter();
 	final private CachedLogFileWriter simulation=new CachedLogFileWriter();
+	final private CachedLogFileWriter variables=new CachedLogFileWriter();
+	public char split = System.getProperty("user.country").equals("DK")? ';':',';
 
 	public ListenerToLog(File base) throws FileNotFoundException
 	{
@@ -26,11 +30,12 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 		engine.setLogfile(new PrintWriter(new File(this.base,"Engine.log")));
 		message.setLogfile(new PrintWriter(new File(this.base,"Message.log")));
 		simulation.setLogfile(new PrintWriter(new File(this.base,"Simulation.log")));
+		variables.setLogfile(new PrintWriter(new File(this.base,"SharedVariables.csv")));
 	}
 
 	public void from(Simulator simulator, Double time, String messageName)
 	{
-		message.log(pad(10,simulator.toString())+ " , "+pad(75, messageName)+ " , "+ time.toString());	
+		message.log(pad(10,simulator.toString())+ " "+split+" "+pad(75, messageName)+ " "+split+" "+ time.toString());	
 	}
 	
 	private String pad(int c, String data)
@@ -50,13 +55,13 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 		{
 			sb.append(o.name + "=" + o.value+ " ");
 		}
-		simulation.log(pad(10,simulator.toString())+ " , "+ pad(20,sb.toString())+ " , "+ result.time.toString());
+		simulation.log(pad(10,simulator.toString())+ " "+split+" "+ pad(20,sb.toString())+ " "+split+" "+ result.time.toString());
 		
 	}
 
 	public void info(Simulator simulator, String message)
 	{
-		engine.log(pad(10,simulator.toString())+ " , "+ message.replace('\n', ' '));		
+		engine.log(pad(10,simulator.toString())+ " "+split+" "+ message.replace('\n', ' '));		
 	}
 	
 	
@@ -65,6 +70,7 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 		engine.dump(true);
 		message.dump(true);
 		simulation.dump(true);
+		variables.dump(true);
 	}
 	
 	public void flush()
@@ -72,5 +78,17 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 		engine.dump(false);
 		message.dump(false);
 		simulation.dump(false);
+		variables.dump(false);
+	}
+
+	public void info(List<String> colls)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String col : colls)
+		{
+			sb.append(col);
+			sb.append(split);
+		}
+		variables.log(sb.substring(0, sb.length() - 1));
 	}
 }

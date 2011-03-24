@@ -26,9 +26,6 @@ tokens{
 @header {
 package org.destecs.core.parsers.dcl;
 
-import org.destecs.core.dcl.Dcl;
-import org.destecs.core.dcl.Action;
-import org.destecs.core.dcl.ScriptFactory;
 }
 
 @lexer::header{  
@@ -121,14 +118,8 @@ package org.destecs.core.parsers.dcl;
 @members {
 private boolean mMessageCollectionEnabled = false;
     private boolean mHasErrors = false;
-    private ScriptFactory dcl = new ScriptFactory();
     private List<String> mMessages;
     private List<RecognitionException> mExceptions = new ArrayList<RecognitionException>();
-
-    public Dcl getScript()
-    {
-        return dcl.getScript();
-    }
   
     public boolean hasExceptions()
     {

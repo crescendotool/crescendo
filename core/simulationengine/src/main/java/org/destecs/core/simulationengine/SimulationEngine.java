@@ -67,8 +67,9 @@ public class SimulationEngine
 	public final List<IEngineListener> engineListeners = new Vector<IEngineListener>();
 	public final List<IMessageListener> messageListeners = new Vector<IMessageListener>();
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
-	
-	private final List<XmlRpcClient> clients= new Vector<XmlRpcClient>();
+	public final List<IVariableSyncListener> variablesSyncListeners = new Vector<IVariableSyncListener>();
+
+	private final List<XmlRpcClient> clients = new Vector<XmlRpcClient>();
 
 	private final List<IProcessCreationListener> processCreationListeners = new Vector<IProcessCreationListener>();
 
@@ -221,13 +222,14 @@ public class SimulationEngine
 			ProxyICoSimProtocol ctProxy = connect(Simulator.CT, ctEndpoint);
 
 			initialize(Simulator.CT, ctProxy);
-			
-			//Turn off timeout, simulators may be slow at loading the model which should not cause a timeout. Instead they should try to load and report an error if they fail.
+
+			// Turn off timeout, simulators may be slow at loading the model which should not cause a timeout. Instead
+			// they should try to load and report an error if they fail.
 			for (XmlRpcClient client : clients)
 			{
-				if(client.getClientConfig() instanceof XmlRpcClientConfigImpl)
+				if (client.getClientConfig() instanceof XmlRpcClientConfigImpl)
 				{
-					((XmlRpcClientConfigImpl)client.getClientConfig()).setReplyTimeout(0);
+					((XmlRpcClientConfigImpl) client.getClientConfig()).setReplyTimeout(0);
 				}
 			}
 
@@ -247,8 +249,12 @@ public class SimulationEngine
 			startSimulator(Simulator.DE, dtProxy);
 			startSimulator(Simulator.CT, ctProxy);
 
+			long before = System.currentTimeMillis();
 			Double finishTime = simulate(totalSimulationTime, dtProxy, ctProxy);
-
+			long after = System.currentTimeMillis();
+			double totalSec = (double)(after-before)/1000;
+			engineInfo(Simulator.ALL, "Simulation executed in " + (totalSec>60?((int)Math.floor(totalSec/60))+"."+((int)totalSec%60)+" mins.":totalSec + " secs."));
+			
 			// stop the simulators
 			stop(Simulator.DE, finishTime, dtProxy);
 			// TODO: stop(Simulator.CT, finishTime, ctProxy);
@@ -385,8 +391,12 @@ public class SimulationEngine
 		List<String> events = new Vector<String>();
 
 		// First initialize DT
-		StepStruct result = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
+		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
+		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
+		StepResult res = merge(deResult, ctResult);
+//		System.out.print(res.toHeaderString());
+		variableSyncInfo(res.getHeaders());
 		while (time <= totalSimulationTime)
 		{
 			if (forceStopSimulation)
@@ -394,15 +404,104 @@ public class SimulationEngine
 				// simulation stop requested, stop simulation loop
 				break;
 			}
-			// Step CT
-			result = step(Simulator.CT, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, result.events);
+//			System.out.print(res.toString());
+			variableSyncInfo(res.getVariables());
+			// Step DT - time calculate
+			deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
 
-			// Step DT
-			result = step(Simulator.DE, dtProxy, ctProxy, result.time, outputToInput(result.outputs), false, result.events);
+			// Step CT - step
+			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, res.ctData, false, res.events);
 
-			time = result.time;
+			// Step DT - step
+			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, res.deData, false, res.events);
+
+			res = merge(deResult, ctResult);
+
+			time = res.time;
 		}
 		return time;
+	}
+
+	private StepResult merge(StepStruct deResult, StepStruct ctResult)
+	{
+		return new StepResult(ctResult.time, deResult.time, outputToInput(ctResult.outputs), outputToInput(deResult.outputs), ctResult.events);
+	}
+
+	public static class StepResult
+	{
+		// data time
+		public final Double time; // from CT
+		public final Double destTime; // from DE
+		public final List<StepinputsStructParam> deData;// Merged variables
+		public final List<StepinputsStructParam> ctData;// Merged variables
+		public final List<String> events;
+		public char split = ';';
+
+		public StepResult(Double time, Double destTime,
+				List<StepinputsStructParam> deData,
+				List<StepinputsStructParam> ctData, List<String> events)
+		{
+			this.time = time;
+			this.destTime = destTime;
+			this.deData = deData;
+			this.ctData = ctData;
+			this.events = events;
+		}
+
+		@Override
+		public String toString()
+		{
+			StringBuilder sb = new StringBuilder();
+			for (String col : getVariables())
+			{
+				sb.append(col);
+				sb.append(split);
+			}
+			return sb.substring(0, sb.length() - 1) + "\n";
+		}
+		
+		public List<String> getVariables()
+		{
+			List<String> list = new Vector<String>();
+			
+			list.add(time.toString());
+			for (StepinputsStructParam elem : deData)
+			{
+				list.add(elem.value.toString());
+			}
+			for (StepinputsStructParam elem : ctData)
+			{
+				list.add(elem.value.toString());
+			}
+			return list;
+		}
+
+		public String toHeaderString()
+		{
+			StringBuilder sb = new StringBuilder();
+			for (String col : getHeaders())
+			{
+				sb.append(col);
+				sb.append(split);
+			}
+			return sb.substring(0, sb.length() - 1) + "\n";
+		}
+		
+		public List<String> getHeaders()
+		{
+			List<String> list = new Vector<String>();
+			
+			list.add("Time");
+			for (StepinputsStructParam elem : deData)
+			{
+				list.add("CT_"+elem.name);
+			}
+			for (StepinputsStructParam elem : ctData)
+			{
+				list.add("DE_"+elem.name);
+			}
+			return list;
+		}
 	}
 
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
@@ -544,13 +643,13 @@ public class SimulationEngine
 		// abort(Simulator.DT, "Count of shared design parameters do not match: Contract("+
 		// contract.getSharedDesignParameters()+") actual ("+dtInterface.sharedDesignParameters+")");
 		// }
-		//		
+		//
 		// if(contract.getSharedDesignParameters().size()!= ctInterface.sharedDesignParameters.size())
 		// {
 		// abort(Simulator.CT, "Count of shared design parameters do not match: Contract("+
 		// contract.getSharedDesignParameters()+") actual ("+ctInterface.sharedDesignParameters+")");
 		// }
-		//		
+		//
 		// for (Variable var : contract.getSharedDesignParameters())
 		// {
 		// if (!dtInterface.sharedDesignParameters.contains(var.name))
@@ -635,7 +734,7 @@ public class SimulationEngine
 			{
 				client.setTransportFactory(new CustomSAXParserTransportFactory(client));
 			}
-			
+
 			clients.add(client);
 			// add factory for annotations for generated protocol
 			AnnotationClientFactory factory = new AnnotationClientFactory(client);
@@ -719,6 +818,15 @@ public class SimulationEngine
 		for (ISimulationListener listener : simulationListeners)
 		{
 			listener.stepInfo(fromSimulator, result);
+		}
+	}
+	
+	protected void variableSyncInfo(List<String> colls)
+	{
+
+		for (IVariableSyncListener listener : variablesSyncListeners)
+		{
+			listener.info(colls);
 		}
 	}
 

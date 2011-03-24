@@ -120,6 +120,7 @@ public class SimulationManager extends BasicSimulationManager
 			debugErr(e);
 			throw new SimulationException("Notification of scheduler faild", e);
 		}
+		debug("Next Step return at clock: " + nextTimeStep);
 
 		this.status = CoSimStatusEnum.STEP_TAKEN;
 

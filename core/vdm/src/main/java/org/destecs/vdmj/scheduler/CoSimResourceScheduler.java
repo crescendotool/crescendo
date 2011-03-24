@@ -22,17 +22,17 @@ public class CoSimResourceScheduler extends ResourceScheduler
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private Long nextSimulationStop = Long.valueOf(0);
-	
+
 	private boolean forceStop = false;
-	
+
 	@Override
 	public void start(MainThread main)
 	{
 		mainThread = main;
 		SimulationManager.getInstance().setMainContext(mainThread.ctxt);
-		BUSValue.start();	// Start BUS threads first...
+		BUSValue.start(); // Start BUS threads first...
 
 		boolean idle = true;
 		stopping = false;
@@ -41,24 +41,23 @@ public class CoSimResourceScheduler extends ResourceScheduler
 		{
 			long minstep = Long.MAX_VALUE;
 			idle = true;
-			
-			if(forceStop)
+
+			if (forceStop)
 			{
 				SchedulableThread.signalAll(Signal.TERMINATE);
 				return;
 			}
 
-			for (Resource resource: resources)
+			for (Resource resource : resources)
 			{
 				if (resource.reschedule())
 				{
 					idle = false;
-				}
-				else
+				} else
 				{
 					long d = resource.getMinimumTimestep();
 
-					if (d  < minstep)
+					if (d < minstep)
 					{
 						minstep = d;
 					}
@@ -67,12 +66,12 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 			if (idle && minstep >= 0 && minstep < Long.MAX_VALUE)
 			{
-//				System.out.println("Min step "+ minstep + " - Time: "+SystemClock.getWallTime());
-				if(canAdvanceSimulationTime(minstep))
+				// System.out.println("Min step "+ minstep + " - Time: "+SystemClock.getWallTime());
+				if (canAdvanceSimulationTime(minstep))
 				{
 					SystemClock.advance(minstep);
-	
-					for (Resource resource: resources)
+
+					for (Resource resource : resources)
 					{
 						resource.advance();
 					}
@@ -80,36 +79,34 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 				idle = false;
 			}
-			
-		}
-		while (!idle && main.getRunState() != RunState.COMPLETE);
+
+		} while (!idle && main.getRunState() != RunState.COMPLETE);
 
 		stopping = true;
 
 		if (main.getRunState() != RunState.COMPLETE)
 		{
-    		for (Resource resource: resources)
-    		{
-    			if (resource.hasActive())
-    			{
-   					Console.err.println("DEADLOCK detected");
+			for (Resource resource : resources)
+			{
+				if (resource.hasActive())
+				{
+					Console.err.println("DEADLOCK detected");
 					SchedulableThread.signalAll(Signal.DEADLOCKED);
 
 					while (main.isAlive())
 					{
 						try
-                        {
-	                        Thread.sleep(500);
-                        }
-                        catch (InterruptedException e)
-                        {
-	                        // ?
-                        }
+						{
+							Thread.sleep(500);
+						} catch (InterruptedException e)
+						{
+							// ?
+						}
 					}
 
-    				break;
-    			}
-    		}
+					break;
+				}
+			}
 		}
 
 		SchedulableThread.signalAll(Signal.TERMINATE);
@@ -117,24 +114,23 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 	private synchronized boolean canAdvanceSimulationTime(long minstep)
 	{
-		if(SystemClock.getWallTime()+minstep <= nextSimulationStop)
+		if (SystemClock.getWallTime() + minstep <= nextSimulationStop)
 		{
 			return true; // OK, just proceed there is still simulation time left
-		}else
+		} else
 		{
-			//We have reached the allowed simulation time
-							nextSimulationStop = SimulationManager.getInstance().waitForStep(minstep);
-				if(SystemClock.getWallTime()+minstep <= nextSimulationStop)
-				{
-					return true;
-				}else
-				{
-					return false;
-				}
-			
-			
+			// We have reached the allowed simulation time
+			nextSimulationStop = SimulationManager.getInstance().waitForStep(minstep);
+			if (SystemClock.getWallTime() + minstep <= nextSimulationStop)
+			{
+				return true;
+			} else
+			{
+				return false;
+			}
+
 		}
-		
+
 	}
 
 	public void stop()

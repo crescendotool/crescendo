@@ -180,6 +180,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			engine.engineListeners.add(log);
 			engine.messageListeners.add(log);
 			engine.simulationListeners.add(log);
+			engine.variablesSyncListeners.add(log);
 
 			if (!remoteDebug)
 			{

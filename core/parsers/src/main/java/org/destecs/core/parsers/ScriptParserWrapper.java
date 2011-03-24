@@ -7,7 +7,6 @@ import java.util.List;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.destecs.core.dcl.Dcl;
 import org.destecs.core.parsers.dcl.DclLexer;
 import org.destecs.core.parsers.dcl.DclParser;
 
