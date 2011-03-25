@@ -26,7 +26,7 @@ public class ShowLogCommandHandler extends AbstractHandler {
 			 
 
 			 //possible format
-			 FileWriter fw = new FileWriter("C:\\Development Log.csv");
+			 FileWriter fw = new FileWriter("C:\\XiaochenPhD\\Development Log.csv");
 	         fw.write("Development Log\r\n");
 			 fw.write("Revision,Actions,Author,Date,Message,Auto-detected Changes,Exploration Point,Imporatant Change,Tag as Baseline\r\n");
 	         fw.write("6,edit,zng,02:18:23 March 8 2011,fixed a bug,,,,\r\n");
@@ -51,7 +51,7 @@ public class ShowLogCommandHandler extends AbstractHandler {
 	         fw.write("1,add,zng,22:10:03 March 4 2011,top-level model,,,,Yes\r\n");
 	         fw.close();
 			 
-	         System.out.println("Development log file is generated at: C:\\Development Log.csv");
+	         System.out.println("Development log file is generated at: C:\\XiaochenPhD\\Development Log.csv");
 	         
 			}catch(Exception e)
 			{e.printStackTrace();}
