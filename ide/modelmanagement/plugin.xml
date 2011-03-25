@@ -41,11 +41,11 @@
      		    style="push">
    		   </separator>
  	       <command commandId="org.destecs.ide.modelmanagement.commandShowLog"
-    	       label="Show Development Overview Graph"
+    	       label="Show Development Log"
    	           style="push">
      	   </command>
-     	   <command commandId="org.destecs.ide.modelmanagement.commandShowBaseline"
-         	  label="Show Baselines"
+     	   <command commandId="org.destecs.ide.modelmanagement.commandShowLogGraph"
+         	  label="Generate Development Graph"
          	  style="push">
    		   </command>
          <separator
@@ -92,8 +92,8 @@
       name="Show development overview">
 </command>
 <command
-      id="org.destecs.ide.modelmanagement.commandShowBaseline"
-      name="Show baselines">
+      id="org.destecs.ide.modelmanagement.commandShowLogGraph"
+      name="Show log graph">
 </command>
 <command
       id="org.destecs.ide.modelmanagement.commandSaveAsReusable"
@@ -126,8 +126,8 @@
        commandId="org.destecs.ide.modelmanagement.commandShowLog">
  </handler>
  <handler
-       class="org.destecs.ide.modelmanagement.ShowBaselineCommandHandler"
-       commandId="org.destecs.ide.modelmanagement.commandShowBaseline">
+       class="org.destecs.ide.modelmanagement.ui.showlog.ShowLogGraphCommandHandler"
+       commandId="org.destecs.ide.modelmanagement.commandShowLogGraph">
  </handler>
  <handler
        class="org.destecs.ide.modelmanagement.SaveAsReusableCommandHandler"
@@ -162,17 +162,44 @@
        <action
              class="org.destecs.ide.modelmanagement.ShowDevLogAction"
              id="org.destecs.ide.modelmanagement.actionShowLog"
-             label="Show development overview"
+             label="Show Development Log"
              menubarPath="org.destecs.ide.modelmanagement.menu/MgmtGroupMenu1"
              style="push">
        </action>
        <action
              class="org.destecs.ide.modelmanagement.ShowBaselineAction"
              id="org.destecs.ide.modelmanagement.actionShowBaseline"
-             label="Show baselines"
-             menubarPath="org.destecs.ide.modelmanagement.menu/MgmtGroupMenu1">
+             label="Generate Development Graph"
+             menubarPath="org.destecs.ide.modelmanagement.menu/MgmtGroupMenu1"
+             style="push">
        </action>
     </actionSet>
+ </extension>
+ <extension
+       point="org.eclipse.ui.views">
+    <view
+          class="org.destecs.ide.modelmanagement.LoggraphViewPart"
+          id="org.destecs.ide.modelmanagement.viewLogGraph"
+          name="Log Graph View"
+          restorable="true">
+    </view>
+ </extension>
+ <extension
+       point="org.eclipse.ui.editors">
+    <editor
+          class="org.destecs.ide.modelmanagement.ui.showlog.LogGraphEditor"
+          default="false"
+          id="org.destecs.ide.modelmanagement.editorLogGraph"
+          name="Log Graph Editor">
+    </editor>
+    <editor
+          class="org.destecs.ide.modelmanagement.editors.DevLogGraphEditor"
+          contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+          extensions="jpg"
+          icon="icons/sample.gif"
+          id="org.destecs.ide.modelmanagement.editors.DevLogGraphEditor"
+          name="Development Overview Graph">
+    </editor>
  </extension>
 
 </plugin>
