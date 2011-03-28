@@ -17,48 +17,53 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 
-public class ShowLogGraphCommandHandler extends AbstractHandler implements ISelectionListener{
-
-	private IWorkbenchWindow window;
-	private IStructuredSelection selection;
+public class ShowLogGraphCommandHandler extends AbstractHandler {
+//implements ISelectionListener
 	
-	public ShowLogGraphCommandHandler(IWorkbenchWindow window){
-		this.window = window;
-		setText("&Log Graph");
-		window.getSelectionService().addSelectionListener(this);
-	}
+	//private IWorkbenchWindow window;
+	//private IStructuredSelection selection;
 	
-	private void setText(String string) {
-		// TODO Auto-generated method stub
+	public ShowLogGraphCommandHandler(){
 		
 	}
+	
+//	public ShowLogGraphCommandHandler(IWorkbenchWindow window){
+//		this.window = window;
+//		setText("&Log Graph");
+//		window.getSelectionService().addSelectionListener(this);
+//	}
+	
+	
+	
+//	private void setText(String string) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String path = openFileDialog();
-		if (path!=null){
-			IEditorInput input = new LogGraphEditorInput(new Path(path));
-			IWorkbenchPage page = window.getActivePage();
-			try{
-				page.openEditor(input, LogGraphEditor.ID, true);
-			}catch(PartInitException e){				
-			}			
-		}
-		
-		
+		//String path = openFileDialog();
+//		if (path!=null){
+//			IEditorInput input = new LogGraphEditorInput(new Path(path));
+//			IWorkbenchPage page = window.getActivePage();
+//			try{
+//				page.openEditor(input, LogGraphEditor.ID, true);
+//			}catch(PartInitException e){				
+//			}			
+//		}
+		System.out.println("See result by selecting: Window->Show View->Other->Development Log Graph");
 		return null;
 	}
 
-	private String openFileDialog() {
-		FileDialog dialog = new FileDialog(window.getShell(),SWT.OPEN);
-		dialog.setText("Graph");
-		dialog.setFilterExtensions(new String[] {".jpg"});
-		return dialog.open();
-	}
+//	private String openFileDialog() {
+//		FileDialog dialog = new FileDialog(window.getShell(),SWT.OPEN);
+//		dialog.setText("Graph");
+//		dialog.setFilterExtensions(new String[] {".jpg"});
+//		return dialog.open();
+//	}
 
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		// TODO Auto-generated method stub
-		
-	}
+//	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+//		// TODO Auto-generated method stub		
+//	}
 
 
 }
