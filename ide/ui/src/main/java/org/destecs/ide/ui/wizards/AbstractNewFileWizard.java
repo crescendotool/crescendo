@@ -7,7 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -72,7 +74,7 @@ public abstract class AbstractNewFileWizard extends Wizard implements
 		path = path.append("/" + _pageOne.getFileName());
 		path = path.addFileExtension(getFileExtension());
 		IFile file = createFileHandle(path);
-		
+
 		if (!file.exists())
 		{
 			createFile(file, getInitialContents());
@@ -102,15 +104,15 @@ public abstract class AbstractNewFileWizard extends Wizard implements
 	{
 		return IDEWorkbenchPlugin.getPluginWorkspace().getRoot().getFile(filePath);
 	}
-	
+
 	/**
-	 * Returns a stream containing the initial contents to be given to new file
-	 * resource instances. <b>Subclasses</b> may wish to override. This default
-	 * implementation provides no initial contents.
+	 * Returns a stream containing the initial contents to be given to new file resource instances. <b>Subclasses</b>
+	 * may wish to override. This default implementation provides no initial contents.
 	 * 
 	 * @return initial contents to be given to new file resource instances
 	 */
-	protected InputStream getInitialContents() {
+	protected InputStream getInitialContents()
+	{
 		String fileTemplate = getFileTemplate(_pageOne.getProjectName());
 		InputStream stream = null;
 		if (fileTemplate != null && fileTemplate.length() > 0)
@@ -213,23 +215,27 @@ public abstract class AbstractNewFileWizard extends Wizard implements
 		super.addPages();
 
 		IProject project = getProject();
-		_pageOne = new DestecsWizardPageCreation("Project Selection", this.fStructuredSelection, getFileExtension(), getName(),isFileNameEditable(),project.getName());
+		_pageOne = new DestecsWizardPageCreation("Project Selection", this.fStructuredSelection, getFileExtension(), getName(), isFileNameEditable(), getInitialFileName(project));
 		_pageOne.setTitle("Project Selection");
-		_pageOne.setDescription("Chose the project in which you want to create the "
+		_pageOne.setDescription("Choose the project in which you want to create the "
 				+ getName());
 
 		addPage(_pageOne);
 	}
-	
+
+	protected abstract String getInitialFileName(IProject project);
+
 	protected IProject getProject()
 	{
-		if(fStructuredSelection.getFirstElement() instanceof IProject)
+		Object tmp = fStructuredSelection.getFirstElement();
+		if (tmp instanceof IContainer)
 		{
-			return (IProject) fStructuredSelection.getFirstElement();
+			return ((IContainer) tmp).getProject();
 		}
+
 		return null;
 	}
-	
+
 	protected boolean isFileNameEditable()
 	{
 		return false;

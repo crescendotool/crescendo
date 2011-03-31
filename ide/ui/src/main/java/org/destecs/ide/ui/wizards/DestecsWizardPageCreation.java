@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -102,9 +103,9 @@ public class DestecsWizardPageCreation extends WizardPage
 		this.fFileNameEditable = fileNameEditable;
 		this.initialFileName = initialFileName;
 		
-		if(fStructuredSelection.getFirstElement() instanceof IProject)
+		if(fStructuredSelection.getFirstElement() instanceof IContainer)
 		{
-			this.fProjectName =((IProject) fStructuredSelection.getFirstElement()).getName();
+			this.fProjectName = ((IContainer)fStructuredSelection.getFirstElement()).getProject().getName();
 		}
 
 	}
@@ -267,7 +268,7 @@ public class DestecsWizardPageCreation extends WizardPage
 		});
 
 		Group groupFile = new Group(parent, parent.getStyle());
-		groupFile.setText("Project");
+		groupFile.setText(fName);
 		GridData gdFile = new GridData(GridData.FILL_HORIZONTAL);
 
 		groupFile.setLayoutData(gdFile);

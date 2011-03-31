@@ -1,5 +1,6 @@
 package org.destecs.ide.ui.wizards;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.INewWizard;
 
 public class ScenarioNewWizard extends AbstractNewFileWizard implements
@@ -34,5 +35,11 @@ public class ScenarioNewWizard extends AbstractNewFileWizard implements
 	protected String getFileTemplate(String fileName)
 	{
 		return "// Time  [DE/CT].variable := value;\n// 0.2    DE.enableFault1   :=  1.0;\n";
+	}
+
+	@Override
+	protected String getInitialFileName(IProject project)
+	{
+		return project.getName();
 	}
 }

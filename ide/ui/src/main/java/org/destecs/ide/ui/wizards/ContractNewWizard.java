@@ -1,4 +1,5 @@
 package org.destecs.ide.ui.wizards;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.INewWizard;
 
 
@@ -25,11 +26,24 @@ public class ContractNewWizard extends AbstractNewFileWizard implements INewWiza
 	protected String getFileTemplate(String fileName)
 	{
 		StringBuffer sb = new StringBuffer();
-		sb.append("contract ");
-		sb.append(fileName);
+		sb.append("-- Shared Design Parameters \n");
+		sb.append("-- sdp real MAXLEVEL;");
 		sb.append("\n\n");
-		sb.append("end ");
-		sb.append(fileName);
+		sb.append("-- Monitored variables\n");
+		sb.append("-- monitored real level := 0.0;");
+		sb.append("\n\n");
+		sb.append("-- Controlled variables\n");
+		sb.append("-- controlled real valve := 0.0;");
+		sb.append("\n\n");
+		sb.append("-- Events\n");
+		sb.append("-- event HIGH;");
+		sb.append("\n\n");
 		return sb.toString();
+	}
+
+	@Override
+	protected String getInitialFileName(IProject project)
+	{
+		return "contract";
 	}
 }
