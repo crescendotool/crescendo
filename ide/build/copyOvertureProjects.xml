@@ -112,7 +112,12 @@ Plugins
 		<exclude name="**/target/" />
 	</fileset>
 </copy>
-
+<copy todir="${buildDirectory}/plugins/overture.plugins.externaleditor"
+    filtering="true">
+    <fileset dir="${OvertureSourceIdeBase}/plugins/externaleditor">
+        <exclude name="**/target/" />
+    </fileset>
+</copy>
 
 	<!-- Platform plugin, manage version number -->
 
