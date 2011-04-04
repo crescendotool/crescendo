@@ -11,6 +11,8 @@ import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
+import org.destecs.protocol.structs.Load2Struct;
+import org.destecs.protocol.structs.Load2argumentsStructParam;
 import org.destecs.protocol.structs.LoadStruct;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.SetDesignParametersStruct;
@@ -27,7 +29,7 @@ import org.overturetool.vdmj.scheduler.SystemClock;
 public class CoSimImpl implements IDestecs
 {
 
-	private static final String version = "0.0.0.1";
+	private static final String version = "0.0.0.2";
 
 	public Map<String, Integer> getStatus()
 	{
@@ -57,7 +59,79 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			return new LoadStruct(SimulationManager.getInstance().load(new File(path))).toMap();
+			final String linkFileName = "vdm.link";
+			final String specFileExtension = "vdmrt";
+			File root = new File(path);
+			File linkFile = new File(new File(root.getParentFile(), "configuration"), linkFileName);
+			final List<File> files = new Vector<File>();
+
+			
+			files.addAll(getFiles(root, specFileExtension));
+
+			File outputFolder = new File(root.getParentFile(), "output");
+			return new LoadStruct(SimulationManager.getInstance().load(files,outputFolder,linkFile)).toMap();
+		} catch (SimulationException e)
+		{
+			ErrorLog.log(e);
+			throw new UndeclaredThrowableException(e);
+		}
+	}
+	
+	/***
+	 * local helper function of load
+	 * @param path
+	 * @param extension
+	 * @return
+	 */
+	private static List<File> getFiles(File path, String extension)
+	{
+		List<File> files = new Vector<File>();
+
+		if (path.isFile() && path.getName().toLowerCase().endsWith(extension))
+		{
+			files.add(path);
+		} else if (path.isDirectory())
+		{
+			for (File file : path.listFiles())
+			{
+				files.addAll(getFiles(file, extension));
+			}
+
+		}
+		return files;
+	}
+	
+	
+	
+	public Map<String, Boolean> load2(Map<String, Object> arg0)
+	{
+		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
+
+		List<File> specfiles = new Vector<File>();
+		File linkFile = null;
+		for (Object in : tmp)
+		{
+			if (in instanceof Map)
+			{
+				Load2argumentsStructParam arg =new Load2argumentsStructParam((Map<String, Object>) in);
+				
+				if(arg.argumentName.startsWith("file"))
+				{
+					specfiles.add(new File(arg.argumentValue));
+				}
+				
+				if(arg.argumentName.startsWith("link"))
+				{
+					linkFile= new File(arg.argumentValue);
+				}
+			}
+		}
+		
+		String outputDir = (String) arg0.get("outputDir");
+
+		try
+		{
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles,linkFile,new File(outputDir))).toMap();
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
@@ -267,4 +341,6 @@ public class CoSimImpl implements IDestecs
 			throw new UndeclaredThrowableException(e);
 		}
 	}
+
+	
 }

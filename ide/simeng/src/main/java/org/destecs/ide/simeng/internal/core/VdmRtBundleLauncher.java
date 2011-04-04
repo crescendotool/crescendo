@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.destecs.core.simulationengine.ISimulatorLauncher;
+import org.destecs.core.simulationengine.launcher.ISimulatorLauncher;
 import org.destecs.ide.simeng.ISimengConstants;
 import org.eclipse.core.runtime.CoreException;
 

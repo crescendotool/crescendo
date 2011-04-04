@@ -1,4 +1,4 @@
-package org.destecs.core.simulationengine;
+package org.destecs.core.simulationengine.launcher;
 
 import java.io.IOException;
 

@@ -17,4 +17,5 @@ Require-Bundle: org.eclipse.ui.views;bundle-version="3.4.1",
 Bundle-Activator: org.destecs.ide.simeng.Activator
 Export-Package: org.destecs.ide.simeng,
  org.destecs.ide.simeng.internal.core,
+ org.destecs.ide.simeng.listener,
  org.destecs.ide.simeng.ui.views

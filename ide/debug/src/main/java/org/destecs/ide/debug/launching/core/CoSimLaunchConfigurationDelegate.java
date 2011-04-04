@@ -5,6 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -12,31 +15,38 @@ import java.util.Vector;
 import org.destecs.core.parsers.ScenarioParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.core.scenario.Scenario;
-import org.destecs.core.simulationengine.IProcessCreationListener;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
+import org.destecs.core.simulationengine.listener.IProcessCreationListener;
+import org.destecs.core.simulationengine.model.CtModelConfig;
+import org.destecs.core.simulationengine.model.DeModelConfig;
+import org.destecs.core.simulationengine.model.ModelConfig;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.core.model.internal.CoSimulationThread;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
-import org.destecs.ide.simeng.internal.core.EngineListener;
-import org.destecs.ide.simeng.internal.core.ListenerToLog;
-import org.destecs.ide.simeng.internal.core.MessageListener;
-import org.destecs.ide.simeng.internal.core.SimulationListener;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
+import org.destecs.ide.simeng.listener.EngineListener;
+import org.destecs.ide.simeng.listener.ListenerToLog;
+import org.destecs.ide.simeng.listener.MessageListener;
+import org.destecs.ide.simeng.listener.SimulationListener;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -51,13 +61,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
-import org.omg.CosNaming.IstringHelper;
 
 public class CoSimLaunchConfigurationDelegate implements
 		ILaunchConfigurationDelegate
 {
 
-	private File dtFile = null;
+	private File deFile = null;
 	private File ctFile = null;
 	private File contractFile = null;
 	private File scenarioFile = null;
@@ -69,6 +78,7 @@ public class CoSimLaunchConfigurationDelegate implements
 	private boolean remoteDebug = false;
 	private DestecsDebugTarget target;
 	private ILaunch launch;
+	private File outputFolder = null;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -99,7 +109,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
 			contractFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
-			dtFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
+			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
 			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
 			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
@@ -130,6 +140,16 @@ public class CoSimLaunchConfigurationDelegate implements
 		} catch (Exception e)
 		{
 			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
+		}
+
+		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
+		File base = dProject.getOutputFolder().getLocation().toFile();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+		outputFolder = new File(base, dateFormat.format(new Date()));
+
+		if (!outputFolder.mkdirs())
+		{
+			outputFolder = null;
 		}
 
 	}
@@ -185,19 +205,21 @@ public class CoSimLaunchConfigurationDelegate implements
 			if (!remoteDebug)
 			{
 				File libSearchRoot = new File(project.getLocation().toFile(), "lib");
-				engine.setDtSimulationLauncher(new VdmRtBundleLauncher(dtFile, deUrl.getPort(), libSearchRoot));// new
+				engine.setDeSimulationLauncher(new VdmRtBundleLauncher(deFile, deUrl.getPort(), libSearchRoot));// new
 			} else
 			{
 				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", Integer.valueOf(8080).toString()));
-				engine.setDtSimulationLauncher(new VdmRtLauncher(5000));
+				engine.setDeSimulationLauncher(new VdmRtLauncher(5000));
 			}
 
-			engine.setDtModel(dtFile);
-			engine.setDtEndpoint(deUrl);
+			engine.setDeModel(getDeModelConfig(project));
+			engine.setDeEndpoint(deUrl);
 
 			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
-			engine.setCtModel(ctFile);
+			engine.setCtModel(new CtModelConfig(ctFile));
 			engine.setCtEndpoint(ctUrl);
+
+			engine.setOutputFolder(outputFolder);
 
 			engine.addProcessCreationListener(new IProcessCreationListener()
 			{
@@ -251,17 +273,50 @@ public class CoSimLaunchConfigurationDelegate implements
 				}
 			} catch (DebugException e)
 			{
-				DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Error launching",e));
+				DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Error launching", e));
 			}
 		}
+	}
+
+	private ModelConfig getDeModelConfig(IProject project2)
+	{
+		final DeModelConfig model = new DeModelConfig();
+
+		final IContentType vdmrtFileContentType = Platform.getContentTypeManager().getContentType(IDebugConstants.VDMRT_CONTENT_TYPE_ID);
+
+		try
+		{
+			project2.accept(new IResourceVisitor()
+			{
+
+				public boolean visit(IResource resource) throws CoreException
+				{
+					if (vdmrtFileContentType.isAssociatedWith(resource.getName()))
+					{
+						model.addSpecFile(resource.getLocation().toFile());
+					} else if (resource instanceof IFile
+							&& resource.getFileExtension().equals(DeModelConfig.LINK))
+					{
+						model.arguments.put(DeModelConfig.LINK, resource.getLocation().toFile().getAbsolutePath());
+					}
+					return true;
+				}
+			});
+			return model;
+		} catch (CoreException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 
 	private ListenerToLog getLog()
 	{
 		try
 		{
-			IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
-			return new ListenerToLog(dProject.getOutputFolder().getLocation().toFile());
+			return new ListenerToLog(outputFolder);
 		} catch (FileNotFoundException e1)
 		{
 			// TODO Auto-generated catch block

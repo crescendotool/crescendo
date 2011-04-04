@@ -1,10 +1,10 @@
-package org.destecs.ide.simeng.internal.core;
+package org.destecs.ide.simeng.listener;
 
 import java.util.List;
 import java.util.Vector;
 
-import org.destecs.core.simulationengine.IEngineListener;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+import org.destecs.core.simulationengine.listener.IEngineListener;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 
 public class EngineListener extends BaseListener implements IEngineListener

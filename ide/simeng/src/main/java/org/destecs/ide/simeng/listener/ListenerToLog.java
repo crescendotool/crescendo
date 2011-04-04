@@ -1,15 +1,15 @@
-package org.destecs.ide.simeng.internal.core;
+package org.destecs.ide.simeng.listener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.destecs.core.simulationengine.IEngineListener;
-import org.destecs.core.simulationengine.IMessageListener;
-import org.destecs.core.simulationengine.ISimulationListener;
-import org.destecs.core.simulationengine.IVariableSyncListener;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+import org.destecs.core.simulationengine.listener.IEngineListener;
+import org.destecs.core.simulationengine.listener.IMessageListener;
+import org.destecs.core.simulationengine.listener.ISimulationListener;
+import org.destecs.core.simulationengine.listener.IVariableSyncListener;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 

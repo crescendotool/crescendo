@@ -13,6 +13,11 @@ import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.core.simulationengine.launcher.Clp20SimLauncher;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
+import org.destecs.core.simulationengine.listener.IEngineListener;
+import org.destecs.core.simulationengine.listener.IMessageListener;
+import org.destecs.core.simulationengine.listener.ISimulationListener;
+import org.destecs.core.simulationengine.model.CtModelConfig;
+import org.destecs.core.simulationengine.model.DeModelConfig;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
@@ -41,12 +46,12 @@ public class Main
 			engine = new SimulationEngine(new File(base, "configuration\\contract.csc"));
 		}
 
-		engine.setDtSimulationLauncher(new VdmRtLauncher());
-		engine.setDtModel(new File(base, "model_de"));
-		engine.setDtEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
+		engine.setDeSimulationLauncher(new VdmRtLauncher());
+		engine.setDeModel(new DeModelConfig(new File(base, "model_de")));
+		engine.setDeEndpoint(new URL("http://127.0.0.1:8080/xmlrpc"));
 
 		engine.setCtSimulationLauncher(new Clp20SimLauncher());
-		engine.setCtModel(new File(new File(base, "model_ct"), ctModelName));
+		engine.setCtModel(new CtModelConfig(new File(new File(base, "model_ct"), ctModelName)));
 		engine.setCtEndpoint(new URL("http://localhost:1580"));
 
 		Listener listener = new Listener();

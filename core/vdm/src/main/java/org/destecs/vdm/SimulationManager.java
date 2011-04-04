@@ -43,8 +43,8 @@ import org.overturetool.vdmj.values.ValueList;
 
 public class SimulationManager extends BasicSimulationManager
 {
-	private final static String specFileExtension = "vdmrt";
-	private final static String linkFileName = "vdm.link";
+	
+	
 	// Thread runner;
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
@@ -203,12 +203,12 @@ public class SimulationManager extends BasicSimulationManager
 		return null;
 	}
 
-	public Boolean load(File path) throws SimulationException
+	public Boolean load(List<File> specfiles, File linkFile,File outputDir) throws SimulationException
 	{
 		try
 		{
-			File linkFile = new File(new File(path.getParentFile(), "configuration"), linkFileName);
-			if (!linkFile.exists())
+			
+			if (!linkFile.exists()|| linkFile.isDirectory())
 			{
 				throw new SimulationException("The VDM link file does not exist: "
 						+ linkFile);
@@ -221,17 +221,13 @@ public class SimulationManager extends BasicSimulationManager
 				throw new SimulationException("Faild to parse vdm links");
 			}
 
-			final List<File> files = new Vector<File>();
-
-			files.addAll(getFiles(path, specFileExtension));
-
-			File outputFolder = new File(path.getParentFile(), "output");
 			
-			controller.setLogFile(new File(outputFolder, "logFile.logrt"));
+			
+			controller.setLogFile(new File(outputDir, "logFile.logrt"));
 			controller.setScript(script);
-			Settings.DGBPbaseDir = path.getParentFile();
+			Settings.DGBPbaseDir = outputDir.getParentFile();
 
-			ExitStatus status = controller.parse(files);
+			ExitStatus status = controller.parse(specfiles);
 
 			if (status == ExitStatus.EXIT_OK)
 			{
@@ -255,7 +251,7 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			throw new SimulationException("Faild to load model from " + path, e);
+			throw new SimulationException("Faild to load model from " + outputDir, e);
 
 		}
 
@@ -311,12 +307,13 @@ public class SimulationManager extends BasicSimulationManager
 
 	}
 
+
 	private List<File> getFiles() throws SimulationException
 	{
 		final List<File> files = new Vector<File>();
 		try
 		{
-			files.addAll(controller.getInterpreter().getSourceFiles());
+			files.addAll(getInstance().controller.getInterpreter().getSourceFiles());
 		} catch (Exception e)
 		{
 			debugErr(e);

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -19,9 +20,19 @@ import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
 import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
+import org.destecs.core.simulationengine.launcher.ISimulatorLauncher;
+import org.destecs.core.simulationengine.listener.IEngineListener;
+import org.destecs.core.simulationengine.listener.IMessageListener;
+import org.destecs.core.simulationengine.listener.IProcessCreationListener;
+import org.destecs.core.simulationengine.listener.ISimulationListener;
+import org.destecs.core.simulationengine.listener.IVariableSyncListener;
+import org.destecs.core.simulationengine.model.ModelConfig;
+import org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory;
 import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
 import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
+import org.destecs.protocol.structs.GetVersionStruct;
+import org.destecs.protocol.structs.Load2argumentsStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
@@ -55,13 +66,13 @@ public class SimulationEngine
 	 */
 	public static boolean eclipseEnvironment = false;
 
-	private URL dtEndpoint = null;
+	private URL deEndpoint = null;
 	private URL ctEndpoint = null;
 
-	private File dtModelBase = null;
-	private File ctModel = null;
+	private ModelConfig deModelBase = null;
+	private ModelConfig ctModel = null;
 
-	private ISimulatorLauncher dtLauncher = null;
+	private ISimulatorLauncher deLauncher = null;
 	private ISimulatorLauncher ctLauncher = null;
 
 	public final List<IEngineListener> engineListeners = new Vector<IEngineListener>();
@@ -77,14 +88,19 @@ public class SimulationEngine
 
 	private boolean forceStopSimulation = false;
 
+	private String deVersion = "";
+	private String ctVersion = "";
+
+	private File outputDirectory = null;
+
 	public SimulationEngine(File contractFile)
 	{
 		this.contractFile = contractFile;
 	}
 
-	public void setDtEndpoint(URL endpoint)
+	public void setDeEndpoint(URL endpoint)
 	{
-		dtEndpoint = endpoint;
+		deEndpoint = endpoint;
 	}
 
 	public void setCtEndpoint(URL endpoint)
@@ -92,40 +108,45 @@ public class SimulationEngine
 		ctEndpoint = endpoint;
 	}
 
-	public void setDtModel(File model) throws ModelPathNotValidException
+	public void setDeModel(ModelConfig model) throws ModelPathNotValidException
 	{
 		if (model == null)
 		{
 			throw new ModelPathNotValidException(Simulator.DE, "null");
 		}
-		if (!model.exists())
+		if (!model.isValid())
 		{
 			throw new ModelPathNotValidException(Simulator.DE, model.toString());
 		}
-		this.dtModelBase = model;
+		this.deModelBase = model;
 	}
 
-	public void setCtModel(File model) throws ModelPathNotValidException
+	public void setCtModel(ModelConfig model) throws ModelPathNotValidException
 	{
 		if (model == null)
 		{
 			throw new ModelPathNotValidException(Simulator.CT, "null");
 		}
-		if (!model.exists() || model.isDirectory())
+		if (!model.isValid())
 		{
 			throw new ModelPathNotValidException(Simulator.CT, model.toString());
 		}
 		this.ctModel = model;
 	}
 
-	public void setDtSimulationLauncher(ISimulatorLauncher launcher)
+	public void setDeSimulationLauncher(ISimulatorLauncher launcher)
 	{
-		dtLauncher = launcher;
+		deLauncher = launcher;
 	}
 
 	public void setCtSimulationLauncher(ISimulatorLauncher launcher)
 	{
 		ctLauncher = launcher;
+	}
+	
+	public void setOutputFolder(File output)
+	{
+		this.outputDirectory = output;
 	}
 
 	private void validate() throws InvalidEndpointsExpection,
@@ -138,9 +159,9 @@ public class SimulationEngine
 					+ contractFile);
 		}
 
-		if (dtEndpoint == null)
+		if (deEndpoint == null)
 		{
-			throw new InvalidEndpointsExpection(Simulator.DE, dtEndpoint);
+			throw new InvalidEndpointsExpection(Simulator.DE, deEndpoint);
 		}
 
 		if (ctEndpoint == null)
@@ -148,11 +169,11 @@ public class SimulationEngine
 			throw new InvalidEndpointsExpection(Simulator.CT, ctEndpoint);
 		}
 
-		checkModel(Simulator.DE, dtModelBase);
+		checkModel(Simulator.DE, deModelBase);
 
 		checkModel(Simulator.CT, ctModel);
 
-		if (dtLauncher == null)
+		if (deLauncher == null)
 		{
 			throw new InvalidSimulationLauncher(Simulator.DE, "Launcher not set");
 		}
@@ -163,13 +184,13 @@ public class SimulationEngine
 		}
 	}
 
-	private void checkModel(Simulator simulator, File model)
+	private void checkModel(Simulator simulator, ModelConfig model)
 			throws ModelPathNotValidException
 	{
 		if (model == null)
 		{
 			throw new ModelPathNotValidException(simulator, "null");
-		} else if (!ctModel.exists())
+		} else if (!ctModel.isValid())
 		{
 			throw new ModelPathNotValidException(simulator, "null");
 		}
@@ -210,12 +231,12 @@ public class SimulationEngine
 			validateSharedDesignParameters(sharedDesignParameters, contract);
 
 			// launch the simulators
-			launchSimulator(Simulator.DE, dtLauncher);
+			launchSimulator(Simulator.DE, deLauncher);
 
 			launchSimulator(Simulator.CT, ctLauncher);
 
 			// connect to the simulators
-			ProxyICoSimProtocol dtProxy = connect(Simulator.DE, dtEndpoint);
+			ProxyICoSimProtocol dtProxy = connect(Simulator.DE, deEndpoint);
 
 			initialize(Simulator.DE, dtProxy);
 
@@ -234,7 +255,7 @@ public class SimulationEngine
 			}
 
 			// load the models
-			loadModel(Simulator.DE, dtProxy, dtModelBase);
+			loadModel(Simulator.DE, dtProxy, deModelBase);
 
 			loadModel(Simulator.CT, ctProxy, ctModel);
 
@@ -252,18 +273,21 @@ public class SimulationEngine
 			long before = System.currentTimeMillis();
 			Double finishTime = simulate(totalSimulationTime, dtProxy, ctProxy);
 			long after = System.currentTimeMillis();
-			double totalSec = (double)(after-before)/1000;
-			engineInfo(Simulator.ALL, "Simulation executed in " + (totalSec>60?((int)Math.floor(totalSec/60))+"."+((int)totalSec%60)+" mins.":totalSec + " secs."));
-			
+			double totalSec = (double) (after - before) / 1000;
+			engineInfo(Simulator.ALL, "Simulation executed in "
+					+ (totalSec > 60 ? ((int) Math.floor(totalSec / 60)) + "."
+							+ ((int) totalSec % 60) + " mins." : totalSec
+							+ " secs."));
+
 			// stop the simulators
 			stop(Simulator.DE, finishTime, dtProxy);
 			// TODO: stop(Simulator.CT, finishTime, ctProxy);
 
-			terminate(Simulator.DE, finishTime, dtProxy, dtLauncher);
+			terminate(Simulator.DE, finishTime, dtProxy, deLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
 		} finally
 		{
-			if (dtLauncher.isRunning() || ctLauncher.isRunning())
+			if (deLauncher.isRunning() || ctLauncher.isRunning())
 			{
 				sleep();
 				shutdownSimulators();
@@ -284,9 +308,9 @@ public class SimulationEngine
 
 	public void shutdownSimulators()
 	{
-		if (dtLauncher.isRunning())
+		if (deLauncher.isRunning())
 		{
-			dtLauncher.kill();
+			deLauncher.kill();
 		}
 		if (ctLauncher.isRunning())
 		{
@@ -395,7 +419,7 @@ public class SimulationEngine
 		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
 		StepResult res = merge(deResult, ctResult);
-//		System.out.print(res.toHeaderString());
+		// System.out.print(res.toHeaderString());
 		variableSyncInfo(res.getHeaders());
 		while (time <= totalSimulationTime)
 		{
@@ -404,7 +428,7 @@ public class SimulationEngine
 				// simulation stop requested, stop simulation loop
 				break;
 			}
-//			System.out.print(res.toString());
+			// System.out.print(res.toString());
 			variableSyncInfo(res.getVariables());
 			// Step DT - time calculate
 			deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
@@ -459,11 +483,11 @@ public class SimulationEngine
 			}
 			return sb.substring(0, sb.length() - 1) + "\n";
 		}
-		
+
 		public List<String> getVariables()
 		{
 			List<String> list = new Vector<String>();
-			
+
 			list.add(time.toString());
 			for (StepinputsStructParam elem : deData)
 			{
@@ -486,19 +510,19 @@ public class SimulationEngine
 			}
 			return sb.substring(0, sb.length() - 1) + "\n";
 		}
-		
+
 		public List<String> getHeaders()
 		{
 			List<String> list = new Vector<String>();
-			
+
 			list.add("Time");
 			for (StepinputsStructParam elem : deData)
 			{
-				list.add("CT_"+elem.name);
+				list.add("CT_" + elem.name);
 			}
 			for (StepinputsStructParam elem : ctData)
 			{
-				list.add("DE_"+elem.name);
+				list.add("DE_" + elem.name);
 			}
 			return list;
 		}
@@ -755,7 +779,21 @@ public class SimulationEngine
 		try
 		{
 			messageInfo(simulator, new Double(0), "getVersion");
-			engineInfo(simulator, "Interface Version: " + proxy.getVersion());
+			GetVersionStruct version = proxy.getVersion();
+			engineInfo(simulator, "Interface Version: " + version);
+
+			switch (simulator)
+			{
+				case ALL:
+					break;
+				case CT:
+					ctVersion = version.version.trim();
+					break;
+				case DE:
+					deVersion = version.version.trim();
+					break;
+
+			}
 		} catch (UndeclaredThrowableException undeclaredException)
 		{
 			abort(simulator, "getVersion failed", undeclaredException);
@@ -776,22 +814,48 @@ public class SimulationEngine
 	}
 
 	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
-			File model) throws SimulationException
+			ModelConfig model) throws SimulationException
 	{
-		try
+		if (simulator == Simulator.DE && deVersion.equals("0.0.0.2"))
 		{
-			engineInfo(simulator, "Loading model: " + model);
-			messageInfo(simulator, new Double(0), "load");
-			boolean success = proxy.load(model.getAbsolutePath()).success;
-			engineInfo(simulator, "Loading model completed with no errors: "
-					+ success);
-			return success;
-		} catch (UndeclaredThrowableException undeclaredException)
+			try
+			{
+				engineInfo(simulator, "Loading model: " + model);
+				messageInfo(simulator, new Double(0), "load");
+				List<Load2argumentsStructParam> arguments = new Vector<Load2argumentsStructParam>();
+				for (Entry<String, String> entry : model.arguments.entrySet())
+				{
+					arguments.add(new Load2argumentsStructParam(entry.getValue(),entry.getKey()));
+				}
+				
+				boolean success = proxy.load2(outputDirectory.getAbsolutePath() ,arguments).success;
+				engineInfo(simulator, "Loading model completed with no errors: "
+						+ success);
+				return success;
+			} catch (UndeclaredThrowableException undeclaredException)
+			{
+				abort(simulator, "Could not load model: "
+						+ model, undeclaredException);
+			}
+			abort(simulator, "Could not load model: " + model);
+		} else
 		{
-			abort(simulator, "Could not load model: " + model.getAbsolutePath(), undeclaredException);
+			String absolutePath = new File(model.arguments.values().iterator().next()).getAbsolutePath();
+			try
+			{
+				engineInfo(simulator, "Loading model: " + model);
+				messageInfo(simulator, new Double(0), "load");
+				boolean success = proxy.load(absolutePath).success;
+				engineInfo(simulator, "Loading model completed with no errors: "
+						+ success);
+				return success;
+			} catch (UndeclaredThrowableException undeclaredException)
+			{
+				abort(simulator, "Could not load model: "
+						+ absolutePath, undeclaredException);
+			}
+			abort(simulator, "Could not load model: " + absolutePath);
 		}
-		abort(simulator, "Could not load model: " + model.getAbsolutePath());
-
 		return false;
 	}
 
@@ -820,7 +884,7 @@ public class SimulationEngine
 			listener.stepInfo(fromSimulator, result);
 		}
 	}
-	
+
 	protected void variableSyncInfo(List<String> colls)
 	{
 

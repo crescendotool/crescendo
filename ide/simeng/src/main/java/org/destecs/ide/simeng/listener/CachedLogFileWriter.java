@@ -1,4 +1,4 @@
-package org.destecs.ide.simeng.internal.core;
+package org.destecs.ide.simeng.listener;
 
 import java.io.PrintWriter;
 import java.util.LinkedList;

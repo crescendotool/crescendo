@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.destecs.core.simulationengine.ISimulatorLauncher;
+import org.destecs.core.simulationengine.launcher.ISimulatorLauncher;
 import org.destecs.ide.simeng.internal.util.WindowsUtils;
 
 public class Clp20SimProgramLauncher implements ISimulatorLauncher

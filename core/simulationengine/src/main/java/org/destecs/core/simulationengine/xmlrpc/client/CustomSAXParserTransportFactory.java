@@ -1,4 +1,4 @@
-package org.destecs.core.simulationengine;
+package org.destecs.core.simulationengine.xmlrpc.client;
 
 import javax.xml.parsers.SAXParserFactory;
 

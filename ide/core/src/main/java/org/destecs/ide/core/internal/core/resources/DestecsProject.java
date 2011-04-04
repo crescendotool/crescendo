@@ -165,7 +165,19 @@ public class DestecsProject implements
 
 	public IFolder getOutputFolder()
 	{
-		return this.project.getFolder("output");
+		IFolder output = this.project.getFolder("output");
+		if(!output.exists())
+		{
+			try
+			{
+				output.create(IResource.FORCE, false, null);
+			} catch (CoreException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return output;
 	}
 
 	public List<IFile> getScenarioFiles() throws CoreException

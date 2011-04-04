@@ -257,23 +257,7 @@ public abstract class BasicSimulationManager
 		return nextTimeStep;
 	}
 
-	protected static List<File> getFiles(File path, String extension)
-	{
-		List<File> files = new Vector<File>();
-
-		if (path.isFile() && path.getName().toLowerCase().endsWith(extension))
-		{
-			files.add(path);
-		} else if (path.isDirectory())
-		{
-			for (File file : path.listFiles())
-			{
-				files.addAll(getFiles(file, extension));
-			}
-
-		}
-		return files;
-	}
+	
 
 	protected static void debug(String message)
 	{

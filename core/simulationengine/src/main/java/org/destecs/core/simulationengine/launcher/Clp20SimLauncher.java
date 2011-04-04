@@ -1,6 +1,5 @@
 package org.destecs.core.simulationengine.launcher;
 
-import org.destecs.core.simulationengine.ISimulatorLauncher;
 
 public class Clp20SimLauncher implements ISimulatorLauncher
 {

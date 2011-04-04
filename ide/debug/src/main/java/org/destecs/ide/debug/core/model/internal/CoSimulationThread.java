@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.SimulationEngine;
-import org.destecs.ide.simeng.internal.core.ListenerToLog;
+import org.destecs.ide.simeng.listener.ListenerToLog;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IResource;

@@ -1,5 +1,6 @@
-package org.destecs.core.simulationengine;
+package org.destecs.core.simulationengine.listener;
 
+import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.protocol.structs.StepStruct;
 
