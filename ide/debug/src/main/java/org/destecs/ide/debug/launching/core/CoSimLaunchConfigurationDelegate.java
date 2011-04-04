@@ -295,7 +295,7 @@ public class CoSimLaunchConfigurationDelegate implements
 					{
 						model.addSpecFile(resource.getLocation().toFile());
 					} else if (resource instanceof IFile
-							&& resource.getFileExtension().equals(DeModelConfig.LINK))
+							&& resource.getFileExtension()!=null && resource.getFileExtension().equals(DeModelConfig.LINK))
 					{
 						model.arguments.put(DeModelConfig.LINK, resource.getLocation().toFile().getAbsolutePath());
 					}
