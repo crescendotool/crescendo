@@ -5,8 +5,11 @@ import java.util.Map.Entry;
 
 public class DeModelConfig extends ModelConfig
 {
-	public final static String FILE="file";
-	public final static String LINK="link";
+	public final static String LOAD_FILE="file";
+	public final static String LOAD_LINK="link";
+	public static final String LOAD_DEPLOY = "deploy";
+	public static final String LOAD_ARCHITECTURE = "architecture";
+	public static final String LOAD_REPLACE = "replace";
 	private int fileCount = 0;
 	public DeModelConfig()
 	{
@@ -20,7 +23,7 @@ public class DeModelConfig extends ModelConfig
 	
 	public void addSpecFile(File file)
 	{
-		arguments.put(FILE+fileCount++, file.getAbsolutePath());
+		arguments.put(LOAD_FILE+fileCount++, file.getAbsolutePath());
 	}
 
 	@Override
@@ -28,11 +31,11 @@ public class DeModelConfig extends ModelConfig
 	{
 		for (Entry<String, String> entry : arguments.entrySet())
 		{
-			if(entry.getKey().startsWith("file")&& !new File(entry.getValue()).exists())
+			if(entry.getKey().startsWith(LOAD_FILE)&& !new File(entry.getValue()).exists())
 			{
 				return false;
 			}
-			if(entry.getKey().startsWith("link")&& !new File(entry.getValue()).exists())
+			if(entry.getKey().startsWith(LOAD_LINK)&& !new File(entry.getValue()).exists())
 			{
 				return false;
 			}

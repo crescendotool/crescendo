@@ -1,7 +1,9 @@
 package org.destecs.ide.debug.launching.core;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -79,6 +81,8 @@ public class CoSimLaunchConfigurationDelegate implements
 	private DestecsDebugTarget target;
 	private ILaunch launch;
 	private File outputFolder = null;
+	private File deArchitectureFile;
+	private String deReplacePattern;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -112,6 +116,8 @@ public class CoSimLaunchConfigurationDelegate implements
 			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
 			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
 			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
+			deArchitectureFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
+			deReplacePattern = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 
@@ -281,6 +287,50 @@ public class CoSimLaunchConfigurationDelegate implements
 	private ModelConfig getDeModelConfig(IProject project2)
 	{
 		final DeModelConfig model = new DeModelConfig();
+		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);
+
+		if (deArchitectureFile!= null && deArchitectureFile.exists())
+		{
+			StringBuffer architecture =new StringBuffer();
+			StringBuffer deploy=new StringBuffer();
+			try
+			{
+				BufferedReader in = new BufferedReader(new FileReader(deArchitectureFile));
+				String str;
+				boolean inArch = false;
+				boolean inDeploy = false;
+				while ((str = in.readLine()) != null)
+				{
+					str = str.trim();
+					if(str.startsWith("-- ## Architecture ## --"))
+					{
+						inArch = true;
+						inDeploy = false;
+					}
+					if(str.startsWith("-- ## Deployment ## --"))
+					{
+						inDeploy = true;
+						inArch = false;
+					}
+					
+					if(inArch)
+					{
+						architecture.append(str);
+						architecture.append("\n");
+					}
+					if(inDeploy)
+					{
+						deploy.append(str);
+						deploy.append("\n");
+					}
+				}
+				in.close();
+			} catch (IOException e)
+			{
+			}
+			model.arguments.put(DeModelConfig.LOAD_ARCHITECTURE, architecture.toString());
+			model.arguments.put(DeModelConfig.LOAD_DEPLOY, deploy.toString());
+		}
 
 		final IContentType vdmrtFileContentType = Platform.getContentTypeManager().getContentType(IDebugConstants.VDMRT_CONTENT_TYPE_ID);
 
@@ -291,13 +341,26 @@ public class CoSimLaunchConfigurationDelegate implements
 
 				public boolean visit(IResource resource) throws CoreException
 				{
+					if (resource instanceof IFile
+							&& resource.getFileExtension() != null
+							&& resource.getFileExtension().equals(DeModelConfig.LOAD_LINK))
+					{
+						model.arguments.put(DeModelConfig.LOAD_LINK, resource.getLocation().toFile().getAbsolutePath());
+					}
+					return true;
+				}
+			});
+			
+			
+			IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
+			p.getVdmModelFolder().accept(new IResourceVisitor()
+			{
+
+				public boolean visit(IResource resource) throws CoreException
+				{
 					if (vdmrtFileContentType.isAssociatedWith(resource.getName()))
 					{
 						model.addSpecFile(resource.getLocation().toFile());
-					} else if (resource instanceof IFile
-							&& resource.getFileExtension()!=null && resource.getFileExtension().equals(DeModelConfig.LINK))
-					{
-						model.arguments.put(DeModelConfig.LINK, resource.getLocation().toFile().getAbsolutePath());
 					}
 					return true;
 				}

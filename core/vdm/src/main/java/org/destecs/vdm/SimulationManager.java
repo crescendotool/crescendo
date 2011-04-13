@@ -227,6 +227,7 @@ public class SimulationManager extends BasicSimulationManager
 			controller.setScript(script);
 			Settings.DGBPbaseDir = outputDir.getParentFile();
 
+			VDMCO.outputDir = outputDir;
 			ExitStatus status = controller.parse(specfiles);
 
 			if (status == ExitStatus.EXIT_OK)

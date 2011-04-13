@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.Settings;
 
 public class ErrorLog
@@ -22,7 +23,14 @@ public class ErrorLog
 			{
 				exception.printStackTrace();
 			}
-			File outputFolder = new File(Settings.DGBPbaseDir, "output");
+			File outputFolder = null;
+			if (VDMCO.outputDir != null)
+			{
+				outputFolder = VDMCO.outputDir;
+			} else
+			{
+				outputFolder = new File(Settings.DGBPbaseDir, "output");
+			}
 			PrintWriter out = new PrintWriter(new FileWriter(new File(outputFolder, "vdm_error.txt"), true));
 			out.println();
 			out.println("===============================================================================================");

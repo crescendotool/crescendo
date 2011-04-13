@@ -23,12 +23,19 @@ import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.protocol.structs.StopStruct;
 import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.protocol.structs.UnLoadStruct;
+import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.scheduler.SystemClock;
 
 @SuppressWarnings("unchecked")
 public class CoSimImpl implements IDestecs
 {
 
+	private static final String LOAD_DEPLOY = "deploy";
+	private static final String LOAD_ARCHITECTURE = "architecture";
+	private static final String LOAD_REPLACE = "replace";
+	private static final String LOAD_LINK = "link";
+	private static final String LOAD_FILE = "file";
+	
 	private static final String version = "0.0.0.2";
 
 	public Map<String, Integer> getStatus()
@@ -107,6 +114,7 @@ public class CoSimImpl implements IDestecs
 	{
 		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
 
+		VDMCO.replaceNewIdentifier.clear();
 		List<File> specfiles = new Vector<File>();
 		File linkFile = null;
 		for (Object in : tmp)
@@ -115,14 +123,36 @@ public class CoSimImpl implements IDestecs
 			{
 				Load2argumentsStructParam arg =new Load2argumentsStructParam((Map<String, Object>) in);
 				
-				if(arg.argumentName.startsWith("file"))
+				if(arg.argumentName.startsWith(LOAD_FILE))
 				{
 					specfiles.add(new File(arg.argumentValue));
 				}
 				
-				if(arg.argumentName.startsWith("link"))
+				if(arg.argumentName.startsWith(LOAD_LINK))
 				{
 					linkFile= new File(arg.argumentValue);
+				}
+				if(arg.argumentName.startsWith(LOAD_REPLACE))
+				{
+					List<String> replacePatterns = Arrays.asList(arg.argumentValue.split(","));
+					for (String pattern : replacePatterns)
+					{
+						String key =pattern.split("/")[0];
+						String value =pattern.split("/")[1];
+						if(!VDMCO.replaceNewIdentifier.containsKey(key))
+						{
+							VDMCO.replaceNewIdentifier.put(key, value);	
+						}
+						
+					}
+				}
+				if(arg.argumentName.startsWith(LOAD_ARCHITECTURE))
+				{
+					VDMCO.architecture = arg.argumentValue;
+				}
+				if(arg.argumentName.startsWith(LOAD_DEPLOY))
+				{
+					VDMCO.deploy = arg.argumentValue;
 				}
 			}
 		}
