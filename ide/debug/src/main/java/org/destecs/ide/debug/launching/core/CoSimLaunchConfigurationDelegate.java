@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -218,7 +219,8 @@ public class CoSimLaunchConfigurationDelegate implements
 				engine.setDeSimulationLauncher(new VdmRtLauncher(5000));
 			}
 
-			engine.setDeModel(getDeModelConfig(project));
+			final int deDebugPort = findFreePort();
+			engine.setDeModel(getDeModelConfig(project,deDebugPort));
 			engine.setDeEndpoint(deUrl);
 
 			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
@@ -245,7 +247,7 @@ public class CoSimLaunchConfigurationDelegate implements
 				{
 					try
 					{
-						ILaunchConfiguration vdmLaunchConfig = getVdmLaunchConfig();
+						ILaunchConfiguration vdmLaunchConfig = getVdmLaunchConfig(deDebugPort);
 						ILaunch vdmLaunch = vdmLaunchConfig.launch("debug", null);
 						launch.addDebugTarget(vdmLaunch.getDebugTarget());
 					} catch (CoreException e)
@@ -284,10 +286,11 @@ public class CoSimLaunchConfigurationDelegate implements
 		}
 	}
 
-	private ModelConfig getDeModelConfig(IProject project2)
+	private ModelConfig getDeModelConfig(IProject project2,int port)
 	{
 		final DeModelConfig model = new DeModelConfig();
 		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);
+		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
 
 		if (deArchitectureFile!= null && deArchitectureFile.exists())
 		{
@@ -471,7 +474,7 @@ public class CoSimLaunchConfigurationDelegate implements
 
 	}
 
-	private ILaunchConfiguration getVdmLaunchConfig()
+	private ILaunchConfiguration getVdmLaunchConfig(int port)
 	{
 		// ILaunchConfiguration config = null;
 		ILaunchConfigurationWorkingCopy wc = null;
@@ -499,6 +502,8 @@ public class CoSimLaunchConfigurationDelegate implements
 			final String VDM_LAUNCH_CONFIG_REMOTE_DEBUG = "vdm_launch_config_remote_debug";
 			// final String VDM_LAUNCH_CONFIG_VM_MEMORY_OPTION = "vdm_launch_config_memory_option";
 			final String VDM_LAUNCH_CONFIG_ENABLE_LOGGING = "vdm_launch_config_enable_logging";
+			
+			final String VDM_LAUNCH_CONFIG_OVERRIDE_PORT = "vdm_launch_config_override_port";
 
 			wc.setAttribute(VDM_LAUNCH_CONFIG_PROJECT, project.getName());
 			wc.setAttribute(VDM_LAUNCH_CONFIG_CREATE_COVERAGE, true);
@@ -514,6 +519,8 @@ public class CoSimLaunchConfigurationDelegate implements
 			wc.setAttribute(VDM_LAUNCH_CONFIG_ENABLE_LOGGING, true);
 
 			wc.setAttribute(VDM_LAUNCH_CONFIG_REMOTE_DEBUG, true);
+			
+			wc.setAttribute(VDM_LAUNCH_CONFIG_OVERRIDE_PORT, port);
 		} catch (CoreException e)
 		{
 			// TODO Auto-generated catch block
@@ -523,4 +530,32 @@ public class CoSimLaunchConfigurationDelegate implements
 		return wc;
 	}
 
+	/**
+	 * Returns a free port number on localhost, or -1 if unable to find a free port.
+	 * 
+	 * @return a free port number on localhost, or -1 if unable to find a free port
+	 */
+	public static int findFreePort()
+	{
+		ServerSocket socket = null;
+		try
+		{
+			socket = new ServerSocket(0);
+			return socket.getLocalPort();
+		} catch (IOException e)
+		{
+		} finally
+		{
+			if (socket != null)
+			{
+				try
+				{
+					socket.close();
+				} catch (IOException e)
+				{
+				}
+			}
+		}
+		return -1;
+	}
 }

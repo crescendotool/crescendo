@@ -19,6 +19,7 @@ import org.destecs.vdmj.runtime.CoSimClassInterpreter;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.VDMRT;
+import org.overturetool.vdmj.debug.DBGPStatus;
 import org.overturetool.vdmj.definitions.ClassList;
 import org.overturetool.vdmj.lex.BacktrackInputReader;
 import org.overturetool.vdmj.lex.LexLocation;
@@ -38,6 +39,7 @@ public class VDMCO extends VDMRT
 	private static final CharSequence DEPLOYMENT_COMMENT = "-- ## Deploy ## --";
 	public static File outputDir;
 	ClassInterpreter interpreter = null;
+	public static int debugPort = 10000;
 
 	@Override
 	public CoSimClassInterpreter getInterpreter() throws Exception
@@ -120,12 +122,28 @@ public class VDMCO extends VDMRT
 						status = ExitStatus.EXIT_OK;
 						finished = true;
 						String host="localhost";
-						int port=10000;
+						//int port=10000;
 						String ideKey="1";
-						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, port, ideKey, interpreter, script, null);
+						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, interpreter, script, null);
 //						interpreter.init(dbgpreader);
-						dbgpreader.startup(null);
-						
+						int retried = 0;
+						while(dbgpreader.getStatus()== null )
+						{
+							if(retried>0)
+							{
+								Thread.sleep(500);
+							}
+							retried++;
+							System.out.println("Trying to connect to IDE...("+retried+")");
+							dbgpreader.startup(null);
+							
+						}
+						while(dbgpreader.getStatus()==DBGPStatus.STARTING)
+						{
+							Thread.sleep(1000);
+							dbgpreader.startup(null);
+						}
+						System.out.println(dbgpreader.getStatus());
 //						println(interpreter.execute(script, null).toString());
 
 					} else

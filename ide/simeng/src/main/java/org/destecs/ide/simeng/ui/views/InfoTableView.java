@@ -216,6 +216,10 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 	public void refreshPackTable()
 	{
+		if(display.isDisposed())
+		{
+			return;
+		}
 		display.asyncExec(new Runnable()
 		{
 			public void run()

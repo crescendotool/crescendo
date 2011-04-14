@@ -10,6 +10,7 @@ public class DeModelConfig extends ModelConfig
 	public static final String LOAD_DEPLOY = "deploy";
 	public static final String LOAD_ARCHITECTURE = "architecture";
 	public static final String LOAD_REPLACE = "replace";
+	public static final String LOAD_DEBUG_PORT = "dbgp_port";
 	private int fileCount = 0;
 	public DeModelConfig()
 	{

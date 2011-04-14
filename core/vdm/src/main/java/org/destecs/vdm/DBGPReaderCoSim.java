@@ -3,6 +3,7 @@ package org.destecs.vdm;
 import java.io.IOException;
 
 import org.overturetool.vdmj.debug.DBGPReaderV2;
+import org.overturetool.vdmj.debug.DBGPStatus;
 import org.overturetool.vdmj.debug.RemoteControl;
 import org.overturetool.vdmj.runtime.Interpreter;
 import org.overturetool.vdmj.values.CPUValue;
@@ -20,8 +21,7 @@ public class DBGPReaderCoSim extends DBGPReaderV2
 	{
 		super(host, port, ideKey, interpreter, expression, cpu);
 	}
-	
-	
+
 	/**
 	 * Only connect, skip interpreter.init and remote set
 	 */
@@ -31,6 +31,9 @@ public class DBGPReaderCoSim extends DBGPReaderV2
 		interpreter.init(this);
 		connect();
 	}
-	
 
+	public DBGPStatus getStatus()
+	{
+		return this.status;
+	}
 }

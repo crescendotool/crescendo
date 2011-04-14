@@ -35,6 +35,7 @@ public class CoSimImpl implements IDestecs
 	private static final String LOAD_REPLACE = "replace";
 	private static final String LOAD_LINK = "link";
 	private static final String LOAD_FILE = "file";
+	private static final String LOAD_DEBUG_PORT = "dbgp_port";
 
 	private static final String version = "0.0.0.2";
 
@@ -153,6 +154,10 @@ public class CoSimImpl implements IDestecs
 				if (arg.argumentName.startsWith(LOAD_DEPLOY))
 				{
 					VDMCO.deploy = arg.argumentValue;
+				}
+				if (arg.argumentName.startsWith(LOAD_DEBUG_PORT))
+				{
+					VDMCO.debugPort = Integer.valueOf(arg.argumentValue);
 				}
 			}
 		}
