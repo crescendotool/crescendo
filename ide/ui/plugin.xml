@@ -89,6 +89,10 @@
             <contentExtension
                   pattern="org.destecs.ide.ui.destecsNavigatorContent">
             </contentExtension>
+            <contentExtension
+                  pattern="org.destecs.ide.ui.navigator.resources.filters.*">
+            </contentExtension>
+            
          </includes>
       </viewerContentBinding>
       <viewerActionBinding
@@ -227,6 +231,23 @@
                   </test>
                </adapt>
             </and>
+         </filterExpression>
+      </commonFilter>
+      <commonFilter
+            activeByDefault="true"
+            description="%Filters.Only.DestecsProjects.description"
+            id="org.destecs.ide.ui.navigator.resources.filters.DestecsProjects"
+            name="%Filters.Only.DestecsProjects.name">
+         <filterExpression>
+            <not>
+               <adapt
+                     type="org.eclipse.core.resources.IProject">
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="org.destecs.ide.core.nature">
+                  </test>
+               </adapt>
+            </not>
          </filterExpression>
       </commonFilter>
    </extension>

@@ -117,12 +117,12 @@ public class DestecsContentProvider extends BaseWorkbenchContentProvider
 					} else
 					{
 
-						IDestecsProject destecsProject = (IDestecsProject) ((IProject) children[i])
-								.getAdapter(IDestecsProject.class);
-						if (destecsProject != null)
-						{
+//						IDestecsProject destecsProject = (IDestecsProject) ((IProject) children[i])
+//								.getAdapter(IDestecsProject.class);
+//						if (destecsProject != null)
+//						{
 							result.add((IProject) children[i]);
-						}
+//						}
 					}
 
 				}
