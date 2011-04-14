@@ -28,7 +28,9 @@ public class DBGPReaderCoSim extends DBGPReaderV2
 	@Override
 	public void startup(RemoteControl remote) throws IOException
 	{
+		interpreter.init(this);
 		connect();
 	}
+	
 
 }

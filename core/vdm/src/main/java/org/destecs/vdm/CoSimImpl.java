@@ -35,7 +35,7 @@ public class CoSimImpl implements IDestecs
 	private static final String LOAD_REPLACE = "replace";
 	private static final String LOAD_LINK = "link";
 	private static final String LOAD_FILE = "file";
-	
+
 	private static final String version = "0.0.0.2";
 
 	public Map<String, Integer> getStatus()
@@ -72,20 +72,20 @@ public class CoSimImpl implements IDestecs
 			File linkFile = new File(new File(root.getParentFile(), "configuration"), linkFileName);
 			final List<File> files = new Vector<File>();
 
-			
 			files.addAll(getFiles(root, specFileExtension));
 
 			File outputFolder = new File(root.getParentFile(), "output");
-			return new LoadStruct(SimulationManager.getInstance().load(files,outputFolder,linkFile)).toMap();
+			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile)).toMap();
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
-	
+
 	/***
 	 * local helper function of load
+	 * 
 	 * @param path
 	 * @param extension
 	 * @return
@@ -107,9 +107,7 @@ public class CoSimImpl implements IDestecs
 		}
 		return files;
 	}
-	
-	
-	
+
 	public Map<String, Boolean> load2(Map<String, Object> arg0)
 	{
 		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
@@ -121,47 +119,49 @@ public class CoSimImpl implements IDestecs
 		{
 			if (in instanceof Map)
 			{
-				Load2argumentsStructParam arg =new Load2argumentsStructParam((Map<String, Object>) in);
-				
-				if(arg.argumentName.startsWith(LOAD_FILE))
+				Load2argumentsStructParam arg = new Load2argumentsStructParam((Map<String, Object>) in);
+
+				if (arg.argumentName.startsWith(LOAD_FILE))
 				{
 					specfiles.add(new File(arg.argumentValue));
 				}
-				
-				if(arg.argumentName.startsWith(LOAD_LINK))
+
+				if (arg.argumentName.startsWith(LOAD_LINK))
 				{
-					linkFile= new File(arg.argumentValue);
+					linkFile = new File(arg.argumentValue);
 				}
-				if(arg.argumentName.startsWith(LOAD_REPLACE))
+				if (arg.argumentName.startsWith(LOAD_REPLACE))
 				{
 					List<String> replacePatterns = Arrays.asList(arg.argumentValue.split(","));
 					for (String pattern : replacePatterns)
 					{
-						String key =pattern.split("/")[0];
-						String value =pattern.split("/")[1];
-						if(!VDMCO.replaceNewIdentifier.containsKey(key))
+						if (pattern != null && pattern.contains("/"))
 						{
-							VDMCO.replaceNewIdentifier.put(key, value);	
+							String key = pattern.split("/")[0];
+							String value = pattern.split("/")[1];
+							if (!VDMCO.replaceNewIdentifier.containsKey(key))
+							{
+								VDMCO.replaceNewIdentifier.put(key, value);
+							}
 						}
-						
 					}
 				}
-				if(arg.argumentName.startsWith(LOAD_ARCHITECTURE))
+				if (arg.argumentName.startsWith(LOAD_ARCHITECTURE))
 				{
 					VDMCO.architecture = arg.argumentValue;
 				}
-				if(arg.argumentName.startsWith(LOAD_DEPLOY))
+				if (arg.argumentName.startsWith(LOAD_DEPLOY))
 				{
 					VDMCO.deploy = arg.argumentValue;
 				}
 			}
 		}
-		
+
 		String outputDir = (String) arg0.get("outputDir");
 
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles,linkFile,new File(outputDir))).toMap();
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir))).toMap();
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
@@ -372,5 +372,4 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	
 }

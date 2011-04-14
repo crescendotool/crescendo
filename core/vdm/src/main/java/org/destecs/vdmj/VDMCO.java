@@ -123,8 +123,9 @@ public class VDMCO extends VDMRT
 						int port=10000;
 						String ideKey="1";
 						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, port, ideKey, interpreter, script, null);
-						interpreter.init(dbgpreader);
+//						interpreter.init(dbgpreader);
 						dbgpreader.startup(null);
+						
 //						println(interpreter.execute(script, null).toString());
 
 					} else

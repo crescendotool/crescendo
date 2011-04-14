@@ -409,8 +409,8 @@ public class SimulationEngine
 		Double initTime = 0.0;// 100.0;
 		Double time = 0.0;
 
-		engineInfo(Simulator.ALL, "Running simulation: InitialTime=" + initTime
-				+ " CurrentTime=" + time);
+		engineInfo(Simulator.ALL, "Starting simulation: Time=" + initTime
+				+" -> "+totalSimulationTime+ " Current=" + time);
 
 		List<String> events = new Vector<String>();
 
