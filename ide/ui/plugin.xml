@@ -239,15 +239,19 @@
             id="org.destecs.ide.ui.navigator.resources.filters.DestecsProjects"
             name="%Filters.Only.DestecsProjects.name">
          <filterExpression>
-            <not>
-               <adapt
-                     type="org.eclipse.core.resources.IProject">
-                  <test
-                        property="org.eclipse.core.resources.projectNature"
-                        value="org.destecs.ide.core.nature">
-                  </test>
-               </adapt>
-            </not>
+            <and>
+               <not>
+                  <adapt
+                        type="org.eclipse.core.resources.IProject">
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="org.destecs.ide.core.nature">
+                     </test>
+                  </adapt>
+               </not>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof></and>
          </filterExpression>
       </commonFilter>
    </extension>
