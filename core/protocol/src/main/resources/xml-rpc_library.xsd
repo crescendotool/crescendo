@@ -77,11 +77,7 @@
 							<xs:element name="param">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="value">
-											<xs:complexType>
-												<xs:group ref="structValue"/>
-											</xs:complexType>
-										</xs:element>
+										<xs:group ref="scalarValue"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
@@ -177,13 +173,7 @@
 									<xs:element name="param">
 										<xs:complexType>
 											<xs:sequence>
-												<xs:element name="value">
-													<xs:complexType>
-														<xs:sequence>
-															<xs:group ref="structValue"/>
-														</xs:sequence>
-													</xs:complexType>
-												</xs:element>
+												<xs:group ref="scalarValue"/>
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>

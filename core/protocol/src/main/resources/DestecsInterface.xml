@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="protocol.xsl"?>
-<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library-with-array.xsd"
+<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<schemeVersion>
 		<major>1</major>
@@ -20,8 +20,7 @@
 		<revision>2</revision>
 		<patch>22</patch>
 	</implementationVersion>
-	<methods>
-		<description>
+	<description>
   <![CDATA[
 Normal control flow of the protocol:<br/>
 
@@ -72,8 +71,8 @@ Commands that can be fired at any point:
 
 </ul>
 ]]>
-  
   </description>
+	<methods>
 		<!--GetVersion -->
 		<method>
 			<description>Gets the name and version of the simulator in the form: name / majorVersion.MinorVersion.revision.patch</description>
