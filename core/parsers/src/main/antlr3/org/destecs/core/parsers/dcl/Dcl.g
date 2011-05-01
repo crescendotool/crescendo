@@ -27,17 +27,8 @@ tokens{
   INT = 'int';
   BOOL = 'boolean';
 // new part 
-  METHOD_DECL; // function definition
-  ARG_DECL;    // parameter
-  BLOCK;
-  VAR_DECL;
-  FIELD_DECL;
-  CALL;
-  ELIST;       // expression list
-  EXPR;      // root of an expression
-  UNARY_MINUS;
-  UNARY_NOT;
-  INDEX;
+  ASSIGN=':=';
+  EXPR; 
 }
  
 @header {
@@ -234,8 +225,7 @@ private boolean mMessageCollectionEnabled = false;
 }
 compilationUnit[SymbolTable symtab]
 @init {this.symtab = symtab;}       // set the parser's field
-    : toplevelStatement* {System.out.println("Compilation Unit ends");}
-//    assignStatement+ // recognize at least one variable declaration
+    : toplevelStatement* 
     ; 
 
 toplevelStatement
@@ -249,18 +239,18 @@ includeStatement
   ; 
 
 whenStatement
-  :WHEN {System.out.println("whenStatement");} expression{System.out.println("expression");}  DO
+  :WHEN expression DO
     statement *
    (AFTER 
     statement)?
-    ->^(expression WHEN DO
-    statement *
-    ^(AFTER 
-    statement)?)
+    ->^(WHEN expression DO 
+      statement *
+       ^(AFTER
+       statement))
   ;
   
 statement
-  : assignStatement {System.out.println("assign Statement");}  
+  : assignStatement
   | blockStatement 
   | revertStatement
   | printStatement
@@ -271,44 +261,12 @@ statement
 
 assignStatement 
   : identifier ':=' expression
-//  {
-//      System.out.println("line  "+$IDENT.getLine()+":  def  "+$IDENT.text);
-//      VariableSymbol  vs  =  new  VariableSymbol($IDENT.text,$type.tsym);
-//      symtab.define(vs);
-//  } 
-    -> ^(EXPR identifier expression)
+    -> ^(':=' identifier expression)
   ;
-  
-  
-//assignStatement 
-//  :type IDENT  ':=' expression
-//   {System.out.println("THIS IS" + $identifier.type );}
-//  {
-//			System.out.println("line  "+$IDENT.getLine()+":  def  "+$IDENT.text);
-//			VariableSymbol  vs  =  new  VariableSymbol($IDENT.text,$type.tsym);
-//			symtab.define(vs);
-//			System.out.println("here ");
-//  }  
-//  ;
-  
-  
-  
-//varDeclaration
-//:      type  ID  ('=' expression)?  ';'
-////  E.g.,  "int  i  =  2;",  "int  i;"
-//{
-//System.out.println("line  "+$ID.getLine()+":  def  "+$ID.text);
-//VariableSymbol  vs  =  new  VariableSymbol($ID.text,$type.tsym);
-//symtab.define(vs);
-//}
-//;
 
 blockStatement
   : '(' statement (';' statement)* (';')? ')'  
-  -> ^( statement '('  (';' statement)* (';')? ')')  
   ;
-// To Check 
-// multi-alternatives complains ???
   
 revertStatement
   : REVERT identifier
@@ -330,18 +288,11 @@ warnStatement
   -> ^(WARN STRING)
   ;
   
-expression
-  : irexpression
-  -> ^(EXPR irexpression)
-  ;
-
-irexpression 
+expression 
   : singletonexpression
   | unaryexpression
   | binaryexpression
-//  -> ^(EXPR (singletonexpression|unaryexpression|binaryexpression))
   ;
-
     
 singletonexpression
   : booleanliteral
@@ -382,12 +333,6 @@ numeral
 
 identifier 
   : (domain)? type IDENT 
-  { System.out.println("line  "+$IDENT.getLine()+":  def  "+$IDENT.text);
-    VariableSymbol  vs  =  new  VariableSymbol($IDENT.text,$type.tsym);
-    symtab.define(vs);
-//    System.out.println("line "+$IDENT.getLine()+": ref to "+ symtab.resolve($IDENT.text));
-   }
-//  {$type.setType(INDEX);}
   ;
 
 domain
@@ -433,52 +378,17 @@ binaryoperator
   | 'for'
   ;
   
-//type: primitiveType
-//    | 'struct' IDENT -> IDENT
-//  ;
 
-//primitiveType
-//  :   'float'
-//    | 'int'
-//    | 'char'
-//    | 'boolean'
-//    | 'void'
-//    ;
-type returns [Type tsym]
-//@after { // $start is the first tree node matched by this rule
-////    System.out.println("line "+$start.getLine()+": ref "+$tsym.getName());
-//    System.out.println(": ref "+$tsym.getName());
-//}
-    :   REAL    {System.out.println("real here!!!");if(symtab == null) System.out.println("null!"); $tsym= (Type)symtab.resolve("real");System.out.println("real end!!!");}
-    |   INT     {$tsym = (Type)symtab.resolve("int");} 
-    |   BOOL    {$tsym = (Type)symtab.resolve("boolean");}
-    |   TIME    {$tsym = (Type)symtab.resolve("TIME");}
+type 
+    :   REAL  
+    |   INT
+    |   BOOL 
+    |   TIME   
     ; 
-
-
-
-//type returns [Type type]
-//  :   REAL {$type = $REAL.getName();System.out.println("THIS IS" + $REAL.getName() );}
-//    | INT  {$type = $INT.getName(); System.out.println("THIS IS" + $INT.getText() );}
-//    | BOOL {$type = $BOOL.getName();System.out.println("THIS IS" + $BOOL.getText() );}
-//    | TIME {$type = $TIME.getName();System.out.println("THIS IS" + $TIME.getText() );}
-//    ;    
-
-
-//type returns [String type]
-//  : REAL {$type = $REAL.getText();System.out.println("THIS IS" + $REAL.getText() );}
-//  | BOOL {$type = $BOOL.getText();System.out.println("THIS IS" + $BOOL.getText() );}
-//  | INT  {$type = $INT.getText(); System.out.println("THIS IS" + $INT.getText() );}
-//  | TIME {$type = $TIME.getText();System.out.println("THIS IS" + $TIME.getText() );}
-//  ;  
-
-
-
-
-
-
+ 
 STRING
-  : '"'
+  :
+   '"'
     { StringBuilder b = new StringBuilder(); }
     ( '"' '"'       { b.appendCodePoint('"');}
     | c=~('"'|'\r'|'\n')  { b.appendCodePoint(c);}

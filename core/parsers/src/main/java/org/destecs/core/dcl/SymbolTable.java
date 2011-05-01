@@ -35,19 +35,13 @@ public class SymbolTable implements Scope { // single-scope symtab
             if ( t!=null ) define((BuiltInTypeSymbol)t);
         }
     }
-//    protected void initTypeSystem() {
-//    	System.out.println("lazy 1");
-//        define(new BuiltInTypeSymbol("int"));
-//        define(new BuiltInTypeSymbol("real"));
-//        define(new BuiltInTypeSymbol("boolean"));
-//        define(new BuiltInTypeSymbol("TIME"));
-//        System.out.println("lazy 2");
-//    }
+
     // Satisfy Scope interface
     public String getScopeName() { return "global"; }
     public Scope getEnclosingScope() { return null; }
-    public void define(Symbol sym) {System.out.println("define"); symbols.put(sym.name, sym); }
-    public Symbol resolve(String name) { System.out.println("something here");return symbols.get(name); }
+    public void define(Symbol sym) {symbols.put(sym.name, sym); }
+    public Symbol resolve(String name) { return symbols.get(name); }
 
     public String toString() { return getScopeName()+":"+symbols; }
+    
 }
