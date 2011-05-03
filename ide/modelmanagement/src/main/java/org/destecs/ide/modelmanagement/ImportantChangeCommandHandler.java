@@ -6,9 +6,11 @@ import org.eclipse.core.commands.ExecutionException;
 
 /*
  * Get resource, set important flag to true, store info in model base.
+ * set important change flag to history table
+ * invoke commit
  * */
 
-public class ImportantChangeCommandHandler extends AbstractHandler {
+public class ImportantChangeCommandHandler extends AbstractHandler{
 
 	boolean isImportantChange;
 	private String decisionMsg;
@@ -22,7 +24,8 @@ public class ImportantChangeCommandHandler extends AbstractHandler {
 	}
 	
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		
+
+	
 		//mark as important change	
 		//TODO get resource, query model base, set isImportanctchange flag=true
 		System.out.println("ImportantChangeCommandHandler");
@@ -32,8 +35,7 @@ public class ImportantChangeCommandHandler extends AbstractHandler {
 			newImportantChange.setBaseEnabled(true);
 			newImportantChange.setMsg("important change comments");
 			System.out.println("This change is marked as an important change.");
-		}else{
-			
+		}else{			
 			System.out.println("error msg: This change is already marked as an important change.");
 		}
 			
@@ -50,6 +52,7 @@ public class ImportantChangeCommandHandler extends AbstractHandler {
 		
 		return null;
 	}
+    
 	
 	//write those to model base table	
 	public void setImportantChangeFlag(boolean isImportantChange){

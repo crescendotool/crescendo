@@ -11,19 +11,17 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class ShowLogCommandHandler extends AbstractHandler {
 
 	public ShowLogCommandHandler(){
-		
 	}
 
 	
 	public Object execute(ExecutionEvent event) throws ExecutionException {		
 		try{
-			 IStructuredSelection  selection  =  (IStructuredSelection)  HandlerUtil.
-			 getCurrentSelectionChecked(event);
-			 final  IContainer  c  =  (IContainer)  selection.getFirstElement();
+//			 IStructuredSelection  selection  =  (IStructuredSelection)  HandlerUtil.
+//			 getCurrentSelectionChecked(event);
+//			 final  IContainer  c  =  (IContainer)  selection.getFirstElement();
 			 
 			 //System.out.println("ShowLogCommandHandler");		 
 			 //System.out.println(c);
-			 
 
 			 //possible format
 			 FileWriter fw = new FileWriter("C:\\dectecstemp\\Development Log.csv");
@@ -57,7 +55,5 @@ public class ShowLogCommandHandler extends AbstractHandler {
 			{e.printStackTrace();}
 		return null;
 	}
-
-
 
 }

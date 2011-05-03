@@ -17,6 +17,11 @@ Require-Bundle: org.eclipse.core.resources;bundle-version="3.5.2",
  org.tigris.subversion.subclipse.ui;bundle-version="1.4.2",
  org.eclipse.gef;bundle-version="3.6.2",
  org.eclipse.jface.text,
- org.eclipse.ui.editors
+ org.eclipse.ui.editors,
+ org.eclipse.team.core;bundle-version="3.5.101",
+ org.tigris.subversion.clientadapter.javahl;bundle-version="1.6.15",
+ org.tigris.subversion.clientadapter.svnkit;bundle-version="1.6.15",
+ org.overture.ide.ui;bundle-version="0.3.4"
 Bundle-Activator: org.destecs.ide.modelmanagement.Activator
-Import-Package: org.eclipse.team.ui.history
+Import-Package: org.eclipse.team.ui.history,
+ org.eclipse.team.ui.synchronize

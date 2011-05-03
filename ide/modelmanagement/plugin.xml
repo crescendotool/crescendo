@@ -6,19 +6,19 @@
                allPopups="true"
                locationURI="popup:org.destecs.ide.ui.destecsExplorer">
   			<menu
- 				label="Model Management">
+ 				label="Model Management (old)">
 
 			<command commandId="org.destecs.ide.modelmanagement.commandTag"
 				label="Tag project as Baseline"
 				style="push">
-      <visibleWhen
-            checkEnabled="false">
-         <iterate>
-            <adapt
-                  type="org.eclipse.core.resources.IFolder">
-            </adapt>
-         </iterate>
-      </visibleWhen>
+		      <visibleWhen
+		            checkEnabled="false">
+		         <iterate>
+		            <adapt
+		                  type="org.eclipse.core.resources.IFolder">
+		            </adapt>
+		         </iterate>
+		      </visibleWhen>
 			</command>
   			<command
            commandId="org.destecs.ide.modelmanagement.commandImportantChange"
@@ -146,35 +146,6 @@
   
 
  
- <extension point="org.eclipse.ui.actionSets">
-    <actionSet
-          id="org.destecs.ide.modelmanagement.actionSet"
-          label="Mgmt"
-          visible="true">
-       <menu
-             id="org.destecs.ide.modelmanagement.menu"
-             label="Model Management"
-             path="window">
-          <separator
-                name="MgmtGroupMenu1">
-          </separator>
-       </menu>
-       <action
-             class="org.destecs.ide.modelmanagement.ShowDevLogAction"
-             id="org.destecs.ide.modelmanagement.actionShowLog"
-             label="Show Development Log"
-             menubarPath="org.destecs.ide.modelmanagement.menu/MgmtGroupMenu1"
-             style="push">
-       </action>
-       <action
-             class="org.destecs.ide.modelmanagement.ShowBaselineAction"
-             id="org.destecs.ide.modelmanagement.actionShowBaseline"
-             label="Generate Development Graph"
-             menubarPath="org.destecs.ide.modelmanagement.menu/MgmtGroupMenu1"
-             style="push">
-       </action>
-    </actionSet>
- </extension>
  <extension
        point="org.eclipse.ui.views">
     <view
@@ -200,6 +171,35 @@
           id="org.destecs.ide.modelmanagement.editors.DevLogGraphEditor"
           name="Development Overview Graph">
     </editor>
+ </extension>
+ <extension
+       point="org.eclipse.ui.popupMenus">
+    <objectContribution
+          adaptable="true"
+          id="org.destecs.ide.modelmanagement.popupmenu"
+          objectClass="org.eclipse.core.resources.IResource">
+       <menu
+             id="org.destecs.ide.modelmanagement.popupsubmenu"
+             label="Model Management (new)"
+             path="mgmtgroupmenu2">
+          <separator
+                name="mgmtgroupmenu2">
+          </separator>
+       </menu>
+       <action
+             class="org.destecs.ide.modelmanagement.showlogaction"
+             enablesFor="1"
+             id="org.destecs.ide.modelmanagement.showlogaction"
+             label="Show Co-model Development Log in History View"
+             menubarPath="org.destecs.ide.modelmanagement.popupsubmenu/mgmtgroupmenu2">
+       </action>
+       <action
+             class="org.destecs.ide.modelmanagement.commit2mgmt"
+             id="org.destecs.ide.modelmanagement.commit"
+             label="Commit to Model Management"
+             menubarPath="org.destecs.ide.modelmanagement.popupsubmenu/mgmtgroupmenu2">
+       </action>
+    </objectContribution>
  </extension>
 
 </plugin>
