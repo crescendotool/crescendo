@@ -1,9 +1,4 @@
-; example1.nsi
-;
-; This script is perhaps one of the simplest NSIs you can make. All of the
-; optional settings are left to their default settings. The installer simply 
-; prompts the user asking them where to install, and drops a copy of example1.nsi
-; there. 
+ 
 
 ;--------------------------------
 !include zipdll.nsh
@@ -16,8 +11,23 @@
 Var /GLOBAL switch_overwrite
 
 !include 'MoveFileFolder.nsh'
+
+!define PRODUCT_VERSION "1.0.3"
+!define PRODUCT_REG_KEY "DESTECS"
+!define PRODUCT_NAME "DESTECS"
+
+!define DESTECSIDE "DestecsIde-"
+!define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}I"
+!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
+
+!include "WordFunc.nsh"
+  !insertmacro VersionCompare
+
+Var UNINSTALL_OLD_VERSION
+
+
 ; The name of the installer
-Name "DESTECS Installer"
+Name "DESTECS"
 
 ; The file to write
 OutFile "destecsInstaller.exe"
@@ -25,62 +35,160 @@ OutFile "destecsInstaller.exe"
 ; The default installation directory
 InstallDir $PROGRAMFILES\DESTECS
 
+; Registry key to check for directory (so if you install again, it will 
+; overwrite the old one automatically)
+InstallDirRegKey HKLM "Software\DESTECS" "Install_Dir"
+
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
 ;--------------------------------
 
 ; Pages
-
+Page components
 Page directory
 Page instfiles
 
 ;--------------------------------
 
 ; The stuff to install
-Section "" ;No components page, name is not important
+Section "DESTECS (required)" ;No components page, name is not important
 
+  SectionIn RO
+
+  ; This variable indicates if the move files in DESTECS instalation should 
+  ; overwrite or not (0=not)
   StrCpy $switch_overwrite 0
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
-  File data\DestecsIde-1.0.2I-win32.win32.x86.zip
+
+  ;
+  StrCmp $UNINSTALL_OLD_VERSION "" core.files
+  ExecWait '$UNINSTALL_OLD_VERSION'
+
+  core.files:
+  WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "" $INSTDIR
+  WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "Version" "${PRODUCT_VERSION}"
   
-  ; DESTECS Tool
+  ; DESTECS Tool instalation file
+  File "data\${DESTECSZIP}"
+  ; Calling the function that installs DESTECS  
   Call DESTECSInstall
-
-
+  
+  ; 20-sim instalation file
   File data\20-sim4.1.3.2.exe
-  ; 20-sim
+  ; Calling the function that installs 20-sim
   Call 20simInstall
   
-  ;Moving files from DESTECS folder to root of $INSTDIR
+  ; Registry creation
+  ; Write the installation path into the registry
+  WriteRegStr HKLM SOFTWARE\${PRODUCT_REG_KEY} "Install_Dir" "$INSTDIR"
+  ; Write the uninstall keys for Windows
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "DisplayName" "DESTECS Tool"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "NoRepair" 1
+  WriteUninstaller "uninstall.exe"
   
-
 SectionEnd ; end the section
 
+; Optional section (can be disabled by the user)
+Section "Start Menu Shortcuts (Optional)"
+  CreateDirectory "$SMPROGRAMS\${PRODUCT_REG_KEY}"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\DESTECS.lnk" "$INSTDIR\destecs.exe" "" "$INSTDIR\destecs.exe" 0
+SectionEnd
+
+; Uninstaller
+Section "Uninstall"
+
+  ; could use the 20-sim executable to make uninstall but there 
+  ; might be a better way
+  ;File data\20-sim4.1.3.2.exe
+  ;ExecWait  '"$INSTDIR\20-sim4.1.3.2.exe"'
+  ;Delete 20-sim4.1.3.2.exe
+  
+  ; Remove registry keys
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}"
+  DeleteRegKey HKLM SOFTWARE\${PRODUCT_REG_KEY}
+  ; Remove files and uninstaller
+  ;Delete $INSTDIR\example2.nsi
+  DetailPrint "Deleting $INSTDIR\configuration"
+  RMDir /r "$INSTDIR\configuration"
+  DetailPrint "Deleting $INSTDIR\features"
+  RMDir /r "$INSTDIR\features"
+  DetailPrint "Deleting $INSTDIR\p2"
+  RMDir /r "$INSTDIR\p2"
+  DetailPrint "Deleting $INSTDIR\plugins"
+  RMDir /r "$INSTDIR\plugins"
+  DetailPrint "Deleting $INSTDIR\readme"
+  RMDir /r "$INSTDIR\readme"
+  DetailPrint "Deleting $INSTDIR\.eclipseproduct"
+  Delete "$INSTDIR\.eclipseproduct"
+  DetailPrint "Deleting $INSTDIR\artifacts.xml"
+  Delete "$INSTDIR\artifacts.xml"
+  DetailPrint "Deleting $INSTDIR\destecs.exe"
+  Delete "$INSTDIR\destecs.exe"
+  DetailPrint "Deleting $INSTDIR\destecs.ini"
+  Delete "$INSTDIR\destecs.ini"
+  DetailPrint "Deleting $INSTDIR\epl-v10.html"
+  Delete "$INSTDIR\epl-v10.html"
+  DetailPrint "Deleting $INSTDIR\notice.html"
+  Delete "$INSTDIR\notice.html"
+ 
+  ; Remove shortcuts, if any
+  Delete "$SMPROGRAMS\${PRODUCT_REG_KEY}\*.*"
+  ; Remove directories used
+  RMDir "$SMPROGRAMS\${PRODUCT_REG_KEY}"
+  
+  Delete $INSTDIR\uninstall.exe 
+  RMDir "$INSTDIR"
+SectionEnd
+
+
+Function .onInit
+  ;Check earlier installation
+  ClearErrors
+  ReadRegStr $0 HKLM "Software\${PRODUCT_REG_KEY}" "Version"
+  IfErrors init.uninst ; older versions might not have "Version" string set
+  ${VersionCompare} $0 ${PRODUCT_VERSION} $1
+  IntCmp $1 2 init.uninst
+    MessageBox MB_YESNO|MB_ICONQUESTION "${PRODUCT_NAME} version $0 seems to be already installed on your system.$\nWould you like to proceed with the installation of version ${PRODUCT_VERSION}?" \
+        IDYES init.uninst
+    Quit
+
+init.uninst:
+  ClearErrors
+  ReadRegStr $0 HKLM "Software\${PRODUCT_REG_KEY}" ""
+  IfErrors init.done
+  StrCpy $UNINSTALL_OLD_VERSION '"$0\uninstall.exe" /S _?=$0'
+
+init.done:
+FunctionEnd
 
 ; Install DESTECS Tool
 Function DESTECSInstall
+  ; Print to detail log 
   DetailPrint "Installing DESTECS Tool"
-  ; copying to $INSTDIR folder
-  
   ; Unzip the file
-  ZipDLL::extractall "DestecsIde-1.0.2I-win32.win32.x86.zip" $INSTDIR
+  ZipDLL::extractall "${DESTECSZIP}" $INSTDIR
   ; Delete the zip
-  Delete DestecsIde-1.0.2I-win32.win32.x86.zip
-  !insertmacro MoveFolder "$INSTDIR\DestecsIde-1.0.2I\" $INSTDIR "*.*"
-  
+  Delete "${DESTECSZIP}"
+  ;Moving files from DESTECS folder to root of $INSTDIR
+  !insertmacro MoveFolder "$INSTDIR\${DESTECSFOLDER}\" $INSTDIR "*.*"
 FunctionEnd
 
 
 ; Install 20-sim function
 Function 20simInstall
-  DetailPrint "Installing 20-sim"
-  
+  ; Print to detail log
+  DetailPrint "Installing 20-sim"  
   ;Executing the installer
   ExecWait  '"$INSTDIR\20-sim4.1.3.2.exe"'
   Delete 20-sim4.1.3.2.exe
+  ; Update the Windows Registry
   Call updateRegistry
+  ; Copy the DestecsInterface.xrl to 20-sim folder
   Call copyXRL
 FunctionEnd
 
@@ -120,17 +228,11 @@ Function updateRegistry
 ${If} ${RunningX64}
     ; Updating registry for x64
     DetailPrint "Updating Windows registry (64-bit)"
-    Call  x64registry
-    ;File XMLRPCSupport_x64.reg
-    ;ExecWait "REGEDIT.EXE XMLRPCSupport_x64.reg" 
-    ;Delete XMLRPCSupport_x64.reg
+    Call  x64registry    
 ${Else}
     ; Updating registry for x86
     DetailPrint "Updating Windows registry (32-bit)"
-    ;File XMLRPCSupport_x86.reg
     Call x86registry
-    ;ExecWait "REGEDIT.EXE XMLRPCSupport_x86.reg" 
-    ;Delete XMLRPCSupport_x86.reg
 ${EndIf}
 FunctionEnd
 
@@ -152,7 +254,6 @@ FunctionEnd
 
 ; x86 registry setup
 Function x86registry
-
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File" "" "20-sim model"
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell" "" ""
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell\open" "" ""
@@ -163,6 +264,5 @@ WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\ContextMenuHandlers\EM_Menu" "" 
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\IconHandler" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers" "" "EM_Page"
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers\EM_Page" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
-
 FunctionEnd
 
