@@ -34,7 +34,6 @@ import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
 public class showlogaction extends TeamAction implements IActionDelegate  {
 	
 	ISVNClientAdapter svnClient;
-	ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
 	
 	public showlogaction() {
 		// TODO Auto-generated constructor stub
@@ -43,6 +42,7 @@ public class showlogaction extends TeamAction implements IActionDelegate  {
 	public void run(IAction action) {
 		if(action != null){
 			System.out.println("showlogaction is triggered.");
+			ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
 			
 			//create client type (javahl is recommended)
 			setup();
@@ -60,7 +60,7 @@ public class showlogaction extends TeamAction implements IActionDelegate  {
 			svnClient.addNotifyListener(listener);
 			
 			try{
-				//get selected resources (or get ISVNResource? then have svnUrl, check later)
+				//get selected resources
 				IResource[] resources = getSelectedResources(selection);				
 				if (resources != null){					
 					System.out.println("Selection toString: "+selection.toString());
@@ -85,7 +85,7 @@ public class showlogaction extends TeamAction implements IActionDelegate  {
 					System.out.println("Message: "+logMsg2[i].getMessage()+"\n");
 				}
 				
-				//show log msg in history view
+				//show log msg in History view
 				IHistoryView view = (IHistoryView) showView(ISVNUIConstants.HISTORY_VIEW_ID);
 				if (view != null) {
 					view.showHistoryFor(resources[0]);
@@ -201,18 +201,15 @@ public class showlogaction extends TeamAction implements IActionDelegate  {
     }
 
 	public void selectionChanged(IAction action, ISelection selection) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	public void init(IWorkbenchWindow window) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	protected boolean isEnabled() throws TeamException {

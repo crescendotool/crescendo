@@ -23,21 +23,24 @@ public class commit2mgmt extends CommitAction implements IActionDelegate{
 	protected boolean isImportantchange;
 	protected boolean isBaseline;
 	protected boolean hasAlternatives;
-	ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
 	
 	public commit2mgmt(){	
 	}
 	
 	public void execute(IAction action) throws InvocationTargetException, InterruptedException {
 		if(action != null){
-			IResource[] resources = getSelectedResources(selection);
 			System.out.println("commit2mgmt is triggered.");	
-			//TODO something wrong: cannot get correct resources
+			
+			ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
+			IResource[] resources = getSelectedResources(selection);
+			
 			System.out.println("this class selected resource length: "+resources.length);
+			System.out.println("this class selected resource locatiion: "+resources[0].getLocation().toString());
 			System.out.println("super class selected resource length: "+super.getSelectedResources().length);
 			
 			//TODO override super.execute, call SvnWizardCommitPage
 			//TODO call mgmtCommitOperation, then user can specify the extra dev info
+			super.setSelectedResources(resources);
 			super.execute(action);
 
 		}else{
@@ -81,8 +84,7 @@ public class commit2mgmt extends CommitAction implements IActionDelegate{
 	 }
 	
 	public void selectionChanged(IAction action, ISelection selection) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	
