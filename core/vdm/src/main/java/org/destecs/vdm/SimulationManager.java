@@ -130,7 +130,14 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			try
 			{
-				outputs.add(new StepStructoutputsStruct(key, getOutput(key)));
+				Double value = getOutput(key);
+				if(value != null)
+				{
+					outputs.add(new StepStructoutputsStruct(key, value));
+				}else
+				{
+					throw new SimulationException("Faild to get output parameter, output not bound for: "+key);
+				}
 			} catch (ValueException e)
 			{
 				debugErr(e);

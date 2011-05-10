@@ -26,9 +26,8 @@ public class IncrementalProjectBuilder extends
 		org.eclipse.core.resources.IncrementalProjectBuilder
 {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
+	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
 			throws CoreException
 	{
 		if (!getProject().hasNature(IDestecsCoreConstants.NATURE))
@@ -73,8 +72,7 @@ public class IncrementalProjectBuilder extends
 
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			//TODO build with errors, set project state to build and error
 		}
 
 		return null;
@@ -234,8 +232,7 @@ public class IncrementalProjectBuilder extends
 		FileUtility.addMarker(file, message, 0, IMarker.SEVERITY_ERROR);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected Object parse(ParserWrapper parser, IFile file) throws Exception
+	protected Object parse(@SuppressWarnings("rawtypes") ParserWrapper parser, IFile file) throws Exception
 	{
 		Object result = parser.parse(file.getLocation().toFile());
 
@@ -248,7 +245,7 @@ public class IncrementalProjectBuilder extends
 			for (Object err : parser.getErrors())
 			{
 				IError e = (IError) err;
-				System.out.println(e);
+//				System.out.println(e);
 				FileUtility.addMarker(file, e.getMessage(), e.getLine(), e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, FileUtility.getCharContent(FileUtility.getContent(file)).toString());
 			}
 			throw new Exception("Parse errors in " + file);

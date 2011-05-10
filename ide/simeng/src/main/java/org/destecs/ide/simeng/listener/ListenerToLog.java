@@ -22,6 +22,7 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 	final private CachedLogFileWriter simulation=new CachedLogFileWriter();
 	final private CachedLogFileWriter variables=new CachedLogFileWriter();
 	public char split = System.getProperty("user.country").equals("DK")? ';':',';
+	public char decimalSeperator = System.getProperty("user.country").equals("DK")? ',':'.';
 
 	public ListenerToLog(File base) throws FileNotFoundException
 	{
@@ -86,7 +87,7 @@ public class ListenerToLog implements IEngineListener, IMessageListener, ISimula
 		StringBuilder sb = new StringBuilder();
 		for (String col : colls)
 		{
-			sb.append(col);
+			sb.append(col.replace('.', decimalSeperator));
 			sb.append(split);
 		}
 		variables.log(sb.substring(0, sb.length() - 1));
