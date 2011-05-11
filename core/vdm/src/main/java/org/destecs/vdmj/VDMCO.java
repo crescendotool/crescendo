@@ -14,7 +14,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
+import org.destecs.vdm.BasicSimulationManager;
 import org.destecs.vdm.DBGPReaderCoSim;
+import org.destecs.vdm.SimulationManager;
 import org.destecs.vdmj.runtime.CoSimClassInterpreter;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Settings;
@@ -40,6 +42,8 @@ public class VDMCO extends VDMRT
 	public static File outputDir;
 	ClassInterpreter interpreter = null;
 	public static int debugPort = 10000;
+	public Exception exception = null;
+	
 
 	@Override
 	public CoSimClassInterpreter getInterpreter() throws Exception
@@ -87,14 +91,22 @@ public class VDMCO extends VDMRT
 		{
 			println("Initialization: " + e);
 			e.ctxt.printStackTrace(Console.out, true);
+			exception = e;
 			return ExitStatus.EXIT_ERRORS;
 		} catch (Exception e)
 		{
 			println("Initialization: " + e.getMessage());
+			//TODO: need to output this error somewhere
+			exception = e;
 			return ExitStatus.EXIT_ERRORS;
 		}
 	}
 
+	public Exception getException()
+	{
+		return exception;
+	}
+	
 	public ExitStatus asyncStartInterpret(final List<File> filenames)
 	{
 		class AsyncInterpreterExecutionThread extends Thread
