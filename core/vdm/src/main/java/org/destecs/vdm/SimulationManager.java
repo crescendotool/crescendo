@@ -270,7 +270,7 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		Properties.init();
 		Properties.parser_tabstop = 1;
-		Properties.rt_duration_transactions = true;
+		Properties.rt_duration_transactions = false;;
 
 		Settings.dialect = Dialect.VDM_RT;
 		Settings.usingCmdLine = false;
@@ -307,10 +307,11 @@ public class SimulationManager extends BasicSimulationManager
 				return false;
 			}
 		} else
-		{
-			throw new SimulationException("Model must be "
-					+ CoSimStatusEnum.INITIALIZED
-					+ " before it can be started. Status = " + this.status);
+		{					
+			throw new SimulationException(//"Model must be "
+					//+ CoSimStatusEnum.INITIALIZED
+					//+ " before it can be started. " +
+							"Status = " + this.status + ". Internal error:" + controller.exception.getMessage());
 		}
 
 	}
