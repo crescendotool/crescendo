@@ -12,7 +12,7 @@ Var /GLOBAL switch_overwrite
 
 !include 'MoveFileFolder.nsh'
 
-!define PRODUCT_VERSION "1.0.3"
+!define PRODUCT_VERSION "1.0.4"
 !define PRODUCT_REG_KEY "DESTECS"
 !define PRODUCT_NAME "DESTECS"
 
@@ -96,7 +96,7 @@ SectionEnd ; end the section
 Section "Start Menu Shortcuts (Optional)"
   CreateDirectory "$SMPROGRAMS\${PRODUCT_REG_KEY}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\DESTECS.lnk" "$INSTDIR\destecs.exe" "" "$INSTDIR\destecs.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\DESTECS.lnk" "$INSTDIR\${DESTECSFOLDER}\destecs.exe" "" "$INSTDIR\destecs.exe" 0
 SectionEnd
 
 ; Uninstaller
@@ -175,7 +175,7 @@ Function DESTECSInstall
   ; Delete the zip
   Delete "${DESTECSZIP}"
   ;Moving files from DESTECS folder to root of $INSTDIR
-  !insertmacro MoveFolder "$INSTDIR\${DESTECSFOLDER}\" $INSTDIR "*.*"
+  ;!insertmacro MoveFolder "$INSTDIR\${DESTECSFOLDER}\" $INSTDIR "*.*"
 FunctionEnd
 
 
