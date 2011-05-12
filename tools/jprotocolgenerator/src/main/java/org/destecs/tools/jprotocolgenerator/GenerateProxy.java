@@ -60,7 +60,8 @@ public class GenerateProxy
 		sb.append("\n");
 		String name = "Proxy" + intf.getName();
 		sb.append("\n");
-		sb.append("\n@SuppressWarnings(\"unused\")");
+//		sb.append("\n@SuppressWarnings(\"unused\")");
+		sb.append("\n@SuppressWarnings({\"unused\",\"unchecked\"})");
 		sb.append("\n");
 		sb.append("public class " + name);
 		sb.append("\n{");
@@ -227,6 +228,11 @@ public class GenerateProxy
 		}
 
 		sb.append(")");
+		
+		if(!m.throwsTypes.isEmpty())
+		{
+			sb.append(m.getThrowsSourceSegment());
+		}
 
 		sb.append("\n\t{");
 

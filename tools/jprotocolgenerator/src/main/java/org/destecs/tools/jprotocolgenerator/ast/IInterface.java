@@ -23,22 +23,43 @@ public class IInterface implements IAstNode, ITypeNode
 
 		sb.append("\n");
 
-		List<String> importedNames = new Vector<String>();
-		for (ITypeNode c : imports)
+		if (!definitions.isEmpty())
 		{
-			if (importedNames.contains(c.getName()))
+			List<String> importedNames = new Vector<String>();
+			for (ITypeNode c : imports)
 			{
-				continue;
-			} else
-			{
-				sb.append("\nimport " + c.getName() + ";");
-				importedNames.add(c.getName());
+				if (importedNames.contains(c.getName()))
+				{
+					continue;
+				} else
+				{
+					sb.append("\nimport " + c.getName() + ";");
+					importedNames.add(c.getName());
+				}
 			}
 		}
-
 		sb.append("\n");
-		
-		sb.append("\n@SuppressWarnings({\"unused\",\"unchecked\"})");
+
+		boolean suppressUnused = false;
+		boolean suppressUnchecked = !definitions.isEmpty();
+
+		if (suppressUnchecked || suppressUnused)
+		{
+			sb.append("\n@SuppressWarnings({");
+			if (suppressUnused)
+			{
+				sb.append("\"unused\"");
+			}
+			if (suppressUnchecked)
+			{
+				if (sb.toString().endsWith("\""))
+				{
+					sb.append(", ");
+				}
+				sb.append("\"unchecked\"");
+			}
+			sb.append("})");
+		}
 
 		sb.append("\npublic " + typeName + " " + getName());
 		if (extended.size() > 0)
@@ -49,7 +70,7 @@ public class IInterface implements IAstNode, ITypeNode
 				sb.append(" ");
 				sb.append(type.getName());
 			}
-			
+
 		}
 		addImplemented(sb);
 		sb.append("\n{");
@@ -108,10 +129,10 @@ public class IInterface implements IAstNode, ITypeNode
 	{
 		return toSource();
 	}
-	
+
 	public File getOutputFolder(File folder)
 	{
 		String path = packageName.replace('.', File.separatorChar);
-		return new File(folder,path);
+		return new File(folder, path);
 	}
 }

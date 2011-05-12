@@ -14,6 +14,7 @@ public class Method implements IAstNode
 	public IAnnotation annotation;
 	public String group;
 	public boolean isConstructor = false;
+	public List<FreeTextType> throwsTypes = new Vector<FreeTextType>();
 
 	public Method clone()
 	{
@@ -25,6 +26,7 @@ public class Method implements IAstNode
 		m.javaDoc = this.javaDoc;
 		m.group = this.group;
 		m.isConstructor = this.isConstructor;
+		m.throwsTypes = this.throwsTypes;
 		return m;
 	}
 
@@ -65,6 +67,9 @@ public class Method implements IAstNode
 			sb.delete(sb.length() - 2, sb.length());
 		}
 		sb.append(")");
+		
+		sb.append(getThrowsSourceSegment());
+		
 		if (body == null)
 		{
 			sb.append(";");
@@ -75,6 +80,24 @@ public class Method implements IAstNode
 			sb.append("\n\t}");
 		}
 
+		return sb.toString();
+	}
+
+	public String getThrowsSourceSegment()
+	{
+		StringBuilder sb= new StringBuilder();
+		if(!throwsTypes.isEmpty())
+		{
+			sb.append(" throws ");
+			for (int i = 0; i < throwsTypes.size(); i++)
+			{
+				sb.append(throwsTypes.get(i));
+				if(i<throwsTypes.size()-1)
+				{
+					sb.append(", ");
+				}
+			}
+		}
 		return sb.toString();
 	}
 

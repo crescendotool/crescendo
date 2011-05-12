@@ -14,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.Assert;
 
+import org.destecs.tools.jprotocolgenerator.ast.FreeTextType;
 import org.destecs.tools.jprotocolgenerator.ast.IInterface;
 import org.destecs.tools.jprotocolgenerator.ast.ITypeNode;
 import org.destecs.tools.jprotocolgenerator.ast.ListType;
@@ -267,6 +268,7 @@ public class XmlRpcJavaInterfaceGenerator
 	private static Method getMethodSignature(Element element)
 	{
 		Method method = new Method();
+		method.throwsTypes.add(new FreeTextType(Exception.class.getName()));
 		StringBuilder sb = new StringBuilder();
 
 		String name = "";
