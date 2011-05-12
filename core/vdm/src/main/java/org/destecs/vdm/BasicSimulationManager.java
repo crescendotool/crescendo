@@ -1,13 +1,11 @@
 package org.destecs.vdm;
 
 import java.io.File;
-import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.destecs.core.vdmlink.Links;
 import org.destecs.core.vdmlink.StringPair;
-import org.destecs.protocol.exceptions.SimulationException;
+import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
@@ -134,7 +132,7 @@ public abstract class BasicSimulationManager
 	}
 
 	protected boolean setValue(String name, CoSimType inputType,
-			String inputValue) throws SimulationException
+			String inputValue) throws RemoteSimulationException
 	{
 		Value val = getValue(name);
 		if (val != null)
@@ -163,7 +161,7 @@ public abstract class BasicSimulationManager
 			} catch (ValueException e)
 			{
 				debugErr(e);
-				throw new SimulationException("Faild to servalue from: " + name, e);
+				throw new RemoteSimulationException("Faild to servalue from: " + name, e);
 			} catch (InterruptedException e)
 			{
 				// TODO Auto-generated catch block

@@ -48,7 +48,7 @@ public class CoSimulationThread extends Thread
 			engine.simulate(shareadDesignParameters, totalSimulationTime);
 		} catch (Throwable e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 			exceptions.add(e);
 			log.flush();
 		}

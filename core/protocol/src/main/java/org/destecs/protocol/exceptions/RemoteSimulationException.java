@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 
-public class SimulationException extends Exception implements Serializable
+public class RemoteSimulationException extends Exception implements Serializable
 {
 	/**
 	 * 
@@ -12,13 +12,13 @@ public class SimulationException extends Exception implements Serializable
 	private static final long serialVersionUID = 1L;
 	private String internalStackTrace;
 
-	public SimulationException(String message, Throwable cause)
+	public RemoteSimulationException(String message, Throwable cause)
 	{
 		super(message, cause);
 		internalStackTrace =stack2string(cause);
 	}
 
-	public SimulationException(String message)
+	public RemoteSimulationException(String message)
 	{
 		super(message);
 	}

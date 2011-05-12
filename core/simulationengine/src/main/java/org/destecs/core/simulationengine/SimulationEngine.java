@@ -31,6 +31,7 @@ import org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportF
 import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
 import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
+import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.Load2argumentsStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
@@ -649,9 +650,9 @@ public class SimulationEngine {
 	protected void abort(Simulator source, String reason, Throwable throwable)
 			throws SimulationException {
 		String extendedReason = "";
-		if (throwable instanceof SimulationException) {
+		if (throwable instanceof RemoteSimulationException) {
 			extendedReason = " => "
-					+ getXmlRpcCause((SimulationException) throwable);
+					+ getXmlRpcCause((RemoteSimulationException) throwable);
 		}
 
 		if (throwable instanceof XmlRpcException) {
@@ -665,7 +666,7 @@ public class SimulationEngine {
 				throwable);
 	}
 
-	private static String getXmlRpcCause(SimulationException exception) {
+	private static String getXmlRpcCause(RemoteSimulationException exception) {
 
 		return exception.getMessage();
 	}

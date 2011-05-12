@@ -11,7 +11,7 @@ import java.util.Vector;
 
 import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.StringPair;
-import org.destecs.protocol.exceptions.SimulationException;
+import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
@@ -89,7 +89,7 @@ public class SimulationManager extends BasicSimulationManager
 
 	public synchronized StepStruct step(Double outputTime,
 			List<StepinputsStructParam> inputs, List<String> events)
-			throws SimulationException
+			throws RemoteSimulationException
 	{
 		for (StepinputsStructParam p : inputs)
 		{
@@ -119,7 +119,7 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			throw new SimulationException("Notification of scheduler faild", e);
+			throw new RemoteSimulationException("Notification of scheduler faild", e);
 		}
 		debug("Next Step return at clock: " + nextTimeStep);
 
@@ -137,12 +137,12 @@ public class SimulationManager extends BasicSimulationManager
 					outputs.add(new StepStructoutputsStruct(key, value));
 				}else
 				{
-					throw new SimulationException("Faild to get output parameter, output not bound for: "+key);
+					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "+key);
 				}
 			} catch (ValueException e)
 			{
 				debugErr(e);
-				throw new SimulationException("Faild to get output parameter", e);
+				throw new RemoteSimulationException("Faild to get output parameter", e);
 			}
 		}
 
@@ -151,7 +151,7 @@ public class SimulationManager extends BasicSimulationManager
 		return result;
 	}
 
-	private void evalEvent(String event) throws SimulationException
+	private void evalEvent(String event) throws RemoteSimulationException
 	{
 		boolean evaluated = false;
 		if (links.getEvents().contains(event))
@@ -172,7 +172,7 @@ public class SimulationManager extends BasicSimulationManager
 					} catch (ValueException e)
 					{
 						debugErr(e);
-						throw new SimulationException("Faild to evaluate event: "
+						throw new RemoteSimulationException("Faild to evaluate event: "
 								+ event, e);
 					}
 
@@ -182,7 +182,7 @@ public class SimulationManager extends BasicSimulationManager
 		if (!evaluated)
 		{
 			debugErr("Event: " + event + " not found");
-			throw new SimulationException("Faild to find event: " + event);
+			throw new RemoteSimulationException("Faild to find event: " + event);
 		}
 	}
 
@@ -211,14 +211,14 @@ public class SimulationManager extends BasicSimulationManager
 		return null;
 	}
 
-	public Boolean load(List<File> specfiles, File linkFile,File outputDir) throws SimulationException
+	public Boolean load(List<File> specfiles, File linkFile,File outputDir) throws RemoteSimulationException
 	{
 		try
 		{
 			
 			if (!linkFile.exists()|| linkFile.isDirectory())
 			{
-				throw new SimulationException("The VDM link file does not exist: "
+				throw new RemoteSimulationException("The VDM link file does not exist: "
 						+ linkFile);
 			}
 			VdmLinkParserWrapper linksParser = new VdmLinkParserWrapper();
@@ -226,7 +226,7 @@ public class SimulationManager extends BasicSimulationManager
 
 			if (links == null || linksParser.hasErrors())
 			{
-				throw new SimulationException("Faild to parse vdm links");
+				throw new RemoteSimulationException("Faild to parse vdm links");
 			}
 
 			
@@ -252,7 +252,7 @@ public class SimulationManager extends BasicSimulationManager
 					final PrintWriter printWriter = new PrintWriter(result);
 					TypeChecker.printWarnings(printWriter);
 					TypeChecker.printErrors(printWriter);
-					throw new SimulationException("Type check error: "
+					throw new RemoteSimulationException("Type check error: "
 							+ result.toString());
 				}
 			}
@@ -260,14 +260,14 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			throw new SimulationException("Faild to load model from " + outputDir, e);
+			throw new RemoteSimulationException("Faild to load model from " + outputDir, e);
 
 		}
 
 		return false;
 	}
 
-	public Boolean initialize() throws SimulationException
+	public Boolean initialize() throws RemoteSimulationException
 	{
 		Properties.init();
 		Properties.parser_tabstop = 1;
@@ -282,7 +282,7 @@ public class SimulationManager extends BasicSimulationManager
 
 	}
 
-	public Boolean start() throws SimulationException
+	public Boolean start() throws RemoteSimulationException
 	{
 		final List<File> files = getFiles();
 
@@ -309,16 +309,16 @@ public class SimulationManager extends BasicSimulationManager
 			}
 		} else
 		{					
-			throw new SimulationException(//"Model must be "
+			throw new RemoteSimulationException(//"Model must be "
 					//+ CoSimStatusEnum.INITIALIZED
 					//+ " before it can be started. " +
-							"Status = " + this.status + ". Internal error:" + controller.exception.getMessage());
+							"Status = " + this.status + ". Internal error: " + controller.exception.getMessage());
 		}
 
 	}
 
 
-	private List<File> getFiles() throws SimulationException
+	private List<File> getFiles() throws RemoteSimulationException
 	{
 		final List<File> files = new Vector<File>();
 		try
@@ -327,11 +327,11 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if (e instanceof SimulationException)
+			if (e instanceof RemoteSimulationException)
 			{
-				throw (SimulationException) e;
+				throw (RemoteSimulationException) e;
 			}
-			throw new SimulationException("Faild to initialize, could not get sourcefiles", e);
+			throw new RemoteSimulationException("Faild to initialize, could not get sourcefiles", e);
 		}
 		return files;
 	}
@@ -360,10 +360,10 @@ public class SimulationManager extends BasicSimulationManager
 	 * @param parameters
 	 *            A list of Maps containing (name,value) keys and name->String, value->Double
 	 * @return false if any error occur else true
-	 * @throws SimulationException
+	 * @throws RemoteSimulationException
 	 */
 	public Boolean setDesignParameters(List<Map<String, Object>> parameters)
-			throws SimulationException
+			throws RemoteSimulationException
 	{
 		try
 		{
@@ -376,7 +376,7 @@ public class SimulationManager extends BasicSimulationManager
 				{
 					debugErr("Tried to set unlinked shared design parameter: "
 							+ parameterName);
-					throw new SimulationException("Tried to set unlinked shared design parameter: "
+					throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 				}
 				StringPair vName = links.getBoundVariable(parameterName);
@@ -417,25 +417,25 @@ public class SimulationManager extends BasicSimulationManager
 				{
 					debugErr("Tried to set unlinked shared design parameter: "
 							+ parameterName);
-					throw new SimulationException("Tried to set unlinked shared design parameter: "
+					throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 				}
 			}
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if (e instanceof SimulationException)
+			if (e instanceof RemoteSimulationException)
 			{
-				throw (SimulationException) e;
+				throw (RemoteSimulationException) e;
 			}
-			throw new SimulationException("Internal error in set design parameters", e);
+			throw new RemoteSimulationException("Internal error in set design parameters", e);
 		}
 
 		return true;
 	}
 
 	public Boolean setParameter(String name, Double value)
-			throws SimulationException
+			throws RemoteSimulationException
 	{
 		try
 		{
@@ -443,15 +443,15 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if (e instanceof SimulationException)
+			if (e instanceof RemoteSimulationException)
 			{
-				throw (SimulationException) e;
+				throw (RemoteSimulationException) e;
 			}
-			throw new SimulationException("Error in set parameter", e);
+			throw new RemoteSimulationException("Error in set parameter", e);
 		}
 	}
 
-	public synchronized Boolean stopSimulation() throws SimulationException
+	public synchronized Boolean stopSimulation() throws RemoteSimulationException
 	{
 		try
 		{
@@ -462,11 +462,11 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			if (e instanceof SimulationException)
+			if (e instanceof RemoteSimulationException)
 			{
-				throw (SimulationException) e;
+				throw (RemoteSimulationException) e;
 			}
-			throw new SimulationException("Could not stop the scheduler", e);
+			throw new RemoteSimulationException("Could not stop the scheduler", e);
 
 		}
 	}

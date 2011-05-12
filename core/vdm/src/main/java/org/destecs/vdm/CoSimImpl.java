@@ -1,16 +1,13 @@
 package org.destecs.vdm;
 
 import java.io.File;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
-import org.apache.xmlrpc.XmlRpcException;
 import org.destecs.protocol.IDestecs;
-import org.destecs.protocol.exceptions.SimulationException;
+import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.Load2Struct;
@@ -27,6 +24,7 @@ import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.protocol.structs.UnLoadStruct;
 import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.scheduler.SystemClock;
+import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
 @SuppressWarnings("unchecked")
 public class CoSimImpl implements IDestecs
@@ -51,19 +49,19 @@ public class CoSimImpl implements IDestecs
 		return new GetVersionStruct("VDMJ", version).toMap();
 	}
 
-	public Map<String, Boolean> initialize() throws SimulationException
+	public Map<String, Boolean> initialize() throws RemoteSimulationException
 	{
 		try
 		{
 			return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e;
 		}
 	}
 
-	public Map<String, Boolean> load(Map<String, String> data) throws SimulationException
+	public Map<String, Boolean> load(Map<String, String> data) throws RemoteSimulationException
 	{
 		String path = data.get(data.keySet().toArray()[0]);
 
@@ -79,7 +77,7 @@ public class CoSimImpl implements IDestecs
 
 			File outputFolder = new File(root.getParentFile(), "output");
 			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile)).toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e;
@@ -111,7 +109,7 @@ public class CoSimImpl implements IDestecs
 		return files;
 	}
 
-	public Map<String, Boolean> load2(Map<String, Object> arg0) throws SimulationException
+	public Map<String, Boolean> load2(Map<String, Object> arg0) throws RemoteSimulationException
 	{
 		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
 
@@ -169,7 +167,7 @@ public class CoSimImpl implements IDestecs
 		try
 		{
 			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir))).toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e;
@@ -212,7 +210,7 @@ public class CoSimImpl implements IDestecs
 		return s.toMap();
 	}
 
-	public Map<String, Object> step(Map<String, Object> data) throws SimulationException
+	public Map<String, Object> step(Map<String, Object> data) throws RemoteSimulationException
 	{
 		Double outputTime = (Double) data.get("outputTime");
 
@@ -250,7 +248,7 @@ public class CoSimImpl implements IDestecs
 			result.time = SystemClock.internalToTime(TimeUnit.seconds, result.time.longValue());
 
 			return result.toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e;
@@ -285,12 +283,12 @@ public class CoSimImpl implements IDestecs
 		return new UnLoadStruct(true).toMap();
 	}
 
-	public Map<String, Boolean> stop() throws SimulationException
+	public Map<String, Boolean> stop() throws RemoteSimulationException
 	{
 		try
 		{
 			return new StopStruct(SimulationManager.getInstance().stopSimulation()).toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e;
@@ -323,7 +321,7 @@ public class CoSimImpl implements IDestecs
 	}
 
 	public Map<String, Boolean> setDesignParameters(
-			Map<String, List<Map<String, Object>>> data) throws SimulationException
+			Map<String, List<Map<String, Object>>> data) throws RemoteSimulationException
 	{
 		try
 		{
@@ -337,14 +335,14 @@ public class CoSimImpl implements IDestecs
 
 			}
 			return new SetDesignParametersStruct(success).toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e;
 		}
 	}
 
-	public Map<String, Boolean> setParameter(Map<String, Object> data) throws SimulationException
+	public Map<String, Boolean> setParameter(Map<String, Object> data) throws RemoteSimulationException
 	{
 		String name = (String) data.get("name");
 		Double value = (Double) data.get("value");
@@ -354,7 +352,7 @@ public class CoSimImpl implements IDestecs
 			success = SimulationManager.getInstance().setParameter(name, value);
 
 			return new SetParametersStruct(success).toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e;
@@ -367,12 +365,12 @@ public class CoSimImpl implements IDestecs
 		throw new NoSuchMethodError("Not supported by VDMJ");
 	}
 
-	public Map<String, Boolean> start() throws SimulationException 
+	public Map<String, Boolean> start() throws RemoteSimulationException 
 	{
 		try
 		{
 			return new StartStruct(SimulationManager.getInstance().start()).toMap();
-		} catch (SimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
 			throw e; 
