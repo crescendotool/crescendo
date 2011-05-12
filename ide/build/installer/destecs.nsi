@@ -16,6 +16,10 @@
 !define PRODUCT_REG_KEY "DESTECS"
 !define PRODUCT_NAME "DESTECS"
 
+!define SIM20_NAME "20-sim"
+!define SIM20_VERSION "4.1.3.2"
+!define SIM20_EXE "${SIM20_NAME}${SIM20_VERSION}.exe"
+
 !define DESTECSIDE "DestecsIde-"
 !define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}I"
 !define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
@@ -47,10 +51,12 @@ RequestExecutionLevel admin
   !define MUI_HEADERIMAGE 
   !define MUI_HEADERIMAGE_BITMAP "destecs.bmp" ; optional
   !define MUI_ABORTWARNING
-
+  !define MUI_LICENSEPAGE_TEXT_BOTTOM "This includes DESTECS ${PRODUCT_VERSION} and 20-sim ${SIM20_VERSION}."
 ;-------------------------------- 
 
-
+;!define MUI_WELCOMEPAGE_TITLE "dsasda"
+;!define MUI_WELCOMEPAGE_TITLE_3LINES
+;!define MUI_WELCOMEPAGE_TEXT "dsadas sdadas dassd ada dsa dsadsa"
 
 
 ;--------------------------------
@@ -58,11 +64,16 @@ RequestExecutionLevel admin
 ; Pages
 ;Page components
 ;Page directory
-;Page instfiles   
+;Page instfiles
+  ;!insertmacro MUI_PAGE_WELCOME   
   !insertmacro MUI_PAGE_LICENSE "license.txt"
   !insertmacro MUI_PAGE_COMPONENTS
+   ; Var StartMenuFolder
+;!insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
+  
+
   
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
@@ -94,7 +105,7 @@ Section "DESTECS (required)" ;No components page, name is not important
   Call DESTECSInstall
   
   ; 20-sim instalation file
-  File data\20-sim4.1.3.2.exe
+  File "data\${SIM20_EXE}"
   ; Calling the function that installs 20-sim
   Call 20simInstall
   
@@ -202,8 +213,8 @@ Function 20simInstall
   ; Print to detail log
   DetailPrint "Installing 20-sim"  
   ;Executing the installer
-  ExecWait  '"$INSTDIR\20-sim4.1.3.2.exe"'
-  Delete 20-sim4.1.3.2.exe
+  ExecWait  '"$INSTDIR\${SIM20_EXE}"'
+  Delete "${SIM20_EXE}"
   ; Update the Windows Registry
   Call updateRegistry
   ; Copy the DestecsInterface.xrl to 20-sim folder
