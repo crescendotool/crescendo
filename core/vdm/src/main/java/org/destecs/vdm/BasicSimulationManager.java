@@ -7,6 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import org.destecs.core.vdmlink.Links;
 import org.destecs.core.vdmlink.StringPair;
+import org.destecs.protocol.exceptions.SimulationException;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;

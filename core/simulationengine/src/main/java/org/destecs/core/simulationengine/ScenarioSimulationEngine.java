@@ -46,9 +46,9 @@ public class ScenarioSimulationEngine extends SimulationEngine
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.CT, nextTime, "setParameter");
 						ctProxy.setParameter(action.variableName, action.variableValue);
-					} catch (UndeclaredThrowableException undeclaredException)
+					} catch (Exception e)
 					{
-						abort(Simulator.CT, "setParameter("+action.variableName+"="+action.variableValue+") faild", undeclaredException);
+						abort(Simulator.CT, "setParameter("+action.variableName+"="+action.variableValue+") faild", e);
 					}
 					break;
 				case DE:
@@ -58,9 +58,9 @@ public class ScenarioSimulationEngine extends SimulationEngine
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.DE, nextTime, "setParameter");
 						dtProxy.setParameter(action.variableName, action.variableValue);
-					} catch (UndeclaredThrowableException undeclaredException)
+					} catch (Exception e)
 					{
-						abort(Simulator.DE, "setParameter("+action.variableName+"="+action.variableValue+") faild", undeclaredException);
+						abort(Simulator.DE, "setParameter("+action.variableName+"="+action.variableValue+") faild", e);
 					}
 					break;
 

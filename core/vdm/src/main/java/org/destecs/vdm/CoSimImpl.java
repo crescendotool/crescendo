@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Vector;
 import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.destecs.protocol.IDestecs;
+import org.destecs.protocol.exceptions.SimulationException;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.Load2Struct;
@@ -38,7 +40,7 @@ public class CoSimImpl implements IDestecs
 	private static final String LOAD_DEBUG_PORT = "dbgp_port";
 
 	private static final String version = "0.0.0.2";
-
+ 
 	public Map<String, Integer> getStatus()
 	{
 		return new GetStatusStruct(SimulationManager.getInstance().getStatus()).toMap();
@@ -49,7 +51,7 @@ public class CoSimImpl implements IDestecs
 		return new GetVersionStruct("VDMJ", version).toMap();
 	}
 
-	public Map<String, Boolean> initialize()
+	public Map<String, Boolean> initialize() throws SimulationException
 	{
 		try
 		{
@@ -57,11 +59,11 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e;
 		}
 	}
 
-	public Map<String, Boolean> load(Map<String, String> data)
+	public Map<String, Boolean> load(Map<String, String> data) throws SimulationException
 	{
 		String path = data.get(data.keySet().toArray()[0]);
 
@@ -80,7 +82,7 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e;
 		}
 	}
 
@@ -109,7 +111,7 @@ public class CoSimImpl implements IDestecs
 		return files;
 	}
 
-	public Map<String, Boolean> load2(Map<String, Object> arg0)
+	public Map<String, Boolean> load2(Map<String, Object> arg0) throws SimulationException
 	{
 		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
 
@@ -170,7 +172,7 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e;
 		}
 	}
 
@@ -210,7 +212,7 @@ public class CoSimImpl implements IDestecs
 		return s.toMap();
 	}
 
-	public Map<String, Object> step(Map<String, Object> data)
+	public Map<String, Object> step(Map<String, Object> data) throws SimulationException
 	{
 		Double outputTime = (Double) data.get("outputTime");
 
@@ -251,7 +253,7 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e;
 		}
 	}
 
@@ -283,7 +285,7 @@ public class CoSimImpl implements IDestecs
 		return new UnLoadStruct(true).toMap();
 	}
 
-	public Map<String, Boolean> stop()
+	public Map<String, Boolean> stop() throws SimulationException
 	{
 		try
 		{
@@ -291,7 +293,7 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e;
 		}
 	}
 
@@ -321,7 +323,7 @@ public class CoSimImpl implements IDestecs
 	}
 
 	public Map<String, Boolean> setDesignParameters(
-			Map<String, List<Map<String, Object>>> data)
+			Map<String, List<Map<String, Object>>> data) throws SimulationException
 	{
 		try
 		{
@@ -338,11 +340,11 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e;
 		}
 	}
 
-	public Map<String, Boolean> setParameter(Map<String, Object> data)
+	public Map<String, Boolean> setParameter(Map<String, Object> data) throws SimulationException
 	{
 		String name = (String) data.get("name");
 		Double value = (Double) data.get("value");
@@ -355,7 +357,7 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e;
 		}
 	}
 
@@ -365,7 +367,7 @@ public class CoSimImpl implements IDestecs
 		throw new NoSuchMethodError("Not supported by VDMJ");
 	}
 
-	public Map<String, Boolean> start()
+	public Map<String, Boolean> start() throws SimulationException 
 	{
 		try
 		{
@@ -373,7 +375,7 @@ public class CoSimImpl implements IDestecs
 		} catch (SimulationException e)
 		{
 			ErrorLog.log(e);
-			throw new UndeclaredThrowableException(e);
+			throw e; 
 		}
 	}
 

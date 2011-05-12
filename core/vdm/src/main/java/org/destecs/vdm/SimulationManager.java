@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.StringPair;
+import org.destecs.protocol.exceptions.SimulationException;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
