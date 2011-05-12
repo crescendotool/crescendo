@@ -4,7 +4,15 @@ options {
   language = Java;
 }
 
+@header {
+package org.destecs.core.parsers.subs;
 
+
+}
+
+@lexer::header{  
+package org.destecs.core.parsers.subs;
+}  
 
 fragment LETTER : ('a'..'z' | 'A'..'Z') ;
 fragment DIGIT : '0'..'9';
