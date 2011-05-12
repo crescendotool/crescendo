@@ -12,6 +12,13 @@
             name="Co-Sim Launch"
             public="true">
       </launchConfigurationType>
+      <launchConfigurationType
+            delegate="org.destecs.ide.debug.launching.core.DSELaunchDelegate"
+            id="org.destecs.ide.debug.launchDSEConfigurationType"
+            modes="debug"
+            name="DSE Launch"
+            public="true">
+      </launchConfigurationType>
    </extension>
    
    
@@ -38,6 +45,11 @@
                   description="%localDestecsApplicationTabGroupDescription.debug">
             </launchMode>
       </launchConfigurationTabGroup>
+      <launchConfigurationTabGroup
+            class="org.destecs.ide.debug.launching.ui.DSEConfigurationTabGroup"
+            id="org.destecs.ide.debug.launchDSEConfigurationTabGroup"
+            type="org.destecs.ide.debug.launchDSEConfigurationType">
+      </launchConfigurationTabGroup>
    </extension>
    
    <!--
@@ -50,6 +62,11 @@
             configTypeID="org.destecs.ide.debug.launchConfigurationType"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.debug.launchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
+            configTypeID="org.destecs.ide.debug.launchDSEConfigurationType"
+            icon="icons/ctool16/destecs3_misc.png"
+            id="org.destecs.ide.debug.launchDSEConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
    
