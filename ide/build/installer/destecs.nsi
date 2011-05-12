@@ -1,5 +1,8 @@
  
+;--------------------------------
+;Include Modern UI
 
+  !include "MUI2.nsh"
 ;--------------------------------
 !include zipdll.nsh
 !include LogicLib.nsh
@@ -8,9 +11,6 @@
 !include 'FileFunc.nsh'
 !insertmacro Locate
  
-Var /GLOBAL switch_overwrite
-
-!include 'MoveFileFolder.nsh'
 
 !define PRODUCT_VERSION "1.0.4"
 !define PRODUCT_REG_KEY "DESTECS"
@@ -41,24 +41,42 @@ InstallDirRegKey HKLM "Software\DESTECS" "Install_Dir"
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
+;--------------------------------
+;Interface Configuration
+
+  !define MUI_HEADERIMAGE 
+  !define MUI_HEADERIMAGE_BITMAP "destecs.bmp" ; optional
+  !define MUI_ABORTWARNING
+
+;-------------------------------- 
+
+
+
 
 ;--------------------------------
 
 ; Pages
-Page components
-Page directory
-Page instfiles
+;Page components
+;Page directory
+;Page instfiles   
+  !insertmacro MUI_PAGE_LICENSE "license.txt"
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_DIRECTORY
+  !insertmacro MUI_PAGE_INSTFILES
+  
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
 
 ;--------------------------------
+
+  !insertmacro MUI_LANGUAGE "English"
+
 
 ; The stuff to install
 Section "DESTECS (required)" ;No components page, name is not important
 
   SectionIn RO
 
-  ; This variable indicates if the move files in DESTECS instalation should 
-  ; overwrite or not (0=not)
-  StrCpy $switch_overwrite 0
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
 
@@ -171,7 +189,7 @@ Function DESTECSInstall
   ; Print to detail log 
   DetailPrint "Installing DESTECS Tool"
   ; Unzip the file
-  ZipDLL::extractall "${DESTECSZIP}" $INSTDIR
+  ZipDLL::extractfile "${DESTECSZIP}" $INSTDIR "DestecsIde-1.0.4I"
   ; Delete the zip
   Delete "${DESTECSZIP}"
   ;Moving files from DESTECS folder to root of $INSTDIR
