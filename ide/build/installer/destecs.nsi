@@ -52,7 +52,7 @@ RequestExecutionLevel admin
   !define MUI_HEADERIMAGE 
   !define MUI_HEADERIMAGE_BITMAP "destecs.bmp" ; optional
   !define MUI_ABORTWARNING
-  !define MUI_LICENSEPAGE_TEXT_BOTTOM "This includes DESTECS ${PRODUCT_VERSION} and 20-sim ${SIM20_VERSION}."
+  !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes DESTECS ${PRODUCT_VERSION} and 20-sim ${SIM20_VERSION}."
 ;-------------------------------- 
 
 ;!define MUI_WELCOMEPAGE_TITLE "dsasda"
@@ -132,11 +132,9 @@ SectionEnd
 ; Uninstaller
 Section "Uninstall"
 
-  ; could use the 20-sim executable to make uninstall but there 
-  ; might be a better way
-  ;File data\20-sim4.1.3.2.exe
-  ;ExecWait  '"$INSTDIR\20-sim4.1.3.2.exe"'
-  ;Delete 20-sim4.1.3.2.exe
+  ;deleting the uninstall exe first is apparently normal
+  Delete $INSTDIR\uninstall.exe 
+  
   
   ; Remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}"
@@ -171,7 +169,7 @@ Section "Uninstall"
   ; Remove directories used
   RMDir "$SMPROGRAMS\${PRODUCT_REG_KEY}"
   
-  Delete $INSTDIR\uninstall.exe 
+  
   RMDir "$INSTDIR"
 SectionEnd
 
