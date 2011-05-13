@@ -3,4 +3,4 @@ This program is being developed under European Union Seventh Framework Programme
 - DESTECS Tool is distributed under GPL 2.0 license.
 - 20-sim is a registered trademark, refer to 20-sim website (www.20sim.com) for its licensing. 
 
-This program cannot be used to commercial ends and there is absolute no guarantee that this program will work.
+This program cannot be used to commercial ends and is distributed with absolute no guarantee.
