@@ -22,7 +22,8 @@
 
 !define DESTECSIDE "DestecsIde-"
 !define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}I"
-!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
+;!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
+!define DESTECSZIP "destecs.zip"
 
 !include "WordFunc.nsh"
   !insertmacro VersionCompare
@@ -200,7 +201,7 @@ Function DESTECSInstall
   ; Print to detail log 
   DetailPrint "Installing DESTECS Tool"
   ; Unzip the file
-  ZipDLL::extractfile "${DESTECSZIP}" $INSTDIR "DestecsIde-1.0.4I"
+  ZipDLL::extractall "${DESTECSZIP}" $INSTDIR
   ; Delete the zip
   Delete "${DESTECSZIP}"
   ;Moving files from DESTECS folder to root of $INSTDIR
