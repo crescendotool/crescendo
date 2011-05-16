@@ -77,7 +77,7 @@ RequestExecutionLevel admin
 
   
   !insertmacro MUI_UNPAGE_CONFIRM
-  ;!insertmacro MUI_UNPAGE_INSTFILES
+  !insertmacro MUI_UNPAGE_INSTFILES
 
 ;--------------------------------
 
