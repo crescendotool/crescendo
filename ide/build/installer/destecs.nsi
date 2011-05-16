@@ -77,7 +77,7 @@ RequestExecutionLevel admin
 
   
   !insertmacro MUI_UNPAGE_CONFIRM
-  !insertmacro MUI_UNPAGE_INSTFILES
+  ;!insertmacro MUI_UNPAGE_INSTFILES
 
 ;--------------------------------
 
@@ -126,7 +126,7 @@ SectionEnd ; end the section
 Section "Start Menu Shortcuts (Optional)"
   CreateDirectory "$SMPROGRAMS\${PRODUCT_REG_KEY}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\DESTECS.lnk" "$INSTDIR\${DESTECSFOLDER}\destecs.exe" "" "$INSTDIR\destecs.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\DESTECS.lnk" "$INSTDIR\destecs.exe" "" "$INSTDIR\destecs.exe" 0
 SectionEnd
 
 ; Uninstaller
@@ -199,7 +199,8 @@ Function DESTECSInstall
   ; Print to detail log 
   DetailPrint "Installing DESTECS Tool"
   ; Unzip the file
-  ZipDLL::extractall "${DESTECSZIP}" $INSTDIR
+  ZipDLL::extractall "${DESTECSZIP}" "$TEMP\destecs"
+  ExecWait 'xcopy /S /Y $\"$TEMP\destecs$\" $\"$INSTDIR$\"'
   ; Delete the zip
   Delete "${DESTECSZIP}"
   ;Moving files from DESTECS folder to root of $INSTDIR
