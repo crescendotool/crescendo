@@ -20,8 +20,10 @@ import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
+import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.simulationengine.listener.IProcessCreationListener;
+import org.destecs.core.simulationengine.listener.ISimulationStartListener;
 import org.destecs.core.simulationengine.model.CtModelConfig;
 import org.destecs.core.simulationengine.model.DeModelConfig;
 import org.destecs.core.simulationengine.model.ModelConfig;
@@ -239,7 +241,7 @@ public class CoSimLaunchConfigurationDelegate implements
 
 			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
 
-			Job vdm = new Job("launch vdm")
+			final Job vdm = new Job("launch vdm")
 			{
 
 				@Override
@@ -257,7 +259,19 @@ public class CoSimLaunchConfigurationDelegate implements
 					return Status.OK_STATUS;
 				}
 			};
-			vdm.schedule();
+			
+			
+			engine.simulationStartListeners.add(new ISimulationStartListener()
+			{
+				
+				public void simulationStarting(Simulator simulator)
+				{
+					if(simulator==Simulator.DE)
+					{
+						vdm.schedule();
+					}
+				}
+			});
 
 			CoSimulationThread simThread = new CoSimulationThread(engine, log, shareadDesignParameters, totalSimulationTime, target, views);
 			target.setCoSimulationThread(simThread);

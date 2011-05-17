@@ -25,6 +25,7 @@ import org.destecs.core.simulationengine.listener.IEngineListener;
 import org.destecs.core.simulationengine.listener.IMessageListener;
 import org.destecs.core.simulationengine.listener.IProcessCreationListener;
 import org.destecs.core.simulationengine.listener.ISimulationListener;
+import org.destecs.core.simulationengine.listener.ISimulationStartListener;
 import org.destecs.core.simulationengine.listener.IVariableSyncListener;
 import org.destecs.core.simulationengine.model.ModelConfig;
 import org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory;
@@ -77,7 +78,8 @@ public class SimulationEngine {
 	public final List<IMessageListener> messageListeners = new Vector<IMessageListener>();
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
 	public final List<IVariableSyncListener> variablesSyncListeners = new Vector<IVariableSyncListener>();
-
+	public final List<ISimulationStartListener> simulationStartListeners = new Vector<ISimulationStartListener>();
+	
 	private final List<XmlRpcClient> clients = new Vector<XmlRpcClient>();
 
 	private final List<IProcessCreationListener> processCreationListeners = new Vector<IProcessCreationListener>();
@@ -525,6 +527,7 @@ public class SimulationEngine {
 	private boolean startSimulator(Simulator simulator,
 			ProxyICoSimProtocol proxy) throws SimulationException {
 		try {
+			simulationStarting(simulator);
 			messageInfo(simulator, new Double(0), "start");
 			return proxy.start().success;
 		} catch (Exception e) {
@@ -799,6 +802,13 @@ public class SimulationEngine {
 
 		for (IVariableSyncListener listener : variablesSyncListeners) {
 			listener.info(colls);
+		}
+	}
+	
+	protected void simulationStarting(Simulator fromSimulator) {
+
+		for (ISimulationStartListener listener : simulationStartListeners) {
+			listener.simulationStarting(fromSimulator);
 		}
 	}
 
