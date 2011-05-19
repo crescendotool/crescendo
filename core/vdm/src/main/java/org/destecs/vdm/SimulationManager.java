@@ -12,6 +12,7 @@ import java.util.Vector;
 import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
+import org.destecs.protocol.structs.QueryToolSettingsStructsettingsStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
@@ -469,5 +470,10 @@ public class SimulationManager extends BasicSimulationManager
 			throw new RemoteSimulationException("Could not stop the scheduler", e);
 
 		}
+	}
+
+	public List<QueryToolSettingsStructsettingsStruct> queryToolSettings() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
