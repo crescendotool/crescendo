@@ -958,6 +958,52 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
+		<!--QueryToolSettings-->
+   <method>
+      <description>
+        Queries the DE or CT tool for the list of tool settings that are available.
+      </description>
+    <methodCall>
+      <methodName>Destecs.QueryToolSettings</methodName>
+    </methodCall>
+    <methodResponse>
+    <params>
+      <param>
+        <value>
+          <struct>
+            <member>
+              <name>settings</name>
+              <value>
+                <array> 
+                  <data>
+                    <value>
+                      <struct>
+                        <member>
+                          <name>key</name>
+                          <value>
+                            <string>simulator.integrationmethod</string>
+                          </value>
+                        </member>
+                       <member>
+                          <name>value</name>
+                          <value>
+                            <string>Euler</string>
+                          </value>
+                        </member>
+                     </struct>
+                    </value>
+                  </data>
+                </array>
+              </value>
+            </member>
+          </struct>
+        </value>
+      </param>
+    </params>
+    </methodResponse>
+  </method>
+		
+		
 	</methods>
 	<methodFaultResponses>
 		<methodResponse>
