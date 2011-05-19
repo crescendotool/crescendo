@@ -14,6 +14,7 @@ import org.destecs.protocol.structs.Load2Struct;
 import org.destecs.protocol.structs.Load2argumentsStructParam;
 import org.destecs.protocol.structs.LoadStruct;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
+import org.destecs.protocol.structs.QueryToolSettingsStruct;
 import org.destecs.protocol.structs.SetDesignParametersStruct;
 import org.destecs.protocol.structs.SetParametersStruct;
 import org.destecs.protocol.structs.StartStruct;
@@ -375,6 +376,12 @@ public class CoSimImpl implements IDestecs
 			ErrorLog.log(e);
 			throw e; 
 		}
+	}
+
+	public Map<String, List<Map<String, Object>>> queryToolSettings() throws RemoteSimulationException
+	{
+		return new QueryToolSettingsStruct(SimulationManager.getInstance().queryToolSettings()).toMap();
+		
 	}
 
 }
