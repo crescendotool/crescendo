@@ -4,8 +4,11 @@ public interface IDebugConstants {
 	
 	public static final String PLUGIN_ID = "org.destecs.ide.debug";
 	
-	public static final String DESTECS_LAUNCH_CONFIG_PROJECT_NAME = "DESTECS_LAUNCH_CONFIG_PROJECT_NAME".toLowerCase(); 
+	public static final String DESTECS_LAUNCH_CONFIG_PROJECT_NAME = "DESTECS_LAUNCH_CONFIG_PROJECT_NAME".toLowerCase();
+	
 	public static final String DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH = "DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH".toLowerCase();
+	public static final String DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH_DEFAULT = "__DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH_DEFAULT__";
+	
 	public static final String DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH = "DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_SCENARIO_PATH = "DESTECS_LAUNCH_CONFIG_SCENARIO_PATH".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_CONTRACT_PATH = "DESTECS_LAUNCH_CONFIG_CONTRACT_PATH".toLowerCase();
@@ -29,4 +32,14 @@ public interface IDebugConstants {
 	public static final String DEFAULT_CT_ENDPOINT = "http://localhost:1580";
 
 	public static final String VDMRT_CONTENT_TYPE_ID = "org.overture.ide.vdmrt.core.content-type";
+
+	public static final String VDM_LAUNCH_CONFIG_DTC_CHECKS = "VDM_LAUNCH_CONFIG_DTC_CHECKS".toLowerCase();
+
+	public static final String VDM_LAUNCH_CONFIG_INV_CHECKS = "VDM_LAUNCH_CONFIG_INV_CHECKS".toLowerCase();
+
+	public static final String VDM_LAUNCH_CONFIG_POST_CHECKS = "VDM_LAUNCH_CONFIG_POST_CHECKS".toLowerCase();
+
+	public static final String VDM_LAUNCH_CONFIG_MEASURE_CHECKS = "VDM_LAUNCH_CONFIG_MEASURE_CHECKS".toLowerCase();
+
+	public static final String VDM_LAUNCH_CONFIG_PRE_CHECKS = "VDM_LAUNCH_CONFIG_PRE_CHECKS".toLowerCase();
 }
