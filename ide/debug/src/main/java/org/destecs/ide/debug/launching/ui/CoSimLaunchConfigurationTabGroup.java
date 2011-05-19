@@ -22,7 +22,7 @@ public class CoSimLaunchConfigurationTabGroup extends
 				new _20simTab(),
 				new SharedDesignParameterTab(), 
 				new FaultTab(),
-				new ArchDseTab(),
+				new DseTab(),
 				new SimulatorConnectionTab(),
 				new CommonTab() };
 		setTabs(tabs);
