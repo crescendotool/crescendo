@@ -17,7 +17,7 @@ public class DSEConfigurationTabGroup extends
 				new CoSimLaunchConfigurationTab(),
 				new SharedDesignParameterTab(), 
 				new FaultTab(),
-				new DseTab(),
+				new DseArchitectureLaunchTab(),
 				new SimulatorConnectionTab(),
 				new CommonTab() };
 		setTabs(tabs);
