@@ -49,6 +49,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab {
 	private Button checkBoxInvChecks = null;
 	private Button checkBoxDynamicTypeChecks = null;
 	private Button checkBoxUseMeasure = null;
+	private Button checkBoxUseCoverage = null;
+	private Button checkBoxUseLogRt = null;
 
 	public void createControl(Composite parent)
 	{
@@ -102,6 +104,14 @@ public class VdmTab extends AbstractLaunchConfigurationTab {
 		checkBoxUseMeasure = new Button(interperterGroup, SWT.CHECK);
 		checkBoxUseMeasure.setText("Measure Run-Time checks");
 		checkBoxUseMeasure.addSelectionListener(fListener);
+		
+		checkBoxUseCoverage  = new Button(interperterGroup, SWT.CHECK);
+		checkBoxUseCoverage.setText("Generate Coverage");
+		checkBoxUseCoverage.addSelectionListener(fListener);
+		
+		checkBoxUseLogRt  = new Button(interperterGroup, SWT.CHECK);
+		checkBoxUseLogRt.setText("Log Real-Time Events");
+		checkBoxUseLogRt.addSelectionListener(fListener);
 
 	}
 
@@ -119,6 +129,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab {
 			checkBoxUsePostChecks.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, true));
 			checkBoxUsePreChecks.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, true));
 			checkBoxUseMeasure.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true));
+			checkBoxUseCoverage.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true));
+			checkBoxUseCoverage.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true));
 			
 		} catch (CoreException e)
 		{
@@ -136,6 +148,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab {
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, checkBoxUsePostChecks.getSelection());
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, checkBoxUsePreChecks.getSelection());
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, checkBoxUseMeasure.getSelection());
+		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, checkBoxUseCoverage.getSelection());
+		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, checkBoxUseLogRt.getSelection());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
@@ -145,6 +159,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab {
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, true);
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, true);
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true);
+		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true);
+		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true);
 	}
 
 }

@@ -42,4 +42,8 @@ public interface IDebugConstants {
 	public static final String VDM_LAUNCH_CONFIG_MEASURE_CHECKS = "VDM_LAUNCH_CONFIG_MEASURE_CHECKS".toLowerCase();
 
 	public static final String VDM_LAUNCH_CONFIG_PRE_CHECKS = "VDM_LAUNCH_CONFIG_PRE_CHECKS".toLowerCase();
+
+	public static final String VDM_LAUNCH_CONFIG_GENERATE_COVERAGE = "VDM_LAUNCH_CONFIG_GENERATE_COVERAGE".toLowerCase();
+
+	public static final String VDM_LAUNCH_CONFIG_LOG_RT = "VDM_LAUNCH_CONFIG_LOG_RT".toLowerCase();
 }

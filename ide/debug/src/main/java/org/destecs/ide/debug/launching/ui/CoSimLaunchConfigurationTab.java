@@ -95,6 +95,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 	private Text fScenarioText;
 	private Button selectCtPathButton;
+	private Button removeScenarioButton;
 
 	public void createControl(Composite parent)
 	{
@@ -120,7 +121,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		GridLayout layout = new GridLayout();
 		layout.makeColumnsEqualWidth = false;
-		layout.numColumns = 3;
+		layout.numColumns = 4;
 		group.setLayout(layout);
 
 		// editParent = group;
@@ -136,6 +137,23 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		fScenarioText.setLayoutData(gd);
 		fScenarioText.addModifyListener(fListener);
 
+		removeScenarioButton = createPushButton(group, "Remove", null);
+		if(fScenarioText.getText().equals(""))
+		{
+			removeScenarioButton.setEnabled(false);
+		}
+		else
+		{
+			removeScenarioButton.setEnabled(true);
+		
+		}
+		removeScenarioButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				fScenarioText.setText("");
+			}
+		});
+		
 		selectScenarioButton = createPushButton(group, "Browse...", null);
 		selectScenarioButton.setEnabled(false);
 		selectScenarioButton.addSelectionListener(new SelectionAdapter()
@@ -198,6 +216,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					)
 					{
 						fScenarioText.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
+						removeScenarioButton.setEnabled(true);
 					}
 
 				}
