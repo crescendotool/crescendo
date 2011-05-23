@@ -24,6 +24,7 @@ import org.destecs.protocol.structs.StopStruct;
 import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.protocol.structs.UnLoadStruct;
 import org.destecs.vdmj.VDMCO;
+import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
@@ -36,10 +37,17 @@ public class CoSimImpl implements IDestecs
 	private static final String LOAD_REPLACE = "replace";
 	private static final String LOAD_LINK = "link";
 	private static final String LOAD_FILE = "file";
+	private static final String LOAD_BASE_DIR = "basedir";
 	private static final String LOAD_DEBUG_PORT = "dbgp_port";
+	// settings
+	public static final String LOAD_SETTING_DISABLE_PRE = "settings_disable_pre";
+	public static final String LOAD_SETTING_DISABLE_POST = "settings_disable_post";
+	public static final String LOAD_SETTING_DISABLE_INV = "settings_disable_inv";
+	public static final String LOAD_SETTING_DISABLE_DYNAMIC_TC = "settings_disable_dtc";
+	public static final String LOAD_SETTING_DISABLE_MEASURE = "settings_disable_measure";
 
 	private static final String version = "0.0.0.2";
- 
+
 	public Map<String, Integer> getStatus()
 	{
 		return new GetStatusStruct(SimulationManager.getInstance().getStatus()).toMap();
@@ -62,7 +70,8 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> load(Map<String, String> data) throws RemoteSimulationException
+	public Map<String, Boolean> load(Map<String, String> data)
+			throws RemoteSimulationException
 	{
 		String path = data.get(data.keySet().toArray()[0]);
 
@@ -77,7 +86,7 @@ public class CoSimImpl implements IDestecs
 			files.addAll(getFiles(root, specFileExtension));
 
 			File outputFolder = new File(root.getParentFile(), "output");
-			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile)).toMap();
+			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile, files.get(0).getParentFile())).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -110,13 +119,22 @@ public class CoSimImpl implements IDestecs
 		return files;
 	}
 
-	public Map<String, Boolean> load2(Map<String, Object> arg0) throws RemoteSimulationException
+	public Map<String, Boolean> load2(Map<String, Object> arg0)
+			throws RemoteSimulationException
 	{
 		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
 
 		VDMCO.replaceNewIdentifier.clear();
+
+		Settings.prechecks = true;
+		Settings.postchecks = true;
+		Settings.invchecks = true;
+		Settings.dynamictypechecks = true;
+		Settings.measureChecks = true;
+
 		List<File> specfiles = new Vector<File>();
 		File linkFile = null;
+		File baseDirFile = null;
 		for (Object in : tmp)
 		{
 			if (in instanceof Map)
@@ -131,6 +149,10 @@ public class CoSimImpl implements IDestecs
 				if (arg.argumentName.startsWith(LOAD_LINK))
 				{
 					linkFile = new File(arg.argumentValue);
+				}
+				if (arg.argumentName.startsWith(LOAD_BASE_DIR))
+				{
+					baseDirFile = new File(arg.argumentValue);
 				}
 				if (arg.argumentName.startsWith(LOAD_REPLACE))
 				{
@@ -160,6 +182,26 @@ public class CoSimImpl implements IDestecs
 				{
 					VDMCO.debugPort = Integer.valueOf(arg.argumentValue);
 				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_PRE))
+				{
+					Settings.prechecks = false;
+				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_POST))
+				{
+					Settings.postchecks = false;
+				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_INV))
+				{
+					Settings.invchecks = false;
+				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_DYNAMIC_TC))
+				{
+					Settings.dynamictypechecks = false;
+				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_MEASURE))
+				{
+					Settings.measureChecks = false;
+				}
 			}
 		}
 
@@ -167,7 +209,7 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir))).toMap();
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile)).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -211,7 +253,8 @@ public class CoSimImpl implements IDestecs
 		return s.toMap();
 	}
 
-	public Map<String, Object> step(Map<String, Object> data) throws RemoteSimulationException
+	public Map<String, Object> step(Map<String, Object> data)
+			throws RemoteSimulationException
 	{
 		Double outputTime = (Double) data.get("outputTime");
 
@@ -322,7 +365,8 @@ public class CoSimImpl implements IDestecs
 	}
 
 	public Map<String, Boolean> setDesignParameters(
-			Map<String, List<Map<String, Object>>> data) throws RemoteSimulationException
+			Map<String, List<Map<String, Object>>> data)
+			throws RemoteSimulationException
 	{
 		try
 		{
@@ -343,7 +387,8 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> setParameter(Map<String, Object> data) throws RemoteSimulationException
+	public Map<String, Boolean> setParameter(Map<String, Object> data)
+			throws RemoteSimulationException
 	{
 		String name = (String) data.get("name");
 		Double value = (Double) data.get("value");
@@ -366,7 +411,7 @@ public class CoSimImpl implements IDestecs
 		throw new NoSuchMethodError("Not supported by VDMJ");
 	}
 
-	public Map<String, Boolean> start() throws RemoteSimulationException 
+	public Map<String, Boolean> start() throws RemoteSimulationException
 	{
 		try
 		{
@@ -374,14 +419,15 @@ public class CoSimImpl implements IDestecs
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
-			throw e; 
+			throw e;
 		}
 	}
 
-	public Map<String, List<Map<String, Object>>> queryToolSettings() throws RemoteSimulationException
+	public Map<String, List<Map<String, Object>>> queryToolSettings()
+			throws RemoteSimulationException
 	{
 		return new QueryToolSettingsStruct(SimulationManager.getInstance().queryToolSettings()).toMap();
-		
+
 	}
 
 }

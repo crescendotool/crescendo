@@ -302,9 +302,11 @@ public class CoSimLaunchConfigurationDelegate implements
 
 	private ModelConfig getDeModelConfig(IProject project2,int port)
 	{
+		final IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
 		final DeModelConfig model = new DeModelConfig();
 		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);
 		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
+		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder().getLocation().toFile().getAbsolutePath());
 
 		if (deArchitectureFile!= null && deArchitectureFile.exists())
 		{
@@ -369,7 +371,7 @@ public class CoSimLaunchConfigurationDelegate implements
 			});
 			
 			
-			IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
+			
 			p.getVdmModelFolder().accept(new IResourceVisitor()
 			{
 

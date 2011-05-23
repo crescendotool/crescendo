@@ -212,7 +212,7 @@ public class SimulationManager extends BasicSimulationManager
 		return null;
 	}
 
-	public Boolean load(List<File> specfiles, File linkFile,File outputDir) throws RemoteSimulationException
+	public Boolean load(List<File> specfiles, File linkFile,File outputDir, File baseDirFile) throws RemoteSimulationException
 	{
 		try
 		{
@@ -234,7 +234,7 @@ public class SimulationManager extends BasicSimulationManager
 			
 			controller.setLogFile(new File(outputDir, "logFile.logrt"));
 			controller.setScript(script);
-			Settings.DGBPbaseDir = outputDir.getParentFile();
+			Settings.DGBPbaseDir = baseDirFile;
 
 			VDMCO.outputDir = outputDir;
 			ExitStatus status = controller.parse(specfiles);
