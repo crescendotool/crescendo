@@ -25,6 +25,7 @@ import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.protocol.structs.UnLoadStruct;
 import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.Settings;
+import org.overturetool.vdmj.messages.rtlog.RTLogger;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
@@ -46,6 +47,9 @@ public class CoSimImpl implements IDestecs
 	public static final String LOAD_SETTING_DISABLE_DYNAMIC_TC = "settings_disable_dtc";
 	public static final String LOAD_SETTING_DISABLE_MEASURE = "settings_disable_measure";
 
+	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
+	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
+	
 	private static final String version = "0.0.0.2";
 
 	public Map<String, Integer> getStatus()
@@ -131,6 +135,7 @@ public class CoSimImpl implements IDestecs
 		Settings.invchecks = true;
 		Settings.dynamictypechecks = true;
 		Settings.measureChecks = true;
+		RTLogger.enable(true);
 
 		List<File> specfiles = new Vector<File>();
 		File linkFile = null;
@@ -201,6 +206,14 @@ public class CoSimImpl implements IDestecs
 				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_MEASURE))
 				{
 					Settings.measureChecks = false;
+				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_RT_LOG))
+				{
+					RTLogger.enable(false);
+				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
+				{
+					//TODO: disable runtime validation.
 				}
 			}
 		}

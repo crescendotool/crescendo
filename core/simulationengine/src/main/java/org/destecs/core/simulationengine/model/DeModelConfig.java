@@ -19,6 +19,9 @@ public class DeModelConfig extends ModelConfig
 	public static final String LOAD_SETTING_DISABLE_DYNAMIC_TC = "settings_disable_dtc";
 	public static final String LOAD_SETTING_DISABLE_MEASURE = "settings_disable_measure";
 	
+	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
+	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
+	
 	private int fileCount = 0;
 	public DeModelConfig()
 	{
