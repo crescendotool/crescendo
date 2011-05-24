@@ -680,7 +680,9 @@ public class SimulationEngine {
 		try {
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(url);
-			config.setReplyTimeout(5000);// 5 sec time out
+			
+			// 0 sec timeout = no timeout and fixes Bert problem
+			config.setReplyTimeout(000);// 5 sec time out
 
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
