@@ -63,7 +63,6 @@ public class DeMetadata {
 	}
 
 	private void findAndClearSystem() {
-		
 
 		for (String key : vdmMetadata.keySet()) {
 			List<String> clas = vdmMetadata.get(key);
@@ -75,14 +74,13 @@ public class DeMetadata {
 				}
 			}
 		}
-		
+
 		for (String key : new HashSet<String>(vdmMetadata.keySet())) {
 
 			List<String> clas = vdmMetadata.get(key);
 			if (clas.size() > 0 && !clas.get(0).equals("real")) {
 				vdmMetadata.remove(key);
-			} 
-			else {
+			} else {
 				if (key.startsWith(systemClass)) {
 					vdmMetadata.remove(key);
 					String res = key.replace(systemClass, "");
@@ -99,21 +97,21 @@ public class DeMetadata {
 
 		for (String key : links.getLinks().keySet()) {
 			StringPair p = links.getLinks().get(key);
-			
-			if(!vdmMetadata.containsKey(p.toString()))
-			{
-				System.out.println(p.toString() + " not present in the metadata");
-				errorMsgs.add(p.toString() + " does not exist in the VDM model or it is not at real number");
+
+			if (!vdmMetadata.containsKey(p.toString())) {
+				System.out.println(p.toString()
+						+ " not present in the metadata");
+				errorMsgs
+						.add(p.toString()
+								+ " does not exist in the VDM model or it is not at real number");
 			}
 		}
-
 	}
 
-	public List<String> getErrorMsgs()
-	{
+	public List<String> getErrorMsgs() {
 		return errorMsgs;
 	}
-	
+
 	private void printMetadata() {
 		System.out.println("---- PRINTING TRIMMED METADATA ----");
 		for (String key : vdmMetadata.keySet()) {
