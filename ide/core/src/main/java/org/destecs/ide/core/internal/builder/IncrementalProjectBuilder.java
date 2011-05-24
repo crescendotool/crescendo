@@ -13,6 +13,7 @@ import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.Links;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.metadata.DeMetadata;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.core.utility.FileUtility;
@@ -35,6 +36,9 @@ public class IncrementalProjectBuilder extends
 			return null;
 		}
 
+		boolean isOk = true;
+		boolean isChecked = true;
+		
 		IDestecsProject project = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
 		final DestecsModel model = project.getModel();
 		try
@@ -42,6 +46,7 @@ public class IncrementalProjectBuilder extends
 			if (!project.getContractFile().exists())
 			{
 				model.setContract(null);
+				isOk = false;
 				return null;
 			}
 			ContractParserWrapper contractParser = new ContractParserWrapper();
@@ -50,6 +55,7 @@ public class IncrementalProjectBuilder extends
 			if (!typeCheck(project.getContractFile(), contract))
 			{
 				model.setContract(null);
+				isOk = false;
 				return null;
 			}
 			model.setContract(contract);
@@ -57,6 +63,7 @@ public class IncrementalProjectBuilder extends
 			if (!project.getVdmLinkFile().exists())
 			{
 				model.setLinks(null);
+				isOk = false;
 				return null;
 			}
 			VdmLinkParserWrapper vdmLinkParser = new VdmLinkParserWrapper();
@@ -65,16 +72,29 @@ public class IncrementalProjectBuilder extends
  			if (!typeCheck(project.getVdmLinkFile(), vdmlinks, contract))
 			{
 				model.setLinks(null);
+				isOk = false;
 				return null;
 			}
 
 			model.setLinks(vdmlinks);
 
+			DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
+			deMetadata.checkLinks();
+			for (String err : deMetadata.getErrorMsgs()) {
+				addError(project.getVdmLinkFile(), err);
+			}
+			
 		} catch (Exception e)
 		{
+			isOk = false;
+			isChecked = false;
+			e.printStackTrace();
 			//TODO build with errors, set project state to build and error
 		}
 
+		model.setChecked(isChecked);
+		model.setOk(isOk);
+		
 		return null;
 	}
 
