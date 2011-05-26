@@ -57,14 +57,14 @@ public class WindowsUtils
 		BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		while ((line = input.readLine()) != null)
 		{
-			String[] items = line.split(",");
+			String[] items = line.split("\",");
 
 			for (int i = 0; i < items.length; i++)
 			{
 				items[i] = items[i].replaceAll("\"", "");
 			}
 
-			if (items.length == 5)
+			if (items.length >= 5)
 			{
 				ProcessInfo info = new ProcessInfo(items[0], Integer.valueOf(items[1]), items[2], Integer.valueOf(items[3]), items[4]);
 				processes.add(info);
