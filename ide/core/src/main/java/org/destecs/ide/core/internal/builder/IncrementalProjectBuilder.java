@@ -78,11 +78,12 @@ public class IncrementalProjectBuilder extends
 
 			model.setLinks(vdmlinks);
 
-			DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
-			deMetadata.checkLinks();
-			for (String err : deMetadata.getErrorMsgs()) {
-				addError(project.getVdmLinkFile(), err);
-			}
+			//TODO: I COMMENTED THIS
+//			DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
+//			deMetadata.checkLinks();
+//			for (String err : deMetadata.getErrorMsgs()) {
+//				addError(project.getVdmLinkFile(), err);
+//			}
 			
 		} catch (Exception e)
 		{
