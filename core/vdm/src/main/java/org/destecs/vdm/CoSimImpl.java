@@ -90,7 +90,7 @@ public class CoSimImpl implements IDestecs
 			files.addAll(getFiles(root, specFileExtension));
 
 			File outputFolder = new File(root.getParentFile(), "output");
-			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile, files.get(0).getParentFile())).toMap();
+			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile, files.get(0).getParentFile(),false)).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -135,7 +135,7 @@ public class CoSimImpl implements IDestecs
 		Settings.invchecks = true;
 		Settings.dynamictypechecks = true;
 		Settings.measureChecks = true;
-		RTLogger.enable(true);
+		boolean disableRtLog = false;
 
 		List<File> specfiles = new Vector<File>();
 		File linkFile = null;
@@ -209,7 +209,7 @@ public class CoSimImpl implements IDestecs
 				}
 				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_RT_LOG))
 				{
-					RTLogger.enable(false);
+					disableRtLog = true;
 				}
 				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
 				{
@@ -222,7 +222,7 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile)).toMap();
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile,disableRtLog)).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);

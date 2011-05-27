@@ -189,5 +189,19 @@ public class DBGPThread extends Thread
 			throw new NotSupportedError();
 		}
 
+		public void alarming(long expected)
+		{
+			//Not used
+		}
+		public long getAlarmWakeTime()
+		{
+			//Not used
+			return 0;
+		}
+		public void clearAlarm()
+		{
+			//Not used
+		}
+
 	}
 }

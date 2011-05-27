@@ -68,7 +68,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
 
 public class CoSimLaunchConfigurationDelegate extends
-		LaunchConfigurationDelegate {
+		LaunchConfigurationDelegate
+{
 
 	private File deFile = null;
 	private File ctFile = null;
@@ -88,7 +89,8 @@ public class CoSimLaunchConfigurationDelegate extends
 	private ILaunchConfiguration configuration;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+			ILaunch launch, IProgressMonitor monitor) throws CoreException
+	{
 		this.configuration = configuration;
 		loadSettings(configuration);
 		this.launch = launch;
@@ -97,106 +99,89 @@ public class CoSimLaunchConfigurationDelegate extends
 		startSimulation();
 	}
 
-	private File getFileFromPath(IProject project, String path) {
+	private File getFileFromPath(IProject project, String path)
+	{
 
 		IResource r = project.findMember(new Path(path));
 
-		if (r != null && !r.equals(project)) {
+		if (r != null && !r.equals(project))
+		{
 			return r.getLocation().toFile();
 		}
 		return null;
 	}
 
-	private void loadSettings(ILaunchConfiguration configuration) {
-		try {
-			project = ResourcesPlugin
-					.getWorkspace()
-					.getRoot()
-					.getProject(
-							configuration
-									.getAttribute(
-											IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME,
-											""));
+	private void loadSettings(ILaunchConfiguration configuration)
+	{
+		try
+		{
+			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
-			contractFile = getFileFromPath(project, configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
-			deFile = getFileFromPath(project, configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
-			ctFile = getFileFromPath(project, configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
-			scenarioFile = getFileFromPath(project, configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
-			deArchitectureFile = getFileFromPath(
-					project,
-					configuration
-							.getAttribute(
-									IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE,
-									""));
-			deReplacePattern = configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
-			sharedDesignParam = configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM,
-					"");
-			totalSimulationTime = Double
-					.parseDouble(configuration
-							.getAttribute(
-									IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME,
-									"0"));
+			contractFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
+			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
+			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
+			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
+			deArchitectureFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
+			deReplacePattern = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
+			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
+			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 
-			String deUrlString = configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
-			if (deUrlString.length() == 0) {
+			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
+			if (deUrlString.length() == 0)
+			{
 				Integer freePort = VdmRtBundleLauncher.getFreePort();
-				if (freePort == -1) {
+				if (freePort == -1)
+				{
 					throw new Exception("No free port found for DE launch");
 				}
-				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll(
-						"PORT", freePort.toString()));
-			} else {
+				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", freePort.toString()));
+			} else
+			{
 				deUrl = new URL(deUrlString);
 			}
-			ctUrl = new URL(configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT,
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT));
+			ctUrl = new URL(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT));
 
-			remoteDebug = configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false);
-		} catch (CoreException e) {
-			DestecsDebugPlugin.logError(
-					"Faild to load launch configuration attributes", e);
-		} catch (MalformedURLException e) {
-			DestecsDebugPlugin.logError(
-					"Faild to load launch configuration attributes (URL's)", e);
-		} catch (Exception e) {
-			DestecsDebugPlugin.logError(
-					"Faild to load launch configuration attributes (URL's)", e);
+			remoteDebug = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false);
+		} catch (CoreException e)
+		{
+			DestecsDebugPlugin.logError("Faild to load launch configuration attributes", e);
+		} catch (MalformedURLException e)
+		{
+			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
+		} catch (Exception e)
+		{
+			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
 		}
 
-		IDestecsProject dProject = (IDestecsProject) project
-				.getAdapter(IDestecsProject.class);
+		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 		File base = dProject.getOutputFolder().getLocation().toFile();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
 		outputFolder = new File(base, dateFormat.format(new Date()));
 
-		if (!outputFolder.mkdirs()) {
+		if (!outputFolder.mkdirs())
+		{
 			outputFolder = null;
 		}
 
 	}
 
-	private void startSimulation() {
+	private void startSimulation()
+	{
 		final List<InfoTableView> views = new Vector<InfoTableView>();
 		final ListenerToLog log = getLog();
 
-		try {
+		try
+		{
 
 			SimulationEngine.eclipseEnvironment = true;
 			final SimulationEngine engine = getEngine();
 
-			UIJob listeners = new UIJob("Set Listeners") {
+			UIJob listeners = new UIJob("Set Listeners")
+			{
 
 				@Override
-				public IStatus runInUIThread(IProgressMonitor monitor) {
+				public IStatus runInUIThread(IProgressMonitor monitor)
+				{
 					final String messageViewId = IDebugConstants.MESSAGE_VIEW_ID;
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 					final String simulationViewId = IDebugConstants.SIMULATION_VIEW_ID;
@@ -210,17 +195,15 @@ public class CoSimLaunchConfigurationDelegate extends
 					views.add(simulationView);
 
 					engine.engineListeners.add(new EngineListener(engineView));
-					engine.messageListeners
-							.add(new MessageListener(messageView));
-					engine.simulationListeners.add(new SimulationListener(
-							simulationView));
+					engine.messageListeners.add(new MessageListener(messageView));
+					engine.simulationListeners.add(new SimulationListener(simulationView));
 
-					for (InfoTableView view : views) {
+					for (InfoTableView view : views)
+					{
 						view.refreshPackTable();
 					}
 
-					return new Status(IStatus.OK, IDebugConstants.PLUGIN_ID,
-							"Listeners OK");
+					return new Status(IStatus.OK, IDebugConstants.PLUGIN_ID, "Listeners OK");
 				}
 			};
 
@@ -230,14 +213,13 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.simulationListeners.add(log);
 			engine.variablesSyncListeners.add(log);
 
-			if (!remoteDebug) {
-				File libSearchRoot = new File(project.getLocation().toFile(),
-						"lib");
-				engine.setDeSimulationLauncher(new VdmRtBundleLauncher(deFile,
-						deUrl.getPort(), libSearchRoot));// new
-			} else {
-				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll(
-						"PORT", Integer.valueOf(8080).toString()));
+			if (!remoteDebug)
+			{
+				File libSearchRoot = new File(project.getLocation().toFile(), "lib");
+				engine.setDeSimulationLauncher(new VdmRtBundleLauncher(deFile, deUrl.getPort(), libSearchRoot));// new
+			} else
+			{
+				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", Integer.valueOf(8080).toString()));
 				engine.setDeSimulationLauncher(new VdmRtLauncher(5000));
 			}
 
@@ -251,181 +233,186 @@ public class CoSimLaunchConfigurationDelegate extends
 
 			engine.setOutputFolder(outputFolder);
 
-			engine.addProcessCreationListener(new IProcessCreationListener() {
-				public void processCreated(String name, Process p) {
+			engine.addProcessCreationListener(new IProcessCreationListener()
+			{
+				public void processCreated(String name, Process p)
+				{
 					launch.addProcess(DebugPlugin.newProcess(launch, p, name));
 				}
 			});
 
 			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
 
-			final Job vdm = new Job("launch vdm") {
+			final Job vdm = new Job("launch vdm")
+			{
 
 				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					try {
+				protected IStatus run(IProgressMonitor monitor)
+				{
+					try
+					{
 						ILaunchConfiguration vdmLaunchConfig = getVdmLaunchConfig(deDebugPort);
-						ILaunch vdmLaunch = vdmLaunchConfig.launch("debug",
-								null);
+						ILaunch vdmLaunch = vdmLaunchConfig.launch("debug", null);
 						launch.addDebugTarget(vdmLaunch.getDebugTarget());
-					} catch (CoreException e) {
-						return new Status(IStatus.ERROR,
-								IDebugConstants.PLUGIN_ID,
-								"Faild to launch VDM-RT debug", e);
+					} catch (CoreException e)
+					{
+						return new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, "Faild to launch VDM-RT debug", e);
 					}
 					return Status.OK_STATUS;
 				}
 			};
 
-			engine.simulationStartListeners.add(new ISimulationStartListener() {
+			engine.simulationStartListeners.add(new ISimulationStartListener()
+			{
 
-				public void simulationStarting(Simulator simulator) {
-					if (simulator == Simulator.DE) {
+				public void simulationStarting(Simulator simulator)
+				{
+					if (simulator == Simulator.DE)
+					{
 						vdm.schedule();
 					}
 				}
 			});
 
-			CoSimulationThread simThread = new CoSimulationThread(engine, log,
-					shareadDesignParameters, totalSimulationTime, target, views);
+			CoSimulationThread simThread = new CoSimulationThread(engine, log, shareadDesignParameters, totalSimulationTime, target, views);
 			target.setCoSimulationThread(simThread);
 			simThread.start();
 
-		} catch (Exception ex) {
+		} catch (Exception ex)
+		{
 			ex.printStackTrace();
-			for (InfoTableView view : views) {
+			for (InfoTableView view : views)
+			{
 				view.refreshPackTable();
 			}
-			try {
-				if (target != null) {
+			try
+			{
+				if (target != null)
+				{
 					target.terminate();
-				} else {
+				} else
+				{
 					launch.terminate();
 				}
-			} catch (DebugException e) {
-				DestecsDebugPlugin.log(new Status(IStatus.ERROR,
-						DestecsDebugPlugin.PLUGIN_ID, "Error launching", e));
+			} catch (DebugException e)
+			{
+				DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Error launching", e));
 			}
 		}
 	}
 
-	private ModelConfig getDeModelConfig(IProject project2, int port) {
-		final IDestecsProject p = (IDestecsProject) project2
-				.getAdapter(IDestecsProject.class);
+	private ModelConfig getDeModelConfig(IProject project2, int port)
+	{
+		final IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
 		final DeModelConfig model = new DeModelConfig();
 		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);
-		model.arguments
-				.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
-		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder()
-				.getLocation().toFile().getAbsolutePath());
+		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
+		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder().getLocation().toFile().getAbsolutePath());
 
-		if (deArchitectureFile != null && deArchitectureFile.exists()) {
+		if (deArchitectureFile != null && deArchitectureFile.exists())
+		{
 			StringBuffer architecture = new StringBuffer();
 			StringBuffer deploy = new StringBuffer();
-			try {
-				BufferedReader in = new BufferedReader(new FileReader(
-						deArchitectureFile));
+			try
+			{
+				BufferedReader in = new BufferedReader(new FileReader(deArchitectureFile));
 				String str;
 				boolean inArch = false;
 				boolean inDeploy = false;
-				while ((str = in.readLine()) != null) {
+				while ((str = in.readLine()) != null)
+				{
 					str = str.trim();
-					if (str.startsWith("-- ## Architecture ## --")) {
+					if (str.startsWith("-- ## Architecture ## --"))
+					{
 						inArch = true;
 						inDeploy = false;
 					}
-					if (str.startsWith("-- ## Deployment ## --")) {
+					if (str.startsWith("-- ## Deployment ## --"))
+					{
 						inDeploy = true;
 						inArch = false;
 					}
 
-					if (inArch) {
+					if (inArch)
+					{
 						architecture.append(str);
 						architecture.append("\n");
 					}
-					if (inDeploy) {
+					if (inDeploy)
+					{
 						deploy.append(str);
 						deploy.append("\n");
 					}
 				}
 				in.close();
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 			}
-			model.arguments.put(DeModelConfig.LOAD_ARCHITECTURE,
-					architecture.toString());
+			model.arguments.put(DeModelConfig.LOAD_ARCHITECTURE, architecture.toString());
 			model.arguments.put(DeModelConfig.LOAD_DEPLOY, deploy.toString());
 
 		}
 
-		final IContentType vdmrtFileContentType = Platform
-				.getContentTypeManager().getContentType(
-						IDebugConstants.VDMRT_CONTENT_TYPE_ID);
+		final IContentType vdmrtFileContentType = Platform.getContentTypeManager().getContentType(IDebugConstants.VDMRT_CONTENT_TYPE_ID);
 
-		try {
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, true))// vdmProject.hasPrechecks())
+		try
+		{
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, true))// vdmProject.hasPrechecks())
 			{
-				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_PRE,
-						"false");
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_PRE, "true");
 			}
 
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, true))// vdmProject.hasPostchecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, true))// vdmProject.hasPostchecks())
 			{
-				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_POST,
-						"false");
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_POST, "true");
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_INV_CHECKS, true))// vdmProject.hasInvchecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_INV_CHECKS, true))// vdmProject.hasInvchecks())
 			{
-				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_INV,
-						"false");
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_INV, "true");
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_DTC_CHECKS, true))// vdmProject.hasDynamictypechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_DTC_CHECKS, true))// vdmProject.hasDynamictypechecks())
 			{
-				model.arguments.put(
-						DeModelConfig.LOAD_SETTING_DISABLE_DYNAMIC_TC, "false");
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_DYNAMIC_TC, "true");
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true))// vdmProject.hasMeasurechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true))// vdmProject.hasMeasurechecks())
 			{
-				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_MEASURE,
-						"false");
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_MEASURE, "true");
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true))// vdmProject.hasMeasurechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true))// vdmProject.hasMeasurechecks())
 			{
-				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_RT_LOG,
-						"false");
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_RT_LOG, "true");
 			}
 
-			project2.accept(new IResourceVisitor() {
+			project2.accept(new IResourceVisitor()
+			{
 
-				public boolean visit(IResource resource) throws CoreException {
+				public boolean visit(IResource resource) throws CoreException
+				{
 					if (resource instanceof IFile
 							&& resource.getFileExtension() != null
-							&& resource.getFileExtension().equals(
-									DeModelConfig.LOAD_LINK)) {
-						model.arguments.put(DeModelConfig.LOAD_LINK, resource
-								.getLocation().toFile().getAbsolutePath());
+							&& resource.getFileExtension().equals(DeModelConfig.LOAD_LINK))
+					{
+						model.arguments.put(DeModelConfig.LOAD_LINK, resource.getLocation().toFile().getAbsolutePath());
 					}
 					return true;
 				}
 			});
 
-			p.getVdmModelFolder().accept(new IResourceVisitor() {
+			p.getVdmModelFolder().accept(new IResourceVisitor()
+			{
 
-				public boolean visit(IResource resource) throws CoreException {
-					if (vdmrtFileContentType.isAssociatedWith(resource
-							.getName())) {
+				public boolean visit(IResource resource) throws CoreException
+				{
+					if (vdmrtFileContentType.isAssociatedWith(resource.getName()))
+					{
 						model.addSpecFile(resource.getLocation().toFile());
 					}
 					return true;
 				}
 			});
 			return model;
-		} catch (CoreException e) {
+		} catch (CoreException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
@@ -433,58 +420,62 @@ public class CoSimLaunchConfigurationDelegate extends
 
 	}
 
-	private ListenerToLog getLog() {
-		try {
+	private ListenerToLog getLog()
+	{
+		try
+		{
 			return new ListenerToLog(outputFolder);
-		} catch (FileNotFoundException e1) {
+		} catch (FileNotFoundException e1)
+		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return null;
 	}
 
-	private SimulationEngine getEngine() throws IOException {
+	private SimulationEngine getEngine() throws IOException
+	{
 
-		if (scenarioFile != null) {
+		if (scenarioFile != null)
+		{
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
 			return new ScenarioSimulationEngine(contractFile, scenario);
-		} else {
+		} else
+		{
 			return new SimulationEngine(contractFile);
 		}
 	}
 
 	private static List<SetDesignParametersdesignParametersStructParam> loadSharedDesignParameters(
-			String sharedDesignParamData) throws Exception {
+			String sharedDesignParamData) throws Exception
+	{
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
 		SdpParserWrapper parser = new SdpParserWrapper();
-		HashMap<String, Object> result = parser.parse(new File("memory"),
-				sharedDesignParamData);
+		HashMap<String, Object> result = parser.parse(new File("memory"), sharedDesignParamData);
 
-		for (Object key : result.keySet()) {
+		for (Object key : result.keySet())
+		{
 			String name = key.toString();
-			if (result.get(name) instanceof Double) {
-				shareadDesignParameters
-						.add(new SetDesignParametersdesignParametersStructParam(
-								name, (Double) result.get(name)));
-			} else if (result.get(name) instanceof Integer) {
-				shareadDesignParameters
-						.add(new SetDesignParametersdesignParametersStructParam(
-								name, ((Integer) result.get(name))
-										.doubleValue()));
-			} else if (result.get(name) instanceof Boolean) {
+			if (result.get(name) instanceof Double)
+			{
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, (Double) result.get(name)));
+			} else if (result.get(name) instanceof Integer)
+			{
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, ((Integer) result.get(name)).doubleValue()));
+			} else if (result.get(name) instanceof Boolean)
+			{
 				boolean r = ((Boolean) result.get(name)).booleanValue();
 				Double val = Double.valueOf(0);
-				if (r) {
+				if (r)
+				{
 					val = Double.valueOf(1);
 				}
-				shareadDesignParameters
-						.add(new SetDesignParametersdesignParametersStructParam(
-								name, val));
-			} else {
-				throw new Exception(
-						"Design parameter type not supported by protocol: "
-								+ name);
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, val));
+			} else
+			{
+				throw new Exception("Design parameter type not supported by protocol: "
+						+ name);
 			}
 
 		}
@@ -492,47 +483,50 @@ public class CoSimLaunchConfigurationDelegate extends
 		return shareadDesignParameters;
 	}
 
-	private static InfoTableView getInfoTableView(String id) {
+	private static InfoTableView getInfoTableView(String id)
+	{
 		IViewPart v;
-		try {
-			IWorkbenchWindow[] windows = PlatformUI.getWorkbench()
-					.getWorkbenchWindows();
-			if (windows.length > 0) {
-				v = windows[0].getActivePage().getActivePart().getSite()
-						.getPage().showView(id);
+		try
+		{
+			IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+			if (windows.length > 0)
+			{
+				v = windows[0].getActivePage().getActivePart().getSite().getPage().showView(id);
 				return (InfoTableView) v;
 			}
 			return null;
 
-		} catch (PartInitException e1) {
+		} catch (PartInitException e1)
+		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return null;
 		}
 	}
 
-	public static void sleep(long i) {
-		try {
+	public static void sleep(long i)
+	{
+		try
+		{
 			Thread.sleep(i);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e)
+		{
 			// Ignore it
 		}
 
 	}
 
-	private ILaunchConfiguration getVdmLaunchConfig(int port) {
+	private ILaunchConfiguration getVdmLaunchConfig(int port)
+	{
 		// ILaunchConfiguration config = null;
 		ILaunchConfigurationWorkingCopy wc = null;
 
-		ILaunchManager launchManager = DebugPlugin.getDefault()
-				.getLaunchManager();
+		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 
-		ILaunchConfigurationType configType = launchManager
-				.getLaunchConfigurationType("org.overture.ide.vdmrt.debug.launchConfigurationType");// IVdmRtDebugConstants.ATTR_VDM_PROGRAM);
-		try {
-			wc = configType.newInstance(null, launchManager
-					.generateUniqueLaunchConfigurationNameFrom(project
-							.getName()));
+		ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType("org.overture.ide.vdmrt.debug.launchConfigurationType");// IVdmRtDebugConstants.ATTR_VDM_PROGRAM);
+		try
+		{
+			wc = configType.newInstance(null, launchManager.generateUniqueLaunchConfigurationNameFrom(project.getName()));
 
 			final String VDM_LAUNCH_CONFIG_PROJECT = "vdm_launch_config_project";
 			final String VDM_LAUNCH_CONFIG_MODULE = "vdm_launch_config_module";
@@ -578,49 +572,37 @@ public class CoSimLaunchConfigurationDelegate extends
 
 			wc.setAttribute(VDM_LAUNCH_CONFIG_OVERRIDE_PORT, port);
 
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, true))// vdmProject.hasPrechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, true))// vdmProject.hasPrechecks())
 			{
-				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS,
-						false);
+				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_PRE_CHECKS, false);
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, true))// vdmProject.hasPostchecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, true))// vdmProject.hasPostchecks())
 			{
-				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS,
-						false);
+				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, false);
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_INV_CHECKS, true))// vdmProject.hasInvchecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_INV_CHECKS, true))// vdmProject.hasInvchecks())
 			{
-				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_INV_CHECKS,
-						false);
+				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_INV_CHECKS, false);
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_DTC_CHECKS, true))// vdmProject.hasDynamictypechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_DTC_CHECKS, true))// vdmProject.hasDynamictypechecks())
 			{
-				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_DTC_CHECKS,
-						false);
+				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_DTC_CHECKS, false);
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true))// vdmProject.hasMeasurechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true))// vdmProject.hasMeasurechecks())
 			{
-				wc.setAttribute(
-						IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, false);
+				wc.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, false);
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true))// vdmProject.hasMeasurechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true))// vdmProject.hasMeasurechecks())
 			{
 				wc.setAttribute(VDM_LAUNCH_CONFIG_CREATE_COVERAGE, false);
 			}
-			if (!configuration.getAttribute(
-					IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true))// vdmProject.hasMeasurechecks())
+			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true))// vdmProject.hasMeasurechecks())
 			{
-				wc.setAttribute(VDM_LAUNCH_CONFIG_ENABLE_REALTIME_LOGGING,
-						false);
+				wc.setAttribute(VDM_LAUNCH_CONFIG_ENABLE_REALTIME_LOGGING, false);
 			}
 
-		} catch (CoreException e) {
+		} catch (CoreException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -629,23 +611,28 @@ public class CoSimLaunchConfigurationDelegate extends
 	}
 
 	/**
-	 * Returns a free port number on localhost, or -1 if unable to find a free
-	 * port.
+	 * Returns a free port number on localhost, or -1 if unable to find a free port.
 	 * 
-	 * @return a free port number on localhost, or -1 if unable to find a free
-	 *         port
+	 * @return a free port number on localhost, or -1 if unable to find a free port
 	 */
-	public static int findFreePort() {
+	public static int findFreePort()
+	{
 		ServerSocket socket = null;
-		try {
+		try
+		{
 			socket = new ServerSocket(0);
 			return socket.getLocalPort();
-		} catch (IOException e) {
-		} finally {
-			if (socket != null) {
-				try {
+		} catch (IOException e)
+		{
+		} finally
+		{
+			if (socket != null)
+			{
+				try
+				{
 					socket.close();
-				} catch (IOException e) {
+				} catch (IOException e)
+				{
 				}
 			}
 		}

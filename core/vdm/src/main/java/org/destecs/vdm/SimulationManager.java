@@ -45,8 +45,7 @@ import org.overturetool.vdmj.values.ValueList;
 
 public class SimulationManager extends BasicSimulationManager
 {
-	
-	
+
 	// Thread runner;
 	private Context mainContext = null;
 	private final static String script = "new World().run()";
@@ -133,12 +132,13 @@ public class SimulationManager extends BasicSimulationManager
 			try
 			{
 				Double value = getOutput(key);
-				if(value != null)
+				if (value != null)
 				{
 					outputs.add(new StepStructoutputsStruct(key, value));
-				}else
+				} else
 				{
-					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "+key);
+					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "
+							+ key);
 				}
 			} catch (ValueException e)
 			{
@@ -212,12 +212,14 @@ public class SimulationManager extends BasicSimulationManager
 		return null;
 	}
 
-	public Boolean load(List<File> specfiles, File linkFile,File outputDir, File baseDirFile) throws RemoteSimulationException
+	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
+			File baseDirFile, boolean disableRtLog)
+			throws RemoteSimulationException
 	{
 		try
 		{
-			
-			if (!linkFile.exists()|| linkFile.isDirectory())
+
+			if (!linkFile.exists() || linkFile.isDirectory())
 			{
 				throw new RemoteSimulationException("The VDM link file does not exist: "
 						+ linkFile);
@@ -230,9 +232,13 @@ public class SimulationManager extends BasicSimulationManager
 				throw new RemoteSimulationException("Faild to parse vdm links");
 			}
 
-			
-			
-			controller.setLogFile(new File(outputDir, "logFile.logrt"));
+			if (disableRtLog)
+			{
+				RTLogger.enable(false);
+			} else
+			{
+				controller.setLogFile(new File(outputDir, "logFile.logrt"));
+			}
 			controller.setScript(script);
 			Settings.DGBPbaseDir = baseDirFile;
 
@@ -261,7 +267,8 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 		{
 			debugErr(e);
-			throw new RemoteSimulationException("Faild to load model from " + outputDir, e);
+			throw new RemoteSimulationException("Faild to load model from "
+					+ outputDir, e);
 
 		}
 
@@ -272,7 +279,8 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		Properties.init();
 		Properties.parser_tabstop = 1;
-		Properties.rt_duration_transactions = false;;
+		Properties.rt_duration_transactions = false;
+		;
 
 		Settings.dialect = Dialect.VDM_RT;
 		Settings.usingCmdLine = false;
@@ -309,15 +317,15 @@ public class SimulationManager extends BasicSimulationManager
 				return false;
 			}
 		} else
-		{					
-			throw new RemoteSimulationException(//"Model must be "
-					//+ CoSimStatusEnum.INITIALIZED
-					//+ " before it can be started. " +
-							"Status = " + this.status + ". Internal error: " + controller.exception.getMessage());
+		{
+			throw new RemoteSimulationException(// "Model must be "
+			// + CoSimStatusEnum.INITIALIZED
+			// + " before it can be started. " +
+			"Status = " + this.status + ". Internal error: "
+					+ controller.exception.getMessage());
 		}
 
 	}
-
 
 	private List<File> getFiles() throws RemoteSimulationException
 	{
@@ -452,7 +460,8 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	public synchronized Boolean stopSimulation() throws RemoteSimulationException
+	public synchronized Boolean stopSimulation()
+			throws RemoteSimulationException
 	{
 		try
 		{
@@ -472,7 +481,8 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	public List<QueryToolSettingsStructsettingsStruct> queryToolSettings() {
+	public List<QueryToolSettingsStructsettingsStruct> queryToolSettings()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
