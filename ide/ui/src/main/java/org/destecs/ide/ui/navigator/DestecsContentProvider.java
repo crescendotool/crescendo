@@ -111,11 +111,11 @@ public class DestecsContentProvider extends BaseWorkbenchContentProvider
 				if (children[i] instanceof IProject)
 				{
 					IProject p = (IProject) children[i];
-					if (!p.isOpen())
-					{
-						result.add(p);
-					} else
-					{
+//					if (!p.isOpen())
+//					{
+//						result.add(p);
+//					} else
+//					{
 
 //						IDestecsProject destecsProject = (IDestecsProject) ((IProject) children[i])
 //								.getAdapter(IDestecsProject.class);
@@ -123,7 +123,7 @@ public class DestecsContentProvider extends BaseWorkbenchContentProvider
 //						{
 							result.add((IProject) children[i]);
 //						}
-					}
+//					}
 
 				}
 

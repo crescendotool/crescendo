@@ -243,15 +243,22 @@
                <not>
                   <adapt
                         type="org.eclipse.core.resources.IProject">
-                     <test
-                           property="org.eclipse.core.resources.projectNature"
-                           value="org.destecs.ide.core.nature">
-                     </test>
+                     <or>
+                        <test
+                               property="org.eclipse.core.resources.projectNature"
+                                value="org.destecs.ide.core.nature">
+                        </test>
+                        <not>
+                            <test property="org.eclipse.core.resources.open">
+                            </test>
+                        </not>
+                     </or>
                   </adapt>
                </not>
                <instanceof
                      value="org.eclipse.core.resources.IProject">
-               </instanceof></and>
+               </instanceof>
+           </and>
          </filterExpression>
       </commonFilter>
    </extension>
