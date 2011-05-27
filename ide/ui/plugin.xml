@@ -233,6 +233,7 @@
             </and>
          </filterExpression>
       </commonFilter>
+      <!--http://wiki.eclipse.org/Command_Core_Expressions-->
       <commonFilter
             activeByDefault="true"
             description="%Filters.Only.DestecsProjects.description"

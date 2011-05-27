@@ -41,27 +41,35 @@ import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 
-public class SimulationEngine {
-	public enum Simulator {
+public class SimulationEngine
+{
+	public enum Simulator
+	{
 		DE("VDM-RT"), CT("20-Sim"), ALL("All");
 
 		private String name;
 
-		private Simulator(String name) {
+		private Simulator(String name)
+		{
 			this.name = name;
 		}
 
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			return name;
 		}
 	}
 
+	public enum SynchronizationScheme
+	{
+		Default, Theoretical
+	}
+
 	/**
-	 * Indicated that the class is used in the Eclipse Runtime environment. Used
-	 * to change loading of SAX Parser for XML-RPC -needed since Eclipse
-	 * replaced the javax.xml.parsers with an older Eclipse specific version.
-	 * <b>Must be false if running standalone in console mode</b>
+	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
+	 * XML-RPC -needed since Eclipse replaced the javax.xml.parsers with an older Eclipse specific version. <b>Must be
+	 * false if running standalone in console mode</b>
 	 */
 	public static boolean eclipseEnvironment = false;
 
@@ -79,7 +87,7 @@ public class SimulationEngine {
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
 	public final List<IVariableSyncListener> variablesSyncListeners = new Vector<IVariableSyncListener>();
 	public final List<ISimulationStartListener> simulationStartListeners = new Vector<ISimulationStartListener>();
-	
+
 	private final List<XmlRpcClient> clients = new Vector<XmlRpcClient>();
 
 	private final List<IProcessCreationListener> processCreationListeners = new Vector<IProcessCreationListener>();
@@ -93,63 +101,86 @@ public class SimulationEngine {
 
 	private File outputDirectory = null;
 
-	public SimulationEngine(File contractFile) {
+	private SynchronizationScheme syncScheme = SynchronizationScheme.Default;
+
+	public SimulationEngine(File contractFile)
+	{
 		this.contractFile = contractFile;
 	}
 
-	public void setDeEndpoint(URL endpoint) {
+	public void setSynchronizationScheme(SynchronizationScheme scheme)
+	{
+		this.syncScheme = scheme;
+	}
+
+	public void setDeEndpoint(URL endpoint)
+	{
 		deEndpoint = endpoint;
 	}
 
-	public void setCtEndpoint(URL endpoint) {
+	public void setCtEndpoint(URL endpoint)
+	{
 		ctEndpoint = endpoint;
 	}
 
-	public void setDeModel(ModelConfig model) throws ModelPathNotValidException {
-		if (model == null) {
+	public void setDeModel(ModelConfig model) throws ModelPathNotValidException
+	{
+		if (model == null)
+		{
 			throw new ModelPathNotValidException(Simulator.DE, "null");
 		}
-		if (!model.isValid()) {
+		if (!model.isValid())
+		{
 			throw new ModelPathNotValidException(Simulator.DE, model.toString());
 		}
 		this.deModelBase = model;
 	}
 
-	public void setCtModel(ModelConfig model) throws ModelPathNotValidException {
-		if (model == null) {
+	public void setCtModel(ModelConfig model) throws ModelPathNotValidException
+	{
+		if (model == null)
+		{
 			throw new ModelPathNotValidException(Simulator.CT, "null");
 		}
-		if (!model.isValid()) {
+		if (!model.isValid())
+		{
 			throw new ModelPathNotValidException(Simulator.CT, model.toString());
 		}
 		this.ctModel = model;
 	}
 
-	public void setDeSimulationLauncher(ISimulatorLauncher launcher) {
+	public void setDeSimulationLauncher(ISimulatorLauncher launcher)
+	{
 		deLauncher = launcher;
 	}
 
-	public void setCtSimulationLauncher(ISimulatorLauncher launcher) {
+	public void setCtSimulationLauncher(ISimulatorLauncher launcher)
+	{
 		ctLauncher = launcher;
 	}
 
-	public void setOutputFolder(File output) {
+	public void setOutputFolder(File output)
+	{
 		this.outputDirectory = output;
 	}
 
 	private void validate() throws InvalidEndpointsExpection,
 			ModelPathNotValidException, InvalidSimulationLauncher,
-			FileNotFoundException {
-		if (contractFile == null || !contractFile.exists()) {
+			FileNotFoundException
+	{
+		if (contractFile == null || !contractFile.exists())
+		{
 			throw new FileNotFoundException("Contract file now found: "
 					+ contractFile);
 		}
 
-		if (deEndpoint == null) {
+		if (deEndpoint == null)
+		{
 			throw new InvalidEndpointsExpection(Simulator.DE, deEndpoint);
 		}
 
-		if (ctEndpoint == null) {
+		if (ctEndpoint == null)
+		{
 			throw new InvalidEndpointsExpection(Simulator.CT, ctEndpoint);
 		}
 
@@ -157,22 +188,25 @@ public class SimulationEngine {
 
 		checkModel(Simulator.CT, ctModel);
 
-		if (deLauncher == null) {
-			throw new InvalidSimulationLauncher(Simulator.DE,
-					"Launcher not set");
+		if (deLauncher == null)
+		{
+			throw new InvalidSimulationLauncher(Simulator.DE, "Launcher not set");
 		}
 
-		if (ctLauncher == null) {
-			throw new InvalidSimulationLauncher(Simulator.CT,
-					"Launcher not set");
+		if (ctLauncher == null)
+		{
+			throw new InvalidSimulationLauncher(Simulator.CT, "Launcher not set");
 		}
 	}
 
 	private void checkModel(Simulator simulator, ModelConfig model)
-			throws ModelPathNotValidException {
-		if (model == null) {
+			throws ModelPathNotValidException
+	{
+		if (model == null)
+		{
 			throw new ModelPathNotValidException(simulator, "null");
-		} else if (!ctModel.isValid()) {
+		} else if (!ctModel.isValid())
+		{
 			throw new ModelPathNotValidException(simulator, "null");
 		}
 	}
@@ -180,8 +214,10 @@ public class SimulationEngine {
 	public void simulate(
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,
 			double totalSimulationTime) throws SimulationException,
-			FileNotFoundException {
-		try {
+			FileNotFoundException
+	{
+		try
+		{
 			// reset force simulation stop
 			this.forceStopSimulation = false;
 			engineInfo(Simulator.ALL, "Simulation engine type loaded: "
@@ -191,16 +227,18 @@ public class SimulationEngine {
 			infoSharedDesignParameters(sharedDesignParameters);
 
 			Contract contract = null;
-			try {
+			try
+			{
 				ContractParserWrapper parser = new ContractParserWrapper();
 				contract = parser.parse(contractFile);
-				if (parser.hasErrors()) {
+				if (parser.hasErrors())
+				{
 					throw new Exception("Invalid Contract - parse errors");
 				}
-			} catch (Exception e) {
-				abort(Simulator.ALL,
-						"Could not parse contract "
-								+ contractFile.getAbsolutePath(), e);
+			} catch (Exception e)
+			{
+				abort(Simulator.ALL, "Could not parse contract "
+						+ contractFile.getAbsolutePath(), e);
 				return;
 			}
 
@@ -224,10 +262,11 @@ public class SimulationEngine {
 			// Turn off timeout, simulators may be slow at loading the model
 			// which should not cause a timeout. Instead
 			// they should try to load and report an error if they fail.
-			for (XmlRpcClient client : clients) {
-				if (client.getClientConfig() instanceof XmlRpcClientConfigImpl) {
-					((XmlRpcClientConfigImpl) client.getClientConfig())
-							.setReplyTimeout(0);
+			for (XmlRpcClient client : clients)
+			{
+				if (client.getClientConfig() instanceof XmlRpcClientConfigImpl)
+				{
+					((XmlRpcClientConfigImpl) client.getClientConfig()).setReplyTimeout(0);
 				}
 			}
 
@@ -240,10 +279,8 @@ public class SimulationEngine {
 			valideteInterfaces(contract, dtProxy, ctProxy);
 
 			// set SDPs
-			setSharedDesignParameters(Simulator.DE, dtProxy,
-					sharedDesignParameters);
-			setSharedDesignParameters(Simulator.CT, ctProxy,
-					sharedDesignParameters);
+			setSharedDesignParameters(Simulator.DE, dtProxy, sharedDesignParameters);
+			setSharedDesignParameters(Simulator.CT, ctProxy, sharedDesignParameters);
 
 			// start simulation
 			startSimulator(Simulator.DE, dtProxy);
@@ -270,47 +307,60 @@ public class SimulationEngine {
 		// System.out.println("Exception");
 		// System.out.println(e.getMessage());
 		// }
-		finally {
-			if (deLauncher.isRunning() || ctLauncher.isRunning()) {
+		finally
+		{
+			if (deLauncher.isRunning() || ctLauncher.isRunning())
+			{
 				sleep();
 				shutdownSimulators();
 			}
 		}
 	}
 
-	private static void sleep() {
-		try {
+	private static void sleep()
+	{
+		try
+		{
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e)
+		{
 			// ignore it
 		}
 	}
 
-	public void shutdownSimulators() {
-		if (deLauncher.isRunning()) {
+	public void shutdownSimulators()
+	{
+		if (deLauncher.isRunning())
+		{
 			deLauncher.kill();
 		}
-		if (ctLauncher.isRunning()) {
+		if (ctLauncher.isRunning())
+		{
 			ctLauncher.kill();
 		}
 	}
 
 	private void launchSimulator(Simulator simulator,
-			ISimulatorLauncher launcher) throws SimulationException {
+			ISimulatorLauncher launcher) throws SimulationException
+	{
 		engineInfo(simulator, "Launching");
-		try {
+		try
+		{
 			processCreated(launcher.getName(), launcher.launch());
 
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			abort(simulator, "Failed to launch simulator", e);
 		}
 	}
 
 	private void infoSharedDesignParameters(
-			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters) {
+			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
+	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("Shared Design Parameter initialized as: (");
-		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters) {
+		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters)
+		{
 			sb.append(p.name + ":=" + p.value + " ");
 		}
 		sb.append(")");
@@ -319,18 +369,22 @@ public class SimulationEngine {
 
 	private boolean validateSharedDesignParameters(
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters,
-			Contract contract) throws SimulationException {
-		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters) {
+			Contract contract) throws SimulationException
+	{
+		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters)
+		{
 			boolean found = false;
-			for (Variable var : contract.getSharedDesignParameters()) {
-				if (var.name.endsWith(p.name)) {
+			for (Variable var : contract.getSharedDesignParameters())
+			{
+				if (var.name.endsWith(p.name))
+				{
 					found = true;
 				}
 			}
-			if (!found) {
-				abort(Simulator.ALL,
-						"Shared design parameter invalid to contract: \""
-								+ p.name + "\" in " + contractFile);
+			if (!found)
+			{
+				abort(Simulator.ALL, "Shared design parameter invalid to contract: \""
+						+ p.name + "\" in " + contractFile);
 				return false;
 			}
 		}
@@ -339,12 +393,15 @@ public class SimulationEngine {
 
 	private void terminate(Simulator simulator, Double time,
 			ProxyICoSimProtocol proxy, ISimulatorLauncher launcher)
-			throws SimulationException {
-		try {
+			throws SimulationException
+	{
+		try
+		{
 			messageInfo(simulator, time, "terminate");
 			engineInfo(simulator, "Terminating...");
 			proxy.terminate();
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "terminate faild", e);
 		}
 
@@ -354,11 +411,14 @@ public class SimulationEngine {
 	}
 
 	private boolean stop(Simulator simulator, Double finishTime,
-			ProxyICoSimProtocol proxy) throws SimulationException {
-		try {
+			ProxyICoSimProtocol proxy) throws SimulationException
+	{
+		try
+		{
 			messageInfo(simulator, finishTime, "stop");
 			return proxy.stop().success;
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "stop faild", e);
 		}
 		return false;
@@ -366,7 +426,8 @@ public class SimulationEngine {
 
 	private Double simulate(Double totalSimulationTime,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
-			throws SimulationException {
+			throws SimulationException
+	{
 		Double initTime = 0.0;// 100.0;
 		Double time = 0.0;
 
@@ -376,33 +437,32 @@ public class SimulationEngine {
 		List<String> events = new Vector<String>();
 
 		// First initialize DT
-		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime,
-				new Vector<StepinputsStructParam>(), false, events);
-		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime,
-				new Vector<StepinputsStructParam>(), false, events);
+		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
+		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
 		StepResult res = merge(deResult, ctResult);
 		// System.out.print(res.toHeaderString());
 		variableSyncInfo(res.getHeaders());
-		while (time <= totalSimulationTime) {
-			if (forceStopSimulation) {
+		while (time <= totalSimulationTime)
+		{
+			if (forceStopSimulation)
+			{
 				// simulation stop requested, stop simulation loop
 				break;
 			}
 			// System.out.print(res.toString());
 			variableSyncInfo(res.getVariables());
 			// Step DT - time calculate
-			deResult = step(Simulator.DE, dtProxy, ctProxy, res.time,
-					res.deData, false, res.events);
+			deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
 
 			// Step CT - step
-			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time,
-					res.ctData, false, res.events);
+			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, res.ctData, false, res.events);
 
-			// Step DT - step
-			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time,
-					res.deData, false, res.events);
-
+			if (syncScheme == SynchronizationScheme.Default)
+			{
+				// Step DT - step
+				deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, res.deData, false, res.events);
+			}
 			res = merge(deResult, ctResult);
 
 			time = res.time;
@@ -410,13 +470,13 @@ public class SimulationEngine {
 		return time;
 	}
 
-	private StepResult merge(StepStruct deResult, StepStruct ctResult) {
-		return new StepResult(ctResult.time, deResult.time,
-				outputToInput(ctResult.outputs),
-				outputToInput(deResult.outputs), ctResult.events);
+	private StepResult merge(StepStruct deResult, StepStruct ctResult)
+	{
+		return new StepResult(ctResult.time, deResult.time, outputToInput(ctResult.outputs), outputToInput(deResult.outputs), ctResult.events);
 	}
 
-	public static class StepResult {
+	public static class StepResult
+	{
 		// data time
 		public final Double time; // from CT
 		public final Double destTime; // from DE
@@ -427,7 +487,8 @@ public class SimulationEngine {
 
 		public StepResult(Double time, Double destTime,
 				List<StepinputsStructParam> deData,
-				List<StepinputsStructParam> ctData, List<String> events) {
+				List<StepinputsStructParam> ctData, List<String> events)
+		{
 			this.time = time;
 			this.destTime = destTime;
 			this.deData = deData;
@@ -436,45 +497,55 @@ public class SimulationEngine {
 		}
 
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			StringBuilder sb = new StringBuilder();
-			for (String col : getVariables()) {
+			for (String col : getVariables())
+			{
 				sb.append(col);
 				sb.append(split);
 			}
 			return sb.substring(0, sb.length() - 1) + "\n";
 		}
 
-		public List<String> getVariables() {
+		public List<String> getVariables()
+		{
 			List<String> list = new Vector<String>();
 
 			list.add(time.toString());
-			for (StepinputsStructParam elem : deData) {
+			for (StepinputsStructParam elem : deData)
+			{
 				list.add(elem.value.toString());
 			}
-			for (StepinputsStructParam elem : ctData) {
+			for (StepinputsStructParam elem : ctData)
+			{
 				list.add(elem.value.toString());
 			}
 			return list;
 		}
 
-		public String toHeaderString() {
+		public String toHeaderString()
+		{
 			StringBuilder sb = new StringBuilder();
-			for (String col : getHeaders()) {
+			for (String col : getHeaders())
+			{
 				sb.append(col);
 				sb.append(split);
 			}
 			return sb.substring(0, sb.length() - 1) + "\n";
 		}
 
-		public List<String> getHeaders() {
+		public List<String> getHeaders()
+		{
 			List<String> list = new Vector<String>();
 
 			list.add("Time");
-			for (StepinputsStructParam elem : deData) {
+			for (StepinputsStructParam elem : deData)
+			{
 				list.add("CT_" + elem.name);
 			}
-			for (StepinputsStructParam elem : ctData) {
+			for (StepinputsStructParam elem : ctData)
+			{
 				list.add("DE_" + elem.name);
 			}
 			return list;
@@ -483,24 +554,30 @@ public class SimulationEngine {
 
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
-			throws SimulationException {
+			throws SimulationException
+	{
 
 	}
 
 	public StepStruct step(Simulator simulator, ProxyICoSimProtocol dtProxy,
 			ProxyICoSimProtocol ctProxy, Double outputTime,
 			List<StepinputsStructParam> inputs, Boolean singleStep,
-			List<String> events) throws SimulationException {
+			List<String> events) throws SimulationException
+	{
 		beforeStep(simulator, outputTime, dtProxy, ctProxy);
 		messageInfo(simulator, outputTime, "step");
 		StepStruct result = null;
-		try {
-			if (simulator == Simulator.CT) {
+		try
+		{
+			if (simulator == Simulator.CT)
+			{
 				result = ctProxy.step(outputTime, inputs, singleStep, events);
-			} else if (simulator == Simulator.DE) {
+			} else if (simulator == Simulator.DE)
+			{
 				result = dtProxy.step(outputTime, inputs, singleStep, events);
 			}
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "step failed(time = " + outputTime + " inputs=["
 					+ inputs.toString().replaceAll("\n", ", ")
 					+ "], singleStep = " + singleStep + ", events = " + events
@@ -510,27 +587,32 @@ public class SimulationEngine {
 		return result;
 	}
 
-	public void forceSimulationStop() {
+	public void forceSimulationStop()
+	{
 		this.forceStopSimulation = true;
 	}
 
 	private List<StepinputsStructParam> outputToInput(
-			List<StepStructoutputsStruct> outputs) {
+			List<StepStructoutputsStruct> outputs)
+	{
 		List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
-		for (StepStructoutputsStruct stepStructoutputsStruct : outputs) {
-			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name,
-					stepStructoutputsStruct.value));
+		for (StepStructoutputsStruct stepStructoutputsStruct : outputs)
+		{
+			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name, stepStructoutputsStruct.value));
 		}
 		return inputs;
 	}
 
 	private boolean startSimulator(Simulator simulator,
-			ProxyICoSimProtocol proxy) throws SimulationException {
-		try {
+			ProxyICoSimProtocol proxy) throws SimulationException
+	{
+		try
+		{
 			simulationStarting(simulator);
 			messageInfo(simulator, new Double(0), "start");
 			return proxy.start().success;
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "Could not start simulator", e);
 		}
 		abort(simulator, "Could not start simulator");
@@ -542,8 +624,10 @@ public class SimulationEngine {
 			Simulator simulator,
 			ProxyICoSimProtocol proxy,
 			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
-			throws SimulationException {
-		try {
+			throws SimulationException
+	{
+		try
+		{
 			messageInfo(simulator, new Double(0), "setDesignParameters");
 			StringBuffer sb = new StringBuffer();
 			sb.append("Setting sdp's: ");
@@ -551,7 +635,8 @@ public class SimulationEngine {
 
 			engineInfo(simulator, sb.toString());
 			return proxy.setDesignParameters(sharedDesignParameters).success;
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "setDesignParameters failed: "
 					+ getSdpString(sharedDesignParameters), e);
 		}
@@ -563,31 +648,38 @@ public class SimulationEngine {
 
 	private boolean valideteInterfaces(Contract contract,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
-			throws SimulationException {
+			throws SimulationException
+	{
 		QueryInterfaceStruct dtInterface = queryInterface(Simulator.DE, dtProxy);
 		QueryInterfaceStruct ctInterface = queryInterface(Simulator.CT, ctProxy);
 
 		engineInfo(Simulator.ALL, "Validating interfaces...");
-		for (Variable var : contract.getControlledVariables()) {
-			if (!dtInterface.outputs.contains(var.name)) {
+		for (Variable var : contract.getControlledVariables())
+		{
+			if (!dtInterface.outputs.contains(var.name))
+			{
 				abort(Simulator.DE, "Missing-output controlled variable: "
 						+ var);
 				return false;
 
 			}
-			if (!ctInterface.inputs.contains(var.name)) {
+			if (!ctInterface.inputs.contains(var.name))
+			{
 				abort(Simulator.CT, "Missing-input controlled variable: " + var);
 				return false;
 			}
 		}
 
-		for (Variable var : contract.getMonitoredVariables()) {
-			if (!dtInterface.inputs.contains(var.name)) {
+		for (Variable var : contract.getMonitoredVariables())
+		{
+			if (!dtInterface.inputs.contains(var.name))
+			{
 				abort(Simulator.DE, "Missing-input monitored variable: " + var);
 				return false;
 
 			}
-			if (!ctInterface.outputs.contains(var.name)) {
+			if (!ctInterface.outputs.contains(var.name))
+			{
 				abort(Simulator.CT, "Missing-output monitored variable: " + var);
 				return false;
 			}
@@ -632,109 +724,123 @@ public class SimulationEngine {
 	}
 
 	private QueryInterfaceStruct queryInterface(Simulator simulator,
-			ProxyICoSimProtocol proxy) throws SimulationException {
+			ProxyICoSimProtocol proxy) throws SimulationException
+	{
 		QueryInterfaceStruct intf = null;
-		try {
+		try
+		{
 			messageInfo(simulator, new Double(0), "queryInterface");
 			intf = proxy.queryInterface();
 			engineInfo(simulator, toStringInterface(intf));
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "queryInterface failed", e);
 		}
 		return intf;
 	}
 
 	protected void abort(Simulator source, String reason)
-			throws SimulationException {
+			throws SimulationException
+	{
 		engineInfo(source, "[Abort] " + reason);
 		throw new SimulationException(source, reason);
 	}
 
 	protected void abort(Simulator source, String reason, Throwable throwable)
-			throws SimulationException {
+			throws SimulationException
+	{
 		String extendedReason = "";
-		if (throwable instanceof RemoteSimulationException) {
+		if (throwable instanceof RemoteSimulationException)
+		{
 			extendedReason = " => "
 					+ getXmlRpcCause((RemoteSimulationException) throwable);
 		}
 
-		if (throwable instanceof XmlRpcException) {
+		if (throwable instanceof XmlRpcException)
+		{
 			XmlRpcException xmlException = (XmlRpcException) throwable;
 			extendedReason = " => " + Integer.valueOf(xmlException.code) + ": "
 					+ xmlException.getMessage();
 
 		}
 		engineInfo(source, "[Abort] " + reason + extendedReason);
-		throw new SimulationException(source, reason + extendedReason,
-				throwable);
+		throw new SimulationException(source, reason + extendedReason, throwable);
 	}
 
-	private static String getXmlRpcCause(RemoteSimulationException exception) {
+	private static String getXmlRpcCause(RemoteSimulationException exception)
+	{
 
 		return exception.getMessage();
 	}
 
 	private ProxyICoSimProtocol connect(Simulator simulator, URL url)
-			throws SimulationException {
+			throws SimulationException
+	{
 		ProxyICoSimProtocol protocolProxy = null;
-		try {
+		try
+		{
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(url);
-			
+
 			// 0 sec timeout = no timeout and fixes Bert problem
 			config.setReplyTimeout(000);// 5 sec time out
 
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
 
-			if (SimulationEngine.eclipseEnvironment) {
-				client.setTransportFactory(new CustomSAXParserTransportFactory(
-						client));
+			if (SimulationEngine.eclipseEnvironment)
+			{
+				client.setTransportFactory(new CustomSAXParserTransportFactory(client));
 			}
 
 			clients.add(client);
 			// add factory for annotations for generated protocol
-			AnnotationClientFactory factory = new AnnotationClientFactory(
-					client);
+			AnnotationClientFactory factory = new AnnotationClientFactory(client);
 
-			ICoSimProtocol protocol = (ICoSimProtocol) factory
-					.newInstance(ICoSimProtocol.class);
+			ICoSimProtocol protocol = (ICoSimProtocol) factory.newInstance(ICoSimProtocol.class);
 
 			protocolProxy = new ProxyICoSimProtocol(protocol);
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "Connect faild to: " + url, e);
 		}
 		return protocolProxy;
 	}
 
 	private boolean initialize(Simulator simulator, ProxyICoSimProtocol proxy)
-			throws SimulationException {
-		try {
+			throws SimulationException
+	{
+		try
+		{
 			messageInfo(simulator, new Double(0), "getVersion");
 			GetVersionStruct version = proxy.getVersion();
 			engineInfo(simulator, "Interface Version: " + version);
 
-			switch (simulator) {
-			case ALL:
-				break;
-			case CT:
-				ctVersion = version.version.trim();
-				break;
-			case DE:
-				deVersion = version.version.trim();
-				break;
+			switch (simulator)
+			{
+				case ALL:
+					break;
+				case CT:
+					ctVersion = version.version.trim();
+					break;
+				case DE:
+					deVersion = version.version.trim();
+					break;
 
 			}
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "getVersion failed", e);
 		}
 
-		try {
+		try
+		{
 			messageInfo(simulator, new Double(0), "initialize");
 			boolean initializedOk = proxy.initialize().success;
 			engineInfo(simulator, "Initilized ok: " + initializedOk);
 			return initializedOk;
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			abort(simulator, "initialize failed", e);
 		}
 		abort(simulator, "Could not initialize");
@@ -742,37 +848,42 @@ public class SimulationEngine {
 	}
 
 	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
-			ModelConfig model) throws SimulationException {
-		if (simulator == Simulator.DE && deVersion.equals("0.0.0.2")) {
-			try {
+			ModelConfig model) throws SimulationException
+	{
+		if (simulator == Simulator.DE && deVersion.equals("0.0.0.2"))
+		{
+			try
+			{
 				engineInfo(simulator, "Loading model: " + model);
 				messageInfo(simulator, new Double(0), "load");
 				List<Load2argumentsStructParam> arguments = new Vector<Load2argumentsStructParam>();
-				for (Entry<String, String> entry : model.arguments.entrySet()) {
-					arguments.add(new Load2argumentsStructParam(entry
-							.getValue(), entry.getKey()));
+				for (Entry<String, String> entry : model.arguments.entrySet())
+				{
+					arguments.add(new Load2argumentsStructParam(entry.getValue(), entry.getKey()));
 				}
 
-				boolean success = proxy.load2(
-						outputDirectory.getAbsolutePath(), arguments).success;
-				engineInfo(simulator,
-						"Loading model completed with no errors: " + success);
+				boolean success = proxy.load2(outputDirectory.getAbsolutePath(), arguments).success;
+				engineInfo(simulator, "Loading model completed with no errors: "
+						+ success);
 				return success;
-			} catch (Exception e) {
+			} catch (Exception e)
+			{
 				abort(simulator, "Could not load model: " + model, e);
 			}
 			abort(simulator, "Could not load model: " + model);
-		} else {
-			String absolutePath = new File(model.arguments.values().iterator()
-					.next()).getAbsolutePath();
-			try {
+		} else
+		{
+			String absolutePath = new File(model.arguments.values().iterator().next()).getAbsolutePath();
+			try
+			{
 				engineInfo(simulator, "Loading model: " + model);
 				messageInfo(simulator, new Double(0), "load");
 				boolean success = proxy.load(absolutePath).success;
-				engineInfo(simulator,
-						"Loading model completed with no errors: " + success);
+				engineInfo(simulator, "Loading model completed with no errors: "
+						+ success);
 				return success;
-			} catch (Exception e) {
+			} catch (Exception e)
+			{
 				abort(simulator, "Could not load model: " + absolutePath, e);
 			}
 			abort(simulator, "Could not load model: " + absolutePath);
@@ -780,56 +891,72 @@ public class SimulationEngine {
 		return false;
 	}
 
-	protected void engineInfo(Simulator simulator, String message) {
-		for (IEngineListener listener : engineListeners) {
+	protected void engineInfo(Simulator simulator, String message)
+	{
+		for (IEngineListener listener : engineListeners)
+		{
 			listener.info(simulator, message);
 		}
 	}
 
 	protected void messageInfo(Simulator fromSimulator, Double time,
-			String message) {
-		for (IMessageListener listener : messageListeners) {
+			String message)
+	{
+		for (IMessageListener listener : messageListeners)
+		{
 			listener.from(fromSimulator, time, message);
 		}
 	}
 
-	protected void simulationInfo(Simulator fromSimulator, StepStruct result) {
+	protected void simulationInfo(Simulator fromSimulator, StepStruct result)
+	{
 
-		for (ISimulationListener listener : simulationListeners) {
+		for (ISimulationListener listener : simulationListeners)
+		{
 			listener.stepInfo(fromSimulator, result);
 		}
 	}
 
-	protected void variableSyncInfo(List<String> colls) {
+	protected void variableSyncInfo(List<String> colls)
+	{
 
-		for (IVariableSyncListener listener : variablesSyncListeners) {
+		for (IVariableSyncListener listener : variablesSyncListeners)
+		{
 			listener.info(colls);
 		}
 	}
-	
-	protected void simulationStarting(Simulator fromSimulator) {
 
-		for (ISimulationStartListener listener : simulationStartListeners) {
+	protected void simulationStarting(Simulator fromSimulator)
+	{
+
+		for (ISimulationStartListener listener : simulationStartListeners)
+		{
 			listener.simulationStarting(fromSimulator);
 		}
 	}
 
 	public synchronized void addProcessCreationListener(
-			IProcessCreationListener listener) {
+			IProcessCreationListener listener)
+	{
 		processCreationListeners.add(listener);
 	}
 
-	protected synchronized void processCreated(String name, Process p) {
-		if (p != null) {
-			for (IProcessCreationListener listener : processCreationListeners) {
+	protected synchronized void processCreated(String name, Process p)
+	{
+		if (p != null)
+		{
+			for (IProcessCreationListener listener : processCreationListeners)
+			{
 				listener.processCreated(name, p);
 			}
 		}
 	}
 
-	public static String toStringInterface(QueryInterfaceStruct result) {
+	public static String toStringInterface(QueryInterfaceStruct result)
+	{
 		StringBuilder sb = new StringBuilder();
-		if (!eclipseEnvironment) {
+		if (!eclipseEnvironment)
+		{
 
 			sb.append("\n_____________________________\n");
 			sb.append("|\tInterface\n");
@@ -837,65 +964,84 @@ public class SimulationEngine {
 
 			sb.append("|  Shared Design Parameters\n");
 			sb.append("|\n");
-			if (result.sharedDesignParameters.size() > 0) {
-				for (String p : result.sharedDesignParameters) {
+			if (result.sharedDesignParameters.size() > 0)
+			{
+				for (String p : result.sharedDesignParameters)
+				{
 					sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
 				}
-			} else {
+			} else
+			{
 				sb.append("|    None.\n");
 			}
 			sb.append("|----------------------------\n");
 			sb.append("|  Input Variables\n");
 			sb.append("|\n");
-			if (result.inputs.size() > 0) {
-				for (String p : result.inputs) {
+			if (result.inputs.size() > 0)
+			{
+				for (String p : result.inputs)
+				{
 					sb.append("|    " + p /* p.name + " : " + p.value */+ "\n");
 				}
-			} else {
+			} else
+			{
 				sb.append("|    None.\n");
 			}
 			sb.append("|----------------------------\n");
 			sb.append("|  Output Variables\n");
 			sb.append("|\n");
-			if (result.outputs.size() > 0) {
-				for (String p : result.outputs) {
+			if (result.outputs.size() > 0)
+			{
+				for (String p : result.outputs)
+				{
 					sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
 				}
-			} else {
+			} else
+			{
 				sb.append("|    None.\n");
 			}
 			sb.append("_____________________________");
-		} else {
+		} else
+		{
 			sb.append("");
 			sb.append("Interface => ");
 
 			sb.append("SDP( ");
 
-			if (result.sharedDesignParameters.size() > 0) {
-				for (String p : result.sharedDesignParameters) {
+			if (result.sharedDesignParameters.size() > 0)
+			{
+				for (String p : result.sharedDesignParameters)
+				{
 					sb.append("" + p/* p.name + " : " + p.value */+ ", ");
 				}
-			} else {
+			} else
+			{
 				sb.append("- ");
 			}
 
 			sb.append(") Inputs( ");
 
-			if (result.inputs.size() > 0) {
-				for (String p : result.inputs) {
+			if (result.inputs.size() > 0)
+			{
+				for (String p : result.inputs)
+				{
 					sb.append("" + p /* p.name + " : " + p.value */+ ", ");
 				}
-			} else {
+			} else
+			{
 				sb.append("-  ");
 			}
 
 			sb.append(") Outputs( ");
 
-			if (result.outputs.size() > 0) {
-				for (String p : result.outputs) {
+			if (result.outputs.size() > 0)
+			{
+				for (String p : result.outputs)
+				{
 					sb.append("" + p/* p.name + " : " + p.value */+ ", ");
 				}
-			} else {
+			} else
+			{
 				sb.append("- ");
 			}
 			sb.append(")");
@@ -904,14 +1050,17 @@ public class SimulationEngine {
 	}
 
 	private static String getSdpString(
-			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters) {
+			List<SetDesignParametersdesignParametersStructParam> sharedDesignParameters)
+	{
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
-		for (SetDesignParametersdesignParametersStructParam sdp : sharedDesignParameters) {
+		for (SetDesignParametersdesignParametersStructParam sdp : sharedDesignParameters)
+		{
 			sb.append(sdp.name + " = " + sdp.value);
 			sb.append(", ");
 		}
-		if (sb.toString().endsWith(", ")) {
+		if (sb.toString().endsWith(", "))
+		{
 			sb = sb.delete(sb.length() - 2, sb.length());
 		}
 		sb.append("]");

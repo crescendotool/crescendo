@@ -33,7 +33,7 @@
      
       <view
             allowMultiple="false"
-            category="org.destecs.ide.ui.view.category"
+            category="org.destecs.ide.ui.category"
             class="org.destecs.ide.simeng.ui.views.InfoTableView"
             id="org.destecs.ide.simeng.ui.views.SimulationEngineView"
             name="Simulation Engine View">
@@ -41,7 +41,7 @@
       
       <view
             allowMultiple="false"
-            category="org.destecs.ide.ui.view.category"
+            category="org.destecs.ide.ui.category"
             class="org.destecs.ide.simeng.ui.views.InfoTableView"
             id="org.destecs.ide.simeng.ui.views.SimulationMessagesView"
             name="Simulation Messages View">
@@ -49,7 +49,7 @@
       
    <view
             allowMultiple="false"
-            category="org.destecs.ide.ui.view.category"
+            category="org.destecs.ide.ui.category"
             class="org.destecs.ide.simeng.ui.views.InfoTableView"
             id="org.destecs.ide.simeng.ui.views.SimulationView"
             name="Simulation View">

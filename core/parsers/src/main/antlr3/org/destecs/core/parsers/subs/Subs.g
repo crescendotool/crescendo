@@ -1,4 +1,4 @@
-grammar subs;
+grammar Subs;
 
 options {
   language = Java;
@@ -190,7 +190,7 @@ WS  :   ( ' '
 
 start : sub subs;
 
-sub : IDENT '/' IDENT;
+sub : IDENT^ '/' IDENT;
 
 subs : 
      | ',' sub subs

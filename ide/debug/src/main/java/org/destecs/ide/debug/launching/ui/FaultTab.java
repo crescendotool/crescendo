@@ -1,5 +1,10 @@
 package org.destecs.ide.debug.launching.ui;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.destecs.core.parsers.IError;
+import org.destecs.core.parsers.SubsParserWrapper;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.runtime.CoreException;
@@ -53,7 +58,7 @@ public class FaultTab extends AbstractLaunchConfigurationTab
 
 	private Text replacePattern = null;
 	private final WidgetListener fListener = new WidgetListener();
-	
+
 	public void createControl(Composite parent)
 	{
 		Composite comp = new Composite(parent, SWT.NONE);
@@ -63,8 +68,7 @@ public class FaultTab extends AbstractLaunchConfigurationTab
 		// IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
-		
-		
+
 		Group group = new Group(comp, comp.getStyle());
 		group.setText("Faults");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -74,7 +78,7 @@ public class FaultTab extends AbstractLaunchConfigurationTab
 		layout.makeColumnsEqualWidth = false;
 		layout.numColumns = 2;
 		group.setLayout(layout);
-		
+
 		Label label = new Label(group, SWT.MIN);
 		label.setText("DE Replace pattern (A/B):");
 		gd = new GridData(GridData.BEGINNING);
@@ -85,26 +89,24 @@ public class FaultTab extends AbstractLaunchConfigurationTab
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		replacePattern.setLayoutData(gd);
 		replacePattern.addModifyListener(fListener);
-		
-		
-		
-//		label = new Label(group, SWT.MIN);
-//		label.setText("CT Simulator URL:");
-//		gd = new GridData(GridData.BEGINNING);
-//		label.setLayoutData(gd);
-//
-//		ctUrl = new Text(group, SWT.SINGLE | SWT.BORDER);
-//
-//		gd = new GridData(GridData.FILL_HORIZONTAL);
-//		ctUrl.setLayoutData(gd);
-//		ctUrl.addModifyListener(fListener);
+
+		// label = new Label(group, SWT.MIN);
+		// label.setText("CT Simulator URL:");
+		// gd = new GridData(GridData.BEGINNING);
+		// label.setLayoutData(gd);
+		//
+		// ctUrl = new Text(group, SWT.SINGLE | SWT.BORDER);
+		//
+		// gd = new GridData(GridData.FILL_HORIZONTAL);
+		// ctUrl.setLayoutData(gd);
+		// ctUrl.addModifyListener(fListener);
 	}
 
 	public String getName()
 	{
 		return "Faults";
 	}
-	
+
 	@Override
 	public String getId()
 	{
@@ -117,58 +119,50 @@ public class FaultTab extends AbstractLaunchConfigurationTab
 		{
 			String url = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 
-			
 			replacePattern.setText(url);
 		} catch (CoreException e)
 		{
 			DestecsDebugPlugin.logError("Error fetching faults from launch configuration", e);
 		}
-		
+
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, replacePattern.getText());
-//		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, ctUrl.getText());
+		// configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, ctUrl.getText());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE,"");
-//		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DEFAULT_CT_ENDPOINT);
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
+		// configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT,
+		// IDebugConstants.DEFAULT_CT_ENDPOINT);
 	}
-	
+
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig)
 	{
 		setErrorMessage(null);
-//		try
-//		{
-//			if(deUrl.getText().length()<=0)
-//			{
-//				setErrorMessage("DE URL not set");
-//				return false;
-//			}
-//			new URL(deUrl.getText());
-//		} catch (Exception e)
-//		{
-//			setErrorMessage("DE URL not valid");
-//		}
-//		
-//		try
-//		{
-//			if(ctUrl.getText().length()<=0)
-//			{
-//				setErrorMessage("CT URL not set");
-//				return false;
-//			}
-//			new URL(ctUrl.getText());
-//		} catch (Exception e)
-//		{
-//			setErrorMessage("CT URL not valid");
-//		}
-//		
-//		
+
+		if (replacePattern.getText().trim().length() > 0)
+		{
+			try
+			{
+				SubsParserWrapper parser = new SubsParserWrapper();
+				parser.parse(new File("argument"), replacePattern.getText());
+				for (IError errorMessage : parser.getErrors())
+				{
+					setErrorMessage(errorMessage.toString());
+					break;
+				}
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		return super.isValid(launchConfig);
 	}
 

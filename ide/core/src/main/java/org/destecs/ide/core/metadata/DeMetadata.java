@@ -16,7 +16,8 @@ import org.destecs.ide.core.resources.IDestecsProject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 
-public class DeMetadata {
+public class DeMetadata
+{
 
 	private Map<String, List<String>> vdmMetadata = new Hashtable<String, List<String>>();
 	private Links links = null;
@@ -24,64 +25,79 @@ public class DeMetadata {
 	private List<String> errorMsgs = new ArrayList<String>();
 	private String systemClass = null;
 
-	public DeMetadata(Links links, IDestecsProject project) {
+	public DeMetadata(Links links, IDestecsProject project)
+	{
 		this.links = links;
 		this.project = project;
 	}
 
 	private void loadVdmMetadata(IDestecsProject p) throws IOException,
-			CoreException {
+			CoreException
+	{
 
 		Properties props = new Properties();
 		IFile file = p.getVdmModelFolder().getFile(".metadata");
 
-		if (file.exists()) {
+		if (file.exists())
+		{
 			props.load(file.getContents());
 
-			for (Entry<Object, Object> entry : props.entrySet()) {
-				vdmMetadata.put(entry.getKey().toString(),
-						Arrays.asList(entry.getValue().toString().split(",")));
+			for (Entry<Object, Object> entry : props.entrySet())
+			{
+				vdmMetadata.put(entry.getKey().toString(), Arrays.asList(entry.getValue().toString().split(",")));
 			}
 		}
 
 	}
 
-	public synchronized void checkLinks() {
-		try {
+	public synchronized void checkLinks()
+	{
+		try
+		{
 			loadVdmMetadata(project);
 			findAndClearSystem();
 			matchLinksAndMetaData();
 
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (CoreException e) {
+		} catch (CoreException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	private void findAndClearSystem() {
+	private void findAndClearSystem()
+	{
 
-		for (String key : vdmMetadata.keySet()) {
+		for (String key : vdmMetadata.keySet())
+		{
 			List<String> clas = vdmMetadata.get(key);
 
-			if (clas.size() > 0) {
+			if (clas.size() > 0)
+			{
 				String className = clas.get(0);
-				if (className.equals("system")) {
+				if (className.equals("system"))
+				{
 					systemClass = key + ".";
 				}
 			}
 		}
 
-		for (String key : new HashSet<String>(vdmMetadata.keySet())) {
+		for (String key : new HashSet<String>(vdmMetadata.keySet()))
+		{
 
 			List<String> clas = vdmMetadata.get(key);
-			if (clas.size() > 0 && !clas.get(0).equals("real")) {
+			if (clas.size() > 0 && !clas.get(0).equals("real"))
+			{
 				vdmMetadata.remove(key);
-			} else {
-				if (key.startsWith(systemClass)) {
+			} else
+			{
+				if (key.startsWith(systemClass))
+				{
 					vdmMetadata.remove(key);
 					String res = key.replace(systemClass, "");
 					vdmMetadata.put(res, clas);
@@ -89,32 +105,37 @@ public class DeMetadata {
 			}
 		}
 
-		printMetadata();
+//		printMetadata();
 
 	}
 
-	private void matchLinksAndMetaData() {
+	private void matchLinksAndMetaData()
+	{
 
-		for (String key : links.getLinks().keySet()) {
+		for (String key : links.getLinks().keySet())
+		{
 			StringPair p = links.getLinks().get(key);
 
-			if (!vdmMetadata.containsKey(p.toString())) {
-				System.out.println(p.toString()
-						+ " not present in the metadata");
-				errorMsgs
-						.add(p.toString()
-								+ " does not exist in the VDM model or it is not at real number");
+			if (!vdmMetadata.containsKey(p.toString()))
+			{
+//				System.out.println(p.toString()
+//						+ " not present in the metadata");
+				errorMsgs.add(p.toString()
+						+ " does not exist in the VDM model or it is not at real number");
 			}
 		}
 	}
 
-	public List<String> getErrorMsgs() {
+	public List<String> getErrorMsgs()
+	{
 		return errorMsgs;
 	}
 
-	private void printMetadata() {
+	public void printMetadata()
+	{
 		System.out.println("---- PRINTING TRIMMED METADATA ----");
-		for (String key : vdmMetadata.keySet()) {
+		for (String key : vdmMetadata.keySet())
+		{
 			System.out.println(key + ": " + vdmMetadata.get(key));
 		}
 	}

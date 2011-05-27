@@ -3,8 +3,11 @@ package org.destecs.ide.debug.launching.ui;
 import java.util.List;
 import java.util.Vector;
 
+import org.destecs.core.simulationengine.SimulationEngine;
+import org.destecs.core.simulationengine.SimulationEngine.SynchronizationScheme;
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
@@ -27,6 +30,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -79,37 +83,28 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	private Text fProjectText;
 	private Text ctPath = null;
 	private Text dePath = null;
-//	private Text contractPath = null;
-	// private Text scenarioPath = null;
-//	private Text fSharedDesignParamPath = null;
-	// private double totalSimulationTime = 5;
-	Button selectScenarioButton;
-	private Button checkBoxRemoteDebug = null;
-
-	// private IProject project = null;
+	private Button selectScenarioButton;
 	private Text simulationTimeText = null;
-
-	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-
 	private WidgetListener fListener = new WidgetListener();
-
 	private Text fScenarioText;
 	private Button selectCtPathButton;
 	private Button removeScenarioButton;
+	private Combo syncSchemeDropDown;
+
+	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
 	public void createControl(Composite parent)
 	{
 		Composite comp = new Composite(parent, SWT.NONE);
 
 		setControl(comp);
-		// PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(),
-		// IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
 
 		createProjectSelection(comp);
 		createPathsSelection(comp);
 		createSimConfig(comp);
+		createSyncScheme(comp);
 	}
 
 	private void createSimConfig(Composite parent)
@@ -124,36 +119,35 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		layout.numColumns = 4;
 		group.setLayout(layout);
 
-		// editParent = group;
-
 		Label label = new Label(group, SWT.MIN);
 		label.setText("Scenario:");
 		gd = new GridData(GridData.BEGINNING);
 		label.setLayoutData(gd);
 
-		fScenarioText = new Text(group, SWT.SINGLE | SWT.BORDER|SWT.READ_ONLY);
+		fScenarioText = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		fScenarioText.setLayoutData(gd);
 		fScenarioText.addModifyListener(fListener);
 
 		removeScenarioButton = createPushButton(group, "Remove", null);
-		if(fScenarioText.getText().equals(""))
+		if (fScenarioText.getText().equals(""))
 		{
 			removeScenarioButton.setEnabled(false);
-		}
-		else
+		} else
 		{
 			removeScenarioButton.setEnabled(true);
-		
+
 		}
-		removeScenarioButton.addSelectionListener(new SelectionAdapter() {
+		removeScenarioButton.addSelectionListener(new SelectionAdapter()
+		{
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e)
+			{
 				fScenarioText.setText("");
 			}
 		});
-		
+
 		selectScenarioButton = createPushButton(group, "Browse...", null);
 		selectScenarioButton.setEnabled(false);
 		selectScenarioButton.addSelectionListener(new SelectionAdapter()
@@ -180,6 +174,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					@Override
 					public Object[] getElements(Object element)
 					{
+						@SuppressWarnings("rawtypes")
 						List elements = new Vector();
 						Object[] arr = super.getElements(element);
 						if (arr != null)
@@ -210,10 +205,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 				if (dialog.open() == Window.OK)
 				{
-					if (dialog.getFirstResult() != null
-					// && dialog.getFirstResult() instanceof IProject
-					// && ((IProject) dialog.getFirstResult()).getAdapter(IVdmProject.class) != null)
-					)
+					if (dialog.getFirstResult() != null)
 					{
 						fScenarioText.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
 						removeScenarioButton.setEnabled(true);
@@ -249,11 +241,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 				}
 			}
 		});
-		
-		checkBoxRemoteDebug = new Button(group, SWT.CHECK);
-		checkBoxRemoteDebug.setText("Remote debug");
-		checkBoxRemoteDebug.setSelection(false);
-		checkBoxRemoteDebug.addSelectionListener(fListener);
 	}
 
 	private void createPathsSelection(Composite parent)
@@ -269,8 +256,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		layout.numColumns = 3;
 		group.setLayout(layout);
 
-//		parent.setLayout(new GridLayout(1, false));
-
 		// DE Line
 		Label deLabel = new Label(group, SWT.NONE);
 		deLabel.setText("DE Path:");
@@ -280,22 +265,21 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		gridData.grabExcessHorizontalSpace = true;
 		dePath.setLayoutData(gridData);
 		dePath.setText("Insert DE model path here");
-		 createPushButton(group, "Browse...", null).setEnabled(false);
-		
+		createPushButton(group, "Browse...", null).setEnabled(false);
 
 		// CT Line
 		Label ctLabel = new Label(group, SWT.MIN);
 		ctLabel.setText("CT Path:");
 		gd = new GridData(GridData.BEGINNING);
 		ctLabel.setLayoutData(gd);
-		
-		ctPath = new Text(group,  SWT.SINGLE | SWT.BORDER|SWT.READ_ONLY);
+
+		ctPath = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		ctPath.setLayoutData(gd);
 		ctPath.addModifyListener(fListener);
-		
+
 		selectCtPathButton = createPushButton(group, "Browse...", null);
-//		selectCtPathButton.setEnabled(false);
+		// selectCtPathButton.setEnabled(false);
 		selectCtPathButton.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
@@ -320,6 +304,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					@Override
 					public Object[] getElements(Object element)
 					{
+						@SuppressWarnings("rawtypes")
 						List elements = new Vector();
 						Object[] arr = super.getElements(element);
 						if (arr != null)
@@ -350,14 +335,11 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 				if (dialog.open() == Window.OK)
 				{
-					if (dialog.getFirstResult() != null
-					// && dialog.getFirstResult() instanceof IProject
-					// && ((IProject) dialog.getFirstResult()).getAdapter(IVdmProject.class) != null)
-					)
+					if (dialog.getFirstResult() != null)
 					{
 						ctPath.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
-					}
 
+					}
 				}
 			}
 		});
@@ -376,8 +358,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		layout.makeColumnsEqualWidth = false;
 		layout.numColumns = 3;
 		group.setLayout(layout);
-
-		// editParent = group;
 
 		Label label = new Label(group, SWT.MIN);
 		label.setText("Project:");
@@ -416,6 +396,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					@Override
 					public Object[] getElements(Object element)
 					{
+						@SuppressWarnings("rawtypes")
 						List elements = new Vector();
 						Object[] arr = super.getElements(element);
 						if (arr != null)
@@ -424,13 +405,14 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 							{
 								try
 								{
-									if (object instanceof IProject && ((IProject)object).hasNature(IDestecsCoreConstants.NATURE))
+									if (object instanceof IProject
+											&& ((IProject) object).hasNature(IDestecsCoreConstants.NATURE))
 									{
 										elements.add(object);
 									}
 								} catch (CoreException e)
 								{
-									//Ignore it
+									// Ignore it
 								}
 							}
 							return elements.toArray();
@@ -460,7 +442,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 							// Show error
 							return;
 						}
-						
+
 						IDestecsProject dproject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 						dePath.setText(dproject.getVdmModelFolder().getProjectRelativePath().toString());
 						fProjectText.setText(project.getName());
@@ -471,7 +453,48 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		});
 	}
 
+	private void createSyncScheme(Composite parent)
+	{
+		Group group = new Group(parent, parent.getStyle());
+		group.setText("Synchronization Scheme");
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 
+		group.setLayoutData(gd);
+
+		GridLayout layout = new GridLayout();
+		layout.makeColumnsEqualWidth = false;
+		layout.numColumns = 3;
+		group.setLayout(layout);
+
+		Label label = new Label(group, SWT.MIN);
+		label.setText("Sync Scheme:");
+		gd = new GridData(GridData.BEGINNING);
+		label.setLayoutData(gd);
+
+		syncSchemeDropDown = new Combo(group, SWT.SINGLE | SWT.BORDER
+				| SWT.READ_ONLY);
+
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		syncSchemeDropDown.setLayoutData(gd);
+		syncSchemeDropDown.addModifyListener(fListener);
+
+		for (SynchronizationScheme scheme : SimulationEngine.SynchronizationScheme.values())
+		{
+			syncSchemeDropDown.add(scheme.toString());
+
+		}
+
+		for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
+		{
+			if (syncSchemeDropDown.getItem(i).equals(SynchronizationScheme.Default.toString()))
+			{
+				syncSchemeDropDown.select(i);
+				break;
+			}
+
+		}
+
+	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
@@ -486,24 +509,36 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 			ctPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "No Path Selected"));
 			dePath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "No Path Selected"));
-			// contractPath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH,
-			// "No Path Selected"));
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			fScenarioText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 
-			checkBoxRemoteDebug.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false));
+			try
+			{
+				String scheme = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, "DEFAULT");
+				for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
+				{
+					if (syncSchemeDropDown.getItem(i).equals(scheme))
+					{
+						syncSchemeDropDown.select(i);
+						break;
+					}
+
+				}
+			} catch (Exception e)
+			{
+
+			}
 
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Faild to initialize from launch configuration", e);
 		}
 
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
-		if (getProject() != null )
+		if (getProject() != null)
 		{
 			IDestecsProject p = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
 			configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, p.getContractFile().getProjectRelativePath().toString());
@@ -515,7 +550,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
 
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, checkBoxRemoteDebug.getSelection());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, syncSchemeDropDown.getText());
 	}
 
 	public IProject getProject()
@@ -542,7 +577,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			selectScenarioButton.setEnabled(false);
 			return false;
 		}
-		
+
 		IVdmProject vdmProject = (IVdmProject) getProject().getAdapter(IVdmProject.class);
 		IVdmModel model = vdmProject.getModel();
 		if (!model.isTypeCorrect())
@@ -554,7 +589,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			}
 		}
 
-		
 		if (project.findMember(new Path(ctPath.getText())) == null)
 		{
 			setErrorMessage("CT model path not valid");
@@ -563,16 +597,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			setErrorMessage("DE model path not valid");
 		}
-//		if (!new File(contractPath.getText()).exists())
-//		{
-//			setErrorMessage("Contract path not valid");
-//		}
-//
-//		if (!new File(fSharedDesignParamPath.getText()).exists())
-//		{
-//			setErrorMessage("Shared design parameters path not valid");
-//		}
-
 		if (fScenarioText.getText().length() > 0
 				&& project.findMember(new Path(fScenarioText.getText())) == null)
 		{

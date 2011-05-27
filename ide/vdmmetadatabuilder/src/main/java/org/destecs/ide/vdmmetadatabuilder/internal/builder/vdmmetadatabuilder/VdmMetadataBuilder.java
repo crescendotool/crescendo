@@ -116,7 +116,7 @@ public class VdmMetadataBuilder extends
 			IVdmModel model) {
 		String name = prefix + (prefix == "" ? "" : ".") + def.getName();
 		// first save this node
-		System.out.println(name + ": " + getVdmTypeName(def));
+//		System.out.println(name + ": " + getVdmTypeName(def));
 		if (def instanceof SystemDefinition) {
 			save(props, name, "system");
 		} else {

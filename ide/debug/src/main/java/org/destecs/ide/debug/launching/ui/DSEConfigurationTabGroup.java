@@ -18,7 +18,7 @@ public class DSEConfigurationTabGroup extends
 				new SharedDesignParameterTab(), 
 				new FaultTab(),
 				new DseArchitectureLaunchTab(),
-				new SimulatorConnectionTab(),
+				new DevelopLaunchConfigurationTab(),
 				new CommonTab() };
 		setTabs(tabs);
 

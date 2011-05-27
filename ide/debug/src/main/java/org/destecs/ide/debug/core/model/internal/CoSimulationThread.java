@@ -48,9 +48,12 @@ public class CoSimulationThread extends Thread
 			engine.simulate(shareadDesignParameters, totalSimulationTime);
 		} catch (Throwable e)
 		{
-//			e.printStackTrace();
+			// e.printStackTrace();
 			exceptions.add(e);
-			log.flush();
+			if (log != null)
+			{
+				log.flush();
+			}
 		}
 
 		for (InfoTableView view : views)
@@ -58,8 +61,10 @@ public class CoSimulationThread extends Thread
 			view.refreshPackTable();
 		}
 
-		log.close();
-
+		if (log != null)
+		{
+			log.close();
+		}
 		refreshProject();
 
 		try
@@ -88,8 +93,10 @@ public class CoSimulationThread extends Thread
 	public void stopSimulation()
 	{
 		engine.forceSimulationStop();
-		log.flush();
-//		interrupt();
+		if (log != null)
+		{
+			log.flush();
+		}
 	}
 
 	public List<Throwable> getExceptions()

@@ -21,6 +21,7 @@ import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+import org.destecs.core.simulationengine.SimulationEngine.SynchronizationScheme;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.simulationengine.listener.IProcessCreationListener;
 import org.destecs.core.simulationengine.listener.ISimulationStartListener;
@@ -87,6 +88,9 @@ public class CoSimLaunchConfigurationDelegate extends
 	private File deArchitectureFile;
 	private String deReplacePattern;
 	private ILaunchConfiguration configuration;
+	private SynchronizationScheme scheme;
+	private boolean enableLogging = false;
+	private boolean showDebugInfo= false;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -125,6 +129,15 @@ public class CoSimLaunchConfigurationDelegate extends
 			deReplacePattern = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
+			enableLogging = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
+			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
+			try
+			{
+				scheme = SynchronizationScheme.valueOf(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, SynchronizationScheme.Default.toString()));
+			} catch (Exception e)
+			{
+				DestecsDebugPlugin.logError("Faild to load launch configuration attributes", e);
+			}
 
 			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 			if (deUrlString.length() == 0)
@@ -172,47 +185,51 @@ public class CoSimLaunchConfigurationDelegate extends
 
 		try
 		{
-
 			SimulationEngine.eclipseEnvironment = true;
 			final SimulationEngine engine = getEngine();
+			engine.setSynchronizationScheme(scheme);
 
 			UIJob listeners = new UIJob("Set Listeners")
 			{
-
 				@Override
 				public IStatus runInUIThread(IProgressMonitor monitor)
 				{
-					final String messageViewId = IDebugConstants.MESSAGE_VIEW_ID;
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
-					final String simulationViewId = IDebugConstants.SIMULATION_VIEW_ID;
-
-					final InfoTableView messageView = getInfoTableView(messageViewId);
 					final InfoTableView engineView = getInfoTableView(engineViewId);
-					final InfoTableView simulationView = getInfoTableView(simulationViewId);
-
-					views.add(messageView);
 					views.add(engineView);
-					views.add(simulationView);
-
 					engine.engineListeners.add(new EngineListener(engineView));
-					engine.messageListeners.add(new MessageListener(messageView));
-					engine.simulationListeners.add(new SimulationListener(simulationView));
 
-					for (InfoTableView view : views)
+					if (showDebugInfo)
 					{
-						view.refreshPackTable();
-					}
+						final String messageViewId = IDebugConstants.MESSAGE_VIEW_ID;
+						final String simulationViewId = IDebugConstants.SIMULATION_VIEW_ID;
 
+						final InfoTableView messageView = getInfoTableView(messageViewId);
+						final InfoTableView simulationView = getInfoTableView(simulationViewId);
+
+						views.add(messageView);
+						views.add(simulationView);
+
+						engine.messageListeners.add(new MessageListener(messageView));
+						engine.simulationListeners.add(new SimulationListener(simulationView));
+
+						for (InfoTableView view : views)
+						{
+							view.refreshPackTable();
+						}
+					}
 					return new Status(IStatus.OK, IDebugConstants.PLUGIN_ID, "Listeners OK");
 				}
 			};
 
 			listeners.schedule();
-			engine.engineListeners.add(log);
-			engine.messageListeners.add(log);
-			engine.simulationListeners.add(log);
-			engine.variablesSyncListeners.add(log);
-
+			if (enableLogging)
+			{
+				engine.engineListeners.add(log);
+				engine.messageListeners.add(log);
+				engine.simulationListeners.add(log);
+				engine.variablesSyncListeners.add(log);
+			}
 			if (!remoteDebug)
 			{
 				File libSearchRoot = new File(project.getLocation().toFile(), "lib");
@@ -422,6 +439,10 @@ public class CoSimLaunchConfigurationDelegate extends
 
 	private ListenerToLog getLog()
 	{
+		if(!enableLogging)
+		{
+			return null;
+		}
 		try
 		{
 			return new ListenerToLog(outputFolder);
@@ -516,6 +537,7 @@ public class CoSimLaunchConfigurationDelegate extends
 
 	}
 
+	@SuppressWarnings("deprecation")
 	private ILaunchConfiguration getVdmLaunchConfig(int port)
 	{
 		// ILaunchConfiguration config = null;

@@ -43,7 +43,6 @@ public class VDMCO extends VDMRT
 	ClassInterpreter interpreter = null;
 	public static int debugPort = 10000;
 	public Exception exception = null;
-	
 
 	@Override
 	public CoSimClassInterpreter getInterpreter() throws Exception
@@ -96,7 +95,7 @@ public class VDMCO extends VDMRT
 		} catch (Exception e)
 		{
 			println("Initialization: " + e.getMessage());
-			//TODO: need to output this error somewhere
+			// TODO: need to output this error somewhere
 			exception = e;
 			return ExitStatus.EXIT_ERRORS;
 		}
@@ -106,7 +105,7 @@ public class VDMCO extends VDMRT
 	{
 		return exception;
 	}
-	
+
 	public ExitStatus asyncStartInterpret(final List<File> filenames)
 	{
 		class AsyncInterpreterExecutionThread extends Thread
@@ -133,30 +132,31 @@ public class VDMCO extends VDMRT
 					{
 						status = ExitStatus.EXIT_OK;
 						finished = true;
-						String host="localhost";
-						//int port=10000;
-						String ideKey="1";
+						String host = "localhost";
+						// int port=10000;
+						String ideKey = "1";
 						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, interpreter, script, null);
-//						interpreter.init(dbgpreader);
+						// interpreter.init(dbgpreader);
 						int retried = 0;
-						while(dbgpreader.getStatus()== null )
+						while (dbgpreader.getStatus() == null)
 						{
-							if(retried>0)
+							if (retried > 0)
 							{
 								Thread.sleep(500);
 							}
 							retried++;
-							System.out.println("Trying to connect to IDE...("+retried+")");
+							System.out.println("Trying to connect to IDE...("
+									+ retried + ")");
 							dbgpreader.startup(null);
-							
+
 						}
-						while(dbgpreader.getStatus()==DBGPStatus.STARTING)
+						while (dbgpreader.getStatus() == DBGPStatus.STARTING)
 						{
 							Thread.sleep(1000);
 							dbgpreader.startup(null);
 						}
 						System.out.println(dbgpreader.getStatus());
-//						println(interpreter.execute(script, null).toString());
+						// println(interpreter.execute(script, null).toString());
 
 					} else
 					{
@@ -223,161 +223,172 @@ public class VDMCO extends VDMRT
 	{
 		VDMRT.script = script;
 	}
-	
+
 	@Override
 	public ExitStatus parse(List<File> files)
 	{
 		classes.clear();
 		LexLocation.resetLocations();
-   		int perrs = 0;
-   		int pwarn = 0;
-   		long duration = 0;
+		int perrs = 0;
+		int pwarn = 0;
+		long duration = 0;
 
-   		for (File file: files)
-   		{
-   			ClassReader reader = null;
+		for (File file : files)
+		{
+			ClassReader reader = null;
 
-   			try
-   			{
-   				if (file.getName().endsWith(".lib"))
-   				{
-   					FileInputStream fis = new FileInputStream(file);
-   	    	        GZIPInputStream gis = new GZIPInputStream(fis);
-   	    	        ObjectInputStream ois = new ObjectInputStream(gis);
-
-   	    	        ClassList loaded = null;
-   	    	        long begin = System.currentTimeMillis();
-
-   	    	        try
-   	    	        {
-   	    	        	loaded = (ClassList)ois.readObject();
-   	    	        }
-       	 			catch (Exception e)
-       				{
-       	   				println(file + " is not a valid VDM++ library");
-       	   				perrs++;
-       	   				continue;
-       				}
-       	 			finally
-       	 			{
-       	 				ois.close();
-       	 			}
-
-   	    	        long end = System.currentTimeMillis();
-   	    	        loaded.setLoaded();
-   	    	        classes.addAll(loaded);
-   	    	        classes.remap();
-
-   	    	   		infoln("Loaded " + plural(loaded.size(), "class", "es") +
-   	    	   			" from " + file + " in " + (double)(end-begin)/1000 + " secs");
-   				}
-   				else
-   				{
-   					long before = System.currentTimeMillis();
-   					
-   					BacktrackInputReader fileReader = new BacktrackInputReader(file,filecharset);
-   					StringBuffer buf = new StringBuffer();
-   					char c;
-   					while((c=fileReader.readCh())!=(char)-1)
-   					{
-   						buf.append(c);
-   					}
-   					fileReader.close();
-   					
-   					String patchedContent = patch(buf.toString());
-   					logChangedFileContent(patchedContent,file);
-   					
-    				LexTokenReader ltr = new LexTokenReader(patchedContent, Settings.dialect, file);
-        			reader = new ClassReader(ltr);
-        			classes.addAll(reader.readClasses());
-        	   		long after = System.currentTimeMillis();
-        	   		duration += (after - before);
-   				}
-    		}
-			catch (InternalException e)
+			try
 			{
-   				println(e.toString());
-   				perrs++;
-			}
-			catch (Throwable e)
+				if (file.getName().endsWith(".lib"))
+				{
+					FileInputStream fis = new FileInputStream(file);
+					GZIPInputStream gis = new GZIPInputStream(fis);
+					ObjectInputStream ois = new ObjectInputStream(gis);
+
+					ClassList loaded = null;
+					long begin = System.currentTimeMillis();
+
+					try
+					{
+						loaded = (ClassList) ois.readObject();
+					} catch (Exception e)
+					{
+						println(file + " is not a valid VDM++ library");
+						perrs++;
+						continue;
+					} finally
+					{
+						ois.close();
+					}
+
+					long end = System.currentTimeMillis();
+					loaded.setLoaded();
+					classes.addAll(loaded);
+					classes.remap();
+
+					infoln("Loaded " + plural(loaded.size(), "class", "es")
+							+ " from " + file + " in " + (double) (end - begin)
+							/ 1000 + " secs");
+				} else
+				{
+					if (replaceNewIdentifier.isEmpty())
+					{
+						long before = System.currentTimeMillis();
+	    				LexTokenReader ltr =
+	    					new LexTokenReader(file, Settings.dialect, filecharset);
+	        			reader = new ClassReader(ltr);
+	        			classes.addAll(reader.readClasses());
+	        	   		long after = System.currentTimeMillis();
+	        	   		duration += (after - before);
+					} else
+					{
+						long before = System.currentTimeMillis();
+
+						BacktrackInputReader fileReader = new BacktrackInputReader(file, filecharset);
+						StringBuffer buf = new StringBuffer();
+						char c;
+						while ((c = fileReader.readCh()) != (char) -1)
+						{
+							buf.append(c);
+						}
+						fileReader.close();
+
+						String patchedContent = patch(buf.toString());
+						logChangedFileContent(patchedContent, file);
+
+						LexTokenReader ltr = new LexTokenReader(patchedContent, Settings.dialect, file);
+						reader = new ClassReader(ltr);
+						classes.addAll(reader.readClasses());
+						long after = System.currentTimeMillis();
+						duration += (after - before);
+					}
+				}
+			} catch (InternalException e)
 			{
-   				println(e.toString());
-   				perrs++;
+				println(e.toString());
+				perrs++;
+			} catch (Throwable e)
+			{
+				println(e.toString());
+				perrs++;
 			}
 
 			if (reader != null && reader.getErrorCount() > 0)
 			{
-    			perrs += reader.getErrorCount();
-    			reader.printErrors(Console.out);
+				perrs += reader.getErrorCount();
+				reader.printErrors(Console.out);
 			}
 
 			if (reader != null && reader.getWarningCount() > 0)
 			{
 				pwarn += reader.getWarningCount();
-    			reader.printWarnings(Console.out);
+				reader.printWarnings(Console.out);
 			}
-   		}
+		}
 
-   		int n = classes.notLoaded();
+		int n = classes.notLoaded();
 
-   		if (n > 0)
-   		{
-       		info("Parsed " + plural(n, "class", "es") + " in " +
-       			(double)(duration)/1000 + " secs. ");
-       		info(perrs == 0 ? "No syntax errors" :
-       			"Found " + plural(perrs, "syntax error", "s"));
-    		infoln(pwarn == 0 ? "" : " and " +
-    			(warnings ? "" : "suppressed ") + plural(pwarn, "warning", "s"));
-   		}
+		if (n > 0)
+		{
+			info("Parsed " + plural(n, "class", "es") + " in "
+					+ (double) (duration) / 1000 + " secs. ");
+			info(perrs == 0 ? "No syntax errors" : "Found "
+					+ plural(perrs, "syntax error", "s"));
+			infoln(pwarn == 0 ? "" : " and " + (warnings ? "" : "suppressed ")
+					+ plural(pwarn, "warning", "s"));
+		}
 
-   		return perrs == 0 ? ExitStatus.EXIT_OK : ExitStatus.EXIT_ERRORS;
+		return perrs == 0 ? ExitStatus.EXIT_OK : ExitStatus.EXIT_ERRORS;
 	}
 
 	private void logChangedFileContent(String patchedContent, File file)
 	{
-		PrintWriter out =null;
-		try{
-			FileWriter outFile = new FileWriter(new File(outputDir,file.getName()));
+		PrintWriter out = null;
+		try
+		{
+			FileWriter outFile = new FileWriter(new File(outputDir, file.getName()));
 			out = new PrintWriter(outFile);
 			out.append(patchedContent);
-			
-		}catch(IOException e)
+
+		} catch (IOException e)
 		{
-			
-		}finally
+
+		} finally
 		{
-			if(out!=null)
+			if (out != null)
 			{
 				out.close();
 			}
 		}
 	}
 
-	public static Map<String,String> replaceNewIdentifier = new Hashtable<String,String>();
+	public static Map<String, String> replaceNewIdentifier = new Hashtable<String, String>();
 	public static String architecture = "";
 	public static String deploy = "";
-	
-//	static
-//	{
-//		replaceNewIdentifier.put("A", "B");
-//		
-//	}
-	
+
+	// static
+	// {
+	// replaceNewIdentifier.put("A", "B");
+	//
+	// }
+
 	public static String patch(String tmp)
 	{
-		for (Entry<String, String> entry: replaceNewIdentifier.entrySet())
+		for (Entry<String, String> entry : replaceNewIdentifier.entrySet())
 		{
-			tmp = tmp.replaceAll("new( )+"+entry.getKey()+"\\(", "new "+entry.getValue()+"(");
-			tmp = tmp.replaceAll("new(	)+"+entry.getKey()+"\\(", "new "+entry.getValue()+"(");
-			tmp = tmp.replace(entry.getKey()+"`", entry.getValue()+"`");
+			tmp = tmp.replaceAll("new( )+" + entry.getKey() + "\\(", "new "
+					+ entry.getValue() + "(");
+			tmp = tmp.replaceAll("new(	)+" + entry.getKey() + "\\(", "new "
+					+ entry.getValue() + "(");
+			tmp = tmp.replace(entry.getKey() + "`", entry.getValue() + "`");
 		}
-		
-		if(tmp.contains(ARCHITECTURE_COMMENT) && architecture != null)
+
+		if (tmp.contains(ARCHITECTURE_COMMENT) && architecture != null)
 		{
 			tmp = tmp.replace(ARCHITECTURE_COMMENT, architecture);
 		}
-		
-		if(tmp.contains(DEPLOYMENT_COMMENT) && deploy != null)
+
+		if (tmp.contains(DEPLOYMENT_COMMENT) && deploy != null)
 		{
 			tmp = tmp.replace(DEPLOYMENT_COMMENT, deploy);
 		}
