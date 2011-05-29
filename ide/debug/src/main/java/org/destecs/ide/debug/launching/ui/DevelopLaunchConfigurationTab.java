@@ -2,6 +2,8 @@ package org.destecs.ide.debug.launching.ui;
 
 import java.net.URL;
 
+import org.destecs.core.simulationengine.SimulationEngine;
+import org.destecs.core.simulationengine.SimulationEngine.SynchronizationScheme;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.runtime.CoreException;
@@ -18,6 +20,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -53,6 +56,7 @@ AbstractLaunchConfigurationTab
 	private Button checkBoxShowDebugIngo = null;
 	private Text ctUrl = null;
 	private Text deUrl = null;
+	private Combo syncSchemeDropDown;
 	private WidgetListener fListener = new WidgetListener();
 
 	public void createControl(Composite parent)
@@ -67,6 +71,7 @@ AbstractLaunchConfigurationTab
 		
 		createDevelopGroup(comp);
 		createConnectionGroup(comp);
+		createSyncScheme(comp);
 	}
 
 	public void createDevelopGroup(Composite comp)
@@ -132,6 +137,49 @@ AbstractLaunchConfigurationTab
 		ctUrl.setLayoutData(gd);
 		ctUrl.addModifyListener(fListener);		
 	}
+	
+	private void createSyncScheme(Composite parent)
+	{
+		Group group = new Group(parent, parent.getStyle());
+		group.setText("Synchronization Scheme");
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+
+		group.setLayoutData(gd);
+
+		GridLayout layout = new GridLayout();
+		layout.makeColumnsEqualWidth = false;
+		layout.numColumns = 3;
+		group.setLayout(layout);
+
+		Label label = new Label(group, SWT.MIN);
+		label.setText("Sync Scheme:");
+		gd = new GridData(GridData.BEGINNING);
+		label.setLayoutData(gd);
+
+		syncSchemeDropDown = new Combo(group, SWT.SINGLE | SWT.BORDER
+				| SWT.READ_ONLY);
+
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		syncSchemeDropDown.setLayoutData(gd);
+		syncSchemeDropDown.addModifyListener(fListener);
+
+		for (SynchronizationScheme scheme : SimulationEngine.SynchronizationScheme.values())
+		{
+			syncSchemeDropDown.add(scheme.toString());
+
+		}
+
+		for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
+		{
+			if (syncSchemeDropDown.getItem(i).equals(SynchronizationScheme.Default.toString()))
+			{
+				syncSchemeDropDown.select(i);
+				break;
+			}
+
+		}
+
+	}
 
 	public String getName()
 	{
@@ -169,6 +217,24 @@ AbstractLaunchConfigurationTab
 		{
 			DestecsDebugPlugin.logError("Error fetching connections from launch configuration", e);
 		}
+		
+		//syncscheme
+		try
+		{
+			String scheme = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, "DEFAULT");
+			for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
+			{
+				if (syncSchemeDropDown.getItem(i).equals(scheme))
+				{
+					syncSchemeDropDown.select(i);
+					break;
+				}
+
+			}
+		} catch (Exception e)
+		{
+
+		}
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
@@ -180,6 +246,8 @@ AbstractLaunchConfigurationTab
 		//connection
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, deUrl.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, ctUrl.getText());
+		//syncscheme
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, syncSchemeDropDown.getText());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)

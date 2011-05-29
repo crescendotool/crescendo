@@ -3,8 +3,6 @@ package org.destecs.ide.debug.launching.ui;
 import java.util.List;
 import java.util.Vector;
 
-import org.destecs.core.simulationengine.SimulationEngine;
-import org.destecs.core.simulationengine.SimulationEngine.SynchronizationScheme;
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.DestecsDebugPlugin;
@@ -30,7 +28,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -89,7 +86,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	private Text fScenarioText;
 	private Button selectCtPathButton;
 	private Button removeScenarioButton;
-	private Combo syncSchemeDropDown;
+	
 
 	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
@@ -104,7 +101,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		createProjectSelection(comp);
 		createPathsSelection(comp);
 		createSimConfig(comp);
-		createSyncScheme(comp);
+
 	}
 
 	private void createSimConfig(Composite parent)
@@ -453,48 +450,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		});
 	}
 
-	private void createSyncScheme(Composite parent)
-	{
-		Group group = new Group(parent, parent.getStyle());
-		group.setText("Synchronization Scheme");
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-
-		group.setLayoutData(gd);
-
-		GridLayout layout = new GridLayout();
-		layout.makeColumnsEqualWidth = false;
-		layout.numColumns = 3;
-		group.setLayout(layout);
-
-		Label label = new Label(group, SWT.MIN);
-		label.setText("Sync Scheme:");
-		gd = new GridData(GridData.BEGINNING);
-		label.setLayoutData(gd);
-
-		syncSchemeDropDown = new Combo(group, SWT.SINGLE | SWT.BORDER
-				| SWT.READ_ONLY);
-
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		syncSchemeDropDown.setLayoutData(gd);
-		syncSchemeDropDown.addModifyListener(fListener);
-
-		for (SynchronizationScheme scheme : SimulationEngine.SynchronizationScheme.values())
-		{
-			syncSchemeDropDown.add(scheme.toString());
-
-		}
-
-		for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
-		{
-			if (syncSchemeDropDown.getItem(i).equals(SynchronizationScheme.Default.toString()))
-			{
-				syncSchemeDropDown.select(i);
-				break;
-			}
-
-		}
-
-	}
+	
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
@@ -512,22 +468,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			fScenarioText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 
-			try
-			{
-				String scheme = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, "DEFAULT");
-				for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
-				{
-					if (syncSchemeDropDown.getItem(i).equals(scheme))
-					{
-						syncSchemeDropDown.select(i);
-						break;
-					}
-
-				}
-			} catch (Exception e)
-			{
-
-			}
+			
 
 		} catch (CoreException e)
 		{
@@ -550,7 +491,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
 
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, syncSchemeDropDown.getText());
+		
 	}
 
 	public IProject getProject()
