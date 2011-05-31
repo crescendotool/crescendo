@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class FaultTab extends AbstractLaunchConfigurationTab
 {
-	class WidgetListener implements ModifyListener, SelectionListener
+	class FaultWidgetListener implements ModifyListener, SelectionListener
 	{
 
 		public void modifyText(ModifyEvent e)
@@ -57,7 +57,7 @@ public class FaultTab extends AbstractLaunchConfigurationTab
 	}
 
 	private Text replacePattern = null;
-	private final WidgetListener fListener = new WidgetListener();
+	private final FaultWidgetListener fListener = new FaultWidgetListener();
 
 	public void createControl(Composite parent)
 	{

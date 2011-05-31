@@ -19,7 +19,7 @@ public class CoSimLaunchConfigurationTabGroup extends
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				new CoSimLaunchConfigurationTab(),
 				new SharedDesignParameterTab(), 
-				new FaultTab(),
+				//new FaultTab(),
 				new DseTab(),
 				new VdmTab(),
 				new Clp20simTab(),

@@ -1,10 +1,14 @@
 package org.destecs.ide.debug.launching.ui;
 
+import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
+import org.destecs.core.parsers.IError;
+import org.destecs.core.parsers.SubsParserWrapper;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.debug.launching.ui.FaultTab.FaultWidgetListener;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -73,12 +77,15 @@ public class DseTab extends AbstractLaunchConfigurationTab
 	public void createControl(Composite parent)
 	{
 		Composite comp = new Composite(parent, SWT.NONE);
-
+		
 		setControl(comp);
 		// PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(),
 		// IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
+		
+		
+		createFaultField(comp);
 		
 		
 		Group group = new Group(comp, comp.getStyle());
@@ -226,18 +233,29 @@ public class DseTab extends AbstractLaunchConfigurationTab
 		{
 			DestecsDebugPlugin.logError("Error fetching dse from launch configuration", e);
 		}
+		try
+		{
+			String url = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
+
+			replacePattern.setText(url);
+		} catch (CoreException e)
+		{
+			DestecsDebugPlugin.logError("Error fetching faults from launch configuration", e);
+		}
 		
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, fArchitecturePathText.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, replacePattern.getText());
 //		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, ctUrl.getText());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE,"");
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 //		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DEFAULT_CT_ENDPOINT);
 	}
 	
@@ -245,6 +263,25 @@ public class DseTab extends AbstractLaunchConfigurationTab
 	public boolean isValid(ILaunchConfiguration launchConfig)
 	{
 		setErrorMessage(null);
+		if (replacePattern.getText().trim().length() > 0)
+		{
+			try
+			{
+				SubsParserWrapper parser = new SubsParserWrapper();
+				parser.parse(new File("argument"), replacePattern.getText());
+				for (IError errorMessage : parser.getErrors())
+				{
+					setErrorMessage(errorMessage.toString());
+					break;
+				}
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		
 //		try
 //		{
 //			if(deUrl.getText().length()<=0)
@@ -275,4 +312,89 @@ public class DseTab extends AbstractLaunchConfigurationTab
 		return super.isValid(launchConfig);
 	}
 
+	
+	class FaultWidgetListener implements ModifyListener, SelectionListener
+	{
+
+		public void modifyText(ModifyEvent e)
+		{
+			// if(!suspended)
+			{
+				// validatePage();
+				updateLaunchConfigurationDialog();
+			}
+		}
+
+		public void widgetDefaultSelected(SelectionEvent e)
+		{
+			// if(!suspended)
+			{
+				/* do nothing */
+			}
+		}
+
+		public void widgetSelected(SelectionEvent e)
+		{
+			// if(!suspended)
+			{
+				// fOperationText.setEnabled(!fdebugInConsole.getSelection());
+
+				updateLaunchConfigurationDialog();
+			}
+		}
+	}
+
+	private Text replacePattern = null;
+	private final FaultWidgetListener faultListener = new FaultWidgetListener();
+
+	public void createFaultField(Composite comp)
+	{
+//		Composite comp = new Composite(parent, SWT.NONE);
+//
+//		setControl(comp);
+		// PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(),
+		// IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
+		comp.setLayout(new GridLayout(1, true));
+		comp.setFont(comp.getFont());
+
+		Group group = new Group(comp, comp.getStyle());
+		group.setText("Faults");
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		group.setLayoutData(gd);
+
+		GridLayout layout = new GridLayout();
+		layout.makeColumnsEqualWidth = false;
+		layout.numColumns = 2;
+		group.setLayout(layout);
+
+		Label label = new Label(group, SWT.MIN);
+		label.setText("DE Replace pattern (A/B):");
+		gd = new GridData(GridData.BEGINNING);
+		label.setLayoutData(gd);
+
+		replacePattern = new Text(group, SWT.SINGLE | SWT.BORDER);
+
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		replacePattern.setLayoutData(gd);
+		replacePattern.addModifyListener(fListener);
+
+		// label = new Label(group, SWT.MIN);
+		// label.setText("CT Simulator URL:");
+		// gd = new GridData(GridData.BEGINNING);
+		// label.setLayoutData(gd);
+		//
+		// ctUrl = new Text(group, SWT.SINGLE | SWT.BORDER);
+		//
+		// gd = new GridData(GridData.FILL_HORIZONTAL);
+		// ctUrl.setLayoutData(gd);
+		// ctUrl.addModifyListener(fListener);
+	}
+
+	
+
+
+	
+
+
+	
 }
