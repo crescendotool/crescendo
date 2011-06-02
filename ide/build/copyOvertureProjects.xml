@@ -47,6 +47,11 @@
 	src="https://overture.svn.sourceforge.net/svnroot/overture/trunk/documentation/UserGuideOvertureIDE/OvertureIDEUserGuide.pdf"
 	dest="${buildDirectory}/plugins/overture.help/html/OvertureIDEUserGuide.pdf" />
 
+<get
+    src="https://overture.svn.sourceforge.net/svnroot/overture/trunk/documentation/QuickOverviewVDMPPOperators/QuickOverviewofVDMOperators.pdf"
+    dest="${buildDirectory}/plugins/overture.help/html/QuickOverviewofVDMOperators.pdf" />
+
+
 	<!-- Download examples from SF to embed in help -->
 <get
 	src="http://sourceforge.net/projects/overture/files/Examples/examplesSL.zip"
