@@ -2,11 +2,11 @@ package org.destecs.vdmj.scheduler;
 
 import org.destecs.vdm.SimulationManager;
 import org.overturetool.vdmj.messages.Console;
+import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.MainThread;
 import org.overturetool.vdmj.scheduler.Resource;
 import org.overturetool.vdmj.scheduler.ResourceScheduler;
 import org.overturetool.vdmj.scheduler.RunState;
-import org.overturetool.vdmj.scheduler.SchedulableThread;
 import org.overturetool.vdmj.scheduler.Signal;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.values.BUSValue;
@@ -44,7 +44,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 			if (forceStop)
 			{
-				SchedulableThread.signalAll(Signal.TERMINATE);
+				BasicSchedulableThread.signalAll(Signal.TERMINATE);
 				return;
 			}
 
@@ -91,7 +91,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 				if (resource.hasActive())
 				{
 					Console.err.println("DEADLOCK detected");
-					SchedulableThread.signalAll(Signal.DEADLOCKED);
+					BasicSchedulableThread.signalAll(Signal.DEADLOCKED);
 
 					while (main.isAlive())
 					{
@@ -109,7 +109,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 			}
 		}
 
-		SchedulableThread.signalAll(Signal.TERMINATE);
+		BasicSchedulableThread.signalAll(Signal.TERMINATE);
 	}
 
 	private synchronized boolean canAdvanceSimulationTime(long minstep)
