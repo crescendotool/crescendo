@@ -486,4 +486,16 @@ public class SimulationManager extends BasicSimulationManager
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public Double getParameter(String name) throws RemoteSimulationException
+	{
+		try
+		{
+			return getValue(name).realValue(null);
+		} catch (ValueException e)
+		{
+			debugErr(e);
+			throw new RemoteSimulationException("Could set parameter: "+name, e);
+		}
+	}
 }

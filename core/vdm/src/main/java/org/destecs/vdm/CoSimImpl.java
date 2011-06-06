@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
+import org.destecs.protocol.structs.GetParameterStruct;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.Load2Struct;
@@ -25,7 +26,6 @@ import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.protocol.structs.UnLoadStruct;
 import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.Settings;
-import org.overturetool.vdmj.messages.rtlog.RTLogger;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
@@ -362,9 +362,21 @@ public class CoSimImpl implements IDestecs
 		throw new NoSuchMethodError("Not supported by VDMJ");
 	}
 
-	public Map<String, Double> getParameter(Map<String, String> data)
+	public Map<String, Double> getParameter(Map<String, String> data) throws RemoteSimulationException
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+		String name = (String) data.get("name");
+		
+		Double value;
+		try
+		{
+			value = SimulationManager.getInstance().getParameter(name);
+
+			return new GetParameterStruct(value).toMap();
+		} catch (RemoteSimulationException e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
 	}
 
 	public Map<String, List<Map<String, Object>>> getParameters()
