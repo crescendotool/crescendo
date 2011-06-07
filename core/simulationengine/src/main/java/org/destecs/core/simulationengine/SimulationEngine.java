@@ -453,19 +453,19 @@ public class SimulationEngine
 			// System.out.print(res.toString());
 			variableSyncInfo(res.getVariables());
 			// Step DT - time calculate
-			deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
+//			deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
 
 			// Step CT - step
-			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, res.ctData, false, res.events);
+			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, res.events);
 
 			if (syncScheme == SynchronizationScheme.Default)
 			{
 				// Step DT - step
-				deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, res.deData, false, res.events);
+				deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, res.events);
 			}
-			res = merge(deResult, ctResult);
+//			res = merge(deResult, ctResult);
 
-			time = res.time;
+			time = deResult.time;//res.time;
 		}
 		return time;
 	}
