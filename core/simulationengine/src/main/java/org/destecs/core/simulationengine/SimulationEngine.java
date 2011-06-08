@@ -3,7 +3,6 @@ package org.destecs.core.simulationengine;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,7 +12,6 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.destecs.core.contract.Contract;
-
 import org.destecs.core.contract.Variable;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
@@ -101,16 +99,9 @@ public class SimulationEngine
 
 	private File outputDirectory = null;
 
-	private SynchronizationScheme syncScheme = SynchronizationScheme.Default;
-
 	public SimulationEngine(File contractFile)
 	{
 		this.contractFile = contractFile;
-	}
-
-	public void setSynchronizationScheme(SynchronizationScheme scheme)
-	{
-		this.syncScheme = scheme;
 	}
 
 	public void setDeEndpoint(URL endpoint)
@@ -453,19 +444,17 @@ public class SimulationEngine
 			// System.out.print(res.toString());
 			variableSyncInfo(res.getVariables());
 			// Step DT - time calculate
-//			deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
+			// deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
 
 			// Step CT - step
 			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, res.events);
 
-			if (syncScheme == SynchronizationScheme.Default)
-			{
-				// Step DT - step
-				deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, res.events);
-			}
-//			res = merge(deResult, ctResult);
+			// Step DT - step
+			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, res.events);
 
-			time = deResult.time;//res.time;
+			// res = merge(deResult, ctResult);
+
+			time = deResult.time;// res.time;
 		}
 		return time;
 	}

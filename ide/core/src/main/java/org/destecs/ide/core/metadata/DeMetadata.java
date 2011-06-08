@@ -94,18 +94,16 @@ public class DeMetadata
 			if (clas.size() > 0 && !clas.get(0).equals("real"))
 			{
 				vdmMetadata.remove(key);
-			} else
+			} else if (key != null && key.startsWith(systemClass))
 			{
-				if (key.startsWith(systemClass))
-				{
-					vdmMetadata.remove(key);
-					String res = key.replace(systemClass, "");
-					vdmMetadata.put(res, clas);
-				}
+				vdmMetadata.remove(key);
+				String res = key.replace(systemClass, "");
+				vdmMetadata.put(res, clas);
 			}
+
 		}
 
-//		printMetadata();
+		// printMetadata();
 
 	}
 
@@ -118,8 +116,8 @@ public class DeMetadata
 
 			if (!vdmMetadata.containsKey(p.toString()))
 			{
-//				System.out.println(p.toString()
-//						+ " not present in the metadata");
+				// System.out.println(p.toString()
+				// + " not present in the metadata");
 				errorMsgs.add(p.toString()
 						+ " does not exist in the VDM model or it is not at real number");
 			}

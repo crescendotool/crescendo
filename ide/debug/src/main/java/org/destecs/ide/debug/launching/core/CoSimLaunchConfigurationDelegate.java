@@ -88,7 +88,6 @@ public class CoSimLaunchConfigurationDelegate extends
 	private File deArchitectureFile;
 	private String deReplacePattern;
 	private ILaunchConfiguration configuration;
-	private SynchronizationScheme scheme;
 	private boolean enableLogging = false;
 	private boolean showDebugInfo= false;
 
@@ -131,14 +130,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			enableLogging = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
-			try
-			{
-				scheme = SynchronizationScheme.valueOf(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, SynchronizationScheme.Default.toString()));
-			} catch (Exception e)
-			{
-				DestecsDebugPlugin.logError("Faild to load launch configuration attributes", e);
-			}
-
+			
 			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 			if (deUrlString.length() == 0)
 			{
@@ -187,8 +179,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			SimulationEngine.eclipseEnvironment = true;
 			final SimulationEngine engine = getEngine();
-			engine.setSynchronizationScheme(scheme);
-
+			
 			UIJob listeners = new UIJob("Set Listeners")
 			{
 				@Override

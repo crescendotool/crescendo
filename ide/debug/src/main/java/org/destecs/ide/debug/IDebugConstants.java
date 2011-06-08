@@ -47,8 +47,6 @@ public interface IDebugConstants {
 
 	public static final String VDM_LAUNCH_CONFIG_LOG_RT = "VDM_LAUNCH_CONFIG_LOG_RT".toLowerCase();
 
-	public static final String DESTECS_LAUNCH_CONFIG_SYNC_SCHEME = "DESTECS_LAUNCH_CONFIG_SYNC_SCHEME".toLowerCase();
-
 	public static final String DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING = "DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING".toLowerCase();
 
 	public static final String DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO = "DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO".toLowerCase();
