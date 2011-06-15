@@ -35,7 +35,7 @@ Var UNINSTALL_OLD_VERSION
 Name "DESTECS"
 
 ; The file to write
-OutFile "destecsInstaller#VERSION#.exe"
+OutFile "destecsInstaller_#VERSION#.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\DESTECS
