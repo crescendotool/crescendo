@@ -21,7 +21,6 @@ import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
-import org.destecs.core.simulationengine.SimulationEngine.SynchronizationScheme;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.simulationengine.listener.IProcessCreationListener;
 import org.destecs.core.simulationengine.listener.ISimulationStartListener;
