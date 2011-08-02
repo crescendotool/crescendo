@@ -50,4 +50,6 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING = "DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING".toLowerCase();
 
 	public static final String DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO = "DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO".toLowerCase();
+	
+	public static final String DESTECS_LAUNCH_CONFIG_LOG_VARIABLES = "DESTECS_LAUNCH_CONFIG_LOG_VARIABLES".toLowerCase();
 }

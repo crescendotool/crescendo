@@ -22,6 +22,9 @@ public class DeModelConfig extends ModelConfig
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
 	
+	public static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
+	
+	
 	private int fileCount = 0;
 	public DeModelConfig()
 	{

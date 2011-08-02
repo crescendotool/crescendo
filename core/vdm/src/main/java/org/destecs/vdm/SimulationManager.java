@@ -1,10 +1,14 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -16,8 +20,9 @@ import org.destecs.protocol.structs.QueryToolSettingsStructsettingsStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
-
 import org.destecs.vdmj.VDMCO;
+import org.destecs.vdmj.log.SimulationLogger;
+import org.destecs.vdmj.log.SimulationMessage;
 import org.destecs.vdmj.scheduler.EventThread;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
@@ -29,19 +34,25 @@ import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
 import org.overturetool.vdmj.lex.Dialect;
+import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexRealToken;
 import org.overturetool.vdmj.messages.rtlog.RTLogger;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
+import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
+import org.overturetool.vdmj.values.RealValue;
+import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
+import org.overturetool.vdmj.values.ValueListener;
+import org.overturetool.vdmj.values.ValueListenerList;
 
 public class SimulationManager extends BasicSimulationManager
 {
@@ -51,6 +62,8 @@ public class SimulationManager extends BasicSimulationManager
 	private final static String script = "new World().run()";
 
 	private CoSimStatusEnum status = CoSimStatusEnum.NOT_INITIALIZED;
+	final private List<String> variablesToLog = new Vector<String>();
+	private File simulationLogFile;
 	/**
 	 * A handle to the unique Singleton instance.
 	 */
@@ -213,12 +226,13 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
-			File baseDirFile, boolean disableRtLog)
+			File baseDirFile, boolean disableRtLog, List<String> variablesToLog)
 			throws RemoteSimulationException
 	{
 		try
 		{
-
+			this.variablesToLog.clear();
+			this.variablesToLog.addAll(variablesToLog);
 			if (!linkFile.exists() || linkFile.isDirectory())
 			{
 				throw new RemoteSimulationException("The VDM link file does not exist: "
@@ -238,6 +252,14 @@ public class SimulationManager extends BasicSimulationManager
 			} else
 			{
 				controller.setLogFile(new File(outputDir, "logFile.logrt"));
+			}
+
+			if (this.variablesToLog.isEmpty())
+			{
+				SimulationLogger.enable(false);
+			} else
+			{
+				this.simulationLogFile = new File(outputDir, "desimulation.log");
 			}
 			controller.setScript(script);
 			Settings.DGBPbaseDir = baseDirFile;
@@ -354,6 +376,58 @@ public class SimulationManager extends BasicSimulationManager
 	public void setMainContext(Context ctxt)
 	{
 		this.mainContext = ctxt;
+
+		// This is called from the scheduler so we have a running system. So add listeners for log variables
+		if (!variablesToLog.isEmpty())
+		{
+
+			try
+			{
+				PrintWriter p = new PrintWriter(new FileOutputStream(simulationLogFile, false));
+				SimulationLogger.setLogfile(p);
+			} catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+
+			for (String name : variablesToLog)
+			{
+				String[] names = name.split("\\.");
+				Value v = getRawValue(Arrays.asList(names), null);
+				if (v == null)
+				{
+					System.err.println("Could not find variable: " + name
+							+ " logging is skipped.");
+					continue;
+				}
+
+				if (v instanceof UpdatableValue)
+				{
+					UpdatableValue upVal = (UpdatableValue) v;
+					final String variableLogName = name;
+					ValueListener listener = new ValueListener()
+					{
+						final String name = variableLogName;
+
+						public void changedValue(LexLocation location,
+								Value value, Context ctxt)
+						{
+							SimulationLogger.log(new SimulationMessage(name, SystemClock.getWallTime(), value.toString()));
+						}
+					};
+					if (upVal.listeners == null)
+					{
+						upVal.listeners = new ValueListenerList(listener);
+					} else
+					{
+						upVal.listeners.add(listener);
+					}
+				} else
+				{
+					System.err.println("A non updatable value cannot be logged...it is constant!");
+				}
+			}
+		}
 	}
 
 	public Integer getStatus()
@@ -443,6 +517,117 @@ public class SimulationManager extends BasicSimulationManager
 		return true;
 	}
 
+	public Double getDesignParameter(String parameterName)
+			throws RemoteSimulationException
+	{
+		try
+		{
+			boolean found = false;
+
+			if (!links.getSharedDesignParameters().contains(parameterName))
+			{
+				debugErr("Tried to set unlinked shared design parameter: "
+						+ parameterName);
+				throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
+						+ parameterName);
+			}
+			StringPair vName = links.getBoundVariable(parameterName);
+
+			for (ClassDefinition cd : controller.getInterpreter().getClasses())
+			{
+				if (!cd.getName().equals(vName.instanceName))
+				{
+					// wrong class
+					continue;
+				}
+				for (Definition def : cd.definitions)
+				{
+					if (def instanceof ValueDefinition)
+					{
+						ValueDefinition vDef = (ValueDefinition) def;
+						if (vDef.pattern.toString().equals(vName.variableName)
+								&& vDef.isValueDefinition()
+								&& vDef.getType() instanceof RealType)
+						{
+							if (vDef.exp instanceof RealLiteralExpression)
+							{
+								RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
+								LexRealToken token = exp.value;
+
+								return token.value;
+							}
+						}
+					}
+				}
+			}
+			if (!found)
+			{
+				debugErr("Tried to get unlinked shared design parameter: "
+						+ parameterName);
+				throw new RemoteSimulationException("Tried to get unlinked shared design parameter: "
+						+ parameterName);
+			}
+
+		} catch (Exception e)
+		{
+			debugErr(e);
+			if (e instanceof RemoteSimulationException)
+			{
+				throw (RemoteSimulationException) e;
+			}
+			throw new RemoteSimulationException("Internal error in get design parameter", e);
+		}
+
+		throw new RemoteSimulationException("Internal error in get design parameter");
+	}
+
+	public Map<String, Double> getParameters() throws RemoteSimulationException
+	{
+		try
+		{
+			Map<String, Double> parameters = new Hashtable<String, Double>();
+
+			NameValuePairList list = SystemDefinition.getSystemMembers();
+			if (list != null && list.size() > 0)
+			{
+				parameters.putAll(getParameters(list.get(0).name.module, list, 0));
+			}
+
+			return parameters;
+		} catch (Exception e)
+		{
+			debugErr(e);
+			if (e instanceof RemoteSimulationException)
+			{
+				throw (RemoteSimulationException) e;
+			}
+			throw new RemoteSimulationException("Internal error in get parameters", e);
+		}
+	}
+
+	private Map<? extends String, ? extends Double> getParameters(String name,
+			NameValuePairList members, int depth) throws ValueException
+	{
+		Map<String, Double> parameters = new Hashtable<String, Double>();
+		String prefix = (name.length() == 0 ? "" : name + ".");
+		if (depth < 10)
+		{
+			for (NameValuePair p : members)
+			{
+				if (p.value.deref() instanceof ObjectValue)
+				{
+					ObjectValue po = (ObjectValue) p.value.deref();
+					parameters.putAll(getParameters(prefix + p.name.name, po.members.asList(), depth++));
+
+				} else if (p.value.deref() instanceof RealValue)
+				{
+					parameters.put(prefix + p.name.name, p.value.realValue(null));
+				}
+			}
+		}
+		return parameters;
+	}
+
 	public Boolean setParameter(String name, Double value)
 			throws RemoteSimulationException
 	{
@@ -467,6 +652,7 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			scheduler.stop();
 			RTLogger.dump(true);
+			SimulationLogger.dump(true);
 			notify();
 			return true;
 		} catch (Exception e)
@@ -495,7 +681,7 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (ValueException e)
 		{
 			debugErr(e);
-			throw new RemoteSimulationException("Could set parameter: "+name, e);
+			throw new RemoteSimulationException("Could set parameter: " + name, e);
 		}
 	}
 }

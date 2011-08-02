@@ -426,7 +426,7 @@ public class SimulationEngine
 				+ " -> " + totalSimulationTime + " Current=" + time);
 
 		List<String> events = new Vector<String>();
-
+		
 		// First initialize DT
 		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);

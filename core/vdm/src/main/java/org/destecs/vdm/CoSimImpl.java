@@ -4,11 +4,17 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
+import org.destecs.protocol.structs.GetDesignParameterStruct;
+import org.destecs.protocol.structs.GetDesignParametersStruct;
+import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStruct;
 import org.destecs.protocol.structs.GetParameterStruct;
+import org.destecs.protocol.structs.GetParametersStruct;
+import org.destecs.protocol.structs.GetParametersStructparametersStruct;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.Load2Struct;
@@ -16,6 +22,7 @@ import org.destecs.protocol.structs.Load2argumentsStructParam;
 import org.destecs.protocol.structs.LoadStruct;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.QueryToolSettingsStruct;
+import org.destecs.protocol.structs.SetDesignParameterStruct;
 import org.destecs.protocol.structs.SetDesignParametersStruct;
 import org.destecs.protocol.structs.SetParametersStruct;
 import org.destecs.protocol.structs.StartStruct;
@@ -49,8 +56,9 @@ public class CoSimImpl implements IDestecs
 
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
-	
+
 	private static final String version = "0.0.0.2";
+	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 
 	public Map<String, Integer> getStatus()
 	{
@@ -90,7 +98,7 @@ public class CoSimImpl implements IDestecs
 			files.addAll(getFiles(root, specFileExtension));
 
 			File outputFolder = new File(root.getParentFile(), "output");
-			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile, files.get(0).getParentFile(),false)).toMap();
+			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile, files.get(0).getParentFile(), false, new Vector<String>())).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -140,6 +148,7 @@ public class CoSimImpl implements IDestecs
 		List<File> specfiles = new Vector<File>();
 		File linkFile = null;
 		File baseDirFile = null;
+		List<String> variablesToLog = new Vector<String>();
 		for (Object in : tmp)
 		{
 			if (in instanceof Map)
@@ -213,7 +222,12 @@ public class CoSimImpl implements IDestecs
 				}
 				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
 				{
-					//TODO: disable runtime validation.
+					// TODO: disable runtime validation.
+				}
+				if (arg.argumentName.startsWith(LOAD_SETTING_LOG_VARIABLES))
+				{
+					String[] variables = arg.argumentValue.split(",");
+					variablesToLog.addAll(Arrays.asList(variables));
 				}
 			}
 		}
@@ -222,7 +236,7 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile,disableRtLog)).toMap();
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog, variablesToLog)).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -353,19 +367,28 @@ public class CoSimImpl implements IDestecs
 	}
 
 	public Map<String, Double> getDesignParameter(Map<String, String> data)
+			throws RemoteSimulationException
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+		String parameterName = data.get("name");
+		return new GetDesignParameterStruct(SimulationManager.getInstance().getDesignParameter(parameterName)).toMap();
 	}
 
 	public Map<String, List<Map<String, Object>>> getDesignParameters()
+			throws RemoteSimulationException
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+		List<GetDesignParametersStructdesignParametersStruct> list = new Vector<GetDesignParametersStructdesignParametersStruct>();
+		for (String name : SimulationManager.getInstance().getSharedDesignParameters())
+		{
+			list.add(new GetDesignParametersStructdesignParametersStruct(name, SimulationManager.getInstance().getDesignParameter(name)));
+		}
+		return new GetDesignParametersStruct(list).toMap();
 	}
 
-	public Map<String, Double> getParameter(Map<String, String> data) throws RemoteSimulationException
+	public Map<String, Double> getParameter(Map<String, String> data)
+			throws RemoteSimulationException
 	{
 		String name = (String) data.get("name");
-		
+
 		Double value;
 		try
 		{
@@ -380,13 +403,38 @@ public class CoSimImpl implements IDestecs
 	}
 
 	public Map<String, List<Map<String, Object>>> getParameters()
+			throws RemoteSimulationException
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+		List<GetParametersStructparametersStruct> list = new Vector<GetParametersStructparametersStruct>();
+		try
+		{
+			for (Entry<String, Double> p : SimulationManager.getInstance().getParameters().entrySet())
+			{
+				list.add(new GetParametersStructparametersStruct(p.getKey(), p.getValue()));
+			}
+		} catch (RemoteSimulationException e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
+		return new GetParametersStruct(list).toMap();
 	}
 
 	public Map<String, Boolean> setDesignParameter(Map<String, Object> data)
+			throws RemoteSimulationException
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+
+		try
+		{
+			List<Map<String, Object>> argument = new Vector<Map<String, Object>>();
+			argument.add(data);
+			boolean success = SimulationManager.getInstance().setDesignParameters(argument);
+			return new SetDesignParameterStruct(success).toMap();
+		} catch (RemoteSimulationException e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
 	}
 
 	public Map<String, Boolean> setDesignParameters(
@@ -432,8 +480,24 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Boolean> setParameters(
 			Map<String, List<Map<String, Object>>> data)
+			throws RemoteSimulationException
 	{
-		throw new NoSuchMethodError("Not supported by VDMJ");
+		try
+		{
+			boolean success = false;
+			if (data.values().size() > 0)
+			{
+				Map<String, Object> s = (Map<String, Object>) data.values().iterator().next();
+
+				success = setParameter(s).get("success");
+				return new SetParametersStruct(success).toMap();
+			}
+			return new SetDesignParametersStruct(success).toMap();
+		} catch (RemoteSimulationException e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
 	}
 
 	public Map<String, Boolean> start() throws RemoteSimulationException

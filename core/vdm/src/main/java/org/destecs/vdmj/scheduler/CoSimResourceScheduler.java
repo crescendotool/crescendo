@@ -1,7 +1,6 @@
 package org.destecs.vdmj.scheduler;
 
 import org.destecs.vdm.SimulationManager;
-import org.overturetool.vdmj.messages.Console;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.MainThread;
 import org.overturetool.vdmj.scheduler.Resource;
@@ -80,10 +79,10 @@ public class CoSimResourceScheduler extends ResourceScheduler
 				idle = false;
 			}
 
-		} while (!idle && main.getRunState() != RunState.COMPLETE);
+		} while (/*!idle &&*/ main.getRunState() != RunState.COMPLETE);
 
 		stopping = true;
-
+		/*
 		if (main.getRunState() != RunState.COMPLETE)
 		{
 			for (Resource resource : resources)
@@ -107,7 +106,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 					break;
 				}
 			}
-		}
+		}*/
 
 		BasicSchedulableThread.signalAll(Signal.TERMINATE);
 	}

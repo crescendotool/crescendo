@@ -1,6 +1,7 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.destecs.core.vdmlink.Links;
@@ -106,7 +107,7 @@ public abstract class BasicSimulationManager
 					{
 						ValueUpdateRequest request = updateValueQueueRequest.take();
 						request.value.set(coSimLocation, request.newValue, coSimCtxt);
-						if(request.value instanceof TransactionValue)
+						if (request.value instanceof TransactionValue)
 						{
 							TransactionValue.commitOne(BasicSchedulableThread.getThread(Thread.currentThread()).getId());
 						}
@@ -156,12 +157,13 @@ public abstract class BasicSimulationManager
 				}
 
 				// val.set(location, newval.convertTo(estimateType(val), ctxt), ctxt);
-//				val.set(coSimLocation, newval, coSimCtxt);
+				// val.set(coSimLocation, newval, coSimCtxt);
 				updateValueQueueRequest.put(new ValueUpdateRequest(val, newval));
 			} catch (ValueException e)
 			{
 				debugErr(e);
-				throw new RemoteSimulationException("Faild to servalue from: " + name, e);
+				throw new RemoteSimulationException("Faild to servalue from: "
+						+ name, e);
 			} catch (InterruptedException e)
 			{
 				// TODO Auto-generated catch block
@@ -230,6 +232,34 @@ public abstract class BasicSimulationManager
 		return null;
 	}
 
+	protected Value getRawValue(List<String> name, Value v)
+	{
+		if (name.isEmpty())
+		{
+			return v;
+		}
+		NameValuePairList list = null;
+		if (v == null)
+		{
+			list = SystemDefinition.getSystemMembers();
+		} else if (v.deref() instanceof ObjectValue)
+		{
+			list = ((ObjectValue) v.deref()).members.asList();
+		}
+
+		if (list != null)
+		{
+			for (NameValuePair p : list)
+			{
+				if (name.get(0).equals(p.name.getName()))
+				{
+					return getRawValue(name.subList(1, name.size()), p.value);
+				}
+			}
+		}
+		return null;
+	}
+
 	public synchronized Long waitForStep(long minstep)
 	{
 		this.nextSchedulableActionTime = SystemClock.getWallTime() + minstep;
@@ -255,8 +285,6 @@ public abstract class BasicSimulationManager
 		debug("Resume at clock: " + nextTimeStep);
 		return nextTimeStep;
 	}
-
-	
 
 	protected static void debug(String message)
 	{

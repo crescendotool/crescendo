@@ -88,7 +88,8 @@ public class CoSimLaunchConfigurationDelegate extends
 	private String deReplacePattern;
 	private ILaunchConfiguration configuration;
 	private boolean enableLogging = false;
-	private boolean showDebugInfo= false;
+	private boolean showDebugInfo = false;
+	private String logVariables = null;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -129,7 +130,8 @@ public class CoSimLaunchConfigurationDelegate extends
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			enableLogging = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
-			
+			logVariables = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_LOG_VARIABLES, "");
+
 			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 			if (deUrlString.length() == 0)
 			{
@@ -178,7 +180,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			SimulationEngine.eclipseEnvironment = true;
 			final SimulationEngine engine = getEngine();
-			
+
 			UIJob listeners = new UIJob("Set Listeners")
 			{
 				@Override
@@ -316,6 +318,10 @@ public class CoSimLaunchConfigurationDelegate extends
 		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
 		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder().getLocation().toFile().getAbsolutePath());
 
+		if (logVariables != null && !logVariables.trim().isEmpty())
+		{
+			model.arguments.put(DeModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariables);
+		}
 		if (deArchitectureFile != null && deArchitectureFile.exists())
 		{
 			StringBuffer architecture = new StringBuffer();
@@ -429,7 +435,7 @@ public class CoSimLaunchConfigurationDelegate extends
 
 	private ListenerToLog getLog()
 	{
-		if(!enableLogging)
+		if (!enableLogging)
 		{
 			return null;
 		}
