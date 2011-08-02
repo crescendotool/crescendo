@@ -46,7 +46,7 @@
             </launchMode>
       </launchConfigurationTabGroup>
       <launchConfigurationTabGroup
-            class="org.destecs.ide.debug.launching.ui.DSEConfigurationTabGroup"
+            class="org.destecs.ide.debug.launching.ui.aca.DSEConfigurationTabGroup"
             id="org.destecs.ide.debug.launchDSEConfigurationTabGroup"
             type="org.destecs.ide.debug.launchDSEConfigurationType">
       </launchConfigurationTabGroup>

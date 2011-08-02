@@ -15,12 +15,12 @@ public class LinesProvider {
 	}
 	
 	
-	private void fillLines()
-	{		
-		lines.add("A");
-		lines.add("B");
-		lines.add("C");
-	}
+//	private void fillLines()
+//	{		
+//		lines.add("A");
+//		lines.add("B");
+//		lines.add("C");
+//	}
 	
 	static public LinesProvider getInstance()
 	{

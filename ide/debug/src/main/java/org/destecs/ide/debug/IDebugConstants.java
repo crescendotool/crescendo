@@ -23,6 +23,7 @@ public interface IDebugConstants {
 	
 	
 	public static final String ATTR_DESTECS_PROGRAM = "org.destecs.ide.debug.launchConfigurationType";
+	
 
 	public static final String MESSAGE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
 	public static final String ENGINE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
@@ -52,4 +53,7 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO = "DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO".toLowerCase();
 	
 	public static final String DESTECS_LAUNCH_CONFIG_LOG_VARIABLES = "DESTECS_LAUNCH_CONFIG_LOG_VARIABLES".toLowerCase();
+
+	//ACA
+	public static final String DESTECS_ACA_BASE_CONFIG = "DESTECS_ACA_BASE_CONFIG".toLowerCase();
 }

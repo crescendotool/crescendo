@@ -1,5 +1,7 @@
 package org.destecs.ide.debug.core.model.internal;
 
+import java.io.File;
+
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
@@ -21,11 +23,13 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 	private boolean isTerminated;
 	final private IProject project;
 	private CoSimulationThread simulationThread;
+	private File outputFolder;
 
-	public DestecsDebugTarget(ILaunch launch, IProject project)
+	public DestecsDebugTarget(ILaunch launch, IProject project, File outputFolder)
 	{
 		this.launch = launch;
 		this.project = project;
+		this.outputFolder = outputFolder;
 	}
 
 	public String getName() throws DebugException
@@ -68,7 +72,7 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 		return IDebugConstants.PLUGIN_ID;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter)
 	{
 		if (adapter == IDebugElement.class)
@@ -198,6 +202,11 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 	public void setCoSimulationThread(CoSimulationThread simThread)
 	{
 		this.simulationThread = simThread;
+	}
+	
+	public File getOutputFolder()
+	{
+		return this.outputFolder;
 	}
 
 }

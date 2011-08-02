@@ -2,11 +2,7 @@ package org.destecs.ide.debug.launching.ui.internal;
 
 import java.net.URL;
 
-import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
-import org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory;
-import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
-import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
 
 public class _20simHelper {

@@ -97,7 +97,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		this.configuration = configuration;
 		loadSettings(configuration);
 		this.launch = launch;
-		target = new DestecsDebugTarget(launch, project);
+		target = new DestecsDebugTarget(launch, project,outputFolder);
 		this.launch.addDebugTarget(target);
 		startSimulation();
 	}

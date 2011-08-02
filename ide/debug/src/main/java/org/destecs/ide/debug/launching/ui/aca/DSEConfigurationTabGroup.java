@@ -1,4 +1,4 @@
-package org.destecs.ide.debug.launching.ui;
+package org.destecs.ide.debug.launching.ui.aca;
 
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
 import org.eclipse.debug.ui.CommonTab;
@@ -14,11 +14,12 @@ public class DSEConfigurationTabGroup extends
 
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				new CoSimLaunchConfigurationTab(),
-				new SharedDesignParameterTab(), 
-				new FaultTab(),
-				new DseArchitectureLaunchTab(),
-				new DevelopLaunchConfigurationTab(),
+				new DseMainTab(),
+//				new CoSimLaunchConfigurationTab(),
+//				new SharedDesignParameterTab(), 
+//				new FaultTab(),
+//				new DseArchitectureLaunchTab(),
+//				new DevelopLaunchConfigurationTab(),
 				new CommonTab() };
 		setTabs(tabs);
 
