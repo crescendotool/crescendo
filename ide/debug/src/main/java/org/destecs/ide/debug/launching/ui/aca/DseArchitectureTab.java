@@ -1,13 +1,11 @@
-package org.destecs.ide.debug.launching.ui;
+package org.destecs.ide.debug.launching.ui.aca;
 
-import java.io.File;
-
-import org.destecs.core.parsers.IError;
-import org.destecs.core.parsers.SubsParserWrapper;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -15,7 +13,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -35,7 +35,7 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
-public class DseTab extends AbstractLaunchConfigurationTab
+public class DseArchitectureTab extends AbstractLaunchConfigurationTab
 {
 	class WidgetListener implements ModifyListener, SelectionListener
 	{
@@ -68,8 +68,6 @@ public class DseTab extends AbstractLaunchConfigurationTab
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
 
-		createFaultField(comp);
-
 		Group group = new Group(comp, comp.getStyle());
 		group.setText("Controller Architecture");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -99,76 +97,50 @@ public class DseTab extends AbstractLaunchConfigurationTab
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				// class ScenarioContentProvider extends
-				// BaseWorkbenchContentProvider
-				// {
-				// @Override
-				// public boolean hasChildren(Object element)
-				// {
-				// if (element instanceof IProject)
-				// {
-				// return super.hasChildren(element);
-				// } else
-				// {
-				// return super.hasChildren(element);
-				// }
-				// }
-				//
-				// @SuppressWarnings("unchecked")
-				// @Override
-				// public Object[] getElements(Object element)
-				// {
-				// @SuppressWarnings("rawtypes")
-				// List elements = new Vector();
-				// Object[] arr = super.getElements(element);
-				// if (arr != null)
-				// {
-				// for (Object object : arr)
-				// {
-				// if (object instanceof IFile)
-				// {
-				// IFile f = (IFile) object;
-				// if (f.getFullPath().getFileExtension().equals("arch"))
-				// {
-				// elements.add(f);
-				// }
-				// }
-				// }
-				// return elements.toArray();
-				// }
-				// return null;
-				// }
-				//
-				// }
-				// ;
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
 				dialog.setTitle("Architecture Selection");
 				dialog.setMessage("Select an architecture:");
 				dialog.setComparator(new ViewerComparator());
-				dialog.addFilter(new FileExtensionFilter("arch",true));
+				dialog.addFilter(new ViewerFilter()
+				{
+
+					@Override
+					public boolean select(Viewer viewer, Object parentElement,
+							Object element)
+					{
+						if (element instanceof IResource)
+						{
+							IResource res = (IResource) element;
+							return (res.getParent() instanceof IProject && res.getName().equalsIgnoreCase("dse"))
+									|| ((res instanceof IFolder || res instanceof IFile) && !(res.getParent() instanceof IProject));
+						}
+						return false;
+					}
+				});
 				dialog.setValidator(new ISelectionStatusValidator()
 				{
-					
+
 					public IStatus validate(Object[] selection)
 					{
-						if (selection.length == 1 && selection[0] instanceof IFile)
+						if (selection.length == 1
+								&& selection[0] instanceof IFolder)
 						{
 							return Status.OK_STATUS;
-						}
-						else return new Status(IStatus.ERROR,DestecsDebugPlugin.PLUGIN_ID,"Invalid selection. Selection must be a file.");
-							
+						} else
+							return new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Invalid selection. Selection must be a folder.");
+
 					}
 				});
 
 				for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
 				{
-					if (tab instanceof CoSimLaunchConfigurationTab)
+					if (tab instanceof DseMainTab)
 					{
-						CoSimLaunchConfigurationTab cosimLaunchTab = (CoSimLaunchConfigurationTab) tab;
-						IProject project = cosimLaunchTab.getProject();
+						DseMainTab dseLaunchTab = (DseMainTab) tab;
+						IProject project = dseLaunchTab.getProject();
 						if (project != null)
 						{
-							dialog.setInput(project.getFolder("dse"));
+							dialog.setInput(project);
 						}
 					}
 				}
@@ -176,7 +148,7 @@ public class DseTab extends AbstractLaunchConfigurationTab
 				{
 					if (dialog.getFirstResult() != null)
 					{
-						fArchitecturePathText.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
+						fArchitecturePathText.setText(((IResource) dialog.getFirstResult()).getProjectRelativePath().toString());
 
 					}
 
@@ -194,18 +166,11 @@ public class DseTab extends AbstractLaunchConfigurationTab
 				fArchitecturePathText.setText("");
 			}
 		});
-
 	}
 
 	public String getName()
 	{
-		return "DSE";
-	}
-
-	@Override
-	public String getId()
-	{
-		return "org.destecs.ide.debug.launching.ui.DseTab";
+		return "Architecture";
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration)
@@ -217,83 +182,18 @@ public class DseTab extends AbstractLaunchConfigurationTab
 		{
 			DestecsDebugPlugin.logError("Error fetching dse from launch configuration", e);
 		}
-		try
-		{
-			String url = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
-
-			replacePattern.setText(url);
-		} catch (CoreException e)
-		{
-			DestecsDebugPlugin.logError("Error fetching faults from launch configuration", e);
-		}
 		removeArchitectureButton.setEnabled(!fArchitecturePathText.getText().isEmpty());
+
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, fArchitecturePathText.getText());
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, replacePattern.getText());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, "");
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
-	}
-
-	@Override
-	public boolean isValid(ILaunchConfiguration launchConfig)
-	{
-		setErrorMessage(null);
-		if (replacePattern.getText().trim().length() > 0)
-		{
-			try
-			{
-				SubsParserWrapper parser = new SubsParserWrapper();
-				parser.parse(new File("argument"), replacePattern.getText());
-				for (IError errorMessage : parser.getErrors())
-				{
-					setErrorMessage(errorMessage.toString());
-					break;
-				}
-			} catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		return super.isValid(launchConfig);
-	}
-
-	private Text replacePattern = null;
-
-	public void createFaultField(Composite comp)
-	{
-		comp.setLayout(new GridLayout(1, true));
-		comp.setFont(comp.getFont());
-
-		Group group = new Group(comp, comp.getStyle());
-		group.setText("Faults");
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		group.setLayoutData(gd);
-
-		GridLayout layout = new GridLayout();
-		layout.makeColumnsEqualWidth = false;
-		layout.numColumns = 2;
-		group.setLayout(layout);
-
-		Label label = new Label(group, SWT.MIN);
-		label.setText("DE Replace pattern (A/B):");
-		gd = new GridData(GridData.BEGINNING);
-		label.setLayoutData(gd);
-
-		replacePattern = new Text(group, SWT.SINGLE | SWT.BORDER);
-
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		replacePattern.setLayoutData(gd);
-		replacePattern.addModifyListener(fListener);
-
 	}
 
 }

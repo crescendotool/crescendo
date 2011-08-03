@@ -39,29 +39,16 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 
 		public void modifyText(ModifyEvent e)
 		{
-			// if(!suspended)
-			{
-				// validatePage();
-				updateLaunchConfigurationDialog();
-			}
+			updateLaunchConfigurationDialog();
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
-			// if(!suspended)
-			{
-				/* do nothing */
-			}
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
-			// if(!suspended)
-			{
-				// fOperationText.setEnabled(!fdebugInConsole.getSelection());
-
-				updateLaunchConfigurationDialog();
-			}
+			updateLaunchConfigurationDialog();
 		}
 	}
 
@@ -86,7 +73,6 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 
 			public void widgetDefaultSelected(SelectionEvent e)
 			{
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -94,9 +80,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
 
-		// parent.setLayout(new GridLayout());
 		table = new Table(comp, SWT.FULL_SELECTION | SWT.VIRTUAL);// SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
-		// table.setItemCount(10);
 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -303,9 +287,9 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 							return;
 						}
 						contract = parser.parse(file);
-						
+
 						sdps = new HashMap<String, Object>();
-						if(contract == null)
+						if (contract == null)
 						{
 							return;
 						}
@@ -346,13 +330,6 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		}
 
 		return null;
-	}
-
-	@Override
-	public boolean isValid(ILaunchConfiguration launchConfig)
-	{
-		// TODO Auto-generated method stub
-		return super.isValid(launchConfig);
 	}
 
 }

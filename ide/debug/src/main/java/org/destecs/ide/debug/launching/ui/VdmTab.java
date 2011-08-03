@@ -48,19 +48,15 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 	{
 		public void modifyText(ModifyEvent e)
 		{
-			// validatePage();
 			updateLaunchConfigurationDialog();
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
-			/* do nothing */
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
-			// fOperationText.setEnabled(!fdebugInConsole.getSelection());
-
 			updateLaunchConfigurationDialog();
 		}
 	}
@@ -152,9 +148,9 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		public String getConfigValue()
 		{
 			String tmp = toString(",");
-			if(tmp.endsWith(","))
+			if (tmp.endsWith(","))
 			{
-				tmp = tmp.substring(0,tmp.length()-1);
+				tmp = tmp.substring(0, tmp.length() - 1);
 			}
 			return tmp;
 		}

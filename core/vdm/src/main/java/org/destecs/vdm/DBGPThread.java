@@ -11,7 +11,6 @@ import org.overturetool.vdmj.scheduler.ISchedulableThread;
 import org.overturetool.vdmj.scheduler.RunState;
 import org.overturetool.vdmj.scheduler.Signal;
 import org.overturetool.vdmj.util.NotSupportedError;
-import org.overturetool.vdmj.values.CPUValue;
 import org.overturetool.vdmj.values.ObjectValue;
 
 public class DBGPThread extends Thread

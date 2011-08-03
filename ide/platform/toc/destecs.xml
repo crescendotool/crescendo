@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toc label="DESTECS" topic="help/destecs.html">
+   <topic href="help/documentation.html" label="Documentation">
+   </topic>
+   <topic href="help/examples.html" label="Examples">
+   </topic>
+    <topic href="help/ArchitectureAnalysis.html" label="Architecture Analysis">
+   </topic>
+</toc>

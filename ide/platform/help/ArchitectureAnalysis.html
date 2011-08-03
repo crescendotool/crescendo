@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Architecture Analysis</title>
+</head>
+
+<body>
+<h1>Architecture Analysis</h1>
+The DSE feature allowing the hardware and deployment to be specified separate from the VDM system class is illustrated in the following example:<br />
+<br />
+Two things needs to be changed compared to a normal VDM-RT model:<br />
+<ol>
+    <li>The System class must be cleaned and annotations added for the architecture and deployment.
+    <ol>
+        <li>The architecture tag must be places under an <strong>instance variables</strong> block: <br />
+        <ul>
+            <li><font size="2" face="Courier New">-- ## Architecture ## --</font></li>
+        </ul>
+        </li>
+        <li>The deployment tab must be places in the constructor where the deployment normally will have been specified:
+        <ul>
+            <li><font size="2" face="Courier New">-- ## Deployment ## --</font></li>
+        </ul>
+        </li>
+    </ol>
+    </li>
+    <li>Creation of files (located under a folder named <strong>dse</strong> in the project root) with extension .arch, containing the model code which should be inserted at the respective tags e.g:</li>
+</ol>
+<font size="2" face="Courier New">-- ## Architecture ## --<br />
+instance variables<br />
+cpu1: CPU := new CPU(&lt;FCFS&gt;, 1000000 /* Hz */);<br />
+cpu2: CPU := new CPU(&lt;FCFS&gt;, 1000000 /* Hz */);<br />
+cpu3: CPU := new CPU(&lt;FCFS&gt;, 1000000 /* Hz */);<br />
+bus1: BUS := new BUS(&lt;FILO&gt;, 1000 /* bits/s */,{cpu1,cpu2,cpu3});<br />
+-- ## Deployment ## --<br />
+cpu1.deploy(mmi);<br />
+cpu3.deploy(navigation);<br />
+cpu2.deploy(radio);</font>
+</body>
+</html>

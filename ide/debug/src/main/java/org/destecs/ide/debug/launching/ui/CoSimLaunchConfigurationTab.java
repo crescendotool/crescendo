@@ -17,7 +17,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -53,25 +55,18 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			if (!suspended)
 			{
-				// validatePage();
 				updateLaunchConfigurationDialog();
 			}
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
-			if (!suspended)
-			{
-				/* do nothing */
-			}
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
 			if (!suspended)
 			{
-				// fOperationText.setEnabled(!fdebugInConsole.getSelection());
-
 				updateLaunchConfigurationDialog();
 			}
 		}
@@ -86,7 +81,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	private Text fScenarioText;
 	private Button selectCtPathButton;
 	private Button removeScenarioButton;
-	
 
 	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
@@ -128,14 +122,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		fScenarioText.addModifyListener(fListener);
 
 		removeScenarioButton = createPushButton(group, "Remove", null);
-		if (fScenarioText.getText().equals(""))
-		{
-			removeScenarioButton.setEnabled(false);
-		} else
-		{
-			removeScenarioButton.setEnabled(true);
 
-		}
 		removeScenarioButton.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
@@ -152,52 +139,11 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				class ScenarioContentProvider extends
-						BaseWorkbenchContentProvider
-				{
-					@Override
-					public boolean hasChildren(Object element)
-					{
-						if (element instanceof IProject)
-						{
-							return super.hasChildren(element);
-						} else
-						{
-							return super.hasChildren(element);
-						}
-					}
-
-					@SuppressWarnings("unchecked")
-					@Override
-					public Object[] getElements(Object element)
-					{
-						@SuppressWarnings("rawtypes")
-						List elements = new Vector();
-						Object[] arr = super.getElements(element);
-						if (arr != null)
-						{
-							for (Object object : arr)
-							{
-								if (object instanceof IFile)
-								{
-									IFile f = (IFile) object;
-									if (f.getFullPath().getFileExtension().equals("script"))
-									{
-										elements.add(f);
-									}
-								}
-							}
-							return elements.toArray();
-						}
-						return null;
-					}
-
-				}
-				;
-				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new ScenarioContentProvider());
+				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
 				dialog.setTitle("Scenario Selection");
 				dialog.setMessage("Select a scenario:");
 				dialog.setComparator(new ViewerComparator());
+				dialog.addFilter(new FileExtensionFilter("script"));
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText()).getFolder("scenarios"));
 
 				if (dialog.open() == Window.OK)
@@ -222,7 +168,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		simulationTimeText.setLayoutData(gd);
 		simulationTimeText.setText("5");
 
-		// warningLabel = new Label(parent, SWT.NONE);
 		simulationTimeText.addModifyListener(fListener);
 		simulationTimeText.addListener(SWT.Modify, new Listener()
 		{
@@ -276,58 +221,16 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		ctPath.addModifyListener(fListener);
 
 		selectCtPathButton = createPushButton(group, "Browse...", null);
-		// selectCtPathButton.setEnabled(false);
 		selectCtPathButton.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				class CtModelContentProvider extends
-						BaseWorkbenchContentProvider
-				{
-					@Override
-					public boolean hasChildren(Object element)
-					{
-						if (element instanceof IProject)
-						{
-							return super.hasChildren(element);
-						} else
-						{
-							return super.hasChildren(element);
-						}
-					}
-
-					@SuppressWarnings("unchecked")
-					@Override
-					public Object[] getElements(Object element)
-					{
-						@SuppressWarnings("rawtypes")
-						List elements = new Vector();
-						Object[] arr = super.getElements(element);
-						if (arr != null)
-						{
-							for (Object object : arr)
-							{
-								if (object instanceof IFile)
-								{
-									IFile f = (IFile) object;
-									if (f.getFullPath().getFileExtension().equals("emx"))
-									{
-										elements.add(f);
-									}
-								}
-							}
-							return elements.toArray();
-						}
-						return null;
-					}
-
-				}
-				;
-				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new CtModelContentProvider());
+				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
 				dialog.setTitle("20-Sim Model Selection");
 				dialog.setMessage("Select a 20-Sim Model:");
 				dialog.setComparator(new ViewerComparator());
+				dialog.addFilter(new FileExtensionFilter("emx"));
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText()).getFolder("model_ct"));
 
 				if (dialog.open() == Window.OK)
@@ -388,41 +291,28 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 							return super.hasChildren(element);
 						}
 					}
-
-					@SuppressWarnings("unchecked")
-					@Override
-					public Object[] getElements(Object element)
-					{
-						@SuppressWarnings("rawtypes")
-						List elements = new Vector();
-						Object[] arr = super.getElements(element);
-						if (arr != null)
-						{
-							for (Object object : arr)
-							{
-								try
-								{
-									if (object instanceof IProject
-											&& ((IProject) object).hasNature(IDestecsCoreConstants.NATURE))
-									{
-										elements.add(object);
-									}
-								} catch (CoreException e)
-								{
-									// Ignore it
-								}
-							}
-							return elements.toArray();
-						}
-						return null;
-					}
-
 				}
 				;
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new ProjectContentProvider());
 				dialog.setTitle("Project Selection");
 				dialog.setMessage("Select a project:");
 				dialog.setComparator(new ViewerComparator());
+				dialog.addFilter(new ViewerFilter()
+				{
+					@Override
+					public boolean select(Viewer viewer, Object parentElement,
+							Object element)
+					{
+						try
+						{
+							return element instanceof IProject
+									&& ((IProject) element).hasNature(IDestecsCoreConstants.NATURE);
+						} catch (CoreException e)
+						{
+							return false;
+						}
+					}
+				});
 
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 
@@ -450,8 +340,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		});
 	}
 
-	
-
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
 
@@ -468,7 +356,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			fScenarioText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 
-			
+			removeScenarioButton.setEnabled(!fScenarioText.getText().isEmpty());
 
 		} catch (CoreException e)
 		{
@@ -491,7 +379,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
 
-		
 	}
 
 	public IProject getProject()

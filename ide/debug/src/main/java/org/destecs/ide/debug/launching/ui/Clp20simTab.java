@@ -42,8 +42,6 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		Composite comp = new Composite(parent, SWT.NONE);
 
 		setControl(comp);
-		// PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(),
-		// IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
 
@@ -141,36 +139,6 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 	public void initializeFrom(ILaunchConfiguration configuration)
 	{
-		// TODO: we cannot do this. We need to find the other page and ask it for the values. The reason for this is
-		// that the configuration only exists when all values of a page is saved which normally only occur when the user
-		// presses the Debug button
-		
-		// try
-		// {
-		// String ctPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH,
-		// IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH_DEFAULT);
-		//
-		// if (ctPath.equals(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH_DEFAULT))
-		// {
-		// this.setErrorMessage("No 20-sim model selected");
-		// ctEndpoint = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT,
-		// IDebugConstants.DEFAULT_CT_ENDPOINT);
-		// return;
-		// } else
-		// {
-		// this.setErrorMessage(null);
-		// this.ctPath = ctPath;
-		// ctEndpoint = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT,
-		// IDebugConstants.DEFAULT_CT_ENDPOINT);
-		// }
-		//
-		// projectName = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
-		//
-		// } catch (CoreException e)
-		// {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 
 	}
 

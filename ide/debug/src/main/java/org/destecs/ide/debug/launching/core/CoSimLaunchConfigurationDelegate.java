@@ -95,15 +95,26 @@ public class CoSimLaunchConfigurationDelegate extends
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{
 		this.configuration = configuration;
+		try{
 		loadSettings(configuration);
 		this.launch = launch;
 		target = new DestecsDebugTarget(launch, project,outputFolder);
 		this.launch.addDebugTarget(target);
 		startSimulation();
+		}catch(Exception e)
+		{
+			System.err.println("Aborting launch bacuase of config error");
+			launch.terminate();
+//			target.terminate();
+		}
 	}
 
-	private File getFileFromPath(IProject project, String path)
+	private File getFileFromPath(IProject project, String path) throws IOException
 	{
+		if(path == null || path.isEmpty())
+		{
+			return null;
+		}
 
 		IResource r = project.findMember(new Path(path));
 
@@ -111,10 +122,10 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			return r.getLocation().toFile();
 		}
-		return null;
+		throw new IOException("Faild to find file: "+path);
 	}
 
-	private void loadSettings(ILaunchConfiguration configuration)
+	private void loadSettings(ILaunchConfiguration configuration) throws IOException
 	{
 		try
 		{
@@ -154,7 +165,11 @@ public class CoSimLaunchConfigurationDelegate extends
 		} catch (MalformedURLException e)
 		{
 			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
-		} catch (Exception e)
+		} catch(IOException e)
+		{
+			DestecsDebugPlugin.logError("Faild to find file", e);
+			throw e;
+		}catch (Exception e)
 		{
 			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
 		}

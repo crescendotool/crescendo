@@ -14,9 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
-import org.destecs.vdm.BasicSimulationManager;
 import org.destecs.vdm.DBGPReaderCoSim;
-import org.destecs.vdm.SimulationManager;
 import org.destecs.vdmj.runtime.CoSimClassInterpreter;
 import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Settings;
@@ -38,7 +36,7 @@ import org.overturetool.vdmj.syntax.ClassReader;
 public class VDMCO extends VDMRT
 {
 	private static final CharSequence ARCHITECTURE_COMMENT = "-- ## Architecture ## --";
-	private static final CharSequence DEPLOYMENT_COMMENT = "-- ## Deploy ## --";
+	private static final CharSequence DEPLOYMENT_COMMENT = "-- ## Deployment ## --";
 	public static File outputDir;
 	ClassInterpreter interpreter = null;
 	public static int debugPort = 10000;
@@ -271,7 +269,7 @@ public class VDMCO extends VDMRT
 							/ 1000 + " secs");
 				} else
 				{
-					if (replaceNewIdentifier.isEmpty())
+					if (replaceNewIdentifier.isEmpty() && architecture.isEmpty() && deploy.isEmpty())
 					{
 						long before = System.currentTimeMillis();
 	    				LexTokenReader ltr =

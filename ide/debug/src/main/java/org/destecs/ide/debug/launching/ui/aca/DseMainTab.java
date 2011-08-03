@@ -3,6 +3,7 @@ package org.destecs.ide.debug.launching.ui.aca;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -37,24 +38,18 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 	{
 		public void modifyText(ModifyEvent e)
 		{
-			// validatePage();
 			updateLaunchConfigurationDialog();
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
-			/* do nothing */
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
-			// fOperationText.setEnabled(!fdebugInConsole.getSelection());
-
 			updateLaunchConfigurationDialog();
 		}
 	}
-
-	
 
 	protected WidgetListener fListener = new WidgetListener();
 	private Text fBaseLaunchConfigNameText;
@@ -70,7 +65,6 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		createExtendableContent(comp);
 	}
 
-	
 	/**
 	 * Enables sub classes to add groups to the existing view
 	 * 
@@ -94,13 +88,13 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		layout.numColumns = 3;
 		group.setLayout(layout);
 
-		fBaseLaunchConfigNameText = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+		fBaseLaunchConfigNameText = new Text(group, SWT.SINGLE | SWT.BORDER
+				| SWT.READ_ONLY);
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		fBaseLaunchConfigNameText.setLayoutData(gd);
 		fBaseLaunchConfigNameText.addModifyListener(fListener);
-		
-		
+
 		Button selectProjectButton = createPushButton(group, "Browse...", null);
 
 		selectProjectButton.addSelectionListener(new SelectionAdapter()
@@ -108,23 +102,24 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				class LaunchConfigContentProvider implements ITreeContentProvider
+				class LaunchConfigContentProvider implements
+						ITreeContentProvider
 				{
 
 					public void dispose()
 					{
-						
+
 					}
 
 					public void inputChanged(Viewer viewer, Object oldInput,
 							Object newInput)
 					{
-						
+
 					}
 
 					public Object[] getElements(Object inputElement)
 					{
-						if(inputElement instanceof Object[])
+						if (inputElement instanceof Object[])
 						{
 							return (Object[]) inputElement;
 						}
@@ -144,7 +139,8 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 					public boolean hasChildren(Object element)
 					{
 						return false;
-					}}
+					}
+				}
 				;
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), DebugUITools.newDebugModelPresentation(), new LaunchConfigContentProvider());
 				dialog.setTitle("Base Launch Configuration Selection");
@@ -153,7 +149,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 
 				try
 				{
-					//see class: LaunchConfigurationFilteredTree and LaunchConfigurationView for launchconfig display
+					// see class: LaunchConfigurationFilteredTree and LaunchConfigurationView for launchconfig display
 					dialog.setInput(DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurations(getConfigurationType()));
 				} catch (CoreException e1)
 				{
@@ -168,15 +164,15 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 
 					)
 					{
-						fBaseLaunchConfigNameText.setText(((ILaunchConfiguration)dialog.getFirstResult()).getName());
+						fBaseLaunchConfigNameText.setText(((ILaunchConfiguration) dialog.getFirstResult()).getName());
 					}
 
 				}
 			}
 		});
-		
+
 	}
-	
+
 	protected ILaunchConfigurationType getConfigurationType()
 	{
 		return getLaunchManager().getLaunchConfigurationType(IDebugConstants.ATTR_DESTECS_PROGRAM);
@@ -205,6 +201,31 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 
 	public IProject getProject()
 	{
+		if (!fBaseLaunchConfigNameText.getText().isEmpty())
+		{
+			ILaunchConfiguration baseConfig = null;
+
+			try
+			{
+				for (ILaunchConfiguration tmp : DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurations())
+				{
+					if (tmp.getName().equals(fBaseLaunchConfigNameText.getText()))
+					{
+						baseConfig = tmp;
+					}
+				}
+
+				if (baseConfig != null)
+				{
+					String projectName = baseConfig.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
+					return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+				}
+			} catch (CoreException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 

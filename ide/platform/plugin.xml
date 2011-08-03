@@ -84,4 +84,12 @@
       </splashHandlerProductBinding>
    </extension>
  
+ 
+  <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc/destecs.xml"
+            primary="true">
+      </toc>
+       </extension>
 </plugin>
