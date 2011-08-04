@@ -110,7 +110,7 @@
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
             activeByDefault="true"
-            contentProvider="org.destecs.ide.ui.navigator.DestecsContentProvider"
+            contentProvider="org.eclipse.ui.model.WorkbenchContentProvider"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.destecsNavigatorContent"
             labelProvider="org.destecs.ide.ui.navigator.DestecsLabelProvider"
