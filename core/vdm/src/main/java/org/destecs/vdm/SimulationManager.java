@@ -384,6 +384,9 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				PrintWriter p = new PrintWriter(new FileOutputStream(simulationLogFile, false));
 				SimulationLogger.setLogfile(p);
+				
+				p = new PrintWriter(new FileOutputStream(new File(simulationLogFile.getAbsolutePath()+".csv"), false));
+				SimulationLogger.setLogfileCsv(p);
 			} catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
@@ -421,11 +424,13 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						upVal.listeners.add(listener);
 					}
+					listener.changedValue(null, upVal, null);
 				} else
 				{
 					System.err.println("A non updatable value cannot be logged...it is constant!");
 				}
 			}
+			SimulationLogger.prepareCsv();
 		}
 	}
 
