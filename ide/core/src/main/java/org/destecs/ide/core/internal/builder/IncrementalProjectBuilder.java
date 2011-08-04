@@ -20,6 +20,7 @@ import org.destecs.ide.core.utility.FileUtility;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -31,10 +32,13 @@ public class IncrementalProjectBuilder extends
 	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
 			throws CoreException
 	{
-		if (!getProject().hasNature(IDestecsCoreConstants.NATURE))
+		IResourceDelta delta = getDelta(getProject());
+		if (!getProject().hasNature(IDestecsCoreConstants.NATURE) || (delta!=null && delta.getAffectedChildren().length==0))
 		{
 			return null;
 		}
+		
+//		System.out.println("Project: "+getProject().getName()+"-"+getDelta(getProject()).getAffectedChildren().length);
 
 		boolean isOk = true;
 		boolean isChecked = true;
