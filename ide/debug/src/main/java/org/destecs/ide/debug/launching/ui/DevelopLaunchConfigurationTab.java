@@ -251,7 +251,7 @@ public class DevelopLaunchConfigurationTab extends
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
 		// connection
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, IDebugConstants.DEFAULT_DE_ENDPOINT);
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DEFAULT_CT_ENDPOINT);
 	}
 

@@ -151,7 +151,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					throw new Exception("No free port found for DE launch");
 				}
-				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", freePort.toString()));
+				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replace("PORT", freePort.toString()));
 			} else
 			{
 				deUrl = new URL(deUrlString);

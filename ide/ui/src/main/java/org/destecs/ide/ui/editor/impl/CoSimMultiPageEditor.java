@@ -248,6 +248,12 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		super.init(site, editorInput);
 
 	}
+	
+	@Override
+	public String getTitle()
+	{
+	return "Configuration Editor";
+	}
 
 	/*
 	 * (non-Javadoc) Method declared on IEditorPart.

@@ -431,9 +431,9 @@ public class SimulationEngine
 		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
-		StepResult res = merge(deResult, ctResult);
+//		StepResult res = merge(deResult, ctResult);
 		// System.out.print(res.toHeaderString());
-		variableSyncInfo(res.getHeaders());
+		variableSyncInfo(merge(deResult, ctResult).getHeaders());
 		while (time <= totalSimulationTime)
 		{
 			if (forceStopSimulation)
@@ -442,17 +442,17 @@ public class SimulationEngine
 				break;
 			}
 			// System.out.print(res.toString());
-			variableSyncInfo(res.getVariables());
+//			variableSyncInfo(res.getVariables());
 			// Step DT - time calculate
 			// deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
 
 			// Step CT - step
-			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, res.events);
+			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
 
 			variableSyncInfo(merge(deResult, ctResult).getVariables());
 			
 			// Step DT - step
-			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, res.events);
+			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
 
 //			 res = merge(deResult, ctResult);
 
