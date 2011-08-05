@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Events</title>
+</head>
+
+<body>
+<h1>Events</h1>
+This is a small guide which explains how events can be used in DESTECS. <br />
+<h2>What is an event? </h2>
+An event is a boolean state change which can be determined in the CT side by a number of keywords:<br />
+<ol>
+    <li>event</li>
+    <li>eventup</li>
+    <li>eventdown</li>
+</ol>
+Each event type detects an event if a condition becomes true like:<br />
+<ul>
+    <li>eventdown(levelIn-minlevel)</li>
+    <li>eventup(levelIn-maxlevel)</li>
+</ul>
+The events are all declared as a part of the CT model.<br />
+<br />
+<h2>What can an event be used for?</h2>
+An event can be used to make a DE controller aware of a change in the environment (like a normal interrupt on a micro controller)<br />
+In VDM such an event can be modeled as an async operation call.<br />
+<br />
+<h2>How to add events to a DESTECS Co-model?</h2>
+<h3>First add the event to the contract:</h3>
+<font face="Courier New">event high;</font><br />
+<h3>Second add the event to the link file:</h3>
+<font face="Courier New">event high=eventHandler.high;</font><br />
+<br />
+In this case the instance <font face="Courier New">eventHandler</font> must exist in the System class and it must have a public async operation called <font face="Courier New">high</font>.<br />
+<br />
+<h3>Third add the event handler in VDM</h3>
+Add a class like:<font face="Courier New"><br />
+class WatertankEventHandler<br />
+operations<br />
+<br />
+public async high : () ==&gt; ()<br />
+high()== IO`println(&quot;Watertank reached high marker&quot;);<br />
+<br />
+end WatertankEventHandler</font><br />
+<br />
+and add this to the system class:<br />
+instance variables<br />
+<br />
+<font face="Courier New">&nbsp;&nbsp;&nbsp; eventHandler : WatertankEventHandler;</font><br />
+<br />
+and to the constructor:<br />
+<br />
+<font face="Courier New">&nbsp;&nbsp;&nbsp; eventHandler&nbsp; := new WatertankEventHandler();</font><br />
+<br />
+This will cause the high operation to be called when the high event from the contract occurs during simulation.<br />
+<br />
+<h3>Fourth add the event creation in the 20-sim model</h3>
+<font color="#FF0000"><em><strong>Here it is important to notice the quotes used. They must be strait down, not the ones windows tends to insert when you do copying.</strong></em></font><br />
+<br />
+Open your module with the interface for the co-simulation and add:<br />
+<br />
+<font face="Courier New">variables<br />
+boolean global high ('event');</font><br />
+<br />
+<font face="Courier New">code<br />
+high = eventup(levelIn-maxlevel);<br />
+</font>Were high is the event raised (it is marked event) and the eventup is the event type used for detection allowing the simulator to detect the exact time when this occurs. The global is important because this exposes the name to the co-simulation engine has high and nor e.g: Control\high.
+</body>
+</html>
