@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,6 +14,7 @@ import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.AcaGenerator;
 import org.destecs.ide.debug.aca.plugin.ArchitectureAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.IncludeBaseConfigAcaPlugin;
+import org.destecs.ide.debug.aca.plugin.SharedDesignParameterAcaPlugin;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -47,9 +51,14 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 
 		IProject project = getProject(baseConfig);
 
-		AcaGenerator generator = new AcaGenerator(configuration, baseConfig, monitor, 10, project);
+		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+		String outputPreFix = dateFormat.format(new Date()) + "_"
+				+ configuration.getName();
+
+		AcaGenerator generator = new AcaGenerator(configuration, baseConfig, monitor, 10, project, outputPreFix);
 		generator.addGenerator(new IncludeBaseConfigAcaPlugin());
 		generator.addGenerator(new ArchitectureAcaPlugin());
+		generator.addGenerator(new SharedDesignParameterAcaPlugin());
 
 		monitor.worked(10);
 		final Set<ILaunchConfiguration> configurations = generator.generate();

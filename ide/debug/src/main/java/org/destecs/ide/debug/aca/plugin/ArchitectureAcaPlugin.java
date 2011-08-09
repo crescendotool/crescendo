@@ -21,7 +21,7 @@ public class ArchitectureAcaPlugin implements IAcaGeneratorPlugin
 	public Collection<? extends ILaunchConfiguration> generate(
 			ILaunchConfiguration configuration,
 			final ILaunchConfiguration baseConfig,
-			Set<ILaunchConfiguration> congifurations, IProject project)
+			Set<ILaunchConfiguration> congifurations, IProject project,final String outputPreFix)
 	{
 		final Set<ILaunchConfiguration> results = new HashSet<ILaunchConfiguration>();
 
@@ -48,7 +48,7 @@ public class ArchitectureAcaPlugin implements IAcaGeneratorPlugin
 						{
 							ILaunchConfigurationWorkingCopy copy = baseConfig.getWorkingCopy();
 							copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, resource.getProjectRelativePath().toString());
-							
+							copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
 							results.add(copy);
 							return false;
 						}

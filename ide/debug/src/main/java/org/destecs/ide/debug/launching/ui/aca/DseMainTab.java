@@ -228,6 +228,36 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		}
 		return null;
 	}
+	
+	
+	public ILaunchConfiguration getSelectedBaseConfig()
+	{
+		if (!fBaseLaunchConfigNameText.getText().isEmpty())
+		{
+			ILaunchConfiguration baseConfig = null;
+
+			try
+			{
+				for (ILaunchConfiguration tmp : DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurations())
+				{
+					if (tmp.getName().equals(fBaseLaunchConfigNameText.getText()))
+					{
+						baseConfig = tmp;
+					}
+				}
+
+				if (baseConfig != null)
+				{
+					return baseConfig;
+				}
+			} catch (CoreException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{

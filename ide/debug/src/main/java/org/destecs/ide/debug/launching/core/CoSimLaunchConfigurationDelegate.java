@@ -90,6 +90,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	private boolean enableLogging = false;
 	private boolean showDebugInfo = false;
 	private String logVariables = null;
+	private String ourputFolderPrefix="";
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -132,6 +133,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
 			contractFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
+			ourputFolderPrefix =  configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
 			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
 			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
 			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
@@ -177,7 +179,13 @@ public class CoSimLaunchConfigurationDelegate extends
 		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 		File base = dProject.getOutputFolder().getLocation().toFile();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-		outputFolder = new File(base, dateFormat.format(new Date()));
+		String tmp = ourputFolderPrefix;
+		tmp = tmp.replace('\\', File.separatorChar).replace('/', File.separatorChar);
+		if(!tmp.endsWith(""+File.separatorChar))
+		{
+			tmp+=File.separatorChar;
+		}
+		outputFolder = new File(base,tmp+ dateFormat.format(new Date())+ "_"+configuration.getName());
 
 		if (!outputFolder.mkdirs())
 		{

@@ -10,6 +10,6 @@ public interface IAcaGeneratorPlugin
 {
 
 	Collection<? extends ILaunchConfiguration> generate(
-			ILaunchConfiguration configuration, ILaunchConfiguration baseConfig, Set<ILaunchConfiguration> congifurations, IProject project);
+			ILaunchConfiguration configuration, ILaunchConfiguration baseConfig, Set<ILaunchConfiguration> congifurations, IProject project, String outputPreFix);
 
 }

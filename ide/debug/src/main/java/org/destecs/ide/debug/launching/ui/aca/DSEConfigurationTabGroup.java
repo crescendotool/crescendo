@@ -16,6 +16,7 @@ public class DSEConfigurationTabGroup extends
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				new DseMainTab(),
 				new DseArchitectureTab(),
+				new SharedDesignParameterAcaTab(),
 				new CommonTab() };
 		setTabs(tabs);
 
