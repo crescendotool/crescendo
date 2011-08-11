@@ -16,9 +16,12 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.parsers.ScenarioParserWrapper;
+import org.destecs.core.parsers.ScriptParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.core.scenario.Scenario;
+import org.destecs.core.dcl.Script;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
+import org.destecs.core.simulationengine.ScriptSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
@@ -75,6 +78,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	private File ctFile = null;
 	private File contractFile = null;
 	private File scenarioFile = null;
+	private File scriptFile = null;
 	private String sharedDesignParam = null;
 	private double totalSimulationTime = 0.0;
 	private IProject project = null;
@@ -137,6 +141,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
 			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
 			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
+			scriptFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCRIPT_PATH, ""));
 			deArchitectureFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
 			deReplacePattern = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
@@ -478,9 +483,16 @@ public class CoSimLaunchConfigurationDelegate extends
 
 		if (scenarioFile != null)
 		{
+			
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
-			return new ScenarioSimulationEngine(contractFile, scenario);
-		} else
+			return new ScenarioSimulationEngine(contractFile, scenario);						
+		}
+		if (scriptFile != null)
+		{	
+			Script script = new ScriptParserWrapper().parse(scriptFile);
+			return new ScriptSimulationEngine(contractFile, script);
+		}
+		else
 		{
 			return new SimulationEngine(contractFile);
 		}
