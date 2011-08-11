@@ -1,6 +1,7 @@
-grammar Dcl;
+grammar Script;
 
 options {
+//  k=2;
   language = Java;
   output = AST;
   ASTLabelType= CommonTree;
@@ -48,6 +49,12 @@ import org.destecs.core.dcl.SymbolTable;
 import org.destecs.core.dcl.Type;
 import org.destecs.core.dcl.Symbol;
 import org.destecs.core.dcl.VariableSymbol;
+import org.destecs.core.dcl.ScriptFactory;
+import org.destecs.core.dcl.Script;
+import org.destecs.core.dcl.Action;
+//import org.destecs.core.dcl.Action.Condition;
+import org.destecs.core.dcl.Interpreter;
+//import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 
 }
 
@@ -140,12 +147,30 @@ package org.destecs.core.parsers.dcl;
 
 @members {
 
-SymbolTable symtab;
+	 SymbolTable symtab;		
+	 
+	 Action action;
+   public ScriptParser(TokenStream input, Action action) {
+       this(input);
+       this.action = action;
+   }
+   
+   Interpreter interp;
+   public ScriptParser(TokenStream input, Interpreter interp) {
+       this(input);
+       this.interp = interp;
+   }
 
-private boolean mMessageCollectionEnabled = false;
+    private boolean mMessageCollectionEnabled = false;
     private boolean mHasErrors = false;
+    private ScriptFactory script = new ScriptFactory();
     private List<String> mMessages;
     private List<RecognitionException> mExceptions = new ArrayList<RecognitionException>();
+
+    public Script getScript()
+    {
+        return script.getScript();
+    }
   
     public boolean hasExceptions()
     {
@@ -220,14 +245,17 @@ private boolean mMessageCollectionEnabled = false;
     public boolean hasErrors() {
         return mHasErrors;
     }
-   
-   
+      
 }
 compilationUnit[SymbolTable symtab]
 @init {this.symtab = symtab;}       // set the parser's field
     : toplevelStatement* 
+//    {
+//      script.addAction(action);    // script here is scriptfactory, the first element of the queue won't be null
+//     }
     ; 
 
+//***Statements start***
 toplevelStatement
   : includeStatement
   | whenStatement
@@ -241,12 +269,12 @@ includeStatement
 whenStatement
   :WHEN expression DO
     statement *
-   (AFTER 
-    statement)?
+   (AFTER
+    statement)?         
     ->^(WHEN expression DO 
       statement *
        ^(AFTER
-       statement))
+       statement)?) //replace by ->
   ;
   
 statement
@@ -260,12 +288,35 @@ statement
   ;
 
 assignStatement 
-  : identifier ':=' expression
-    -> ^(':=' identifier expression)
+  : 
+//  identifier ':=' expression
+//   {script.addAction(action);
+//    action = new Action( $singletonexpression.value.toString(),
+//            Double.valueOf($expression.value.toString()).doubleValue()            
+//            );
+//   }  
+    domain type IDENT ':=' expression
+    {
+//      if (script.actions.size()!= 0){
+        action = new Action($domain.value.toString(), $IDENT.text.toString(),
+                Double.valueOf($expression.value.toString()).doubleValue()            
+                );
+        script.addAction(action);
+//      }
+//	    else{
+//		    action = new Action($domain.value.toString(), $IDENT.text.toString(),
+//		            Double.valueOf($expression.value.toString()).doubleValue()            
+//		            );
+//		    
+//	    }
+    }
+//    -> ^(':=' identifier expression)
+      -> ^(':=' domain type IDENT  expression)
   ;
 
-blockStatement
+blockStatement  
   : '(' statement (';' statement)* (';')? ')'  
+//  {script.addAction(action);} //TO-DO
   ;
   
 revertStatement
@@ -274,45 +325,88 @@ revertStatement
   ; 
 
 printStatement
-  : PRINT STRING
+  : PRINT STRING {interp.print($STRING.text);}
   -> ^(PRINT STRING)
   ;
 
 errorStatement
-  : ERROR STRING 
-  -> ^(ERROR STRING )
+  : ERROR STRING {interp.print($STRING.text);}
+  -> ^(ERROR STRING)
   ;
 
 warnStatement
-  : WARN STRING
+  : WARN STRING {interp.print($STRING.text);}
   -> ^(WARN STRING)
   ;
-  
-expression 
-  : singletonexpression
-  | unaryexpression
-  | binaryexpression
+//***Statements end***
+
+
+//***Expression start***
+expression returns [Object value]
+  : singletonexpression {$value = $singletonexpression.value ;}
+  | unaryexpression     {$value = $unaryexpression.value ;}
+  | binaryexpression    {$value = $binaryexpression.value ;}
+//  {script.addAction(action);}  
   ;
     
-singletonexpression
-  : booleanliteral
-  | numericliteral
-  | timeliteral
-  | TIME
-  | identifier 
+unaryexpression returns [Object value]
+  : unaryoperator expression
+  // TO-DO
+  ->  ^(EXPR unaryoperator expression)
   ;
   
-booleanliteral
-  : TRUE | FALSE
+unaryoperator
+  : 'add'
+  | 'minus'
+  | 'abs'
+  | 'floor'
+  | 'ceil'
+  ;
+  
+binaryexpression returns [Object value]
+  : 
+//    singletonexpression binaryoperator expression
+//   {        
+//         $value = $singletonexpression.value;
+//    }      
+    singletonexpression binaryoperator expression
+    {
+      $value = $expression.value;
+      action = new Action($singletonexpression.value.toString(),
+                Double.valueOf($expression.value.toString()).doubleValue()            
+                );    
+      script.addAction(action);  
+    }
+  -> singletonexpression
+   ^(EXPR binaryoperator expression)
+  ;
+  
+
+singletonexpression returns [Object value]
+  : booleanliteral {$value = $booleanliteral.value;}
+  | numericliteral {$value = Double.parseDouble($numericliteral.text);}
+  | timeliteral    {$value = $timeliteral.value;}
+  | TIME           {$value = $TIME.text;}
+  | identifier     {$value = $identifier.value;}// for the binaryexpression
+  ;
+
+//***Expression start***
+  
+booleanliteral returns [Object value]
+  : TRUE  {$value = $TRUE.text ;}
+  | FALSE {$value = $FALSE.text ;}
   ;
   
 numericliteral
   : numeral ('.' numeral )?  (exponent)?
   ;
 
-timeliteral
-  : 'Time:' numericliteral ('{')? (timeunit) ('}')?
+timeliteral returns [Object value]
+  :  numericliteral ('{')? (timeunit) ('}')?
+//  'Time:' numericliteral ('{')? (timeunit) ('}')?
 // TODO, needs to lookahead
+  {$value = Double.parseDouble($numericliteral.text);
+  }
   ;
 
 timeunit
@@ -331,32 +425,24 @@ numeral
   : INTEGER
   ;
 
-identifier 
-  : (domain)? type IDENT 
+identifier returns [Object value]
+  : 
+  (domain)? type IDENT
+//  domain type IDENT
+//  {
+//////  new Action.Name($ident.text);
+////    action.Name($IDENT.text);  
+//      id = $IDENT.text;
+//  }
+    {$value = $IDENT.text;}
   ;
 
-domain
-  : DE | CT
+domain returns [Object value]
+  : DE {$value = $DE.text;}
+  | CT {$value = $CT.text;}
   ;
   
-unaryexpression
-  : unaryoperator expression
-  ->  ^(EXPR expression)
-  ;
-  
-unaryoperator
-  : 'add'
-  | 'minus'
-  | 'abs'
-  | 'floor'
-  | 'ceil'
-  ;
-  
-binaryexpression
-  : singletonexpression binaryoperator expression
-  -> singletonexpression
-   ^(EXPR expression)
-  ;
+
 
 binaryoperator
   : '+'
@@ -369,7 +455,7 @@ binaryoperator
   | '<='
   | '>'
   | '>='
-  | '='
+  | '=' // equals
   | '<>'
   | 'or'
   | 'and'
@@ -385,20 +471,32 @@ type
     |   BOOL 
     |   TIME   
     ; 
+
+//ident:
+//    IDENT
+//    ;
  
 STRING
   :
-   '"'
-    { StringBuilder b = new StringBuilder(); }
-    ( '"' '"'       { b.appendCodePoint('"');}
-    | c=~('"'|'\r'|'\n')  { b.appendCodePoint(c);}
-    )*
+//  '"'
+//  ( '"' '"'
+//  | ~('"'|'\r'|'\n')
+//  )*
+//  '"'
+//  ;
+  
     '"'
-   ;
+    .*
+    '"'
+    ;
+    
+
+
+
   
 FORMATTEDSTRING
   : STRING 
-  ('%' IDENT (',' IDENT )?)?
+  ('%' IDENT (',' IDENT)?)?
   ;
 
 fragment LETTER : ('a'..'z' | 'A'..'Z') ;

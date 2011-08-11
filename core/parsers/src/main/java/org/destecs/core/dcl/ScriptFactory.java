@@ -16,8 +16,8 @@ public class ScriptFactory {
 		actions.add(a);
 	}
 	
-	public Dcl getScript(){
-		return new Dcl(this.actions);		
+	public Script getScript(){
+		return new Script(this.actions);		
 	}
 	
 }

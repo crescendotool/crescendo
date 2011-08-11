@@ -8,6 +8,8 @@ package org.destecs.core.dcl;
  * Visit http://www.pragmaticprogrammer.com/titles/tpdsl for more book information.
 ***/
 import java.util.*;
+
+import org.antlr.runtime.tree.CommonTree;
 public class SymbolTable implements Scope { // single-scope symtab
 	   public static final int tUSER = 0; // user-defined type
 	    public static final int tBOOLEAN = 1;
@@ -44,4 +46,11 @@ public class SymbolTable implements Scope { // single-scope symtab
 
     public String toString() { return getScopeName()+":"+symbols; }
     
+//    public Type compare (CommonTree lhs,CommonTree rhs, String Operator)
+//    {
+//    	int tlhs = lhs.;
+//    	String op = Operator;
+//    	Type type = (Type) "true";
+//    	return type;
+//    }
 }

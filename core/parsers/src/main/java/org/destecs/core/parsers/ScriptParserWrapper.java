@@ -12,12 +12,12 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 
 import org.destecs.core.dcl.CymbolAST;
-import org.destecs.core.dcl.Dcl;
+import org.destecs.core.dcl.Script;
 
 import org.destecs.core.dcl.SymbolTable;
-import org.destecs.core.parsers.dcl.DclLexer;
-import org.destecs.core.parsers.dcl.DclParser;
-import org.destecs.core.parsers.dcl.DclParser.compilationUnit_return;
+import org.destecs.core.parsers.dcl.ScriptLexer;
+import org.destecs.core.parsers.dcl.ScriptParser;
+import org.destecs.core.parsers.dcl.ScriptParser.compilationUnit_return;
 import org.destecs.core.parsers.dcl.Treewalker;
 //import org.destecs.core.parsers.dcl.Def;
 
@@ -29,7 +29,7 @@ import org.antlr.runtime.tree.TreeNodeStream;
 import org.antlr.runtime.tree.TreeVisitor;
 import org.antlr.runtime.tree.TreeVisitorAction;
 
-public class ScriptParserWrapper extends ParserWrapper<DclParser.compilationUnit_return>
+public class ScriptParserWrapper extends ParserWrapper<Script>
 {
 ////	/** An adaptor that tells ANTLR to build CymbolAST nodes */
     public static TreeAdaptor CymbolAdaptor = new CommonTreeAdaptor() {
@@ -52,42 +52,42 @@ public class ScriptParserWrapper extends ParserWrapper<DclParser.compilationUnit
 //        }
     };
 
-	protected DclParser.compilationUnit_return  internalParse(File source, CharStream data)
+	protected Script  internalParse(File source, CharStream data)
 			throws IOException
 	{
-		super.lexer = new DclLexer(data);
+		super.lexer = new ScriptLexer(data);
 		final CommonTokenStream tokens = new CommonTokenStream(lexer);
 		
-		DclParser thisParser = new DclParser(tokens);
+		ScriptParser thisParser = new ScriptParser(tokens);
 		parser = thisParser;
 		
 		
 		final SymbolTable symtab = new SymbolTable();
 		
-		((DclLexer)lexer).enableErrorMessageCollection(true);
+		((ScriptLexer)lexer).enableErrorMessageCollection(true);
 		thisParser.enableErrorMessageCollection(true);
 			
 		
 		try
 		{
 			
-			DclParser.compilationUnit_return ast = thisParser.compilationUnit(symtab);				
-	
+//			DclParser.compilationUnit_return ast = thisParser.compilationUnit(symtab);				
+			ScriptParser.compilationUnit_return ast = thisParser.compilationUnit(symtab);			
 		    CommonTree comtree = (CommonTree) ast.getTree();
- 
+		 
 			// CREATE TREE NODE STREAM FOR TREE PARSERS
 			TreeNodeStream nodes = new CommonTreeNodeStream(comtree);
 			
-			Treewalker typeComp = new Treewalker(nodes, symtab);
+			Treewalker typeComp = new Treewalker(nodes, symtab);//should symtab also be an input here?
 		
 			typeComp.program();
 			
 				        
-			if (((DclLexer)lexer).hasExceptions())
+			if (((ScriptLexer)lexer).hasExceptions())
 			{
 //				System.out.println("Dcl Lexer hasExceptions");
 				
-				List<RecognitionException> exps = ((DclLexer)lexer).getExceptions();
+				List<RecognitionException> exps = ((ScriptLexer)lexer).getExceptions();
 				addErrorsLexer(source, exps);
 				return null;
 			}
@@ -99,10 +99,15 @@ public class ScriptParserWrapper extends ParserWrapper<DclParser.compilationUnit
 				List<RecognitionException> exps = thisParser.getExceptions();
 				addErrorsParser(source, exps);
 			}
+			if (typeComp.hasExceptions())
+			{
+				List<RecognitionException> exps = typeComp.getExceptions();
+				addErrorsParser(source, exps);
+			}
 	    	else
 			{
 //				System.out.println("return AST");
-				return ast;
+				return thisParser.getScript();
 			}
 		} catch (RecognitionException errEx)
 		{

@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.destecs.core.dcl.Action;
 
-public class Dcl
+public class Script
 {
 	public final List<Action> actions;
 
-	public Dcl(List<Action> actions) {
+	public Script(List<Action> actions) {
 		this.actions = actions;
 	}
 	
