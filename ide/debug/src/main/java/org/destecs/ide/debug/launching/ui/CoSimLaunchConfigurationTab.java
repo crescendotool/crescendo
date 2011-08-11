@@ -79,6 +79,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	private Text simulationTimeText = null;
 	private WidgetListener fListener = new WidgetListener();
 	private Text fScenarioText;
+	private Text fScriptText;	
 	private Button selectCtPathButton;
 	private Button removeScenarioButton;
 
@@ -116,12 +117,25 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		label.setLayoutData(gd);
 
 		fScenarioText = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
-
+		fScriptText = new Text(group, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+		
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		fScenarioText.setLayoutData(gd);
 		fScenarioText.addModifyListener(fListener);
+		fScriptText.setLayoutData(gd);
+		fScriptText.addModifyListener(fListener);
+
 
 		removeScenarioButton = createPushButton(group, "Remove", null);
+		
+		if (fScenarioText.getText().equals("")&&fScriptText.getText().equals(""))
+		{
+			removeScenarioButton.setEnabled(false);
+		} else
+		{
+			removeScenarioButton.setEnabled(true);
+
+		}
 
 		removeScenarioButton.addSelectionListener(new SelectionAdapter()
 		{
@@ -129,6 +143,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			public void widgetSelected(SelectionEvent e)
 			{
 				fScenarioText.setText("");
+				fScriptText.setText("");
 			}
 		});
 
@@ -144,6 +159,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 				dialog.setMessage("Select a scenario:");
 				dialog.setComparator(new ViewerComparator());
 				dialog.addFilter(new FileExtensionFilter("script"));
+				dialog.addFilter(new FileExtensionFilter("script2"));
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText()).getFolder("scenarios"));
 
 				if (dialog.open() == Window.OK)
@@ -151,6 +167,15 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 					if (dialog.getFirstResult() != null)
 					{
 						fScenarioText.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
+						if(((IFile) dialog.getFirstResult()).getFullPath().getFileExtension().equals("script"))
+						{
+							fScenarioText.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
+						}
+						if(((IFile) dialog.getFirstResult()).getFullPath().getFileExtension().equals("script2"))
+						{
+							fScriptText.setText(((IFile) dialog.getFirstResult()).getProjectRelativePath().toString());
+						}
+										
 						removeScenarioButton.setEnabled(true);
 					}
 
@@ -355,7 +380,8 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			dePath.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, "No Path Selected"));
 			simulationTimeText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			fScenarioText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
-
+			fScriptText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCRIPT_PATH, ""));
+			
 			removeScenarioButton.setEnabled(!fScenarioText.getText().isEmpty());
 
 		} catch (CoreException e)
@@ -378,7 +404,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, simulationTimeText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, fScenarioText.getText());
-
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCRIPT_PATH, fScriptText.getText());
 	}
 
 	public IProject getProject()
