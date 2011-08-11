@@ -448,7 +448,7 @@ public class SimulationEngine
 
 			// Step CT - step
 			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
-
+			
 			variableSyncInfo(merge(deResult, ctResult).getVariables());
 			
 			// Step DT - step
