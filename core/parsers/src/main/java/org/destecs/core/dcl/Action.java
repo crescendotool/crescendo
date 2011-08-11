@@ -1,11 +1,5 @@
 package org.destecs.core.dcl;
 
-import org.destecs.core.dcl.Action;
-//import org.destecs.core.dcl.Action.Simulator;
-//import org.destecs.core.dcl.Action.Condition;
-import org.destecs.core.dcl.Type;
-import org.destecs.core.parsers.dcl.ScriptLexer;
-import org.destecs.core.scenario.Action.Simulator;
 
 public class Action implements Comparable<Action>
 {

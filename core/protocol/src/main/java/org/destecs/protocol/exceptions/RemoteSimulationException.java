@@ -29,6 +29,10 @@ public class RemoteSimulationException extends Exception implements Serializable
 	}
 
 	public static String stack2string(Throwable e) {
+		if(e == null)
+		{
+			return "";
+		}
 		  try {
 		    StringWriter sw = new StringWriter();
 		    PrintWriter pw = new PrintWriter(sw);

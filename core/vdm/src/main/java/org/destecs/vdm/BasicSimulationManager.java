@@ -145,7 +145,26 @@ public abstract class BasicSimulationManager
 				switch (inputType)
 				{
 					case Boolean:
-						newval = new BooleanValue(Boolean.parseBoolean(inputValue));
+					{
+						if (inputValue.contains("true")
+								|| inputValue.contains("false"))
+						{
+							newval = new BooleanValue(Boolean.parseBoolean(inputValue));
+							break;
+						}
+
+						try
+						{
+							newval = new BooleanValue(Integer.valueOf(inputValue) > 0 ? true
+									: false);
+						} catch (NumberFormatException e)
+						{
+							debugErr(e);
+							throw new RemoteSimulationException("Faild to setvalue from: "
+									+ name, e);
+						}
+
+					}
 						break;
 					case NumericValue:
 						newval = NumericValue.valueOf(Double.parseDouble(inputValue), coSimCtxt);
@@ -155,57 +174,30 @@ public abstract class BasicSimulationManager
 						System.err.println("Unknown value type to set");
 						return false;
 				}
+				
+				if(newval==null)
+				{
+					throw new RemoteSimulationException("Error in setValue with variable: "+name+ " properly a type mismatch. Requested input type was: "+inputType);
+				}
 
-				// val.set(location, newval.convertTo(estimateType(val), ctxt), ctxt);
-				// val.set(coSimLocation, newval, coSimCtxt);
 				updateValueQueueRequest.put(new ValueUpdateRequest(val, newval));
 			} catch (ValueException e)
 			{
 				debugErr(e);
-				throw new RemoteSimulationException("Faild to servalue from: "
+				throw new RemoteSimulationException("Faild to setvalue from: "
 						+ name, e);
 			} catch (InterruptedException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw new RemoteSimulationException("Internal error in setValue with name: "+name,e);
 			}
 
+		}else{
+			throw new RemoteSimulationException("Faild to find variable in setValue with name: "+name);
 		}
 
 		return true;
 	}
-
-	// private static Type estimateType(Value val)
-	// {
-	// if(val instanceof UpdatableValue)
-	// {
-	// return estimateType(val.deref());
-	// }
-	// if (val instanceof BooleanValue)
-	// {
-	// return new BooleanType(null);
-	// } else if (val instanceof NaturalOneValue)
-	// {
-	// return new NaturalOneType(null);
-	// } else if (val instanceof NaturalOneValue)
-	// {
-	// return new NaturalOneType(null);
-	// } else if (val instanceof NaturalValue)
-	// {
-	// return new NaturalType(null);
-	// } else if (val instanceof IntegerValue)
-	// {
-	// return new IntegerType(null);
-	// } else if (val instanceof RationalValue)
-	// {
-	// return new RationalType(null);
-	// } else if (val instanceof RealValue)
-	// {
-	// return new RealType(null);
-	// }
-	// System.err.println("Unknown type: " + val);
-	// return null;
-	// }
 
 	protected Value getValue(String name)
 	{
@@ -277,11 +269,6 @@ public abstract class BasicSimulationManager
 			// Ok just check again
 		}
 
-		// Long nextStep = null;
-		// synchronized (nextTimeStep)
-		// {
-		// nextStep = nextTimeStep;
-		// }
 		debug("Resume at clock: " + nextTimeStep);
 		return nextTimeStep;
 	}

@@ -1,27 +1,15 @@
 package org.destecs.core.simulationengine;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Iterator;
 
-//import org.destecs.core.scenario.Action;
-//import org.destecs.core.scenario.Scenario;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.destecs.core.contract.Contract;
-import org.destecs.core.dcl.*;
-//import org.destecs.core.parsers.dcl.ScriptLexer;
-//import org.destecs.core.parsers.dcl.ScriptParser;
-import org.destecs.core.parsers.ContractParserWrapper;
-import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+import org.destecs.core.dcl.Action;
+import org.destecs.core.dcl.Script;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
-
 import org.destecs.protocol.ProxyICoSimProtocol;
-import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 

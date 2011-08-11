@@ -859,7 +859,7 @@ public class SimulationEngine
 				return success;
 			} catch (Exception e)
 			{
-				abort(simulator, "Could not load model: " + model, e);
+				abort(simulator, "Could not load model", e);
 			}
 			abort(simulator, "Could not load model: " + model);
 		} else

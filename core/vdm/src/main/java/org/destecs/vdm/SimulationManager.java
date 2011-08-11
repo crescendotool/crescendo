@@ -28,6 +28,7 @@ import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
 import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.config.Properties;
+import org.overturetool.vdmj.definitions.CPUClassDefinition;
 import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
@@ -42,7 +43,10 @@ import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.typechecker.TypeChecker;
+import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.RealType;
+import org.overturetool.vdmj.types.Type;
+import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
@@ -200,7 +204,7 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	private Double getOutput(String name) throws ValueException
+	private Double getOutput(String name) throws ValueException, RemoteSimulationException
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
 		if (list != null && links.getLinks().containsKey(name))
@@ -216,7 +220,17 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						if (mem.name.getName().equals(var.variableName))
 						{
-							return mem.value.realValue(null);
+//							return mem.value.realValue(null);
+							
+							Value value = mem.value.deref();
+
+							Double result = getDoubleFromValue(value);
+							if(result != null)
+							{
+								return result;
+							}
+							
+							throw new RemoteSimulationException("Unexpected type for bound parameter: "+name+" supported types are bool and real but found: "+value.kind());
 						}
 					}
 				}
@@ -274,7 +288,7 @@ public class SimulationManager extends BasicSimulationManager
 				if (status == ExitStatus.EXIT_OK)
 				{
 					this.status = CoSimStatusEnum.LOADED;
-					return true;
+
 				} else
 				{
 					final Writer result = new StringWriter();
@@ -286,7 +300,38 @@ public class SimulationManager extends BasicSimulationManager
 				}
 			}
 
+			int cpus = 0;
+			for (ClassDefinition def : controller.getInterpreter().getClasses())
+			{
+				if (def instanceof SystemDefinition)
+				{
+					for (Definition d : def.definitions)
+					{
+						Type t = d.getType();
+
+						if (t instanceof ClassType)
+						{
+							ClassType ct = (ClassType) t;
+							if (ct.classdef instanceof CPUClassDefinition)
+							{
+								cpus++;
+							}
+						}
+					}
+				}
+			}
+
+			if (cpus == 0)
+			{
+				throw new RemoteSimulationException("Cannot load system to few CPUS", null);
+			}
+			return true;
+
+		} catch (RemoteSimulationException e)
+		{
+			throw e;
 		} catch (Exception e)
+
 		{
 			debugErr(e);
 			throw new RemoteSimulationException("Faild to load model from "
@@ -294,7 +339,6 @@ public class SimulationManager extends BasicSimulationManager
 
 		}
 
-		return false;
 	}
 
 	public Boolean initialize() throws RemoteSimulationException
@@ -302,7 +346,7 @@ public class SimulationManager extends BasicSimulationManager
 		Properties.init();
 		Properties.parser_tabstop = 1;
 		Properties.rt_duration_transactions = true;
-		
+
 		Settings.dialect = Dialect.VDM_RT;
 		Settings.usingCmdLine = false;
 		Settings.usingDBGP = true;
@@ -366,12 +410,6 @@ public class SimulationManager extends BasicSimulationManager
 		return files;
 	}
 
-	// private void setFaults(List<InitializefaultsStructParam> faults)
-	// {
-	// // set faults this might need to be set from the load instead
-	// }
-	//
-
 	public void setMainContext(Context ctxt)
 	{
 		this.mainContext = ctxt;
@@ -384,8 +422,9 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				PrintWriter p = new PrintWriter(new FileOutputStream(simulationLogFile, false));
 				SimulationLogger.setLogfile(p);
-				
-				p = new PrintWriter(new FileOutputStream(new File(simulationLogFile.getAbsolutePath()+".csv"), false));
+
+				p = new PrintWriter(new FileOutputStream(new File(simulationLogFile.getAbsolutePath()
+						+ ".csv"), false));
 				SimulationLogger.setLogfileCsv(p);
 			} catch (FileNotFoundException e)
 			{
@@ -508,7 +547,11 @@ public class SimulationManager extends BasicSimulationManager
 							+ parameterName);
 				}
 			}
-		} catch (Exception e)
+		}catch(RemoteSimulationException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -572,7 +615,10 @@ public class SimulationManager extends BasicSimulationManager
 						+ parameterName);
 			}
 
-		} catch (Exception e)
+		}catch(RemoteSimulationException e)
+		{
+			throw e;
+		}catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -598,7 +644,7 @@ public class SimulationManager extends BasicSimulationManager
 			}
 
 			return parameters;
-		} catch (Exception e)
+		}catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -623,7 +669,7 @@ public class SimulationManager extends BasicSimulationManager
 					ObjectValue po = (ObjectValue) p.value.deref();
 					parameters.putAll(getParameters(prefix + p.name.name, po.members.asList(), depth++));
 
-				} else if (p.value.deref() instanceof RealValue)
+				} else if (p.value.deref() instanceof RealValue)//TODO bool should properly be added here
 				{
 					parameters.put(prefix + p.name.name, p.value.realValue(null));
 				}
@@ -638,7 +684,10 @@ public class SimulationManager extends BasicSimulationManager
 		try
 		{
 			return setValue(name, CoSimType.NumericValue, value.toString());
-		} catch (Exception e)
+		}catch(RemoteSimulationException e){
+			throw e;
+		}
+		catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -681,11 +730,33 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		try
 		{
-			return getValue(name).realValue(null);
+			Value value = getValue(name);
+
+			Double result = getDoubleFromValue(value);
+			if(result != null)
+			{
+				return result;
+			}
+			throw new RemoteSimulationException("Could not get parameter: "
+					+ name);
+
 		} catch (ValueException e)
 		{
 			debugErr(e);
-			throw new RemoteSimulationException("Could set parameter: " + name, e);
+			throw new RemoteSimulationException("Could not get parameter: "
+					+ name, e);
 		}
+	}
+	
+	public static Double getDoubleFromValue(Value value) throws ValueException
+	{
+		if (value.isNumeric())
+		{
+			return value.realValue(null);
+		} else if (value instanceof BooleanValue)
+		{
+			return ((BooleanValue) value).boolValue(null) ? 1.0 : 0.0;
+		}
+		return null;
 	}
 }

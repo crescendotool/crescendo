@@ -7,9 +7,8 @@ package org.destecs.core.dcl;
  * We make no guarantees that this code is fit for any purpose. 
  * Visit http://www.pragmaticprogrammer.com/titles/tpdsl for more book information.
 ***/
-import java.util.*;
-
-import org.antlr.runtime.tree.CommonTree;
+import java.util.HashMap;
+import java.util.Map;
 public class SymbolTable implements Scope { // single-scope symtab
 	   public static final int tUSER = 0; // user-defined type
 	    public static final int tBOOLEAN = 1;

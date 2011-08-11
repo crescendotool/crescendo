@@ -7,27 +7,18 @@ import java.util.List;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-
 import org.antlr.runtime.Token;
-import org.antlr.runtime.TokenStream;
-
-import org.destecs.core.dcl.CymbolAST;
-import org.destecs.core.dcl.Script;
-
-import org.destecs.core.dcl.SymbolTable;
-import org.destecs.core.parsers.dcl.ScriptLexer;
-import org.destecs.core.parsers.dcl.ScriptParser;
-import org.destecs.core.parsers.dcl.ScriptParser.compilationUnit_return;
-import org.destecs.core.parsers.dcl.Treewalker;
-//import org.destecs.core.parsers.dcl.Def;
-
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.TreeAdaptor;
 import org.antlr.runtime.tree.TreeNodeStream;
-import org.antlr.runtime.tree.TreeVisitor;
-import org.antlr.runtime.tree.TreeVisitorAction;
+import org.destecs.core.dcl.CymbolAST;
+import org.destecs.core.dcl.Script;
+import org.destecs.core.dcl.SymbolTable;
+import org.destecs.core.parsers.dcl.ScriptLexer;
+import org.destecs.core.parsers.dcl.ScriptParser;
+import org.destecs.core.parsers.dcl.Treewalker;
 
 public class ScriptParserWrapper extends ParserWrapper<Script>
 {

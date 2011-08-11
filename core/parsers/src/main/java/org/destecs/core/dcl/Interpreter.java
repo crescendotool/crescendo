@@ -1,10 +1,10 @@
 package org.destecs.core.dcl;
 
-import org.antlr.runtime.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.*;
+import org.antlr.runtime.Token;
 
 public class Interpreter {
     public InterpreterListener listener = // default response to messages

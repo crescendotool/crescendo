@@ -78,7 +78,6 @@ public class CoSimLaunchConfigurationDelegate extends
 	private File ctFile = null;
 	private File contractFile = null;
 	private File scenarioFile = null;
-	private File scriptFile = null;
 	private String sharedDesignParam = null;
 	private double totalSimulationTime = 0.0;
 	private IProject project = null;
@@ -94,29 +93,31 @@ public class CoSimLaunchConfigurationDelegate extends
 	private boolean enableLogging = false;
 	private boolean showDebugInfo = false;
 	private String logVariables = null;
-	private String ourputFolderPrefix="";
+	private String ourputFolderPrefix = "";
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{
 		this.configuration = configuration;
-		try{
-		loadSettings(configuration);
-		this.launch = launch;
-		target = new DestecsDebugTarget(launch, project,outputFolder);
-		this.launch.addDebugTarget(target);
-		startSimulation();
-		}catch(Exception e)
+		try
+		{
+			loadSettings(configuration);
+			this.launch = launch;
+			target = new DestecsDebugTarget(launch, project, outputFolder);
+			this.launch.addDebugTarget(target);
+			startSimulation();
+		} catch (Exception e)
 		{
 			System.err.println("Aborting launch bacuase of config error");
 			launch.terminate();
-//			target.terminate();
+			// target.terminate();
 		}
 	}
 
-	private File getFileFromPath(IProject project, String path) throws IOException
+	private File getFileFromPath(IProject project, String path)
+			throws IOException
 	{
-		if(path == null || path.isEmpty())
+		if (path == null || path.isEmpty())
 		{
 			return null;
 		}
@@ -127,21 +128,21 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			return r.getLocation().toFile();
 		}
-		throw new IOException("Faild to find file: "+path);
+		throw new IOException("Faild to find file: " + path);
 	}
 
-	private void loadSettings(ILaunchConfiguration configuration) throws IOException
+	private void loadSettings(ILaunchConfiguration configuration)
+			throws IOException
 	{
 		try
 		{
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
 			contractFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
-			ourputFolderPrefix =  configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
+			ourputFolderPrefix = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
 			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
 			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
 			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
-			scriptFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCRIPT_PATH, ""));
 			deArchitectureFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
 			deReplacePattern = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
@@ -172,11 +173,11 @@ public class CoSimLaunchConfigurationDelegate extends
 		} catch (MalformedURLException e)
 		{
 			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
-		} catch(IOException e)
+		} catch (IOException e)
 		{
 			DestecsDebugPlugin.logError("Faild to find file", e);
 			throw e;
-		}catch (Exception e)
+		} catch (Exception e)
 		{
 			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
 		}
@@ -186,11 +187,12 @@ public class CoSimLaunchConfigurationDelegate extends
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
 		String tmp = ourputFolderPrefix;
 		tmp = tmp.replace('\\', File.separatorChar).replace('/', File.separatorChar);
-		if(!tmp.endsWith(""+File.separatorChar))
+		if (!tmp.endsWith("" + File.separatorChar))
 		{
-			tmp+=File.separatorChar;
+			tmp += File.separatorChar;
 		}
-		outputFolder = new File(base,tmp+ dateFormat.format(new Date())+ "_"+configuration.getName());
+		outputFolder = new File(base, tmp + dateFormat.format(new Date()) + "_"
+				+ configuration.getName());
 
 		if (!outputFolder.mkdirs())
 		{
@@ -483,16 +485,16 @@ public class CoSimLaunchConfigurationDelegate extends
 
 		if (scenarioFile != null)
 		{
-			
+			if (scenarioFile.getName().endsWith("script2"))
+			{
+				Script script = new ScriptParserWrapper().parse(scenarioFile);
+				return new ScriptSimulationEngine(contractFile, script);
+			}
+
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
-			return new ScenarioSimulationEngine(contractFile, scenario);						
-		}
-		if (scriptFile != null)
-		{	
-			Script script = new ScriptParserWrapper().parse(scriptFile);
-			return new ScriptSimulationEngine(contractFile, script);
-		}
-		else
+			return new ScenarioSimulationEngine(contractFile, scenario);
+			
+		} else
 		{
 			return new SimulationEngine(contractFile);
 		}

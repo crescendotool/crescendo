@@ -8,12 +8,8 @@ package org.destecs.core.dcl;
  * We make no guarantees that this code is fit for any purpose. 
  * Visit http://www.pragmaticprogrammer.com/titles/tpdsl for more book information.
 ***/
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
-import org.antlr.runtime.tree.BaseTree;
 import org.antlr.runtime.Token;
-
-import org.destecs.core.dcl.Type;
+import org.antlr.runtime.tree.CommonTree;
 
 public class CymbolAST extends CommonTree {
     public Scope scope;   // set by Def.g; ID lives in which scope?
