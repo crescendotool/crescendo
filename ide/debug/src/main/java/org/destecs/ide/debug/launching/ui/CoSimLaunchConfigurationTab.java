@@ -158,8 +158,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 				dialog.setTitle("Scenario Selection");
 				dialog.setMessage("Select a scenario:");
 				dialog.setComparator(new ViewerComparator());
-				dialog.addFilter(new FileExtensionFilter("script"));
-				dialog.addFilter(new FileExtensionFilter("script2"));
+				dialog.addFilter(new FileExtensionFilter("script","script2"));
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText()).getFolder("scenarios"));
 
 				if (dialog.open() == Window.OK)

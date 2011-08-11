@@ -145,7 +145,7 @@ public class DseTab extends AbstractLaunchConfigurationTab
 				dialog.setTitle("Architecture Selection");
 				dialog.setMessage("Select an architecture:");
 				dialog.setComparator(new ViewerComparator());
-				dialog.addFilter(new FileExtensionFilter("arch",true));
+				dialog.addFilter(new FileExtensionFilter(true,"arch"));
 				dialog.setValidator(new ISelectionStatusValidator()
 				{
 					

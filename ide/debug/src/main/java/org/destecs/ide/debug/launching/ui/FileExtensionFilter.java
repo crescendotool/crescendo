@@ -1,5 +1,9 @@
 package org.destecs.ide.debug.launching.ui;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.jface.viewers.Viewer;
@@ -7,17 +11,17 @@ import org.eclipse.jface.viewers.ViewerFilter;
 
 public class FileExtensionFilter extends ViewerFilter
 {
-	private String filter;
+	final private List<String> filter = new Vector<String>();
 	private boolean allowFolders = false;
 
-	public FileExtensionFilter(String filter)
+	public FileExtensionFilter(String... filter)
 	{
-		this.filter = filter;
+		this.filter.addAll(Arrays.asList(filter));
 	}
 
-	public FileExtensionFilter(String filter, boolean allowFolders)
+	public FileExtensionFilter(boolean allowFolders,String... filter)
 	{
-		this.filter = filter;
+		this.filter.addAll(Arrays.asList(filter));
 		this.allowFolders = allowFolders;
 	}
 
@@ -25,7 +29,7 @@ public class FileExtensionFilter extends ViewerFilter
 	public boolean select(Viewer viewer, Object parentElement, Object element)
 	{
 		return element instanceof IFile
-				&& ((IFile) element).getFullPath().getFileExtension().equals(filter)
+				&& filter.contains(((IFile) element).getFullPath().getFileExtension())
 				|| (allowFolders && element instanceof IFolder);
 	}
 };
