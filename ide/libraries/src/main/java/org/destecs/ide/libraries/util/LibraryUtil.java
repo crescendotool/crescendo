@@ -82,12 +82,15 @@ public class LibraryUtil
 		// newFile.createLink(location, updateFlags, monitor)
 		Bundle b = Platform.getBundle(ILibrariesConstants.PLUGIN_ID);
 		String location = b.getLocation();
+		System.out.println("Bundle location: "+location);
 		IPath systemfilePath = new Path(location.substring(16));
 		systemfilePath = systemfilePath.append("/");
 		systemfilePath = systemfilePath.append(lib.pathToFileRoot);
 		systemfilePath = systemfilePath.append("/");
 		systemfilePath = systemfilePath.append(file);
 		File systemfile = systemfilePath.toFile();
+		System.out.println("Creating link for: "+newFile+ " to: "+systemfilePath);
+		System.out.println("File is: "+systemfile);
 		if (systemfile.exists())
 		{
 			newFile.createLink(systemfilePath, IResource.REPLACE, null);
