@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+         <!-- Wizard categories -->
+       <wizard
+             category="org.destecs.ide.ui.category"
+             class="org.destecs.ide.libraries.AddLibraryWizard"
+             finalPerspective="org.destecs.ide.ui.perspective"
+             icon="icons/obj16/vdm_library_obj.gif"
+             id="org.destecs.ide.ui.addLibraryWizard"
+             name="Add DESTECS Library"
+             preferredPerspectives="org.destecs.ide.ui.perspective"
+             project="false">
+      </wizard>
+   </extension>
+
+</plugin>

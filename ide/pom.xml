@@ -25,6 +25,7 @@
    	<module>ui</module>
    	<module>debug</module>
 <module>vdmmetadatabuilder</module>
+<module>libraries</module>
 
 <!-- test-->
 <module>modelmanagement</module>

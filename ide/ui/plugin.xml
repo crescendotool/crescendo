@@ -216,6 +216,25 @@
             wizardId="org.destecs.ide.ui.newProjectWizard">
          <enablement></enablement>
       </commonWizard>
+      
+      <commonWizard
+            menuGroupId="org.destecs.ide.ui.destecs"
+            type="new"
+            wizardId="org.destecs.ide.ui.addLibraryWizard">
+         <enablement>
+          <or>
+               <adapt
+                     type="org.destecs.ide.core.resources.IDestecsProject">
+                 
+               </adapt>
+               <adapt
+                     type="org.eclipse.core.resources.IFolder">
+                  
+               </adapt>
+            </or>
+         </enablement>
+      </commonWizard>
+      
       <commonFilter
             activeByDefault="true"
             description="Filters Start with Dot"
