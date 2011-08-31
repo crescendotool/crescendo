@@ -90,7 +90,7 @@ public class LibraryUtil
 		if (!location.startsWith("reference:file:/"))
 		{
 			// release mode
-			systemfilePath = new Path("ECLIPSE_HOME/" + location.substring(15));
+			systemfilePath = new Path("${ECLIPSE_HOME}/" + location.substring(15));
 			systemfilePath = systemfilePath.append("/");
 			systemfilePath = systemfilePath.append(lib.pathToFileRoot);
 			systemfilePath = systemfilePath.append("/");
