@@ -54,7 +54,7 @@ public class LibrarySelection extends Composite
 		for (Library library : libs)
 		{
 			Button b = new Button(libGroup, SWT.CHECK);
-			b.setText(library.name + " - "+library.version);
+			b.setText(library.name + " - v."+library.version);
 			b.setToolTipText(library.description);
 			libMap.put(b, library);
 		}

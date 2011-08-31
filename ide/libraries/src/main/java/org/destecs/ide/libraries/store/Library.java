@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-public class Library
+public class Library implements Comparable<Library>
 {
 	public final String name;
 	public final String description;
@@ -47,6 +47,13 @@ public class Library
 	{
 	return name +" (v"+version+")"+" - "+ description;
 	}
+
+	public int compareTo(Library o)
+	{
+		return toString().compareTo(o.toString());
+	}
+
+	
 }
 
 
