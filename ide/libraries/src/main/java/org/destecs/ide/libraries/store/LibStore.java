@@ -5,9 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.destecs.ide.libraries.ILibrariesConstants;
 import org.destecs.ide.libraries.util.PluginFolderInclude;
@@ -28,7 +28,7 @@ public class LibStore
 
 	private Set<Library> load()
 	{
-		Set<Library> loadedLibs = new HashSet<Library>();
+		Set<Library> loadedLibs = new TreeSet<Library>();
 
 		URL storeUrl = PluginFolderInclude.getResource(ILibrariesConstants.PLUGIN_ID, "included_libs/store.txt");
 

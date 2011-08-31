@@ -2,7 +2,6 @@ package org.destecs.ide.libraries.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 import org.destecs.ide.libraries.ILibrariesConstants;
 import org.destecs.ide.libraries.store.Library;
@@ -73,46 +72,38 @@ public class LibraryUtil
 
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void createLink(IProject project, Library lib, String file,
 			String outputFolder) throws CoreException
 	{
-		// System.getenv("ECLIPSE_HOME");
-		// System.getProperty("ECLIPSE_HOME")
 		IPath path = project.getFullPath().append("/" + outputFolder);
 		path = path.append("/" + file.substring(0, file.indexOf('.')));
 		path = path.addFileExtension(file.substring(file.indexOf('.') + 1));
 		IFile newFile = createFileHandle(path);
-		// newFile.createLink(location, updateFlags, monitor)
 		Bundle b = Platform.getBundle(ILibrariesConstants.PLUGIN_ID);
 		String location = b.getLocation();
-		System.out.println("Bundle location: " + location);
+		// System.out.println("Bundle location: " + location);
 		IPath systemfilePath = null;
 		if (!location.startsWith("reference:file:/"))
 		{
 			// release mode
-			systemfilePath = new Path("${ECLIPSE_HOME}/" + location.substring(15));
+			systemfilePath = new Path("${ECLIPSE_HOME}/"
+					+ location.substring(15));
 			systemfilePath = systemfilePath.append("/");
 			systemfilePath = systemfilePath.append(lib.pathToFileRoot);
 			systemfilePath = systemfilePath.append("/");
 			systemfilePath = systemfilePath.append(file);
 		} else
 		{
-			//debug: The plug-in is not packed into the relase structure yet.
+			// debug: The plug-in is not packed into the relase structure yet.
 			systemfilePath = new Path(location.substring(16));
 			systemfilePath = systemfilePath.append("/");
 			systemfilePath = systemfilePath.append(lib.pathToFileRoot);
 			systemfilePath = systemfilePath.append("/");
 			systemfilePath = systemfilePath.append(file);
 		}
-		File systemfile = systemfilePath.toFile();
-		System.out.println("Creating link for: " + newFile + " to: "
-				+ systemfilePath);
-		System.out.println("File is: " + systemfile);
-		if (systemfile.exists())
-		{
-			newFile.createLink(systemfilePath, IResource.REPLACE, null);
-			newFile.setReadOnly(true);
-		}
+		newFile.createLink(systemfilePath, IResource.REPLACE, null);
+		newFile.setReadOnly(true);
 	}
 
 	private static void copyFile(File libFolder, String sourceLocation,
