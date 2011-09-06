@@ -71,6 +71,7 @@ public class ClassDefinition extends IInterface
 			if (f.type instanceof ListType || f.type instanceof List)
 			{
 				fName = "tmp" + count;
+				imports.add(new Type(Vector.class));
 				sb.append("\n\t\tList " + fName + " = new Vector();");
 				sb.append("\n\t\tfor( Object o : " + f.getName() + ")");
 				sb.append("\n\t\t{");

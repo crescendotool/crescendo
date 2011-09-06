@@ -241,22 +241,22 @@ Commands that can be fired at any point:
 				</params>
 			</methodCall>
 			<methodResponse>
-                <params>
-                    <param>
-                        <value>
-                            <struct>
-                                <member>
-                                    <name>success</name>
-                                    <value>
-                                        <boolean>true</boolean>
-                                    </value>
-                                    <description>if failed then the function will return a fault response</description>
-                                </member>
-                            </struct>
-                        </value>
-                    </param>
-                </params>
-            </methodResponse>
+				<params>
+					<param>
+						<value>
+							<struct>
+								<member>
+									<name>success</name>
+									<value>
+										<boolean>true</boolean>
+									</value>
+									<description>if failed then the function will return a fault response</description>
+								</member>
+							</struct>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
 		</method>
 		<!--UnLoad -->
 		<method>
@@ -886,6 +886,149 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
+
+
+
+
+		<!--Step version 2 with arrays -->
+		<method>
+			<description>Step is used to progress in simulation, it pushes time forward. A step inputs variables and the step time and returns variables changed during the step and the time at which the next change in the server can take place.</description>
+			<methodCall>
+				<methodName>Destecs.StepWithArray</methodName>
+				<params>
+					<param>
+						<value>
+							<struct>
+								<member>
+									<name>singleStep</name>
+									<value>
+										<boolean>false</boolean>
+									</value>
+									<description>true=take a single step (do not cross the outputTime), false=take steps untill outputTime has been reached</description>
+								</member>
+								<member>
+									<name>outputTime</name>
+									<value>
+										<double>1.0</double>
+									</value>
+									<description>If zero then just take one step (regardless of the singleStep parameter) else take enough steps to reach outputTime unless singleStep is true</description>
+								</member>
+								<member>
+									<name>inputs</name>
+									<value>
+										<array>
+											<data>
+												<value>
+													<struct>
+														<member>
+															<name>name</name>
+															<value>
+																<string>inputname</string>
+															</value>
+														</member>
+														<member>
+															<name>value</name>
+															<value>
+																<array>
+																	<data>
+																		<value>
+																			<double>3.14159265</double>
+																		</value>
+																	</data>
+																</array>
+															</value>
+															<description>The value is an array of values. This means if a single value e.g. int is used the array has size 1 else if has the size of e.g. Array of int.</description>
+														</member>
+													</struct>
+												</value>
+											</data>
+										</array>
+									</value>
+								</member>
+								<member>
+									<name>events</name>
+									<value>
+										<array>
+											<data>
+												<value>
+													<string>eventname</string>
+												</value>
+											</data>
+										</array>
+									</value>
+									<description>A list of Event causing this Step</description>
+								</member>
+							</struct>
+						</value>
+					</param>
+				</params>
+			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<struct>
+								<member>
+									<name>time</name>
+									<value>
+										<double>1.0</double>
+									</value>
+									<description>the time that has been reached</description>
+								</member>
+								<member>
+									<name>result</name>
+									<value>
+										<int>0</int>
+									</value>
+									<description>0=the step action succeeded, and additional steps can be taken, 1=the step action succeeeded, and the simulation is finished, 2=the step action succeeded, but an event occurred. if failed then the function will return a fault response</description>
+								</member>
+								<member>
+									<name>outputs</name>
+									<value>
+										<array>
+											<data>
+												<value>
+													<struct>
+														<member>
+															<name>name</name>
+															<value>
+																<string>outputname</string>
+															</value>
+														</member>
+														<member>
+															<name>value</name>
+															<value>
+																<double>3.14159265</double>
+															</value>
+														</member>
+													</struct>
+												</value>
+											</data>
+										</array>
+									</value>
+								</member>
+								<member>
+									<name>events</name>
+									<value>
+										<array>
+											<data>
+												<value>
+													<string>eventname</string>
+												</value>
+											</data>
+										</array>
+									</value>
+									<description>A list of Event names causing the Step to return early</description>
+								</member>
+							</struct>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>
+
+
+
 		<!--GetStatus -->
 		<method>
 			<description>Gets the status: 0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished, 4= Loaded</description>
@@ -958,52 +1101,52 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--QueryToolSettings-->
-   <method>
-      <description>
+		<!--QueryToolSettings -->
+		<method>
+			<description>
         Queries the DE or CT tool for the list of tool settings that are available.
       </description>
-    <methodCall>
-      <methodName>Destecs.QueryToolSettings</methodName>
-    </methodCall>
-    <methodResponse>
-    <params>
-      <param>
-        <value>
-          <struct>
-            <member>
-              <name>settings</name>
-              <value>
-                <array> 
-                  <data>
-                    <value>
-                      <struct>
-                        <member>
-                          <name>key</name>
-                          <value>
-                            <string>simulator.integrationmethod</string>
-                          </value>
-                        </member>
-                       <member>
-                          <name>value</name>
-                          <value>
-                            <string>Euler</string>
-                          </value>
-                        </member>
-                     </struct>
-                    </value>
-                  </data>
-                </array>
-              </value>
-            </member>
-          </struct>
-        </value>
-      </param>
-    </params>
-    </methodResponse>
-  </method>
-		
-		
+			<methodCall>
+				<methodName>Destecs.QueryToolSettings</methodName>
+			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<struct>
+								<member>
+									<name>settings</name>
+									<value>
+										<array>
+											<data>
+												<value>
+													<struct>
+														<member>
+															<name>key</name>
+															<value>
+																<string>simulator.integrationmethod</string>
+															</value>
+														</member>
+														<member>
+															<name>value</name>
+															<value>
+																<string>Euler</string>
+															</value>
+														</member>
+													</struct>
+												</value>
+											</data>
+										</array>
+									</value>
+								</member>
+							</struct>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>
+
+
 	</methods>
 	<methodFaultResponses>
 		<methodResponse>
