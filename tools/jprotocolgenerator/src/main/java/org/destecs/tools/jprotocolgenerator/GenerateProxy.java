@@ -301,7 +301,7 @@ public class GenerateProxy
 		if (m.returnType instanceof Type
 				&& ((Type) m.returnType).type == Void.class)
 		{
-
+int i = 0;
 		} else
 		{
 			sb.append("return ");
@@ -311,6 +311,9 @@ public class GenerateProxy
 				defs.addAll(generateStructs(returnClass, structPackageName, (MapType) m.returnType));
 				defs.add(returnClass);
 
+			}else
+			{
+				int i = 0;
 			}
 		}
 
@@ -598,7 +601,7 @@ public class GenerateProxy
 		if (addCast)
 		{
 			sb.append(".values().toArray()[0]");
-		} else
+		} else if (m.returnType instanceof MapType)
 		{
 			sb.append(")");
 		}
