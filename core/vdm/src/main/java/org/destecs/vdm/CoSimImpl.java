@@ -516,6 +516,12 @@ public class CoSimImpl implements IDestecs
 		return null;
 	}
 
+	public Map<String, Object> stepWithArray(Map<String, Object> data)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 
 }
