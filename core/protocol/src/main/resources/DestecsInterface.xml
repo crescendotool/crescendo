@@ -893,7 +893,7 @@ Commands that can be fired at any point:
 		<!--Step version 2 with arrays -->
 		<method>
 			<description>Step is used to progress in simulation, it pushes time forward. A step inputs variables and the step time and returns variables changed during the step and the time at which the next change in the server can take place.</description>
-			<methodCall>
+			<!--methodCall>
 				<methodName>Destecs.StepWithArray</methodName>
 				<params>
 					<param>
