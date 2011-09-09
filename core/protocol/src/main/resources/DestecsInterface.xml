@@ -1113,33 +1113,39 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>settings</name>
+							<array>
+								<data>
 									<value>
-										<array>
-											<data>
+										<struct>
+											<member>
+												<name>key</name>
 												<value>
-													<struct>
-														<member>
-															<name>key</name>
-															<value>
-																<string>simulator.integrationmethod</string>
-															</value>
-														</member>
-														<member>
-															<name>value</name>
+													<string>simulator.integrationmethod</string>
+												</value>
+											</member>
+											<member>
+												<name>value</name>
+												<value>
+													<string>Euler</string>
+												</value>
+											</member>
+											<member>
+												<name>values</name>
+												<value>
+													<array>
+														<data>
 															<value>
 																<string>Euler</string>
 															</value>
-														</member>
-													</struct>
+														</data>
+													</array>
 												</value>
-											</data>
-										</array>
+												<description>This is the possible range of the value. This is like BOOL, NUMBER, NATURAL or a list of names as an enum e.g. Euler SomeOtherThing </description>
+											</member>
+										</struct>
 									</value>
-								</member>
-							</struct>
+								</data>
+							</array>
 						</value>
 					</param>
 				</params>

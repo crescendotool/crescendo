@@ -475,4 +475,8 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		return "Main";
 	}
 
+	public String getCtPath() {
+		return ctPath.getText();
+	}
+
 }

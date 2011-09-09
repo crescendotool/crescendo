@@ -274,4 +274,8 @@ public class DevelopLaunchConfigurationTab extends
 		return super.isValid(launchConfig);
 	}
 
+	public String getCtUrl() {
+		return ctUrl.getText();
+	}
+
 }
