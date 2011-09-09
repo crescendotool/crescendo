@@ -164,6 +164,8 @@ Section "Uninstall"
   DetailPrint "Deleting $INSTDIR\notice.html"
   Delete "$INSTDIR\notice.html"
  
+ 
+ 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\${PRODUCT_REG_KEY}\*.*"
   ; Remove directories used
@@ -216,38 +218,13 @@ Function 20simInstall
   ExecWait  '"$INSTDIR\${SIM20_EXE}"'
   Delete "${SIM20_EXE}"
   ; Update the Windows Registry
-  Call updateRegistry
-  ; Copy the DestecsInterface.xrl to 20-sim folder
-  Call copyXRL
+  ;Call updateRegistry
+  Call writeRegistryTest
+  ; NOT NEEDED ANYMORE - Copy the DestecsInterface.xrl to 20-sim folder
+  ;Call copyXRL 
 FunctionEnd
 
 
-
-; Copying DestecsInterface.xrl interface to 20-sim bin
-Function copyXRL
-
-File data\DestecsInterface.xrl
-${If} ${RunningX64} 
-    DetailPrint "Copying DestecsInterface.xrl interface to 20-sim bin (64-bit)"
-    IfFileExists "$PROGRAMFILES32\20-sim 4.1\bin" BinDirExists64 PastBinDirExists64
-    PastBinDirExists64:
-      Abort "Could not copy DestecsInterface.xrl to 20-sim directory location"
-    BinDirExists64:
-      DetailPrint "$PROGRAMFILES32\20-sim 4.1\bin exists"
-      CopyFiles DestecsInterface.xrl  "$PROGRAMFILES32\20-sim 4.1\bin exists"
-      Delete DestecsInterface.xrl
-${Else}
-    DetailPrint "Copying DestecsInterface.xrl interface to 20-sim bin (32-bit)"
-    IfFileExists "$PROGRAMFILES\20-sim 4.1\bin" BinDirExists32 PastBinDirExists32
-    PastBinDirExists32:
-      Abort "Could not copy DestecsInterface.xrl to 20-sim directory location"
-    BinDirExists32:
-      DetailPrint "$PROGRAMFILES\20-sim 4.1\bin exists"
-      CopyFiles DestecsInterface.xrl "$PROGRAMFILES\20-sim 4.1\bin"
-      Delete DestecsInterface.xrl
-${EndIf}
-
-FunctionEnd 
 
 
 
@@ -279,6 +256,11 @@ WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\ContextMenuHandlers\EM_Menu" "" 
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\IconHandler" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers" "" "EM_Page"
 WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers\EM_Page" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
+
+FunctionEnd
+
+Function writeRegistryTest
+WriteRegDWORD HKCU "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
 FunctionEnd
 
 ; x86 registry setup
