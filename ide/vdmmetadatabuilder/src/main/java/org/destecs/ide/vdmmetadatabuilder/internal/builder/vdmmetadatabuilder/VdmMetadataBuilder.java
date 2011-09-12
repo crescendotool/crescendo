@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.overture.ide.core.IVdmModel;
 import org.overture.ide.core.resources.IVdmProject;
 import org.overturetool.vdmj.ast.IAstNode;
@@ -47,6 +48,11 @@ public class VdmMetadataBuilder extends
 				Properties props = new Properties();
 
 				IVdmModel model = project.getModel();
+				
+				if(!model.isTypeChecked())
+				{
+					project.typeCheck(new NullProgressMonitor());
+				}
 
 				for (IAstNode node : model.getRootElementList())
 				{
