@@ -145,15 +145,17 @@ public class VDMCO extends VDMRT
 							retried++;
 							System.out.println("Trying to connect to IDE...("
 									+ retried + ")");
+							System.out.println("Status of DBGPReader is: "+dbgpreader.getStatus()+ " with retried: "+retried);
 							dbgpreader.startup(null);
 
 						}
 						while (dbgpreader.getStatus() == DBGPStatus.STARTING)
 						{
+							System.out.println("DBGPReader status is not STARTING");
 							Thread.sleep(1000);
 							dbgpreader.startup(null);
 						}
-						System.out.println(dbgpreader.getStatus());
+						System.out.println("DBGPreader status is now: " +dbgpreader.getStatus());
 						// println(interpreter.execute(script, null).toString());
 
 					} else
