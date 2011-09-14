@@ -601,7 +601,16 @@ public class SimulationEngine
 		{
 			simulationStarting(simulator);
 			messageInfo(simulator, new Double(0), "start");
-			return proxy.start().success;
+			boolean result = proxy.start().success;
+			
+			if(result)
+			{
+				engineInfo(simulator, "Simulator started with no errors");
+			}else
+			{
+				engineInfo(simulator, "Simulator FAILD to start");
+			}
+			return result;
 		} catch (Exception e)
 		{
 			abort(simulator, "Could not start simulator", e);
