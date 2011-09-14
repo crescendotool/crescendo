@@ -151,7 +151,7 @@ public class VDMCO extends VDMRT
 						}
 						while (dbgpreader.getStatus() == DBGPStatus.STARTING)
 						{
-							System.out.println("DBGPReader status is not STARTING");
+							System.out.println("DBGPReader status is now STARTING and a new try to start dbgpreader will be made in 1 sec.");
 							Thread.sleep(1000);
 							dbgpreader.startup(null);
 						}
