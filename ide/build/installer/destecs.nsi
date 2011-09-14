@@ -12,7 +12,7 @@
 !insertmacro Locate
  
 
-!define PRODUCT_VERSION "1.0.4"
+!define PRODUCT_VERSION "1.1.0"
 !define PRODUCT_REG_KEY "DESTECS"
 !define PRODUCT_NAME "DESTECS"
 
@@ -21,7 +21,7 @@
 !define SIM20_EXE "${SIM20_NAME}${SIM20_VERSION}.exe"
 
 !define DESTECSIDE "DestecsIde-"
-!define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}I"
+!define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}"
 ;!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
 !define DESTECSZIP "destecs.zip"
 
@@ -106,9 +106,9 @@ Section "DESTECS (required)" ;No components page, name is not important
   Call DESTECSInstall
   
   ; 20-sim instalation file
-  File "data\${SIM20_EXE}"
+;  File "data\${SIM20_EXE}"
   ; Calling the function that installs 20-sim
-  Call 20simInstall
+;  Call 20simInstall
   
   ; Registry creation
   ; Write the installation path into the registry
@@ -201,12 +201,15 @@ Function DESTECSInstall
   ; Print to detail log 
   DetailPrint "Installing DESTECS Tool"
   ; Unzip the file
-  ZipDLL::extractall "${DESTECSZIP}" "$TEMP\destecs"
-  ExecWait 'xcopy /S /Y $\"$TEMP\destecs$\" $\"$INSTDIR$\"'
-  ; Delete the zip
-  Delete "${DESTECSZIP}"
+  ZipDLL::extractall "${DESTECSZIP}" "$INSTDIR"
   ;Moving files from DESTECS folder to root of $INSTDIR
   ;!insertmacro MoveFolder "$INSTDIR\${DESTECSFOLDER}\" $INSTDIR "*.*"
+  ;ExecWait 'xcopy /S /Y $\"$INSTDIR\${DESTECSFOLDER}$\" $\"$INSTDIR$\"'
+  ; Delete the zip and old folder
+  ;RMdir /r "$INSTDIR\${DESTECSFOLDER}"
+  Delete "${DESTECSZIP}"
+  
+  
 FunctionEnd
 
 
