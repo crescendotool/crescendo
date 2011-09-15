@@ -12,7 +12,7 @@
 !insertmacro Locate
  
 
-!define PRODUCT_VERSION "1.1.0"
+!define PRODUCT_VERSION "0.0.0"
 !define PRODUCT_REG_KEY "DESTECS"
 !define PRODUCT_NAME "DESTECS"
 
