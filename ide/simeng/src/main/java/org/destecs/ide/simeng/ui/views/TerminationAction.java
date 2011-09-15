@@ -3,6 +3,7 @@ package org.destecs.ide.simeng.ui.views;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.destecs.ide.simeng.Activator;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.action.Action;
@@ -30,7 +31,7 @@ public class TerminationAction extends Action
 		String iconPath = "icons/";
 		try
 		{
-			ViewsPlugin plugin = ViewsPlugin.getDefault();
+			Activator plugin = Activator.getDefault();
 			URL installURL = plugin.getDescriptor().getInstallURL();
 			URL url = new URL(installURL, iconPath + relativePath);
 			return ImageDescriptor.createFromURL(url);
