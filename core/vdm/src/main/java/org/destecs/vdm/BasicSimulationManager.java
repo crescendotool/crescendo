@@ -65,7 +65,7 @@ public abstract class BasicSimulationManager
 
 	enum CoSimType
 	{
-		NumericValue, Boolean, String, Unknown
+		NumericValue, Boolean, String, Unknown, Auto
 	}
 
 	private static final boolean DEBUG = false;
@@ -140,6 +140,15 @@ public abstract class BasicSimulationManager
 		{
 			Value newval = null;
 
+			if (inputType == CoSimType.Auto)
+			{
+				inputType = CoSimType.NumericValue;
+				if (val.deref() instanceof BooleanValue)
+				{
+					inputType = CoSimType.Boolean;
+				}
+			}
+
 			try
 			{
 				switch (inputType)
@@ -155,7 +164,7 @@ public abstract class BasicSimulationManager
 
 						try
 						{
-							newval = new BooleanValue(Integer.valueOf(inputValue) > 0 ? true
+							newval = new BooleanValue(Double.valueOf(inputValue) > 0 ? true
 									: false);
 						} catch (NumberFormatException e)
 						{
@@ -174,10 +183,13 @@ public abstract class BasicSimulationManager
 						System.err.println("Unknown value type to set");
 						return false;
 				}
-				
-				if(newval==null)
+
+				if (newval == null)
 				{
-					throw new RemoteSimulationException("Error in setValue with variable: "+name+ " properly a type mismatch. Requested input type was: "+inputType);
+					throw new RemoteSimulationException("Error in setValue with variable: "
+							+ name
+							+ " properly a type mismatch. Requested input type was: "
+							+ inputType);
 				}
 
 				updateValueQueueRequest.put(new ValueUpdateRequest(val, newval));
@@ -189,11 +201,14 @@ public abstract class BasicSimulationManager
 			} catch (InterruptedException e)
 			{
 				e.printStackTrace();
-				throw new RemoteSimulationException("Internal error in setValue with name: "+name,e);
+				throw new RemoteSimulationException("Internal error in setValue with name: "
+						+ name, e);
 			}
 
-		}else{
-			throw new RemoteSimulationException("Faild to find variable in setValue with name: "+name);
+		} else
+		{
+			throw new RemoteSimulationException("Faild to find variable in setValue with name: "
+					+ name);
 		}
 
 		return true;

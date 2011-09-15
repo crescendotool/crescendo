@@ -109,7 +109,7 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		for (StepinputsStructParam p : inputs)
 		{
-			setValue(p.name, CoSimType.NumericValue, p.value.toString());
+			setValue(p.name, CoSimType.Auto, p.value.toString());
 		}
 
 		nextTimeStep = outputTime.longValue();

@@ -3,6 +3,9 @@ package org.destecs.ide.simeng.ui.views;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -31,11 +34,12 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	public static String SIMULATION_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationView";
 	public static String SIMULATION_ENGINE_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationEngineView";
 	public static String SIMULATION_MESSAGES_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationMessagesView";
-	
+
 	private final Object lock = new Object();
 	// private Action actionSetProvedFilter;
 
 	public int elementCount = 200;
+	private TerminationAction terminationAction;
 
 	static class ViewContentProvider implements IStructuredContentProvider
 	{
@@ -93,6 +97,34 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	 */
 	public InfoTableView()
 	{
+		// createMenu();
+		this.terminationAction = new TerminationAction();
+	}
+
+	/**
+	 * Create menu.
+	 */
+	private void createMenu()
+	{
+		IMenuManager mgr = getViewSite().getActionBars().getMenuManager();
+		
+		mgr.add(terminationAction );
+	}
+	
+	public TerminationAction getTerminationAction()
+	{
+		return terminationAction;
+	}
+
+	/**
+	 * Create toolbar.
+	 */
+	private void createToolbar()
+	{
+		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
+		// mgr.add(addItemAction);
+		// mgr.add(deleteItemAction);
+		mgr.add(terminationAction);
 	}
 
 	/**
@@ -129,6 +161,11 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		viewer.setLabelProvider(new ViewLabelProvider());
 
 		viewer.setInput(dataSource);
+		if (getSite().getId() != null
+				&& getSite().getId().equals(SIMULATION_ENGINE_VIEW_ID))
+		{
+			createToolbar();
+		}
 	}
 
 	public void addColumn(String name)
@@ -216,7 +253,7 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 	public void refreshPackTable()
 	{
-		if(display.isDisposed())
+		if (display.isDisposed())
 		{
 			return;
 		}

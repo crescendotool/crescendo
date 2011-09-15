@@ -243,14 +243,6 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	// public Map<String, List<Map<String, Object>>> queryFaults()
-	// {
-	// QueryFaultsStruct faults = new QueryFaultsStruct();
-	//
-	// faults.faults.add(new QueryFaultsStructfaultsStruct(3, "Bad valve"));
-	//
-	// return faults.toMap();
-	// }
 
 	public Map<String, Object> queryInterface()
 	{

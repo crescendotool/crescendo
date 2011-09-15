@@ -218,6 +218,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 					final InfoTableView engineView = getInfoTableView(engineViewId);
+					engineView.getTerminationAction().setLaunch(launch);
 					views.add(engineView);
 					engine.engineListeners.add(new EngineListener(engineView));
 
