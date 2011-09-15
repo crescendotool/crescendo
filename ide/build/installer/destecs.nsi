@@ -17,7 +17,7 @@
 !define PRODUCT_NAME "DESTECS"
 
 !define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.1.3.5"
+!define SIM20_VERSION "4.1.3.6"
 !define SIM20_EXE "${SIM20_NAME}${SIM20_VERSION}.exe"
 
 !define DESTECSIDE "DestecsIde-"
@@ -106,9 +106,9 @@ Section "DESTECS (required)" ;No components page, name is not important
   Call DESTECSInstall
   
   ; 20-sim instalation file
-;  File "data\${SIM20_EXE}"
+  File "data\${SIM20_EXE}"
   ; Calling the function that installs 20-sim
-;  Call 20simInstall
+  Call 20simInstall
   
   ; Registry creation
   ; Write the installation path into the registry
