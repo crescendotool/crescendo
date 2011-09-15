@@ -132,6 +132,10 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 	 */
 	protected void createPages()
 	{
+		if(getProject()==null || getProject().getContractFile()==null)
+		{
+			return;
+		}
 		IFile contractFile=getProject().getContractFile();
 		handingFiles.put(contractFile,0);
 		createPage0(createEditorInput(contractFile));

@@ -3,6 +3,7 @@ package org.destecs.ide.simeng.ui.views;
 import java.util.List;
 import java.util.Vector;
 
+import org.destecs.ide.simeng.actions.TerminationAction;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;

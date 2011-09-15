@@ -1,17 +1,24 @@
-package org.destecs.ide.simeng.ui.views;
+package org.destecs.ide.simeng.actions;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.destecs.ide.simeng.Activator;
-import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.internal.views.ViewsPlugin;
 
 public class TerminationAction extends Action
 {
+
+	public TerminationAction()
+	{
+	}
+
+	public TerminationAction(ITerminationProxy proxy)
+	{
+		this.proxy = proxy;
+	}
+
 	@Override
 	public String getText()
 	{
@@ -42,26 +49,19 @@ public class TerminationAction extends Action
 		}
 	}
 
-	ILaunch launch;
+	ITerminationProxy proxy;
 
-	public void setLaunch(ILaunch launch)
+	public void setTerminationProxy(ITerminationProxy proxy)
 	{
-		this.launch = launch;
+		this.proxy = proxy;
 	}
 
 	@Override
 	public void run()
 	{
-		if (this.launch != null)
+		if (this.proxy != null)
 		{
-			try
-			{
-				this.launch.terminate();
-			} catch (DebugException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this.proxy.terminate();
 		}
 	}
 }

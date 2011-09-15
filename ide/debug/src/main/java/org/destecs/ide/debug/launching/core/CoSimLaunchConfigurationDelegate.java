@@ -15,11 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.destecs.core.dcl.Script;
 import org.destecs.core.parsers.ScenarioParserWrapper;
 import org.destecs.core.parsers.ScriptParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.core.scenario.Scenario;
-import org.destecs.core.dcl.Script;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.ScriptSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
@@ -35,6 +35,7 @@ import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.core.model.internal.CoSimulationThread;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
+import org.destecs.ide.simeng.actions.ITerminationProxy;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
 import org.destecs.ide.simeng.listener.EngineListener;
@@ -218,7 +219,22 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 					final InfoTableView engineView = getInfoTableView(engineViewId);
-					engineView.getTerminationAction().setLaunch(launch);
+					engineView.getTerminationAction().setTerminationProxy(new ITerminationProxy()
+					{
+
+						public void terminate()
+						{
+							try
+							{
+								launch.terminate();
+							} catch (DebugException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
+
 					views.add(engineView);
 					engine.engineListeners.add(new EngineListener(engineView));
 
@@ -494,7 +510,7 @@ public class CoSimLaunchConfigurationDelegate extends
 
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
 			return new ScenarioSimulationEngine(contractFile, scenario);
-			
+
 		} else
 		{
 			return new SimulationEngine(contractFile);
