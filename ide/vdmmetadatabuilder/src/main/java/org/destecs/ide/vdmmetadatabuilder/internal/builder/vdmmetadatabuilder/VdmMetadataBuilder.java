@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.eclipse.core.resources.IFile;
