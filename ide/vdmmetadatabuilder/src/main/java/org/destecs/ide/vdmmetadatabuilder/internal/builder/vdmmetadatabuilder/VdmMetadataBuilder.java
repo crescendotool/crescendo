@@ -3,11 +3,9 @@ package org.destecs.ide.vdmmetadatabuilder.internal.builder.vdmmetadatabuilder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.ide.core.resources.IDestecsProject;
@@ -29,7 +27,6 @@ import org.overturetool.vdmj.modules.Module;
 import org.overturetool.vdmj.types.BooleanType;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.IntegerType;
-import org.overturetool.vdmj.types.NaturalType;
 import org.overturetool.vdmj.types.OptionalType;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.types.SeqType;
@@ -51,8 +48,8 @@ public class VdmMetadataBuilder extends
 				Properties props = new Properties();
 
 				IVdmModel model = project.getModel();
-
-				if (!model.isTypeChecked())
+				
+				if(!model.isTypeChecked())
 				{
 					project.typeCheck(new NullProgressMonitor());
 				}
@@ -71,7 +68,7 @@ public class VdmMetadataBuilder extends
 								// save(props, def.getName(),
 								// toCsvString(getFields(getTypeName(def),
 								// model)));
-								expandAndSave(props, sd.getName(), def, model);
+								// expandAndSave(props,"",node,def);
 
 							} else if (def instanceof ValueDefinition
 									|| def instanceof LocalDefinition)
@@ -132,13 +129,12 @@ public class VdmMetadataBuilder extends
 		return null;
 	}
 
-	Set<Definition> expandedDefinitions = new HashSet<Definition>();
+Set<Definition> expandedDefinitions = new HashSet<Definition>();
 
 	private void expandAndSave(Properties props, String prefix, Definition def,
 			IVdmModel model)
 	{
-
-		expandedDefinitions.add(def);
+expandedDefinitions.add(def);
 
 		String name = prefix + (prefix == "" ? "" : ".") + def.getName();
 		// first save this node
@@ -230,9 +226,6 @@ public class VdmMetadataBuilder extends
 		} else if (t instanceof IntegerType)
 		{
 			return "int";
-		} else if (t instanceof NaturalType)
-		{
-			return "nat";
 		} else if (t instanceof BooleanType)
 		{
 			return "bool";
@@ -242,10 +235,10 @@ public class VdmMetadataBuilder extends
 			return getTypeName(t1.seqof) + "[]";
 		} else if (t instanceof ClassType)
 		{
-			return ((ClassType) t).getName();// "Class";
+			return "Class";
 		} else if (t instanceof OptionalType)
 		{
-			return getTypeName(((OptionalType) t).type);
+			getTypeName(((OptionalType) t).type);
 		}
 		return "unknown";
 	}
@@ -275,11 +268,6 @@ public class VdmMetadataBuilder extends
 		if (t instanceof ClassType)
 		{
 			typeName = t.getName();
-		} else if (t instanceof OptionalType
-				&& ((OptionalType) t).type instanceof ClassType)
-		{
-			typeName = t.getName();
-
 		} else
 		{
 			typeName = def.getName();
