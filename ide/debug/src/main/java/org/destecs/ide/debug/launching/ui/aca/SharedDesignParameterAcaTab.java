@@ -78,7 +78,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 		data.heightHint = 200;
 		table.setLayoutData(data);
 
-		String[] titles = { "Name", "From", "To", "Incremet by" };
+		String[] titles = { "Name", "From", "To", "Increment by" };
 		for (int i = 0; i < titles.length; i++)
 		{
 			TableColumn column = new TableColumn(table, SWT.NONE);
