@@ -27,9 +27,12 @@ import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
 import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.config.Properties;
+import org.overturetool.vdmj.debug.DBGPStatus;
 import org.overturetool.vdmj.definitions.CPUClassDefinition;
 import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.Definition;
+import org.overturetool.vdmj.definitions.ExplicitFunctionDefinition;
+import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
@@ -62,7 +65,10 @@ public class SimulationManager extends BasicSimulationManager
 
 	// Thread runner;
 	private Context mainContext = null;
-	private final static String script = "new World().run()";
+	private final static String scriptClass = "World";
+	private final static String scriptOperation = "run";
+	private final static String script = "new " + scriptClass + "()."
+			+ scriptOperation + "()";
 
 	private CoSimStatusEnum status = CoSimStatusEnum.NOT_INITIALIZED;
 	final private List<String> variablesToLog = new Vector<String>();
@@ -107,6 +113,18 @@ public class SimulationManager extends BasicSimulationManager
 			List<StepinputsStructParam> inputs, List<String> events)
 			throws RemoteSimulationException
 	{
+		// first check if main thread is active
+		if (mainContext != null)
+		{
+			if (mainContext.threadState != null
+					&& mainContext.threadState.dbgp != null
+					&& mainContext.threadState.dbgp instanceof DBGPReaderCoSim
+					&& ((DBGPReaderCoSim) mainContext.threadState.dbgp).getStatus() == DBGPStatus.STOPPED)
+			{
+				throw new RemoteSimulationException("VDM Main Thread no longer active. Forced to stop before end time.", null);
+			}
+		}
+
 		for (StepinputsStructParam p : inputs)
 		{
 			setValue(p.name, CoSimType.Auto, p.value.toString());
@@ -203,7 +221,8 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	private Double getOutput(String name) throws ValueException, RemoteSimulationException
+	private Double getOutput(String name) throws ValueException,
+			RemoteSimulationException
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
 		if (list != null && links.getLinks().containsKey(name))
@@ -219,17 +238,20 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						if (mem.name.getName().equals(var.variableName))
 						{
-//							return mem.value.realValue(null);
-							
+							// return mem.value.realValue(null);
+
 							Value value = mem.value.deref();
 
 							Double result = getDoubleFromValue(value);
-							if(result != null)
+							if (result != null)
 							{
 								return result;
 							}
-							
-							throw new RemoteSimulationException("Unexpected type for bound parameter: "+name+" supported types are bool and real but found: "+value.kind());
+
+							throw new RemoteSimulationException("Unexpected type for bound parameter: "
+									+ name
+									+ " supported types are bool and real but found: "
+									+ value.kind());
 						}
 					}
 				}
@@ -299,6 +321,7 @@ public class SimulationManager extends BasicSimulationManager
 				}
 			}
 
+			boolean hasScriptCall = false;
 			int cpus = 0;
 			for (ClassDefinition def : controller.getInterpreter().getClasses())
 			{
@@ -317,7 +340,26 @@ public class SimulationManager extends BasicSimulationManager
 							}
 						}
 					}
+				} else if (def instanceof ClassDefinition)
+				{
+					if (def.getName().equals(scriptClass))
+					{
+						for (Definition d : def.definitions)
+						{
+							if (d.getName().equals(scriptOperation)
+									&& (d instanceof ExplicitOperationDefinition || d instanceof ExplicitFunctionDefinition))
+							{
+								hasScriptCall = true;
+							}
+						}
+					}
 				}
+			}
+
+			if (!hasScriptCall)
+			{
+				throw new RemoteSimulationException("The specification do not contain the entrypoint: "
+						+ script, null);
 			}
 
 			if (cpus == 0)
@@ -546,11 +588,10 @@ public class SimulationManager extends BasicSimulationManager
 							+ parameterName);
 				}
 			}
-		}catch(RemoteSimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			throw e;
-		}
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -614,10 +655,10 @@ public class SimulationManager extends BasicSimulationManager
 						+ parameterName);
 			}
 
-		}catch(RemoteSimulationException e)
+		} catch (RemoteSimulationException e)
 		{
 			throw e;
-		}catch (Exception e)
+		} catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -643,7 +684,7 @@ public class SimulationManager extends BasicSimulationManager
 			}
 
 			return parameters;
-		}catch (Exception e)
+		} catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -668,7 +709,7 @@ public class SimulationManager extends BasicSimulationManager
 					ObjectValue po = (ObjectValue) p.value.deref();
 					parameters.putAll(getParameters(prefix + p.name.name, po.members.asList(), depth++));
 
-				} else if (p.value.deref() instanceof RealValue)//TODO bool should properly be added here
+				} else if (p.value.deref() instanceof RealValue)// TODO bool should properly be added here
 				{
 					parameters.put(prefix + p.name.name, p.value.realValue(null));
 				}
@@ -683,10 +724,10 @@ public class SimulationManager extends BasicSimulationManager
 		try
 		{
 			return setValue(name, CoSimType.NumericValue, value.toString());
-		}catch(RemoteSimulationException e){
+		} catch (RemoteSimulationException e)
+		{
 			throw e;
-		}
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			debugErr(e);
 			if (e instanceof RemoteSimulationException)
@@ -719,8 +760,6 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	
-
 	public Double getParameter(String name) throws RemoteSimulationException
 	{
 		try
@@ -728,7 +767,7 @@ public class SimulationManager extends BasicSimulationManager
 			Value value = getValue(name);
 
 			Double result = getDoubleFromValue(value);
-			if(result != null)
+			if (result != null)
 			{
 				return result;
 			}
@@ -742,7 +781,7 @@ public class SimulationManager extends BasicSimulationManager
 					+ name, e);
 		}
 	}
-	
+
 	public static Double getDoubleFromValue(Value value) throws ValueException
 	{
 		if (value.isNumeric())

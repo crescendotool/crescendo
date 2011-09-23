@@ -8,7 +8,7 @@ public class BaseListener
 {
 	protected InfoTableView view;
 	private int count = 0;
-	protected int refreshCount = 50;
+	protected int refreshCount = 1;
 	protected int initialColPack=3;
 	
 	public BaseListener(InfoTableView view)
