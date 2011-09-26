@@ -16,7 +16,7 @@
             delegate="org.destecs.ide.debug.launching.core.DSELaunchDelegate"
             id="org.destecs.ide.debug.launchDSEConfigurationType"
             modes="debug"
-            name="DSE Launch"
+            name="ACA Launch"
             public="true">
       </launchConfigurationType>
    </extension>
