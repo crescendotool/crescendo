@@ -3,12 +3,12 @@ package org.destecs.ide.vdmmetadatabuilder.internal.builder.vdmmetadatabuilder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.Vector;
 
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.eclipse.core.resources.IFile;
@@ -29,6 +29,7 @@ import org.overturetool.vdmj.modules.Module;
 import org.overturetool.vdmj.types.BooleanType;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.IntegerType;
+import org.overturetool.vdmj.types.NaturalType;
 import org.overturetool.vdmj.types.OptionalType;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.types.SeqType;
@@ -38,20 +39,23 @@ public class VdmMetadataBuilder extends
 		org.eclipse.core.resources.IncrementalProjectBuilder
 {
 
+	private static final String UNKNOWN = "unknown";
+
 	protected IProject[] build(int kind,
 			@SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
 			throws CoreException
 	{
 		try
 		{
+			expandedDefinitions.clear();
 			IVdmProject project = (IVdmProject) getProject().getAdapter(IVdmProject.class);
 			if (project != null)
 			{
 				Properties props = new Properties();
 
 				IVdmModel model = project.getModel();
-				
-				if(!model.isTypeChecked())
+
+				if (!model.isTypeChecked())
 				{
 					project.typeCheck(new NullProgressMonitor());
 				}
@@ -70,7 +74,7 @@ public class VdmMetadataBuilder extends
 								// save(props, def.getName(),
 								// toCsvString(getFields(getTypeName(def),
 								// model)));
-								// expandAndSave(props,"",node,def);
+								// expandAndSave(props, sd.getName(), def, model);
 
 							} else if (def instanceof ValueDefinition
 									|| def instanceof LocalDefinition)
@@ -80,18 +84,25 @@ public class VdmMetadataBuilder extends
 						}
 
 						save(props, sd.getName(), toCsvString(values));
+						expandAndSave(props, "", sd, model);
 					} else
 					{
 						List<String> values = new Vector<String>();
 						for (Definition def : getDefinitions(node))
 						{
 							if (def instanceof ValueDefinition
-									|| def instanceof LocalDefinition)
+									|| def instanceof LocalDefinition
+									|| def instanceof InstanceVariableDefinition)
 							{
 								values.add(def.getName());
 								// expandAndSave(props, "", def, model);
-								save(props, node.getName() + "."
-										+ def.getName(), getVdmTypeName(def));
+
+								String typeName = getVdmTypeName(def);
+								if (!typeName.equals(UNKNOWN))
+								{
+									save(props, node.getName() + "."
+											+ def.getName(), typeName);
+								}
 							}
 						}
 						// save(props, node.getName(), toCsvString(values));
@@ -131,12 +142,13 @@ public class VdmMetadataBuilder extends
 		return null;
 	}
 
-Set<Definition> expandedDefinitions = new HashSet<Definition>();
+	Set<Definition> expandedDefinitions = new HashSet<Definition>();
 
 	private void expandAndSave(Properties props, String prefix, Definition def,
 			IVdmModel model)
 	{
-expandedDefinitions.add(def);
+
+		expandedDefinitions.add(def);
 
 		String name = prefix + (prefix == "" ? "" : ".") + def.getName();
 		// first save this node
@@ -208,14 +220,6 @@ expandedDefinitions.add(def);
 			t = ((LocalDefinition) node).type;
 		}
 
-		// String typeName = "";
-		// if (t instanceof OptionalType)
-		// {
-		// OptionalType opType = (OptionalType) t;
-		// typeName = opType.type.getName();
-		// return typeName;
-		// }
-
 		return getTypeName(t);
 
 	}
@@ -228,21 +232,26 @@ expandedDefinitions.add(def);
 		} else if (t instanceof IntegerType)
 		{
 			return "int";
+		} else if (t instanceof NaturalType)
+		{
+			return "nat";
 		} else if (t instanceof BooleanType)
 		{
 			return "bool";
-		} else if (t instanceof SeqType)
+		}
+		// else if (t instanceof SeqType)
+		// {
+		// SeqType t1 = (SeqType) t;
+		// return getTypeName(t1.seqof) + "[]";
+		// }
+		else if (t instanceof ClassType)
 		{
-			SeqType t1 = (SeqType) t;
-			return getTypeName(t1.seqof) + "[]";
-		} else if (t instanceof ClassType)
-		{
-			return "Class";
+			return ((ClassType) t).getName();// "Class";
 		} else if (t instanceof OptionalType)
 		{
-			getTypeName(((OptionalType) t).type);
+			return getTypeName(((OptionalType) t).type);
 		}
-		return "unknown";
+		return UNKNOWN;
 	}
 
 	private String getTypeName(Definition def)
@@ -270,33 +279,17 @@ expandedDefinitions.add(def);
 		if (t instanceof ClassType)
 		{
 			typeName = t.getName();
+		} else if (t instanceof OptionalType
+				&& ((OptionalType) t).type instanceof ClassType)
+		{
+			typeName = t.getName();
+
 		} else
 		{
 			typeName = def.getName();
 		}
 		return typeName;
 	}
-
-	// private List<String> getFields(String type, IVdmModel model)
-	// {
-	// List<String> variable = new Vector<String>();
-	// for (IAstNode node : model.getRootElementList())
-	// {
-	// if (!node.getName().equals(type))
-	// {
-	// continue;
-	// }
-	// for (Definition def : getDefinitions(node))
-	// {
-	// if (def instanceof InstanceVariableDefinition)
-	// // || def instanceof ValueDefinition || def instanceof LocalDefinition)
-	// {
-	// variable.add(def.getName());
-	// }
-	// }
-	// }
-	// return variable;
-	// }
 
 	private List<Definition> getFieldDefinitions(String type, IVdmModel model)
 	{
@@ -324,21 +317,6 @@ expandedDefinitions.add(def);
 		}
 		return variable;
 	}
-
-	// private Definition getDefinition(String name, IVdmModel model)
-	// {
-	// for (IAstNode node : model.getRootElementList())
-	// {
-	// if (node.getName().equals(name))
-	// {
-	// if (node instanceof Definition)
-	// {
-	// return (Definition) node;
-	// }
-	// }
-	// }
-	// return null;
-	// }
 
 	private List<Definition> getDefinitions(IAstNode node)
 	{
