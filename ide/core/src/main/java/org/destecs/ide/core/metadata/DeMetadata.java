@@ -55,7 +55,6 @@ public class DeMetadata
 		try
 		{
 			loadVdmMetadata(project);
-			findAndClearSystem();
 			matchLinksAndMetaData();
 
 		} catch (IOException e)
@@ -69,52 +68,28 @@ public class DeMetadata
 		}
 
 	}
-
-	private void findAndClearSystem()
-	{
-
-		for (String key : vdmMetadata.keySet())
-		{
-			List<String> clas = vdmMetadata.get(key);
-
-			if (clas.size() > 0)
-			{
-				String className = clas.get(0);
-				if (className.equals("system"))
-				{
-					systemClass = key + ".";
-				}
-			}
-		}
-
-		for (String key : new HashSet<String>(vdmMetadata.keySet()))
-		{
-
-			List<String> clas = vdmMetadata.get(key);
-			if (clas.size() > 0 && !clas.get(0).equals("real"))
-			{
-				vdmMetadata.remove(key);
-			} else if (key != null && key.startsWith(systemClass))
-			{
-				vdmMetadata.remove(key);
-				String res = key.replace(systemClass, "");
-				vdmMetadata.put(res, clas);
-			}
-
-		}
-
-		// printMetadata();
-
-	}
+	
 
 	private void matchLinksAndMetaData()
 	{
 
+		String systemClass = findSystemClass();
+		
+		if(systemClass == null)
+		{
+			errorMsgs.add("The VDM-RT model does not contain a system class");
+			return;
+		}
+		
+		printMetadata();
+		
 		for (String key : links.getLinks().keySet())
 		{
 			StringPair p = links.getLinks().get(key);
 
-			if (!vdmMetadata.containsKey(p.toString()))
+			String keyToFind = systemClass + "." + p.toString();
+			System.out.println("Trying to find key: " + keyToFind);
+			if (!vdmMetadata.containsKey(keyToFind))
 			{
 				// System.out.println(p.toString()
 				// + " not present in the metadata");
@@ -122,6 +97,21 @@ public class DeMetadata
 						+ " does not exist in the VDM model or it is not at real number");
 			}
 		}
+	}
+
+	private String findSystemClass() {
+		for(Entry<String, List<String>> entry : vdmMetadata.entrySet())
+		{
+			if(entry.getValue().size() > 0)
+			{
+				String first = entry.getValue().get(0);
+				if(first.equals("system"))
+				{
+					return entry.getKey();
+				}
+			}
+		}
+		return null;
 	}
 
 	public List<String> getErrorMsgs()
