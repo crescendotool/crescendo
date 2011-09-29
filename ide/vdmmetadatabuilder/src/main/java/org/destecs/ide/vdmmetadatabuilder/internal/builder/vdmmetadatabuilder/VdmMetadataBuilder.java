@@ -19,6 +19,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.overture.ide.core.IVdmModel;
 import org.overture.ide.core.resources.IVdmProject;
 import org.overturetool.vdmj.ast.IAstNode;
+import org.overturetool.vdmj.definitions.BUSClassDefinition;
+import org.overturetool.vdmj.definitions.CPUClassDefinition;
 import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
@@ -38,6 +40,9 @@ public class VdmMetadataBuilder extends
 		org.eclipse.core.resources.IncrementalProjectBuilder
 {
 
+	private static final String BUS_TYPE_NAME = "#BUS";
+	private static final String CPU_TYPE_NAME = "CPU";
+	private static final String SYSTEM_TYPE_NAME = "_system";
 	private static final String UNKNOWN = "unknown";
 
 	protected IProject[] build(int kind,
@@ -152,7 +157,7 @@ public class VdmMetadataBuilder extends
 		String name = prefix + (prefix == "" ? "" : ".") + def.getName();
 		if (def instanceof SystemDefinition)
 		{
-			save(props, name, "system");
+			save(props, name, SYSTEM_TYPE_NAME);
 		} else
 		{
 			save(props, name, getVdmTypeName(def));
@@ -239,7 +244,15 @@ public class VdmMetadataBuilder extends
 		// }
 		else if (t instanceof ClassType)
 		{
-			return ((ClassType) t).getName();// "Class";
+			ClassType ct = (ClassType) t;
+			if(ct.classdef instanceof CPUClassDefinition)
+			{
+				return CPU_TYPE_NAME;
+			}else if(ct.classdef instanceof BUSClassDefinition)
+			{
+				return BUS_TYPE_NAME;
+			}
+			return ct.getName();// "Class";
 		} else if (t instanceof OptionalType)
 		{
 			return getTypeName(((OptionalType) t).type);

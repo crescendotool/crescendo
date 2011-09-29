@@ -105,7 +105,7 @@ public class DeMetadata
 			if(entry.getValue().size() > 0)
 			{
 				String first = entry.getValue().get(0);
-				if(first.equals("system"))
+				if(first.equals("_system"))
 				{
 					return entry.getKey();
 				}
