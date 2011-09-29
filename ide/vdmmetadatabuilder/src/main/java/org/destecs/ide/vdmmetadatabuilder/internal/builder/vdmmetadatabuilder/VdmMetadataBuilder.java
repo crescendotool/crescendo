@@ -32,7 +32,6 @@ import org.overturetool.vdmj.types.IntegerType;
 import org.overturetool.vdmj.types.NaturalType;
 import org.overturetool.vdmj.types.OptionalType;
 import org.overturetool.vdmj.types.RealType;
-import org.overturetool.vdmj.types.SeqType;
 import org.overturetool.vdmj.types.Type;
 
 public class VdmMetadataBuilder extends
@@ -69,14 +68,7 @@ public class VdmMetadataBuilder extends
 						List<String> values = new Vector<String>();
 						for (Definition def : sd.getDefinitions())
 						{
-							if (def instanceof InstanceVariableDefinition)
-							{
-								// save(props, def.getName(),
-								// toCsvString(getFields(getTypeName(def),
-								// model)));
-								// expandAndSave(props, sd.getName(), def, model);
-
-							} else if (def instanceof ValueDefinition
+							if (def instanceof ValueDefinition
 									|| def instanceof LocalDefinition)
 							{
 								values.add(def.getName());
@@ -95,7 +87,6 @@ public class VdmMetadataBuilder extends
 									|| def instanceof InstanceVariableDefinition)
 							{
 								values.add(def.getName());
-								// expandAndSave(props, "", def, model);
 
 								String typeName = getVdmTypeName(def);
 								if (!typeName.equals(UNKNOWN))
@@ -105,7 +96,6 @@ public class VdmMetadataBuilder extends
 								}
 							}
 						}
-						// save(props, node.getName(), toCsvString(values));
 					}
 				}
 
@@ -147,18 +137,30 @@ public class VdmMetadataBuilder extends
 	private void expandAndSave(Properties props, String prefix, Definition def,
 			IVdmModel model)
 	{
+		expandAndSave(props, prefix, def, model, false);
+	}
 
-		expandedDefinitions.add(def);
+	private void expandAndSave(Properties props, String prefix, Definition def,
+			IVdmModel model, boolean defIsField)
+	{
+
+		if (!prefix.isEmpty())
+		{
+			expandedDefinitions.add(def);
+		}
 
 		String name = prefix + (prefix == "" ? "" : ".") + def.getName();
-		// first save this node
-		// System.out.println(name + ": " + getVdmTypeName(def));
 		if (def instanceof SystemDefinition)
 		{
 			save(props, name, "system");
 		} else
 		{
 			save(props, name, getVdmTypeName(def));
+		}
+
+		if (defIsField)
+		{
+			return;
 		}
 
 		for (Definition field : getFieldDefinitions(getTypeName(def), model))
@@ -170,19 +172,10 @@ public class VdmMetadataBuilder extends
 				if (!expandedDefinitions.contains(child))
 				{
 
-					expandAndSave(props, name, child, model);
+					expandAndSave(props, name, child, model, true);
 				}
 			}
 		}
-
-		// for (Definition child : def.getDefinitions())
-		// {
-		// if (child instanceof InstanceVariableDefinition
-		// || child instanceof ValueDefinition)
-		// {
-		// expandAndSave(props, name, child);
-		// }
-		// }
 	}
 
 	private void save(Properties props, String name, String list)
@@ -302,14 +295,7 @@ public class VdmMetadataBuilder extends
 			}
 			for (Definition def : getDefinitions(node))
 			{
-				if (def instanceof InstanceVariableDefinition)// || def
-																// instanceof
-																// ValueDefinition||
-																// def
-																// instanceof
-																// LocalDefinition)
-				// || def instanceof ValueDefinition || def instanceof
-				// LocalDefinition)
+				if (def instanceof InstanceVariableDefinition)
 				{
 					variable.add(def);
 				}
