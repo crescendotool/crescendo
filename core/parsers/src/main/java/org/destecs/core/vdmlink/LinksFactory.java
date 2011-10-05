@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class LinksFactory {
 
-	private Map<String, StringPair> link = new Hashtable<String, StringPair>();
+	private Map<String, LinkInfo> link = new Hashtable<String,LinkInfo>();
 	private List<String> outputs = new ArrayList<String>();
 	private List<String> inputs = new ArrayList<String>();
 	private List<String> events = new ArrayList<String>();
@@ -47,11 +47,11 @@ public class LinksFactory {
 		sdp.addAll(names);
 	}
 	
-	public void addLink(String name, StringPair pair){
+	public void addLink(String name, LinkInfo lInfo){
 //		if(link.containsKey(name)){
 //			valid = false;
 //		}
-		link.put(name, pair);
+		link.put(name, lInfo);
 	}
 	
 	public Links getLinks(){

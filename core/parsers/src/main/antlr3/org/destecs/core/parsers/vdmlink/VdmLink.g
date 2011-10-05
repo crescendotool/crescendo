@@ -15,6 +15,7 @@ tokens{
 @header {
 package org.destecs.core.parsers.vdmlink;
 
+import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.LinksFactory;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.core.vdmlink.Links;
@@ -201,7 +202,7 @@ package org.destecs.core.parsers.vdmlink;
 WS  :   ( ' '
         | '\t'
         | '\r'
-        | '\n'
+        | '\n' 
         ) {$channel=HIDDEN;}
     ;
 
@@ -228,9 +229,9 @@ intf
     
 link
     :  
-    intf a=ID '=' b=ID '.' c=ID ';'
-    { 
-      links.addLink($a.text, new StringPair($b.text,$c.text));
+   intf a=ID '=' b=qualifiedId ';'
+    {
+      links.addLink($a.text, new LinkInfo($a.text,b,$intf.start.getLine()));
       String s = $intf.text;
       if(s.equalsIgnoreCase("output"))
       {
@@ -251,12 +252,23 @@ link
       {
         links.addEvent($a.text);
       }    
-      
-      
     }
-    
     ;
 
+
+
+
+qualifiedId returns [List<String> ids]
+@init{
+  ids = new ArrayList<String>();
+  }
+  : a=ID 
+      {$ids.add($a.text);
+       } 
+    ('.' b=ID 
+      {$ids.add($b.text);} 
+    )*
+  ;
  
   
 
