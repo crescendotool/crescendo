@@ -88,8 +88,7 @@ public class VdmMetadataBuilder extends
 						for (Definition def : getDefinitions(node))
 						{
 							if (def instanceof ValueDefinition
-									|| def instanceof LocalDefinition
-									|| def instanceof InstanceVariableDefinition)
+									|| def instanceof LocalDefinition)
 							{
 								values.add(def.getName());
 
@@ -97,7 +96,18 @@ public class VdmMetadataBuilder extends
 								if (!typeName.equals(UNKNOWN))
 								{
 									save(props, node.getName() + "."
-											+ def.getName(), typeName);
+											+ def.getName(), typeName + "," + "const");
+								}
+							}
+							if(def instanceof InstanceVariableDefinition)
+							{
+								values.add(def.getName());
+
+								String typeName = getVdmTypeName(def);
+								if (!typeName.equals(UNKNOWN))
+								{
+									save(props, node.getName() + "."
+											+ def.getName(), typeName+ "," + "variable");
 								}
 							}
 						}
@@ -157,10 +167,10 @@ public class VdmMetadataBuilder extends
 		String name = prefix + (prefix == "" ? "" : ".") + def.getName();
 		if (def instanceof SystemDefinition)
 		{
-			save(props, name, SYSTEM_TYPE_NAME);
+			save(props, name, SYSTEM_TYPE_NAME + ",systemclass");
 		} else
 		{
-			save(props, name, getVdmTypeName(def));
+			save(props, name, getVdmTypeName(def) + ",class");
 		}
 
 		if (defIsField)

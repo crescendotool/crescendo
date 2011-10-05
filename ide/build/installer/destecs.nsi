@@ -108,7 +108,9 @@ Section "DESTECS (required)" ;No components page, name is not important
   ; 20-sim instalation file
   File "data\${SIM20_EXE}"
   ; Calling the function that installs 20-sim
-  Call 20simInstall
+;  Call 20simInstall
+  
+  call 20simVersionTest
   
   ; Registry creation
   ; Write the installation path into the registry
@@ -207,11 +209,47 @@ Function DESTECSInstall
   ;ExecWait 'xcopy /S /Y $\"$INSTDIR\${DESTECSFOLDER}$\" $\"$INSTDIR$\"'
   ; Delete the zip and old folder
   ;RMdir /r "$INSTDIR\${DESTECSFOLDER}"
+  DetailPrint "Adding DESTECS firewall exception"
+  SimpleFC::AddApplication "DESTECS" "$INSTDIR\destecs.exe" 0 2 "" 1
+  Pop $0
+  DetailPrint "0=Success/1=Error: $0 "
+  
+  
   Delete "${DESTECSZIP}"
   
   
 FunctionEnd
 
+
+Function 20simVersionTest
+${If} ${RunningX64}
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Controllab Products B.V.\20-sim 4.1\" "Version"       
+${Else}
+    ReadRegStr $0 HKLM "Software\Controllab Products B.V.\20-sim 4.1\" "Version"
+${EndIf}
+
+
+IfErrors isLower
+DetailPrint "Installed 20sim is version: $0 / 20sim present in the installer is version: ${SIM20_VERSION}"
+
+${VersionCompare} $0 ${SIM20_VERSION} $1
+DetailPrint "Result of version compare: $1"
+
+IntCmp $1 0 isSame isHigher isLower
+isSame:
+   DetailPrint "20sim version $0 is already installed"  
+   Goto done
+isLower:  
+   DetailPrint "20sim version $0 is older than installer" 
+   Call 20simInstall
+   Goto done
+isHigher:
+   DetailPrint "20sim version $0 is newer than installer"
+   Goto done 
+done:
+  
+
+FunctionEnd
 
 ; Install 20-sim function
 Function 20simInstall
@@ -222,7 +260,7 @@ Function 20simInstall
   Delete "${SIM20_EXE}"
   ; Update the Windows Registry
   ;Call updateRegistry
-  Call writeRegistryTest
+  Call writeRegistryKey
   ; NOT NEEDED ANYMORE - Copy the DestecsInterface.xrl to 20-sim folder
   ;Call copyXRL 
 FunctionEnd
@@ -230,53 +268,7 @@ FunctionEnd
 
 
 
-
-
-; Function to update registry
-Function updateRegistry
-${If} ${RunningX64}
-    ; Updating registry for x64
-    DetailPrint "Updating Windows registry (64-bit)"
-    Call  x64registry    
-${Else}
-    ; Updating registry for x86
-    DetailPrint "Updating Windows registry (32-bit)"
-    Call x86registry
-${EndIf}
-FunctionEnd
-
-
-
-; x64 registry setup
-Function x64registry
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File" "" "20-sim model"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell" "" ""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell\open" "" ""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell\open\command" "" "$\"$PROGRAMFILES32\20-sim 4.1\bin\20sim.exe$\"  -xmlrpc $\"%1$\""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex" "" ""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\ContextMenuHandlers" "" "EM_Menu"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\ContextMenuHandlers\EM_Menu" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\IconHandler" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers" "" "EM_Page"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers\EM_Page" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
-
-FunctionEnd
-
-Function writeRegistryTest
+Function writeRegistryKey
 WriteRegDWORD HKCU "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
-FunctionEnd
-
-; x86 registry setup
-Function x86registry
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File" "" "20-sim model"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell" "" ""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell\open" "" ""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shell\open\command" "" "$\"$PROGRAMFILES\20-sim 4.1\bin\20sim.exe$\"  -xmlrpc $\"%1$\""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex" "" ""
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\ContextMenuHandlers" "" "EM_Menu"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\ContextMenuHandlers\EM_Menu" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\IconHandler" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers" "" "EM_Page"
-WriteRegStr HKEY_CLASSES_ROOT "EMX_File\shellex\PropertySheetHandlers\EM_Page" "" "{DB3247B6-944D-473D-A85A-00CC40BC3954}"
 FunctionEnd
 

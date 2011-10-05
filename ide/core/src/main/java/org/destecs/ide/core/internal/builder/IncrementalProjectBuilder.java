@@ -14,6 +14,8 @@ import org.destecs.core.vdmlink.Links;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.metadata.DeMetadata;
+import org.destecs.ide.core.metadata.DeMetadataChecker;
+import org.destecs.ide.core.metadata.LinkError;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.core.utility.FileUtility;
@@ -82,12 +84,22 @@ public class IncrementalProjectBuilder extends
 
 			model.setLinks(vdmlinks);
 
-			//TODO: The check below has some issues with the build order
-			DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
-			deMetadata.checkLinks();
-			for (String err : deMetadata.getErrorMsgs()) {
-				addError(project.getVdmLinkFile(), err);
+			DeMetadataChecker checker = new DeMetadataChecker(project,vdmlinks);
+			checker.checkLinks();
+			if(checker.hasErrors())
+			{
+				for (LinkError error : checker.getErrors()) {
+					addError(project.getVdmLinkFile(), error.getLine() + 1, error.getReason());
+				}
 			}
+			
+			
+//			//TODO: The check below has some issues with the build order
+//			DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
+//			deMetadata.checkLinks();
+//			for (String err : deMetadata.getErrorMsgs()) {
+//				addError(project.getVdmLinkFile(), err);
+//			}
 			
 		} catch (Exception e)
 		{
@@ -114,13 +126,13 @@ public class IncrementalProjectBuilder extends
 		{
 			if (!vdmlinks.getOutputs().contains(var.name))
 			{
-				addError(file, "Missing-output controlled variable: " + var);
+				addError(file, 0, "Missing-output controlled variable: " + var);
 				faild = true;
 			}
 
 			if (!vdmlinks.getLinks().containsKey(var.name))
 			{
-				addError(file, "Missing-output controlled variable link: "
+				addError(file,0,  "Missing-output controlled variable link: "
 						+ var);
 				faild = true;
 			}
@@ -133,7 +145,7 @@ public class IncrementalProjectBuilder extends
 
 		if (tmp.size() > 0)
 		{
-			addError(file, "Too many outputs defined; no usage found for: "
+			addError(file, 0, "Too many outputs defined; no usage found for: "
 					+ tmp);
 			faild = true;
 		}
@@ -145,12 +157,12 @@ public class IncrementalProjectBuilder extends
 		{
 			if (!vdmlinks.getInputs().contains(var.name))
 			{
-				addError(file, "Missing-input monitored variable: " + var);
+				addError(file,0, "Missing-input monitored variable: " + var);
 				faild = true;
 			}
 			if (!vdmlinks.getLinks().containsKey(var.name))
 			{
-				addError(file, "Missing-input monitored variable link: " + var);
+				addError(file,0, "Missing-input monitored variable link: " + var);
 				faild = true;
 			}
 
@@ -162,7 +174,7 @@ public class IncrementalProjectBuilder extends
 
 		if (tmp.size() > 0)
 		{
-			addError(file, "Too many inputs defined; no usage found for: "
+			addError(file,0, "Too many inputs defined; no usage found for: "
 					+ tmp);
 			faild = true;
 		}
@@ -174,13 +186,13 @@ public class IncrementalProjectBuilder extends
 		{
 			if (!vdmlinks.getEvents().contains(event))
 			{
-				addError(file, "Missing-event: " + event);
+				addError(file,0, "Missing-event: " + event);
 				faild = true;
 			}
 
 			if (!vdmlinks.getLinks().containsKey(event))
 			{
-				addError(file, "Missing-event link: " + event);
+				addError(file,0, "Missing-event link: " + event);
 				faild = true;
 			}
 
@@ -192,7 +204,7 @@ public class IncrementalProjectBuilder extends
 
 		if (tmp.size() > 0)
 		{
-			addError(file, "Too many events defined; no usage found for: "
+			addError(file,0, "Too many events defined; no usage found for: "
 					+ tmp);
 			faild = true;
 		}
@@ -252,9 +264,9 @@ public class IncrementalProjectBuilder extends
 
 	}
 
-	protected void addError(IFile file, String message)
+	protected void addError(IFile file, int line, String message)
 	{
-		FileUtility.addMarker(file, message, 0, IMarker.SEVERITY_ERROR);
+		FileUtility.addMarker(file, message, line, IMarker.SEVERITY_ERROR);
 	}
 
 	protected Object parse(@SuppressWarnings("rawtypes") ParserWrapper parser, IFile file) throws Exception

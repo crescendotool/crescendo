@@ -125,11 +125,13 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 
 		private boolean isRootItem(TreeItem item)
 		{
+			
 			return Arrays.asList(item.getParent().getItems()).contains(item);
 		}
 
 		private boolean checkName(TreeItem item, List<String> names)
-		{
+		{			
+			
 			if (isRootItem(item) && names.isEmpty())
 			{
 				return true;
@@ -245,10 +247,17 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 			{
 				if (event.detail == SWT.CHECK)
 				{
+					if(!Arrays.asList(logTree.getChildren()).contains((TreeItem)event.item))
+					{
+						checkAndExpand((TreeItem) event.item);
+					}
+					
 					logManager.selectionChanged(((TreeItem) event.item));
 					updateLaunchConfigurationDialog();
 				}
 			}
+
+			
 		});
 		logTree.addListener(SWT.Expand, new Listener()
 		{
@@ -285,6 +294,19 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		});
 	}
 
+	private void checkAndExpand(TreeItem root) {
+		
+		boolean isChecked = root.getChecked();
+		
+		TreeItem[] items = root.getItems();
+		for (TreeItem treeItem : items) {
+			treeItem.setChecked(isChecked);			
+			logManager.selectionChanged(treeItem);			
+			checkAndExpand(treeItem);
+		}
+		
+	}
+	
 	private void expandClassDefinition(ClassDefinition c, TreeItem root)
 	{
 		for (Definition def : c.getDefinitions())
