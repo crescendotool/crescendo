@@ -1,9 +1,11 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.Links;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
@@ -22,6 +24,7 @@ import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
+import org.overturetool.vdmj.values.ReferenceValue;
 import org.overturetool.vdmj.values.TransactionValue;
 import org.overturetool.vdmj.values.Value;
 
@@ -135,7 +138,13 @@ public abstract class BasicSimulationManager
 	protected boolean setValue(String name, CoSimType inputType,
 			String inputValue) throws RemoteSimulationException
 	{
-		Value val = getValue(name);
+		Value val = null;
+		try {
+			val = getValueNew(name);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		 
 		if (val != null)
 		{
 			Value newval = null;
@@ -214,28 +223,125 @@ public abstract class BasicSimulationManager
 		return true;
 	}
 
-	protected Value getValue(String name)
+	
+	
+
+	protected Value getValueNew(String name) throws RemoteSimulationException
 	{
-		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if (list != null && links.getLinks().containsKey(name))
+		try {
+			NameValuePairList list = SystemDefinition.getSystemMembers();
+			if (list != null && links.getLinks().containsKey(name)){
+				List<String> varName = links.getQualifiedName(name);
+				
+				Value output = digForVariable(varName.subList(1, varName.size()),list);
+				return output;
+			}
+		} catch (ValueException e) {
+			throw new RemoteSimulationException("Value: " + name + " not found");
+		}
+		return null;	
+	}
+	
+	private Value digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
+
+		Value value = null;
+		
+		
+		
+		if(list.size() >= 1)
 		{
-			StringPair var = links.getBoundVariable(name);
+			String namePart = varName.get(0);
 			for (NameValuePair p : list)
 			{
-				if (var.instanceName.equals(p.name.getName())
-						&& p.value.deref() instanceof ObjectValue)
+				if (namePart.equals(p.name.getName()))
 				{
-					ObjectValue po = (ObjectValue) p.value.deref();
-					for (NameValuePair mem : po.members.asList())
+					value = p.value.deref();
+					
+					if(canResultBeExpanded(value))
+					{						
+						NameValuePairList newArgs = getNamePairListFromResult(value);
+						
+						Value result = digForVariable(getNewName(varName), newArgs);
+						return result;
+					}
+					else
 					{
-						if (mem.name.getName().equals(var.variableName))
-						{
-							return mem.value;
-						}
+						return p.value;
+						
 					}
 				}
 			}
+		}	
+		
+		
+		if(value == null)
+		{
+			throw new RemoteSimulationException("Value: " + varName + " not found");
 		}
+		return null;
+		
+		
+	}
+	
+	private List<String> getNewName(List<String> varName) {
+		List<String> result = new ArrayList<String>();
+		
+		if(varName.size() > 1)
+		{
+			for(int i=1; i< varName.size(); i++)
+			{
+				result.add(varName.get(i));
+			}
+			return result;
+		}
+		else
+		{
+			return null;	
+		}
+		
+	}
+	
+	private boolean canResultBeExpanded(Value result) {
+		if(result instanceof ObjectValue || result instanceof ReferenceValue)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	private NameValuePairList getNamePairListFromResult(Value value) {
+		if(value instanceof ObjectValue)
+		{
+			return ((ObjectValue) value).members.asList();
+		}
+		else 
+			return null;
+	}
+	
+	protected Value getValue(String name)
+	{
+		
+//		NameValuePairList list = SystemDefinition.getSystemMembers();
+//		if (list != null && links.getLinks().containsKey(name))
+//		{
+//			StringPair var = links.getBoundVariable(name);
+//			for (NameValuePair p : list)
+//			{
+//				if (var.instanceName.equals(p.name.getName())
+//						&& p.value.deref() instanceof ObjectValue)
+//				{
+//					ObjectValue po = (ObjectValue) p.value.deref();
+//					for (NameValuePair mem : po.members.asList())
+//					{
+//						if (mem.name.getName().equals(var.variableName))
+//						{
+//							return mem.value;
+//						}
+//					}
+//				}
+//			}
+//		}
 		return null;
 	}
 

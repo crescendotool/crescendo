@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
@@ -54,6 +55,7 @@ import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
 import org.overturetool.vdmj.values.RealValue;
+import org.overturetool.vdmj.values.ReferenceValue;
 import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
@@ -165,7 +167,7 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			try
 			{
-				Double value = getOutput(key);
+				Double value = getOutputNew(key);
 				if (value != null)
 				{
 					outputs.add(new StepStructoutputsStruct(key, value));
@@ -191,7 +193,7 @@ public class SimulationManager extends BasicSimulationManager
 		boolean evaluated = false;
 		if (links.getEvents().contains(event))
 		{
-			Value val = getValue(event);
+			Value val = getValueNew(event); 
 			if (val.deref() instanceof OperationValue)
 			{
 				OperationValue eventOp = (OperationValue) val;
@@ -221,42 +223,142 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	private Double getOutput(String name) throws ValueException,
-			RemoteSimulationException
+	private Double getOutputNew(String name) throws ValueException,RemoteSimulationException
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if (list != null && links.getLinks().containsKey(name))
+		if (list != null && links.getLinks().containsKey(name)){
+			List<String> varName = links.getQualifiedName(name);
+			
+			Double output = digForVariable(varName.subList(1, varName.size()),list);
+			return output;
+		}
+		throw new RemoteSimulationException("Value: " + name + " not found");
+	}
+	
+	private Double digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
+
+		Value value = null;
+		
+		
+		
+		if(list.size() >= 1)
 		{
-			StringPair var = links.getBoundVariable(name);
+			String namePart = varName.get(0);
 			for (NameValuePair p : list)
 			{
-				if (var.instanceName.equals(p.name.getName())
-						&& p.value.deref() instanceof ObjectValue)
+				if (namePart.equals(p.name.getName()))
 				{
-					ObjectValue po = (ObjectValue) p.value.deref();
-					for (NameValuePair mem : po.members.asList())
+					value = p.value.deref();
+					
+					if(canResultBeExpanded(value))
+					{						
+						NameValuePairList newArgs = getNamePairListFromResult(value);
+						
+						Double result = digForVariable(getNewName(varName), newArgs);
+						return result;
+					}
+					else
 					{
-						if (mem.name.getName().equals(var.variableName))
+						Double result = getDoubleFromValue(value);
+						if (result != null)
 						{
-							// return mem.value.realValue(null);
-
-							Value value = mem.value.deref();
-
-							Double result = getDoubleFromValue(value);
-							if (result != null)
-							{
-								return result;
-							}
-
-							throw new RemoteSimulationException("Unexpected type for bound parameter: "
-									+ name
-									+ " supported types are bool and real but found: "
-									+ value.kind());
+							return result;
 						}
+						
 					}
 				}
 			}
+		}	
+		
+		
+		if(value == null)
+		{
+			throw new RemoteSimulationException("Value: " + varName + " not found");
 		}
+		
+		return null;
+	}
+
+	private List<String> getNewName(List<String> varName) {
+		List<String> result = new ArrayList<String>();
+		
+		if(varName.size() > 1)
+		{
+			for(int i=1; i< varName.size(); i++)
+			{
+				result.add(varName.get(i));
+			}
+			return result;
+		}
+		else
+		{
+			return null;	
+		}
+		
+	}
+
+	private NameValuePairList getNamePairListFromResult(Value value) {
+		if(value instanceof ObjectValue)
+		{
+			return ((ObjectValue) value).members.asList();
+		}
+		else 
+			return null;
+	}
+
+	private boolean canResultBeExpanded(Value result) {
+		if(result instanceof ObjectValue || result instanceof ReferenceValue)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+
+	private Double getOutput(String name) throws ValueException,
+			RemoteSimulationException
+	{
+		try {
+			Double value = getOutputNew(name);	
+			return value;
+		} catch (Exception e) {
+			System.out.println(e.getStackTrace());
+		}
+		
+		
+//		NameValuePairList list = SystemDefinition.getSystemMembers();
+//		if (list != null && links.getLinks().containsKey(name))
+//		{
+//			StringPair var = links.getBoundVariable(name);
+//			for (NameValuePair p : list)
+//			{
+//				if (var.instanceName.equals(p.name.getName())
+//						&& p.value.deref() instanceof ObjectValue)
+//				{
+//					ObjectValue po = (ObjectValue) p.value.deref();
+//					for (NameValuePair mem : po.members.asList())
+//					{
+//						if (mem.name.getName().equals(var.variableName))
+//						{
+//							// return mem.value.realValue(null);
+//
+//							Value value = mem.value.deref();
+//
+//							Double result = getDoubleFromValue(value);
+//							if (result != null)
+//							{
+//								return result;
+//							}
+//
+//							throw new RemoteSimulationException("Unexpected type for bound parameter: "
+//									+ name
+//									+ " supported types are bool and real but found: "
+//									+ value.kind());
+//						}
+//					}
+//				}
+//			}
+//		}
 		return null;
 	}
 
