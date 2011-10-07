@@ -39,10 +39,10 @@ public class Links {
 		return events;
 	}
 
-	public List<String> getBoundVariable(String name) {
+	public StringPair getBoundVariable(String name) {
 		if (link.containsKey(name)) {
 			LinkInfo lInfo = link.get(name);
-			return lInfo.getQualifiedName();
+			return lInfo.getBoundedVariable();
 		}
 		return null;
 	}
@@ -67,5 +67,14 @@ public class Links {
 		// }
 		// return names;
 		return designParameters;
+	}
+
+
+	public List<String> getQualifiedName(String name) {
+		if (link.containsKey(name)) {
+			LinkInfo lInfo = link.get(name);
+			return lInfo.getQualifiedName();
+		}
+		return null;
 	}
 }

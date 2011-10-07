@@ -14,25 +14,26 @@ public class LinkInfo {
 		this.line = line;
 	}
 	
-	//@Deprecated
-//	public StringPair getBoundedVariable()
-//	{
-//		if(qualifiedName.size() > 1)
-//		{
-//			return new StringPair(qualifiedName.get(0), qualifiedName.get(1));
-//		}
-//		else
-//			return null;
-//	}
-	
-	public List<String> getQualifiedName()
+	@Deprecated
+	public StringPair getBoundedVariable()
 	{
-		return qualifiedName;
+		if(qualifiedName.size() > 1)
+		{
+			return new StringPair(qualifiedName.get(0), qualifiedName.get(1));
+		}
+		else
+			return null;
 	}
+	
+	
 	
 	public int getLine()
 	{
 		return line;
+	}
+
+	public List<String> getQualifiedName() {
+		return qualifiedName;
 	}
 	
 }
