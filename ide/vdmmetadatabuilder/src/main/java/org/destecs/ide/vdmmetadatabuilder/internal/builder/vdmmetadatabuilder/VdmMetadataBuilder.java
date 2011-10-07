@@ -23,6 +23,7 @@ import org.overturetool.vdmj.definitions.BUSClassDefinition;
 import org.overturetool.vdmj.definitions.CPUClassDefinition;
 import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.Definition;
+import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
 import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.LocalDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
@@ -109,6 +110,14 @@ public class VdmMetadataBuilder extends
 									save(props, node.getName() + "."
 											+ def.getName(), typeName+ "," + "variable");
 								}
+							}
+							if(def instanceof ExplicitOperationDefinition)
+							{
+								ExplicitOperationDefinition op = (ExplicitOperationDefinition) def;
+								values.add(def.getName());
+								
+								save(props, node.getName() + "."
+										+ def.getName(), "_operation"+ "," + (op.accessSpecifier.isAsync  ? "async" : "sync") );
 							}
 						}
 					}
