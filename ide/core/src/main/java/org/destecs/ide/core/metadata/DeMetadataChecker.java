@@ -24,7 +24,7 @@ public class DeMetadataChecker {
 	private List<LinkError> errors = new Vector<LinkError>();
 
 	enum LinkType {
-		Event, Input, Output, SDP
+		Event, Input, Output, SDP,Model
 	}
 
 	public DeMetadataChecker(IDestecsProject project, Links vdmlinks) {
@@ -89,6 +89,7 @@ public class DeMetadataChecker {
 			LinkType linkType = getLinkType(linkId);
 			LinkInfo linkInfo = links.getLinks().get(linkId);
 			List<String> qualifiedName = linkInfo.getQualifiedName();
+			List<String> metadataProperties = null;
 			
 			if(qualifiedName.size() < 2)
 			{
@@ -99,81 +100,135 @@ public class DeMetadataChecker {
 			else
 			{
 				if (linkType != null) {
+					
+					
 					switch (linkType) {
 					case Event:
+						metadataProperties = validate(linkId,linkInfo , true);
+						if(metadataProperties == null)
+						{
+							errors.add(new LinkError(linkInfo.getLine(), "Link " + linkId
+									+ " refers to a non-existent operation"));
+						}else
+						{
+							validateLinkTypeWithMetadata(linkType,metadataProperties,linkInfo,linkId);
+						}
 						break;
 					case Input:
 					case Output:
+					case Model:
 						if(!checkFirstElement(systemName,qualifiedName))
 						{							
-							validate(linkId,linkInfo , true,systemName, linkType);
+							metadataProperties = validate(linkId,linkInfo , true);
+							
 						}
 						else
 						{
 							errors.add(new LinkError(linkInfo.getLine(), "Link "
 									+ linkId + " should refer to a " + systemName + " intance variable"));
 						}
-						break;				
+						if(metadataProperties == null)
+						{
+							errors.add(new LinkError(linkInfo.getLine(), "Link " + linkId
+									+ " refers to a non-existent variable"));
+						}else
+						{
+							validateLinkTypeWithMetadata(linkType,metadataProperties,linkInfo,linkId);
+						}	
 					case SDP:
-						validate(linkId, links.getLinks().get(linkId), false,
-								systemName, linkType);
-						break;
-	
+						metadataProperties =  validate(linkId, links.getLinks().get(linkId), false);						
+						if(metadataProperties == null)
+						{
+							errors.add(new LinkError(linkInfo.getLine(), "Link " + linkId
+									+ " refers to a non-existent value"));
+						}else
+						{
+							validateLinkTypeWithMetadata(linkType,metadataProperties,linkInfo,linkId);
+						}
 					}
+					
+					
 				}
+				
 			}
+			
 		}
 		System.out.println(errors);
 	}
+
+	private void validateLinkTypeWithMetadata(LinkType linkType,
+			List<String> metadataProperties, LinkInfo linkInfo, String linkId) {
+		
+		if(linkType == LinkType.Event)
+		{
+			if (!metadataProperties.get(0).equals("_operation")) {
+				errors.add(new LinkError(linkInfo.getLine(), "Link "
+						+ linkId + " does not refer to a operation"));
+			}
+			else
+			{
+				if (!metadataProperties.get(1).equals("async")) {
+					errors.add(new LinkError(linkInfo.getLine(), "Link "
+							+ linkId + " should refer to an async operation"));
+				}
+			}
+		}
+		
+		if (linkType == LinkType.Input || linkType == LinkType.Output) {
+			if (!metadataProperties.get(1).equals("variable")) {
+				errors.add(new LinkError(linkInfo.getLine(), "Link "
+						+ linkId + " does not refer to a variable"));
+			}
+		}
+	
+		if (linkType == LinkType.SDP) {
+			if (!metadataProperties.get(1).equals("const")) {
+				errors.add(new LinkError(linkInfo.getLine(), "Link "
+						+ linkId + " does not refer to a value"));
+			}
+		}
+	}
+
 
 	private boolean checkFirstElement(String systemName, List<String> qualifiedName) {
 		return !systemName.equals(qualifiedName.get(0));
 	}
 
 
-	private void validate(String linkId, LinkInfo linkInfo, boolean system,
-			String systemName, LinkType linkType) {
+	private List<String> validate(String linkId, LinkInfo linkInfo, boolean system) {
 
 		List<String> qualifiedName = linkInfo.getQualifiedName();
+		List<String> metadataProperties = null; 
 		
-		
-		
-		String metadataKey = null;
-		List<String> metadataProperties = null;
-		if (system) {
-			metadataKey = systemName + "." + qualifiedName.get(0);
+		if(qualifiedName.size() >= 2)
+		{
+			String metadataKey = qualifiedName.get(0) + "." + qualifiedName.get(1);
 			metadataProperties = vdmMetadata.get(metadataKey);
 			if (metadataProperties != null) {
-				metadataProperties = vdmMetadata.get(metadataProperties.get(0)
-						+ "." + qualifiedName.get(1));
-
-			}
-
-			if (metadataProperties == null) {
-				errors.add(new LinkError(linkInfo.getLine(), "Link " + linkId
-						+ " refers to a non-existent variable"));
-			} else {
-
-				if (linkType == LinkType.Input || linkType == LinkType.Output) {
-					if (!metadataProperties.get(1).equals("variable")) {
-						errors.add(new LinkError(linkInfo.getLine(), "Link "
-								+ linkId + " does not refer to a variable"));
-					}
+				if(qualifiedName.size() > 2)
+				{
+					metadataProperties = checkRestOfQualifier(qualifiedName.subList(2, qualifiedName.size()),metadataProperties);
 				}
-			}
-		} else {
-			metadataKey = linkInfo.getBoundedVariable().toString();
-			metadataProperties = vdmMetadata.get(metadataKey);
-			if (linkType == LinkType.SDP) {
-				if (!metadataProperties.get(1).equals("const")) {
-					errors.add(new LinkError(linkInfo.getLine(), "Link "
-							+ linkId + " does not refer to a value"));
-				}
-			}
-
-		}
-
+			}						
+		}		
+		return metadataProperties;
 	}
+
+	private List<String> checkRestOfQualifier(List<String> rest,
+			List<String> metadataProperties) {
+						
+		for (String element : rest) {
+			String newMetaKey = metadataProperties.get(0) + "." + element;
+			metadataProperties = vdmMetadata.get(newMetaKey);
+			if(metadataProperties == null)
+			{
+				return null;
+			}
+		}				
+		return metadataProperties;
+		
+	}
+
 
 	private LinkType getLinkType(String linkId) {
 
@@ -193,7 +248,7 @@ public class DeMetadataChecker {
 			return LinkType.SDP;
 		}
 
-		return null;
+		return LinkType.Model;
 	}
 
 
