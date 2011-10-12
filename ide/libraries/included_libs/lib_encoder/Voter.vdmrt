@@ -1,0 +1,75 @@
+class Voter is subclass of ISensorInt
+
+-- A voter class that implements the ISensorInt interface
+-- This class produces a single value from three ISensorInt objects
+-- If there is no agreement, a default it used
+
+instance variables
+
+sensors: seq of ISensorInt; -- aggregate sensors in a sequence
+default: nat1;              -- default encoder if no agreement
+inv len sensors = 3;        -- supports three sensors
+
+operations
+
+-- constructor for Voter
+public Voter: seq of ISensorInt * nat1 ==> Voter
+Voter(ss,d) ==
+(
+	-- set instance variables
+	sensors := ss;
+    default := d
+)
+pre len ss = 3 and d <= 3;
+
+-- get voted value
+public GetValue: () ==> real
+GetValue() ==
+(
+	-- calculate votes for each pair
+	dcl votes: map (nat1 * nat1) to bool := {p |-> close(sensors(p.#1).GetValue(),sensors(p.#2).GetValue()) | p in set PAIRS};
+
+	-- calculate those pairs which agree	
+    dcl agree: seq of (nat1 * nat1) := [];
+	for all p in set PAIRS do if votes(p) then agree := agree ^ [p];
+
+	if len agree = 3 then 
+	(
+		-- unanimous
+		return sensors(1).GetValue()
+	)
+	else if len agree = 2 then 
+	(
+		-- two pairs agree
+		dcl diff1: real := abs(sensors(agree(1).#1).GetValue() - sensors(agree(1).#2).GetValue());
+		dcl diff2: real := abs(sensors(agree(2).#1).GetValue() - sensors(agree(2).#2).GetValue());
+		if diff1 < diff2 then return sensors(agree(1).#1).GetValue()
+		else return sensors(agree(2).#1).GetValue()
+	)
+	else if len agree = 1 then 
+	(	
+		-- one pair agrees
+		return sensors(agree(1).#1).GetValue()
+	)	
+	else
+	(
+		-- no agreement, use defulat
+	    return sensors(default).GetValue()
+	)
+)
+
+functions
+
+-- return true two values are close, false otherwise
+private close: real * real -> bool
+close(a,b) ==
+    abs(a-b) <= EPSILON
+
+values
+
+-- constants for voting
+PAIRS = {mk_(1,2),mk_(1,3),mk_(2,3)};
+COLS = {1 |-> "v1", 2 |-> "v2", 3 |-> "v3"};
+EPSILON = 0.01;
+
+end Voter
