@@ -24,7 +24,7 @@
 	<module>core</module>
    	<module>ui</module>
    	<module>debug</module>
-<module>vdmmetadatabuilder</module>
+	<module>vdmmetadatabuilder</module>
 <module>libraries</module>
 
 <!-- test-->
@@ -271,5 +271,6 @@
     <org.eclipse.jdt.debug>jar</org.eclipse.jdt.debug>
     <org.eclipse.jdt.debug.jdi>jar</org.eclipse.jdt.debug.jdi>
     <org.eclipse.jdt.ui>jar</org.eclipse.jdt.ui>
+    <java.version>1.5</java.version>
   </properties>
 </project>
