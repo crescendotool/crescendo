@@ -4,6 +4,8 @@ import java.util.List;
 
 public class LinkInfo {
 	
+	
+	
 	private String identifier = null;
 	private List<String> qualifiedName = null;
 	private int line = -1;
@@ -25,7 +27,9 @@ public class LinkInfo {
 			return null;
 	}
 	
-	
+	public String getIdentifier() {
+		return identifier;
+	}
 	
 	public int getLine()
 	{

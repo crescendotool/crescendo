@@ -43,7 +43,8 @@ public class ScenarioSimulationEngine extends SimulationEngine
 						engineInfo(Simulator.CT, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.CT, nextTime, "setParameter");
-						ctProxy.setParameter(action.variableName, action.variableValue);
+						//TODO:
+						//ctProxy.setParameter(action.variableName, action.variableValue);
 					} catch (Exception e)
 					{
 						abort(Simulator.CT, "setParameter("+action.variableName+"="+action.variableValue+") faild", e);
@@ -55,7 +56,8 @@ public class ScenarioSimulationEngine extends SimulationEngine
 						engineInfo(Simulator.DE, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.DE, nextTime, "setParameter");
-						dtProxy.setParameter(action.variableName, action.variableValue);
+						//TODO:
+						//dtProxy.setParameter(action.variableName, action.variableValue);
 					} catch (Exception e)
 					{
 						abort(Simulator.DE, "setParameter("+action.variableName+"="+action.variableValue+") faild", e);

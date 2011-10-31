@@ -94,27 +94,28 @@ public class ScriptSimulationEngine extends SimulationEngine
 						
 			if (result.outputs.get(0).name.matches(expression.variableName)){
 				System.out.println("inside the loop"); 
-				Double internal = result.outputs.get(0).value;
-				System.out.println("current level value is:" + internal);
-				if (internal > expression.variableValue){
-					flag = true;	
-					it.next();// the first one of the queue
-					middle = it.next(); // the next one
-					System.out.println("next action is :" + middle.toString());
-					actions.poll();
-				}					
+				//TODO:
+				//Double internal = result.outputs.get(0).value;
+//				System.out.println("current level value is:" + internal);
+//				if (internal > expression.variableValue){
+//					flag = true;	
+//					it.next();// the first one of the queue
+//					middle = it.next(); // the next one
+//					System.out.println("next action is :" + middle.toString());
+//					actions.poll();
+//				}					
 			}
 			
 			if (flag == true){
 				System.out.println("flag");				
 				System.out.println("next action variableName is :" + actions.peek().variableName);
-				if(result.outputs.get(0).name.matches(actions.peek().variableName) ){
-					System.out.println("**value before**" + result.outputs.get(0).value); 
-					result.outputs.get(0).value = actions.peek().variableValue;
-		//			result.outputs.get(0).toMap().put("value", double (1.0));
-					System.out.println("**value after**" + result.outputs.get(0).value); 
-					flag = false;
-				}
+				//TODO:
+//				if(result.outputs.get(0).name.matches(actions.peek().variableName) ){
+//					System.out.println("**value before**" + result.outputs.get(0).value); 
+//					result.outputs.get(0).value = actions.peek().variableValue;
+//					System.out.println("**value after**" + result.outputs.get(0).value); 
+//					flag = false;
+//				}
 			}
 			
 			counter++;
@@ -201,7 +202,8 @@ public class ScriptSimulationEngine extends SimulationEngine
 						engineInfo(Simulator.DE, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.DE, nextTime, "setParameter");
-						dtProxy.setParameter(action.variableName, action.variableValue);
+						//TODO:
+						//dtProxy.setParameter(action.variableName, action.variableValue);
 					} catch (Exception e)
 					{
 						abort(Simulator.DE, "setParameter("+action.variableName+"="+action.variableValue+") failed", e);

@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
@@ -15,11 +14,14 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.destecs.core.parsers.VdmLinkParserWrapper;
+import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
+import org.destecs.protocol.structs.GetDesignParameterStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
+import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.log.SimulationLogger;
 import org.destecs.vdmj.log.SimulationMessage;
@@ -37,6 +39,7 @@ import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
+import org.overturetool.vdmj.expressions.SeqExpression;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexRealToken;
@@ -49,13 +52,12 @@ import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.types.Type;
-import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
 import org.overturetool.vdmj.values.RealValue;
-import org.overturetool.vdmj.values.ReferenceValue;
+import org.overturetool.vdmj.values.SeqValue;
 import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
@@ -96,17 +98,17 @@ public class SimulationManager extends BasicSimulationManager
 	 * Shared design variables minLevel maxLevel Variables level :IN valveState :OUT Events HIGH_LEVEL LOW_LEVEL
 	 */
 
-	public List<String> getSharedDesignParameters()
+	public Map<String, LinkInfo> getSharedDesignParameters()
 	{
 		return links.getSharedDesignParameters();
 	}
 
-	public List<String> getInputVariables()
+	public Map<String, LinkInfo> getInputVariables()
 	{
 		return links.getInputs();
 	}
 
-	public List<String> getOutputVariables()
+	public Map<String, LinkInfo> getOutputVariables()
 	{
 		return links.getOutputs();
 	}
@@ -129,7 +131,7 @@ public class SimulationManager extends BasicSimulationManager
 
 		for (StepinputsStructParam p : inputs)
 		{
-			setValue(p.name, CoSimType.Auto, p.value.toString());
+			setValue(p.name, CoSimType.Auto, new ValueContents(p.value, p.size));
 		}
 
 		nextTimeStep = outputTime.longValue();
@@ -163,14 +165,14 @@ public class SimulationManager extends BasicSimulationManager
 
 		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
 
-		for (String key : links.getOutputs())
+		for (String key : links.getOutputs().keySet())
 		{
 			try
 			{
-				Double value = getOutputNew(key);
+				ValueContents value = getOutput(key);
 				if (value != null)
 				{
-					outputs.add(new StepStructoutputsStruct(key, value));
+					outputs.add(new StepStructoutputsStruct(key, value.value,value.size));
 				} else
 				{
 					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "
@@ -191,9 +193,9 @@ public class SimulationManager extends BasicSimulationManager
 	private void evalEvent(String event) throws RemoteSimulationException
 	{
 		boolean evaluated = false;
-		if (links.getEvents().contains(event))
+		if (links.getEvents().keySet().contains(event))
 		{
-			Value val = getValueNew(event); 
+			Value val = getValue(event); 
 			if (val.deref() instanceof OperationValue)
 			{
 				OperationValue eventOp = (OperationValue) val;
@@ -223,144 +225,24 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	private Double getOutputNew(String name) throws ValueException,RemoteSimulationException
+	private ValueContents getOutput(String name) throws ValueException,RemoteSimulationException
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
 		if (list != null && links.getLinks().containsKey(name)){
 			List<String> varName = links.getQualifiedName(name);
 			
-			Double output = digForVariable(varName.subList(1, varName.size()),list);
-			return output;
+			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list);
+					
+			return new ValueContents(VDMClassHelper.getDoubleListFromValue(value), VDMClassHelper.getValueDimensions(value));
+			
 		}
 		throw new RemoteSimulationException("Value: " + name + " not found");
 	}
 	
-	private Double digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
+	
 
-		Value value = null;
-		
-		
-		
-		if(list.size() >= 1)
-		{
-			String namePart = varName.get(0);
-			for (NameValuePair p : list)
-			{
-				if (namePart.equals(p.name.getName()))
-				{
-					value = p.value.deref();
-					
-					if(canResultBeExpanded(value))
-					{						
-						NameValuePairList newArgs = getNamePairListFromResult(value);
-						
-						Double result = digForVariable(getNewName(varName), newArgs);
-						return result;
-					}
-					else
-					{
-						Double result = getDoubleFromValue(value);
-						if (result != null)
-						{
-							return result;
-						}
-						
-					}
-				}
-			}
-		}	
-		
-		
-		if(value == null)
-		{
-			throw new RemoteSimulationException("Value: " + varName + " not found");
-		}
-		
-		return null;
-	}
-
-	private List<String> getNewName(List<String> varName) {
-		List<String> result = new ArrayList<String>();
-		
-		if(varName.size() > 1)
-		{
-			for(int i=1; i< varName.size(); i++)
-			{
-				result.add(varName.get(i));
-			}
-			return result;
-		}
-		else
-		{
-			return null;	
-		}
-		
-	}
-
-	private NameValuePairList getNamePairListFromResult(Value value) {
-		if(value instanceof ObjectValue)
-		{
-			return ((ObjectValue) value).members.asList();
-		}
-		else 
-			return null;
-	}
-
-	private boolean canResultBeExpanded(Value result) {
-		if(result instanceof ObjectValue || result instanceof ReferenceValue)
-		{
-			return true;
-		}
-		else
-			return false;
-	}
-
-	private Double getOutput(String name) throws ValueException,
-			RemoteSimulationException
-	{
-		try {
-			Double value = getOutputNew(name);	
-			return value;
-		} catch (Exception e) {
-			System.out.println(e.getStackTrace());
-		}
-		
-		
-//		NameValuePairList list = SystemDefinition.getSystemMembers();
-//		if (list != null && links.getLinks().containsKey(name))
-//		{
-//			StringPair var = links.getBoundVariable(name);
-//			for (NameValuePair p : list)
-//			{
-//				if (var.instanceName.equals(p.name.getName())
-//						&& p.value.deref() instanceof ObjectValue)
-//				{
-//					ObjectValue po = (ObjectValue) p.value.deref();
-//					for (NameValuePair mem : po.members.asList())
-//					{
-//						if (mem.name.getName().equals(var.variableName))
-//						{
-//							// return mem.value.realValue(null);
-//
-//							Value value = mem.value.deref();
-//
-//							Double result = getDoubleFromValue(value);
-//							if (result != null)
-//							{
-//								return result;
-//							}
-//
-//							throw new RemoteSimulationException("Unexpected type for bound parameter: "
-//									+ name
-//									+ " supported types are bool and real but found: "
-//									+ value.kind());
-//						}
-//					}
-//				}
-//			}
-//		}
-		return null;
-	}
+	
+	
 
 	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
 			File baseDirFile, boolean disableRtLog, List<String> variablesToLog)
@@ -641,7 +523,7 @@ public class SimulationManager extends BasicSimulationManager
 				boolean found = false;
 				String parameterName = parameter.get("name").toString();
 
-				if (!links.getSharedDesignParameters().contains(parameterName))
+				if (!links.getSharedDesignParameters().keySet().contains(parameterName))
 				{
 					debugErr("Tried to set unlinked shared design parameter: "
 							+ parameterName);
@@ -649,8 +531,9 @@ public class SimulationManager extends BasicSimulationManager
 							+ parameterName);
 				}
 				StringPair vName = links.getBoundVariable(parameterName);
-				double newValue = (Double) parameter.get("value");
-
+				Object[] objValue = (Object[]) parameter.get("value");
+				
+				Double newValue = (Double) objValue[0];
 				for (ClassDefinition cd : controller.getInterpreter().getClasses())
 				{
 					if (!cd.getName().equals(vName.instanceName))
@@ -706,14 +589,14 @@ public class SimulationManager extends BasicSimulationManager
 		return true;
 	}
 
-	public Double getDesignParameter(String parameterName)
+	public GetDesignParameterStruct getDesignParameter(String parameterName)
 			throws RemoteSimulationException
 	{
 		try
 		{
 			boolean found = false;
 
-			if (!links.getSharedDesignParameters().contains(parameterName))
+			if (!links.getSharedDesignParameters().keySet().contains(parameterName))
 			{
 				debugErr("Tried to set unlinked shared design parameter: "
 						+ parameterName);
@@ -742,9 +625,17 @@ public class SimulationManager extends BasicSimulationManager
 							{
 								RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
 								LexRealToken token = exp.value;
-
-								return token.value;
+								List<Double> value = new Vector<Double>();
+								value.add(token.value);
+								List<Integer> size = new Vector<Integer>();
+								size.add(1);
+								return new GetDesignParameterStruct(value, size);
 							}
+							else if(vDef.exp instanceof SeqExpression)
+							{
+								System.out.println("getDesignParameter:Sequence");
+							}
+								
 						}
 					}
 				}
@@ -773,11 +664,11 @@ public class SimulationManager extends BasicSimulationManager
 		throw new RemoteSimulationException("Internal error in get design parameter");
 	}
 
-	public Map<String, Double> getParameters() throws RemoteSimulationException
+	public Map<String, ValueContents> getParameters() throws RemoteSimulationException
 	{
 		try
 		{
-			Map<String, Double> parameters = new Hashtable<String, Double>();
+			Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
 
 			NameValuePairList list = SystemDefinition.getSystemMembers();
 			if (list != null && list.size() > 0)
@@ -797,10 +688,10 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	private Map<? extends String, ? extends Double> getParameters(String name,
+	private Map<String,ValueContents> getParameters(String name,
 			NameValuePairList members, int depth) throws ValueException
 	{
-		Map<String, Double> parameters = new Hashtable<String, Double>();
+		Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
 		String prefix = (name.length() == 0 ? "" : name + ".");
 		if (depth < 10)
 		{
@@ -813,19 +704,26 @@ public class SimulationManager extends BasicSimulationManager
 
 				} else if (p.value.deref() instanceof RealValue)// TODO bool should properly be added here
 				{
-					parameters.put(prefix + p.name.name, p.value.realValue(null));
+					List<Double> realValue = new Vector<Double>();
+					realValue.add(p.value.realValue(null));
+					List<Integer> valueSize = new Vector<Integer>();
+					valueSize.add(1);
+					parameters.put(prefix + p.name.name, new ValueContents(realValue,valueSize));
+				} else if(p.value.deref() instanceof SeqValue)
+				{
+					System.out.println("getParameters:sequence");
 				}
 			}
 		}
 		return parameters;
 	}
 
-	public Boolean setParameter(String name, Double value)
+	public Boolean setParameter(String name, ValueContents valueContents)
 			throws RemoteSimulationException
 	{
 		try
 		{
-			return setValue(name, CoSimType.NumericValue, value.toString());
+			return setValue(name, CoSimType.Auto, valueContents);
 		} catch (RemoteSimulationException e)
 		{
 			throw e;
@@ -862,13 +760,13 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	public Double getParameter(String name) throws RemoteSimulationException
+	public List<Double> getParameter(String name) throws RemoteSimulationException
 	{
 		try
 		{
 			Value value = getValue(name);
 
-			Double result = getDoubleFromValue(value);
+			List<Double> result = VDMClassHelper.getDoubleListFromValue(value);
 			if (result != null)
 			{
 				return result;
@@ -884,15 +782,12 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	public static Double getDoubleFromValue(Value value) throws ValueException
-	{
-		if (value.isNumeric())
-		{
-			return value.realValue(null);
-		} else if (value instanceof BooleanValue)
-		{
-			return ((BooleanValue) value).boolValue(null) ? 1.0 : 0.0;
-		}
-		return null;
+	public List<Integer> getParameterSize(String name) throws RemoteSimulationException
+	{	
+			Value value = getValue(name);
+			return VDMClassHelper.getValueDimensions(value);
+				
 	}
+
+	
 }

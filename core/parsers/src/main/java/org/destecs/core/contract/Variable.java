@@ -1,12 +1,20 @@
 package org.destecs.core.contract;
 
-public class Variable
+import java.util.List;
+import java.util.Vector;
+
+
+
+public class Variable implements IVariable
 {
+	protected List<Integer> dimensions = new Vector<Integer>();
+	
 	public Variable(String name, VariableType vType, DataType dType, Object value ) {
-		this.name = name;
-		this.type = vType;
-		this.dataType = dType;
+		this.setName(name);
+		this.setType(vType);
+		this.setDataType(dType);
 		this.value = value;
+		this.dimensions.add(1);
 	}
 	
 	
@@ -26,20 +34,73 @@ public class Variable
 
 	public enum DataType
 	{
-		real, bool
+		real, bool, array
 	}
 
 	
 	
-	public String name;
-	public Object value;
-	public VariableType type;
-	public DataType dataType;
+	private String name;
+	private Object value;
+	private VariableType type;
+	private DataType dataType;
 	
 	@Override
 	public String toString()
 	{
 		
-		return type + " "+dataType+ " "+name+" := "+value;
+		return getType() + " "+getDataType()+ " "+getName()+" := "+value;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.destecs.core.contract.IVariable#getName()
+	 */
+	public String getName() {
+		return name;
+	}
+
+	public void setType(VariableType type) {
+		this.type = type;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.destecs.core.contract.IVariable#getType()
+	 */
+	public VariableType getType() {
+		return type;
+	}
+	
+	public void setValue(Object value) {
+		this.value = value;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.destecs.core.contract.IVariable#getValue()
+	 */
+	public Object getValue() {
+		return value;
+	}
+
+	public void setDataType(DataType dataType) {
+		this.dataType = dataType;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.destecs.core.contract.IVariable#getDataType()
+	 */
+	public DataType getDataType() {
+		return dataType;
+	}
+
+	public SharedVariableType getSharedVariableType() {
+		return SharedVariableType.Scalar;
+	}
+
+	public List<Integer> getDimensions() {
+		return dimensions;
+	}
+	
 }

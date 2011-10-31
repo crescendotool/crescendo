@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.destecs.core.contract.Contract;
+import org.destecs.core.contract.IVariable;
 import org.destecs.core.contract.Variable;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
@@ -245,9 +246,9 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 						}
 						contract = parser.parse(file);
 						sdps = new HashMap<String, Object>();
-						for (Variable var : contract.getSharedDesignParameters())
+						for (IVariable var : contract.getSharedDesignParameters())
 						{
-							sdps.put(var.name, "0.0");
+							sdps.put(var.getName(), "0.0");
 						}
 						if (table != null)
 						{
@@ -293,12 +294,12 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 						{
 							return;
 						}
-						for (Variable var : contract.getSharedDesignParameters())
+						for (IVariable var : contract.getSharedDesignParameters())
 						{
-							String[] existing = getItemIfPresent(var.name);
+							String[] existing = getItemIfPresent(var.getName());
 							if (existing == null)
 							{
-								sdps.put(var.name, "0.0");
+								sdps.put(var.getName(), "0.0");
 							} else if (existing.length >= 2)
 							{
 								sdps.put(existing[0], existing[1]);

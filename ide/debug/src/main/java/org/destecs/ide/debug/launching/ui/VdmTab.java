@@ -410,7 +410,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 			checkBoxUseMeasure.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true));
 			checkBoxUseCoverage.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true));
 			checkBoxUseCoverage.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true));
-			logManager.parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_LOG_VARIABLES, ""));
+			logManager.parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, ""));
 
 		} catch (CoreException e)
 		{
@@ -470,7 +470,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, checkBoxUseMeasure.getSelection());
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, checkBoxUseCoverage.getSelection());
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, checkBoxUseLogRt.getSelection());
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_LOG_VARIABLES, logManager.getConfigValue());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, logManager.getConfigValue());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)

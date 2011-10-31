@@ -1,5 +1,6 @@
 package org.destecs.core.vdmlink;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,16 +28,41 @@ public class Links {
 		return link;
 	}
 
-	public List<String> getOutputs() {
-		return outputs;
+	public Map<String, LinkInfo> getSharedDesignParameters() {
+		Map<String, LinkInfo> result = new HashMap<String, LinkInfo>();
+		
+		for (String dp : designParameters) {
+			result.put(dp, link.get(dp));
+		}
+		return result;
+	}
+	
+	public Map<String, LinkInfo> getOutputs() {
+		Map<String, LinkInfo> result = new HashMap<String, LinkInfo>();
+		
+		for (String output : outputs) {
+			result.put(output, link.get(output));
+		}
+		return result;
 	}
 
-	public List<String> getInputs() {
-		return inputs;
+	public Map<String, LinkInfo> getInputs() {
+		
+		Map<String, LinkInfo> result = new HashMap<String, LinkInfo>();
+		
+		for (String input : inputs) {
+			result.put(input, link.get(input));
+		}
+		return result;
 	}
 
-	public List<String> getEvents() {
-		return events;
+	public Map<String, LinkInfo> getEvents() {
+		Map<String, LinkInfo> result = new HashMap<String, LinkInfo>();
+		
+		for (String event : events) {
+			result.put(event, link.get(event));
+		}
+		return result;
 	}
 
 	public StringPair getBoundVariable(String name) {
@@ -59,15 +85,7 @@ public class Links {
 	}
 
 
-	public List<String> getSharedDesignParameters() {
-		// List<String> names = new Vector<String>();
-		// for (String string : sharedDesignParameters.keySet())
-		// {
-		// names.add(string);
-		// }
-		// return names;
-		return designParameters;
-	}
+	
 
 
 	public List<String> getQualifiedName(String name) {

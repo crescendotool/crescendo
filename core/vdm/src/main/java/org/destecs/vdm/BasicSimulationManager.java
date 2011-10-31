@@ -3,12 +3,14 @@ package org.destecs.vdm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.Links;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
+import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
@@ -25,8 +27,10 @@ import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.ReferenceValue;
+import org.overturetool.vdmj.values.SeqValue;
 import org.overturetool.vdmj.values.TransactionValue;
 import org.overturetool.vdmj.values.Value;
+
 
 public abstract class BasicSimulationManager
 {
@@ -135,16 +139,8 @@ public abstract class BasicSimulationManager
 		this.scheduler = scheduler;
 	}
 
-	protected boolean setValue(String name, CoSimType inputType,
-			String inputValue) throws RemoteSimulationException
+	protected boolean setScalarValue(Value val, CoSimType inputType, String p, String name  ) throws RemoteSimulationException
 	{
-		Value val = null;
-		try {
-			val = getValueNew(name);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		 
 		if (val != null)
 		{
 			Value newval = null;
@@ -164,16 +160,16 @@ public abstract class BasicSimulationManager
 				{
 					case Boolean:
 					{
-						if (inputValue.contains("true")
-								|| inputValue.contains("false"))
+						if (p.contains("true")
+								|| p.contains("false"))
 						{
-							newval = new BooleanValue(Boolean.parseBoolean(inputValue));
+							newval = new BooleanValue(Boolean.parseBoolean(p));
 							break;
 						}
 
 						try
 						{
-							newval = new BooleanValue(Double.valueOf(inputValue) > 0 ? true
+							newval = new BooleanValue(Double.valueOf(p) > 0 ? true
 									: false);
 						} catch (NumberFormatException e)
 						{
@@ -185,7 +181,7 @@ public abstract class BasicSimulationManager
 					}
 						break;
 					case NumericValue:
-						newval = NumericValue.valueOf(Double.parseDouble(inputValue), coSimCtxt);
+						newval = NumericValue.valueOf(Double.parseDouble(p), coSimCtxt);
 						break;
 					case String:
 					case Unknown:
@@ -219,14 +215,169 @@ public abstract class BasicSimulationManager
 			throw new RemoteSimulationException("Faild to find variable in setValue with name: "
 					+ name);
 		}
-
 		return true;
+
+	}
+	
+	protected boolean setValue(String name, CoSimType inputType,
+			ValueContents valueContents) throws RemoteSimulationException
+	{
+						
+		Value val = null;
+		try {
+			val = getValue(name);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		 
+		
+		if(valueContents.size.size() == 0 || (valueContents.size.size() == 1 && valueContents.size.get(0) == 1))
+		{
+			return setScalarValue(val,inputType,valueContents.value.get(0).toString(),name);
+		}
+		else
+		{
+			if(val.deref() instanceof SeqValue)
+			{
+				return setNonScalar((SeqValue) val.deref(), valueContents,name);
+			}
+			else
+			{
+				return false;
+			}
+		}
+							
+		//return true;
 	}
 
 	
 	
 
-	protected Value getValueNew(String name) throws RemoteSimulationException
+	private boolean setNonScalar(SeqValue val, ValueContents valueContents, String name) throws RemoteSimulationException {
+		
+		List<Integer> size = valueContents.size;
+		List<Double> values = valueContents.value;
+		
+		List<List<Integer>> indexes = generateIndexes(size.subList(0, size.size()-1));
+		
+		if(indexes.size()==0) //it is a flat array
+		{
+			int sizeOfSeq = size.get(0);
+			setSeqValue(val,values,sizeOfSeq,name);
+		}
+		else
+		{
+			for (List<Integer> index : indexes) {
+				SeqValue seqVal = findNestedSeq(val,index);
+				int sizeOfSeq = size.get(size.size()-1);
+				setSeqValue(seqVal,values,sizeOfSeq,name);
+				values = values.subList(sizeOfSeq, values.size());
+			}
+		}
+		
+		
+		
+		return true;
+	}
+
+	private List<List<Integer>> generateIndexes(List<Integer> shape)
+	{
+		List<List<Integer>> tempResult = new Vector<List<Integer>>();
+		List<List<Integer>> result = new Vector<List<Integer>>();
+		
+		
+		for(int i=0; i<shape.size(); i++)
+		{
+			List<Integer> temp = new Vector<Integer>();
+			for(Integer j=0; j<shape.get(i);j++)
+			{
+				temp.add(j);
+			}
+			tempResult.add(temp);
+		}
+		
+		if(tempResult.size() > 1)
+		{
+			result.add(tempResult.get(0));
+			tempResult = tempResult.subList(1, tempResult.size());
+		} 
+		else
+		{
+			return flatten(tempResult);
+		}
+		
+		for(int i=0; i < tempResult.size(); i++)
+		{
+			appendList(result, tempResult.get(i));
+		}
+		
+		return result;
+	}
+	
+	
+
+	private List<List<Integer>> flatten(List<List<Integer>> tempResult) {
+		List<List<Integer>> result = new Vector<List<Integer>>();
+		
+		for (List<Integer> list : tempResult) {
+			for (Integer integer : list) {
+				List<Integer> temp = new Vector<Integer>();
+				temp.add(integer);
+				result.add(temp);
+			}
+		}
+		return result;
+	}
+
+	private List<List<Integer>> appendList(List<List<Integer>> l1, List<Integer> l2){
+		for (int i=0; i < l1.size(); i++) {
+			for (Integer j : l2) {
+				l1.get(i).add(j);
+			}
+		}
+		return l1;
+	}
+	
+	private SeqValue findNestedSeq(SeqValue val, List<Integer> indexes) throws RemoteSimulationException{
+		
+		if(indexes.size() == 0)
+		{
+			return val;
+		}
+		
+		int index = indexes.get(0);
+		
+		if(index + 1 > val.values.size() )
+		{
+			return null;
+		}
+		else
+		{
+			Value valToInspect = val.values.get(index).deref();
+			if( valToInspect instanceof SeqValue)
+			{
+				return findNestedSeq((SeqValue) valToInspect, indexes.subList(1, indexes.size()));
+			}
+		}
+		return null;
+		
+	}
+	
+	private void setSeqValue(SeqValue val, List<Double> values, int sizeOfSeq, String name) throws RemoteSimulationException {
+		
+		if(val.values.size() > values.size())
+		{
+			throw new RemoteSimulationException("Values received are not enough to fill matrix " + name);
+		}
+		
+		for (int i=0; i < val.values.size(); i++) {
+				
+			setScalarValue(val.values.get(i), CoSimType.Auto, values.get(i).toString() , name);
+		}
+		
+	}
+
+	protected Value getValue(String name) throws RemoteSimulationException
 	{
 		try {
 			NameValuePairList list = SystemDefinition.getSystemMembers();
@@ -244,9 +395,7 @@ public abstract class BasicSimulationManager
 	
 	private Value digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
 
-		Value value = null;
-		
-		
+		Value value = null;				
 		
 		if(list.size() >= 1)
 		{
@@ -319,31 +468,7 @@ public abstract class BasicSimulationManager
 			return null;
 	}
 	
-	protected Value getValue(String name)
-	{
-		
-//		NameValuePairList list = SystemDefinition.getSystemMembers();
-//		if (list != null && links.getLinks().containsKey(name))
-//		{
-//			StringPair var = links.getBoundVariable(name);
-//			for (NameValuePair p : list)
-//			{
-//				if (var.instanceName.equals(p.name.getName())
-//						&& p.value.deref() instanceof ObjectValue)
-//				{
-//					ObjectValue po = (ObjectValue) p.value.deref();
-//					for (NameValuePair mem : po.members.asList())
-//					{
-//						if (mem.name.getName().equals(var.variableName))
-//						{
-//							return mem.value;
-//						}
-//					}
-//				}
-//			}
-//		}
-		return null;
-	}
+	
 
 	protected Value getRawValue(List<String> name, Value v)
 	{

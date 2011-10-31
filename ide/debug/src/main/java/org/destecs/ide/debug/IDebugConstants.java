@@ -52,7 +52,8 @@ public interface IDebugConstants {
 
 	public static final String DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO = "DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO".toLowerCase();
 	
-	public static final String DESTECS_LAUNCH_CONFIG_LOG_VARIABLES = "DESTECS_LAUNCH_CONFIG_LOG_VARIABLES".toLowerCase();
+	public static final String DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES = "DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES".toLowerCase();
+	public static final String DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES = "DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES".toLowerCase();
 
 	//ACA
 	public static final String DESTECS_ACA_BASE_CONFIG = "DESTECS_ACA_BASE_CONFIG".toLowerCase();

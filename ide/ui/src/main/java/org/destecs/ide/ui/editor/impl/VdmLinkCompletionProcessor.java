@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.destecs.core.contract.IVariable;
 import org.destecs.core.contract.Variable;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
@@ -225,10 +226,10 @@ qualifier.checkGroup();
 					}
 				}
 
-				for (Variable var : model.getContract().getMonitoredVariables())
+				for (IVariable var : model.getContract().getMonitoredVariables())
 				{
 
-					String text = var.name;
+					String text = var.getName();
 					if (qualifier.proposal.toString().trim().length() == 0
 							|| text.startsWith(qualifier.proposal.toString()))
 					{
@@ -240,17 +241,17 @@ qualifier.checkGroup();
 						CompletionProposal proposal = new CompletionProposal(text, documentOffset
 								- qlen, qlen, cursor, null, text, contextInfo, text
 								+ "-Monitored variable declared in contract. "
-								+ var.dataType);
+								+ var.getDataType());
 
 						// and add to result list
 						propList.add(proposal);
 					}
 				}
 
-				for (Variable var : model.getContract().getControlledVariables())
+				for (IVariable var : model.getContract().getControlledVariables())
 				{
 
-					String text = var.name;
+					String text = var.getName();
 					if (qualifier.proposal.toString().trim().length() == 0
 							|| text.startsWith(qualifier.proposal.toString()))
 					{
@@ -262,7 +263,7 @@ qualifier.checkGroup();
 						CompletionProposal proposal = new CompletionProposal(text, documentOffset
 								- qlen, qlen, cursor, null, text, contextInfo, text
 								+ "-Monitored variable declared in contract. "
-								+ var.dataType);
+								+ var.getDataType());
 
 						// and add to result list
 						propList.add(proposal);

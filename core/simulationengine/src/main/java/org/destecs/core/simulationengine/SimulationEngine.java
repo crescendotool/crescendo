@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -12,7 +13,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.destecs.core.contract.Contract;
-import org.destecs.core.contract.Variable;
+import org.destecs.core.contract.IVariable;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
 import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
@@ -25,6 +26,7 @@ import org.destecs.core.simulationengine.listener.IProcessCreationListener;
 import org.destecs.core.simulationengine.listener.ISimulationListener;
 import org.destecs.core.simulationengine.listener.ISimulationStartListener;
 import org.destecs.core.simulationengine.listener.IVariableSyncListener;
+import org.destecs.core.simulationengine.model.CtModelConfig;
 import org.destecs.core.simulationengine.model.ModelConfig;
 import org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory;
 import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
@@ -34,6 +36,9 @@ import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.Load2argumentsStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
+import org.destecs.protocol.structs.QueryInterfaceStructinputsStruct;
+import org.destecs.protocol.structs.QueryInterfaceStructoutputsStruct;
+import org.destecs.protocol.structs.QueryInterfaceStructsharedDesignParametersStruct;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
@@ -267,8 +272,11 @@ public class SimulationEngine
 			loadModel(Simulator.CT, ctProxy, ctModel);
 
 			// validate interfaces
-			valideteInterfaces(contract, dtProxy, ctProxy);
+			validateInterfaces(contract, dtProxy, ctProxy);
 
+			//set variables to log
+			setVariablesToLog(Simulator.CT,ctProxy,ctModel);
+			
 			// set SDPs
 			setSharedDesignParameters(Simulator.DE, dtProxy, sharedDesignParameters);
 			setSharedDesignParameters(Simulator.CT, ctProxy, sharedDesignParameters);
@@ -286,6 +294,8 @@ public class SimulationEngine
 							+ ((int) totalSec % 60) + " mins." : totalSec
 							+ " secs."));
 
+			writeLogFiles(Simulator.CT,ctProxy);
+			
 			// stop the simulators
 			stop(Simulator.DE, finishTime, dtProxy);
 			// TODO: stop(Simulator.CT, finishTime, ctProxy);
@@ -306,6 +316,63 @@ public class SimulationEngine
 				shutdownSimulators();
 			}
 		}
+	}
+
+	private void writeLogFiles(Simulator simulator, ProxyICoSimProtocol ctProxy) {
+		String variablesToLog = ctModel.arguments.get(CtModelConfig.LOAD_SETTING_LOG_VARIABLES);
+		
+			engineInfo(simulator, "Writing variables to log");	
+		
+			String[] vars = variablesToLog.split(",");
+			List<String> varsList = new ArrayList<String>();
+			for (String v : vars) {
+				varsList.add(v);
+			}
+			
+			String path = null;
+			
+			path = outputDirectory.getAbsolutePath() + "\\20simVariablesCSV.log";
+			
+			try {
+				ctProxy.writeCSVFile(path, false, varsList);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		
+		
+	}
+
+	private void setVariablesToLog(Simulator simulator, ProxyICoSimProtocol ctProxy,
+			ModelConfig ctModel) {
+		
+		String variablesToLog = ctModel.arguments.get(CtModelConfig.LOAD_SETTING_LOG_VARIABLES);
+		if(variablesToLog.trim().length() == 0)
+		{
+			engineInfo(simulator, "Setting variables to log: none");	
+		}
+		else
+		{
+			String[] vars = variablesToLog.split(",");
+			List<String> varsList = new ArrayList<String>();
+			for (String v : vars) {
+				varsList.add(v);
+			}
+			
+			String path = null;
+			
+			path = outputDirectory.getAbsolutePath() + "\\20simVariables.log";
+			
+			try {
+				ctProxy.setLogVariables(path, false, varsList);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+		
 	}
 
 	private static void sleep()
@@ -365,9 +432,9 @@ public class SimulationEngine
 		for (SetDesignParametersdesignParametersStructParam p : sharedDesignParameters)
 		{
 			boolean found = false;
-			for (Variable var : contract.getSharedDesignParameters())
+			for (IVariable var : contract.getSharedDesignParameters())
 			{
-				if (var.name.endsWith(p.name))
+				if (var.getName().endsWith(p.name))
 				{
 					found = true;
 				}
@@ -448,17 +515,37 @@ public class SimulationEngine
 
 			// Step CT - step
 			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
-			
+			checkStepStructVariableSize(ctResult,Simulator.CT);
 			variableSyncInfo(merge(deResult, ctResult).getVariables());
 			
 			// Step DT - step
 			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
-
+			checkStepStructVariableSize(ctResult,Simulator.DE);
 //			 res = merge(deResult, ctResult);
 
 			time = deResult.time;// res.time;
 		}
 		return time;
+	}
+
+	private void checkStepStructVariableSize(StepStruct ctResult, Simulator simulator) throws SimulationException {
+		for (StepStructoutputsStruct elem : ctResult.outputs) {
+			if(elem.value.size() != calculateSizeFromShape(elem.size))
+			{
+				throw new SimulationException(simulator, "Variable " + elem.name + " does not have the appropriate size");
+			}
+		}
+		
+	}
+	
+	private int calculateSizeFromShape(List<Integer> shape)
+	{
+		int result = 1;
+		
+		for (Integer v : shape) {
+			result = result * v;
+		}
+		return result;
 	}
 
 	private StepResult merge(StepStruct deResult, StepStruct ctResult)
@@ -589,7 +676,7 @@ public class SimulationEngine
 		List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
 		for (StepStructoutputsStruct stepStructoutputsStruct : outputs)
 		{
-			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name, stepStructoutputsStruct.value));
+			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name, stepStructoutputsStruct.value, stepStructoutputsStruct.size));
 		}
 		return inputs;
 	}
@@ -646,7 +733,7 @@ public class SimulationEngine
 		return false;
 	}
 
-	private boolean valideteInterfaces(Contract contract,
+	private boolean validateInterfaces(Contract contract,
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 			throws SimulationException
 	{
@@ -654,31 +741,31 @@ public class SimulationEngine
 		QueryInterfaceStruct ctInterface = queryInterface(Simulator.CT, ctProxy);
 
 		engineInfo(Simulator.ALL, "Validating interfaces...");
-		for (Variable var : contract.getControlledVariables())
+		for (IVariable var : contract.getControlledVariables())
 		{
-			if (!dtInterface.outputs.contains(var.name))
+			if (!interfaceContainsOuput( dtInterface,var.getName()))
 			{
 				abort(Simulator.DE, "Missing-output controlled variable: "
 						+ var);
 				return false;
 
 			}
-			if (!ctInterface.inputs.contains(var.name))
+			if (!interfaceContainsInput(ctInterface,var.getName()))
 			{
 				abort(Simulator.CT, "Missing-input controlled variable: " + var);
 				return false;
 			}
 		}
 
-		for (Variable var : contract.getMonitoredVariables())
+		for (IVariable var : contract.getMonitoredVariables())
 		{
-			if (!dtInterface.inputs.contains(var.name))
+			if (!interfaceContainsInput(dtInterface, var.getName()))
 			{
 				abort(Simulator.DE, "Missing-input monitored variable: " + var);
 				return false;
 
 			}
-			if (!ctInterface.outputs.contains(var.name))
+			if (!interfaceContainsOuput(ctInterface, var.getName()))
 			{
 				abort(Simulator.CT, "Missing-output monitored variable: " + var);
 				return false;
@@ -721,6 +808,24 @@ public class SimulationEngine
 		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
 		return true;
+	}
+
+	private boolean interfaceContainsInput(QueryInterfaceStruct interface_,
+			String name) {
+		for (QueryInterfaceStructinputsStruct input : interface_.inputs) {
+			if(input.name.equals(name))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean interfaceContainsOuput(QueryInterfaceStruct interface_,
+			String name) {
+		for (QueryInterfaceStructoutputsStruct output : interface_.outputs) {
+			if(output.name.equals(name))
+				return true;
+		}
+		return false;
 	}
 
 	private QueryInterfaceStruct queryInterface(Simulator simulator,
@@ -966,9 +1071,9 @@ public class SimulationEngine
 			sb.append("|\n");
 			if (result.sharedDesignParameters.size() > 0)
 			{
-				for (String p : result.sharedDesignParameters)
+				for (QueryInterfaceStructsharedDesignParametersStruct p : result.sharedDesignParameters)
 				{
-					sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
+					sb.append("|    " + p.name/* p.name + " : " + p.value */+ "\n");
 				}
 			} else
 			{
@@ -979,9 +1084,9 @@ public class SimulationEngine
 			sb.append("|\n");
 			if (result.inputs.size() > 0)
 			{
-				for (String p : result.inputs)
+				for (QueryInterfaceStructinputsStruct p : result.inputs)
 				{
-					sb.append("|    " + p /* p.name + " : " + p.value */+ "\n");
+					sb.append("|    " + p.name /* p.name + " : " + p.value */+ "\n");
 				}
 			} else
 			{
@@ -992,9 +1097,9 @@ public class SimulationEngine
 			sb.append("|\n");
 			if (result.outputs.size() > 0)
 			{
-				for (String p : result.outputs)
+				for (QueryInterfaceStructoutputsStruct p : result.outputs)
 				{
-					sb.append("|    " + p/* p.name + " : " + p.value */+ "\n");
+					sb.append("|    " + p.name/* p.name + " : " + p.value */+ "\n");
 				}
 			} else
 			{
@@ -1010,9 +1115,9 @@ public class SimulationEngine
 
 			if (result.sharedDesignParameters.size() > 0)
 			{
-				for (String p : result.sharedDesignParameters)
+				for (QueryInterfaceStructsharedDesignParametersStruct p : result.sharedDesignParameters)
 				{
-					sb.append("" + p/* p.name + " : " + p.value */+ ", ");
+					sb.append("" + p.name/* p.name + " : " + p.value */+ ", ");
 				}
 			} else
 			{
@@ -1023,9 +1128,9 @@ public class SimulationEngine
 
 			if (result.inputs.size() > 0)
 			{
-				for (String p : result.inputs)
+				for (QueryInterfaceStructinputsStruct p : result.inputs)
 				{
-					sb.append("" + p /* p.name + " : " + p.value */+ ", ");
+					sb.append("" + p.name /* p.name + " : " + p.value */+ ", ");
 				}
 			} else
 			{
@@ -1036,9 +1141,9 @@ public class SimulationEngine
 
 			if (result.outputs.size() > 0)
 			{
-				for (String p : result.outputs)
+				for (QueryInterfaceStructoutputsStruct p : result.outputs)
 				{
-					sb.append("" + p/* p.name + " : " + p.value */+ ", ");
+					sb.append("" + p.name/* p.name + " : " + p.value */+ ", ");
 				}
 			} else
 			{

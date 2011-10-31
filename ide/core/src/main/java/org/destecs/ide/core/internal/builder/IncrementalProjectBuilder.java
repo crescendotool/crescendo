@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.destecs.core.contract.Contract;
+import org.destecs.core.contract.IVariable;
 import org.destecs.core.contract.Variable;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.IError;
@@ -121,25 +122,25 @@ public class IncrementalProjectBuilder extends
 		List<String> tmp = new Vector<String>();
 
 		// check outputs
-		tmp.addAll(vdmlinks.getOutputs());
-		for (Variable var : contract.getControlledVariables())
+		tmp.addAll(vdmlinks.getOutputs().keySet());
+		for (IVariable var : contract.getControlledVariables())
 		{
-			if (!vdmlinks.getOutputs().contains(var.name))
+			if (!vdmlinks.getOutputs().keySet().contains(var.getName()))
 			{
 				addError(file, 0, "Missing-output controlled variable: " + var);
 				faild = true;
 			}
 
-			if (!vdmlinks.getLinks().containsKey(var.name))
+			if (!vdmlinks.getLinks().containsKey(var.getName()))
 			{
 				addError(file,0,  "Missing-output controlled variable link: "
 						+ var);
 				faild = true;
 			}
 
-			if (tmp.contains(var.name))
+			if (tmp.contains(var.getName()))
 			{
-				tmp.remove(var.name);
+				tmp.remove(var.getName());
 			}
 		}
 
@@ -152,23 +153,23 @@ public class IncrementalProjectBuilder extends
 		tmp.clear();
 
 		// check inputs
-		tmp.addAll(vdmlinks.getInputs());
-		for (Variable var : contract.getMonitoredVariables())
+		tmp.addAll(vdmlinks.getInputs().keySet());
+		for (IVariable var : contract.getMonitoredVariables())
 		{
-			if (!vdmlinks.getInputs().contains(var.name))
+			if (!vdmlinks.getInputs().keySet().contains(var.getName()))
 			{
 				addError(file,0, "Missing-input monitored variable: " + var);
 				faild = true;
 			}
-			if (!vdmlinks.getLinks().containsKey(var.name))
+			if (!vdmlinks.getLinks().containsKey(var.getName()))
 			{
 				addError(file,0, "Missing-input monitored variable link: " + var);
 				faild = true;
 			}
 
-			if (tmp.contains(var.name))
+			if (tmp.contains(var.getName()))
 			{
-				tmp.remove(var.name);
+				tmp.remove(var.getName());
 			}
 		}
 
@@ -181,10 +182,10 @@ public class IncrementalProjectBuilder extends
 		tmp.clear();
 
 		// check events
-		tmp.addAll(vdmlinks.getEvents());
+		tmp.addAll(vdmlinks.getEvents().keySet());
 		for (String event : contract.getEvents())
 		{
-			if (!vdmlinks.getEvents().contains(event))
+			if (!vdmlinks.getEvents().keySet().contains(event))
 			{
 				addError(file,0, "Missing-event: " + event);
 				faild = true;
@@ -217,29 +218,29 @@ public class IncrementalProjectBuilder extends
 	{
 		List<String> names = new Vector<String>();
 		boolean failed = false;
-		for (Variable var : contract.getVariables())
+		for (IVariable var : contract.getVariables())
 		{
-			if (names.contains(var.name))
+			if (names.contains(var.getName()))
 			{
 				FileUtility.addMarker(file, "Dublicate variable name: " + var, 0, IMarker.SEVERITY_ERROR);
 				failed = true;
 			} else
 			{
-				names.add(var.name);
+				names.add(var.getName());
 				failed = failed || !typeCheck(file, var);
 			}
 		}
 		return !failed;
 	}
 
-	private boolean typeCheck(IFile file, Variable variable)
+	private boolean typeCheck(IFile file, IVariable variable)
 	{
-		switch (variable.dataType)
+		switch (variable.getDataType())
 		{
 			case bool:
 				try
 				{
-					Boolean.parseBoolean(variable.value.toString());
+					Boolean.parseBoolean(variable.getValue().toString());
 				} catch (Exception e)
 				{
 					FileUtility.addMarker(file, "Type error in variable expected 'true' or 'false' in: "
@@ -250,7 +251,7 @@ public class IncrementalProjectBuilder extends
 			case real:
 				try
 				{
-					Double.parseDouble(variable.value.toString());
+					Double.parseDouble(variable.getValue().toString());
 				} catch (Exception e)
 				{
 					FileUtility.addMarker(file, "Type error in variable expected 'true' or 'false' in: "

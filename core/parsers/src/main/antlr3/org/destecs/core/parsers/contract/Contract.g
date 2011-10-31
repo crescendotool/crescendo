@@ -15,6 +15,7 @@ tokens {
 	EVENT = 'event';
 	END = 'end';
 	ASSIGN = ':=';
+	ARRAY = 'array';
 }
 
 @header {
@@ -25,6 +26,8 @@ import org.destecs.core.contract.Variable;
 import org.destecs.core.contract.Variable.VariableType;
 import org.destecs.core.contract.Variable.DataType;
 import org.destecs.core.contract.ContractFactory;
+import org.destecs.core.contract.ArrayVariable;
+import java.util.Vector;
 
 }
 
@@ -276,18 +279,32 @@ body
 	;
 
 parameters 
-	: DESIGN_PARAMETER t=type ID ';' 
-	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null)); }
-	| SDP t=type ID ';' 
+	: sharedDesignParamater t=type ID ';' 
 	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null)); }
 	;
 
+
+sharedDesignParamater
+  : 'design_parameter'
+  | 'sdp'
+  ;
+  
 variables 
 	: k=kind t=type ID ASSIGN v=value ';' 
 	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v));}
+	| k=kind ARRAY ID sizes=arrayspec ';'
+	 {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes));}
 	;
 
-events	
+arrayspec returns [List<Integer> sizes]
+@init{
+  sizes = new Vector<Integer>();
+  }
+  : '[' a=INT {$sizes.add(new Integer($a.text));}  (',' b=INT {$sizes.add(new Integer($b.text));})* ']'
+  ;
+
+events 
+
   : EVENT ID ';' 
   {contract.addEvent($ID.text);}
   

@@ -10,22 +10,22 @@ public class Contract
 {
 //	public final String name;
 	
-	private final List<Variable> variables;
+	private final List<IVariable> variables;
 	private final List<String> events;
 	
-	public Contract( List<Variable> variables, List<String> events) {
+	public Contract( List<IVariable> variables, List<String> events) {
 //		this.name = name;
 		this.variables = variables;
 		this.events = events;
 	}
 	
-	private List<Variable> filterVariables(VariableType... filter)
+	private List<IVariable> filterVariables(VariableType... filter)
 	{
 		List<VariableType> filters = Arrays.asList(filter);
-		List<Variable> list =  new Vector<Variable>();
-		for (Variable variable : variables)
+		List<IVariable> list =  new Vector<IVariable>();
+		for (IVariable variable : variables)
 		{
-			if(filters.contains(variable.type))
+			if(filters.contains(variable.getType()))
 			{
 				list.add(variable);
 			}
@@ -33,21 +33,21 @@ public class Contract
 		return list;
 	}
 	
-	public List<Variable> getVariables()
+	public List<IVariable> getVariables()
 	{
 		return filterVariables(VariableType.Controlled,VariableType.Monitored);
 	}
 	
-	public List<Variable> getControlledVariables()
+	public List<IVariable> getControlledVariables()
 	{
 		return filterVariables(VariableType.Controlled);
 	}
-	public List<Variable> getMonitoredVariables()
+	public List<IVariable> getMonitoredVariables()
 	{
 		return filterVariables(VariableType.Monitored);
 	}
 	
-	public List<Variable> getSharedDesignParameters()
+	public List<IVariable> getSharedDesignParameters()
 	{
 		return filterVariables(VariableType.SharedDesignParameter);
 	}
@@ -69,9 +69,9 @@ public class Contract
 			sb.append("event "+event+";\n");
 		}
 		
-		for (Variable var : variables)
+		for (IVariable var : variables)
 		{
-			sb.append(var.type.syntaxName+" "+ var.dataType+ " "+ var.name+ " := "+ var.value+";\n");
+			sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+ " := "+ var.getValue()+";\n");
 		}
 		
 //		sb.append("end "+name+"\n");

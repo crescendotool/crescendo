@@ -8,11 +8,11 @@ import org.destecs.core.contract.Variable.VariableType;
 public class ContractFactory {
 
 //	private String name = null;
-	private List<Variable> variables = null;
+	private List<IVariable> variables = null;
 	private List<String> events = null;
 	
 	public ContractFactory() {
-		this.variables = new ArrayList<Variable>();
+		this.variables = new ArrayList<IVariable>();
 		this.events = new ArrayList<String>();
 	}
 
@@ -20,7 +20,7 @@ public class ContractFactory {
 //		this.name = name;
 //	}	
 	
-	public void addVariable(Variable var ){
+	public void addVariable(IVariable var ){
 		this.variables.add(var);
 	}
 	
@@ -40,13 +40,13 @@ public class ContractFactory {
 			sb.append("event "+event+";\n");
 		}
 		
-		for (Variable var : variables)
+		for (IVariable var : variables)
 		{
-			if(var.type == VariableType.SharedDesignParameter){
-				sb.append(var.type.syntaxName+" "+ var.dataType+ " "+ var.name + ";\n");
+			if(var.getType() == VariableType.SharedDesignParameter){
+				sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName() + ";\n");
 			}
 			else{
-				sb.append(var.type.syntaxName+" "+ var.dataType+ " "+ var.name+ " := "+ var.value+";\n");	
+				sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+ " := "+ var.getValue()+";\n");	
 			}
 			
 		}

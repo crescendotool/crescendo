@@ -93,7 +93,8 @@ public class CoSimLaunchConfigurationDelegate extends
 	private ILaunchConfiguration configuration;
 	private boolean enableLogging = false;
 	private boolean showDebugInfo = false;
-	private String logVariables = null;
+	private String logVariablesVdm = null;
+	private String logVariables20Sim = null;
 	private String ourputFolderPrefix = "";
 
 	public void launch(ILaunchConfiguration configuration, String mode,
@@ -150,7 +151,8 @@ public class CoSimLaunchConfigurationDelegate extends
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			enableLogging = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
-			logVariables = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_LOG_VARIABLES, "");
+			logVariablesVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
+			logVariables20Sim = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
 
 			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 			if (deUrlString.length() == 0)
@@ -284,7 +286,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.setDeEndpoint(deUrl);
 
 			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
-			engine.setCtModel(new CtModelConfig(ctFile));
+			engine.setCtModel(getCtModelConfig(ctFile)); 	
 			engine.setCtEndpoint(ctUrl);
 
 			engine.setOutputFolder(outputFolder);
@@ -357,6 +359,13 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 	}
 
+	private ModelConfig getCtModelConfig(File ctFile) {
+		CtModelConfig ctConfig = new CtModelConfig(ctFile);
+		ctConfig.arguments.put(CtModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariables20Sim);
+		
+		return ctConfig;
+	}
+
 	private ModelConfig getDeModelConfig(IProject project2, int port)
 	{
 		final IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
@@ -365,9 +374,9 @@ public class CoSimLaunchConfigurationDelegate extends
 		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
 		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder().getLocation().toFile().getAbsolutePath());
 
-		if (logVariables != null && !logVariables.trim().isEmpty())
+		if (logVariablesVdm != null && !logVariablesVdm.trim().isEmpty())
 		{
-			model.arguments.put(DeModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariables);
+			model.arguments.put(DeModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariablesVdm);
 		}
 		if (deArchitectureFile != null && deArchitectureFile.exists())
 		{
@@ -530,10 +539,18 @@ public class CoSimLaunchConfigurationDelegate extends
 			String name = key.toString();
 			if (result.get(name) instanceof Double)
 			{
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, (Double) result.get(name)));
+				List<Double> value = new Vector<Double>();
+				value.add((Double) result.get(name));
+				List<Integer> size = new Vector<Integer>();
+				size.add(1);
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value,size));
 			} else if (result.get(name) instanceof Integer)
 			{
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, ((Integer) result.get(name)).doubleValue()));
+				List<Double> value = new Vector<Double>();
+				value.add(((Integer) result.get(name)).doubleValue());
+				List<Integer> size = new Vector<Integer>();
+				size.add(1);
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value,size ));
 			} else if (result.get(name) instanceof Boolean)
 			{
 				boolean r = ((Boolean) result.get(name)).booleanValue();
@@ -542,7 +559,11 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					val = Double.valueOf(1);
 				}
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, val));
+				List<Double> value = new Vector<Double>();
+				value.add(val);
+				List<Integer> size = new Vector<Integer>();
+				size.add(1);
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value,size));
 			} else
 			{
 				throw new Exception("Design parameter type not supported by protocol: "

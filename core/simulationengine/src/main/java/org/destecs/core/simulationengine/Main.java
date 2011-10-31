@@ -82,8 +82,18 @@ public class Main
 			File sharedDesignParamFile)
 	{
 		List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", 1.0));
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", 2.0));
+		
+		List<Double> minLevel = new Vector<Double>();
+		minLevel.add(1.0);
+		
+		List<Double> maxLevel = new Vector<Double>();
+		maxLevel.add(2.0);
+		
+		List<Integer> size = new Vector<Integer>();
+		size.add(1);
+		
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", minLevel,size));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", maxLevel,size));
 		return shareadDesignParameters;
 	}
 

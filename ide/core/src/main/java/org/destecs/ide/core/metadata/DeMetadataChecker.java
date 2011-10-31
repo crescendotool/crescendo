@@ -235,16 +235,16 @@ public class DeMetadataChecker {
 		if (links == null)
 			return null;
 
-		if (links.getInputs().contains(linkId))
+		if (links.getInputs().keySet().contains(linkId))
 			return LinkType.Input;
 
-		if (links.getOutputs().contains(linkId))
+		if (links.getOutputs().keySet().contains(linkId))
 			return LinkType.Output;
 
-		if (links.getEvents().contains(linkId))
+		if (links.getEvents().keySet().contains(linkId))
 			return LinkType.Event;
 
-		if (links.getSharedDesignParameters().contains(linkId)) {
+		if (links.getSharedDesignParameters().keySet().contains(linkId)) {
 			return LinkType.SDP;
 		}
 
