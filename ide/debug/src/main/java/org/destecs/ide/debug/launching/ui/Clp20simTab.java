@@ -253,21 +253,17 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab {
 	
 	private final Set<LogItem> logItems = new HashSet<LogItem>();
 	private TableViewer logViewer;
-private Clp20simTab tab;
+	
 	
 	
 	public void createControl(Composite parent) {
-		tab = this;
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
 		comp.setLayout(new GridLayout());
 		comp.setFont(parent.getFont());
 		
-		
-		
-		
-		createLogTable(comp);
 		createTable(comp);
+		createLogTable(comp);
 		createPopulateButton(comp);
 			
 	}
@@ -355,11 +351,11 @@ private Clp20simTab tab;
 			public void handleEvent(Event event) {
 				if (event.detail == SWT.CHECK)
 				{
-					
 					if(event.item.getData() instanceof LogItem)
 					{
 						LogItem item = (LogItem) event.item.getData();
 						logManager.selectionChanged(item.name);
+						updateLaunchConfigurationDialog();
 					}
 					
 				}
