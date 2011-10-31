@@ -79,6 +79,8 @@ public class SimulationEngine
 	private URL deEndpoint = null;
 	private URL ctEndpoint = null;
 
+	private Contract contract = null;
+	
 	private ModelConfig deModelBase = null;
 	private ModelConfig ctModel = null;
 
@@ -222,7 +224,7 @@ public class SimulationEngine
 
 			infoSharedDesignParameters(sharedDesignParameters);
 
-			Contract contract = null;
+			contract = null;
 			try
 			{
 				ContractParserWrapper parser = new ContractParserWrapper();
@@ -520,7 +522,7 @@ public class SimulationEngine
 			
 			// Step DT - step
 			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
-			checkStepStructVariableSize(ctResult,Simulator.DE);
+			checkStepStructVariableSize(deResult,Simulator.DE);
 //			 res = merge(deResult, ctResult);
 
 			time = deResult.time;// res.time;
@@ -529,9 +531,22 @@ public class SimulationEngine
 	}
 
 	private void checkStepStructVariableSize(StepStruct ctResult, Simulator simulator) throws SimulationException {
+		
+		IVariable varTarget = null;
+		int varSize = -1;
 		for (StepStructoutputsStruct elem : ctResult.outputs) {
-			if(elem.value.size() != calculateSizeFromShape(elem.size))
+			for (IVariable var : contract.getVariables()) {
+				if(var.getName().equals(elem.name))
+				{
+					varTarget = var;
+					varSize = calculateSizeFromShape(varTarget.getDimensions());
+					break;
+				}
+			}
+			
+			if(varTarget != null && elem.value.size() != varSize )
 			{
+				engineInfo(simulator, elem.name +" expected matrix size: " + varSize + " in shape: (" + varTarget.getDimensions()+ ") but received: " + elem.value.size() + "elements");
 				throw new SimulationException(simulator, "Variable " + elem.name + " does not have the appropriate size");
 			}
 		}

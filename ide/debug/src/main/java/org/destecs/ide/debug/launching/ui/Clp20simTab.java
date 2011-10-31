@@ -522,7 +522,38 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			}
 
 		}
+		
+		deleteUnexistentVariables();
 
+	}
+
+	private void deleteUnexistentVariables() {
+		Set<String> varsToRemove = new HashSet<String>();
+		
+		for (String var : logManager.selectedVariables) {
+			boolean exists = false;
+			
+			for (TableItem elem : logViewer.getTable().getItems())
+			{
+				if (elem.getData() instanceof LogItem)
+				{
+					LogItem logItem = (LogItem) elem.getData();
+					if(logItem.name.equals(var))
+					{
+						exists = true;
+						break;
+					}
+				}
+			}
+			
+			if(!exists)
+			{
+				varsToRemove.add(var);
+			}
+		}
+		
+		logManager.selectedVariables.removeAll(varsToRemove);
+		
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
