@@ -15,7 +15,7 @@ tokens {
 	EVENT = 'event';
 	END = 'end';
 	ASSIGN = ':=';
-	ARRAY = 'array';
+	MATRIX = 'matrix';
 }
 
 @header {
@@ -292,7 +292,7 @@ sharedDesignParamater
 variables 
 	: k=kind t=type ID ASSIGN v=value ';' 
 	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v));}
-	| k=kind ARRAY ID sizes=arrayspec ';'
+	| k=kind MATRIX ID sizes=arrayspec ';'
 	 {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes));}
 	;
 

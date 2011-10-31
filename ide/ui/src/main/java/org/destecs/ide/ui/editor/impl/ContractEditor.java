@@ -60,7 +60,7 @@ public class ContractEditor extends TextEditor
 		{
 			return new String[] { "contract", "end", "sdp","shared_design_parameter",
 					"real", "monitored", "controlled", "event", "bool",
-					"false", "true" };
+					"false", "true", "matrix" };
 		}
 
 		@Override

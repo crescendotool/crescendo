@@ -35,6 +35,7 @@ import org.overturetool.vdmj.types.IntegerType;
 import org.overturetool.vdmj.types.NaturalType;
 import org.overturetool.vdmj.types.OptionalType;
 import org.overturetool.vdmj.types.RealType;
+import org.overturetool.vdmj.types.SeqType;
 import org.overturetool.vdmj.types.Type;
 
 public class VdmMetadataBuilder extends
@@ -256,11 +257,11 @@ public class VdmMetadataBuilder extends
 		{
 			return "bool";
 		}
-		// else if (t instanceof SeqType)
-		// {
-		// SeqType t1 = (SeqType) t;
-		// return getTypeName(t1.seqof) + "[]";
-		// }
+		 else if (t instanceof SeqType)
+		 {
+			 SeqType t1 = (SeqType) t;
+		 return "seq of (" + getTypeName(t1.seqof) + ")";
+		 }
 		else if (t instanceof ClassType)
 		{
 			ClassType ct = (ClassType) t;
