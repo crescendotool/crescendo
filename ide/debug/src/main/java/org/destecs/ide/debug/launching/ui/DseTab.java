@@ -69,7 +69,13 @@ public class DseTab extends AbstractLaunchConfigurationTab
 		comp.setFont(parent.getFont());
 
 		createFaultField(comp);
+		createArchitectureGroup(comp);
+		
 
+	}
+
+	private void createArchitectureGroup(Composite comp)
+	{
 		Group group = new Group(comp, comp.getStyle());
 		group.setText("Controller Architecture");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -99,49 +105,7 @@ public class DseTab extends AbstractLaunchConfigurationTab
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				// class ScenarioContentProvider extends
-				// BaseWorkbenchContentProvider
-				// {
-				// @Override
-				// public boolean hasChildren(Object element)
-				// {
-				// if (element instanceof IProject)
-				// {
-				// return super.hasChildren(element);
-				// } else
-				// {
-				// return super.hasChildren(element);
-				// }
-				// }
-				//
-				// @SuppressWarnings("unchecked")
-				// @Override
-				// public Object[] getElements(Object element)
-				// {
-				// @SuppressWarnings("rawtypes")
-				// List elements = new Vector();
-				// Object[] arr = super.getElements(element);
-				// if (arr != null)
-				// {
-				// for (Object object : arr)
-				// {
-				// if (object instanceof IFile)
-				// {
-				// IFile f = (IFile) object;
-				// if (f.getFullPath().getFileExtension().equals("arch"))
-				// {
-				// elements.add(f);
-				// }
-				// }
-				// }
-				// return elements.toArray();
-				// }
-				// return null;
-				// }
-				//
-				// }
-				// ;
-				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
+								ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
 				dialog.setTitle("Architecture Selection");
 				dialog.setMessage("Select an architecture:");
 				dialog.setComparator(new ViewerComparator());
@@ -194,7 +158,7 @@ public class DseTab extends AbstractLaunchConfigurationTab
 				fArchitecturePathText.setText("");
 			}
 		});
-
+		
 	}
 
 	public String getName()
