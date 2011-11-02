@@ -126,6 +126,7 @@ SectionEnd ; end the section
 
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts (Optional)"
+  SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\${PRODUCT_REG_KEY}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\DESTECS.lnk" "$INSTDIR\destecs.exe" "" "$INSTDIR\destecs.exe" 0
@@ -203,7 +204,10 @@ Function DESTECSInstall
   ; Print to detail log 
   DetailPrint "Installing DESTECS Tool"
   ; Unzip the file
-  ZipDLL::extractall "${DESTECSZIP}" "$INSTDIR"
+ ; ZipDLL::extractall "${DESTECSZIP}" "$INSTDIR"
+  
+  ZipDLL::extractall "${DESTECSZIP}" "$TEMP\destecs"
+  ExecWait 'xcopy /S /Y $\"$TEMP\destecs\*.*$\" $\"$INSTDIR$\"'
   ;Moving files from DESTECS folder to root of $INSTDIR
   ;!insertmacro MoveFolder "$INSTDIR\${DESTECSFOLDER}\" $INSTDIR "*.*"
   ;ExecWait 'xcopy /S /Y $\"$INSTDIR\${DESTECSFOLDER}$\" $\"$INSTDIR$\"'
@@ -260,15 +264,15 @@ Function 20simInstall
   Delete "${SIM20_EXE}"
   ; Update the Windows Registry
   ;Call updateRegistry
-  Call writeRegistryKey
+  Call writeRegistryKey    
   ; NOT NEEDED ANYMORE - Copy the DestecsInterface.xrl to 20-sim folder
   ;Call copyXRL 
+   
 FunctionEnd
 
 
 
-
 Function writeRegistryKey
-WriteRegDWORD HKCU "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
+WriteRegDWORD HKU "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
 FunctionEnd
 
