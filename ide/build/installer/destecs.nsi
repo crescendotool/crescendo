@@ -273,6 +273,6 @@ FunctionEnd
 
 
 Function writeRegistryKey
-WriteRegDWORD HKU "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
+WriteRegDWORD HKLM "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
 FunctionEnd
 
