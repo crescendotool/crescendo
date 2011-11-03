@@ -29,7 +29,7 @@ public class ErrorLog
 				outputFolder = VDMCO.outputDir;
 			} else
 			{
-				outputFolder = new File(Settings.DGBPbaseDir, "output");
+				outputFolder = new File(Settings.baseDir, "output");
 			}
 			PrintWriter out = new PrintWriter(new FileWriter(new File(outputFolder, "vdm_error.txt"), true));
 			out.println();

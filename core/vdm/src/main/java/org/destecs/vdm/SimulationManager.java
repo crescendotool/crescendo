@@ -281,7 +281,7 @@ public class SimulationManager extends BasicSimulationManager
 				this.simulationLogFile = new File(outputDir, "desimulation.log");
 			}
 			controller.setScript(script);
-			Settings.DGBPbaseDir = baseDirFile;
+			Settings.baseDir = baseDirFile;
 
 			VDMCO.outputDir = outputDir;
 			ExitStatus status = controller.parse(specfiles);
