@@ -330,7 +330,7 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						for (Definition d : def.definitions)
 						{
-							if (d.getName().equals(scriptOperation)
+							if (d.getName() != null && d.getName().equals(scriptOperation)
 									&& (d instanceof ExplicitOperationDefinition || d instanceof ExplicitFunctionDefinition))
 							{
 								hasScriptCall = true;
@@ -359,8 +359,7 @@ public class SimulationManager extends BasicSimulationManager
 
 		{
 			debugErr(e);
-			throw new RemoteSimulationException("Faild to load model from "
-					+ outputDir, e);
+			throw new RemoteSimulationException("Internal Error while loading the model.", e);
 
 		}
 

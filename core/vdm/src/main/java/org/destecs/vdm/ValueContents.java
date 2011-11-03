@@ -13,4 +13,9 @@ public class ValueContents {
 		this.size = size;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return value + " size: " + size; 
+	}
 }

@@ -343,7 +343,7 @@ public class CoSimImpl implements IDestecs
 	{
 		Double outputTime = (Double) data.get("outputTime");
 
-		List tmp = Arrays.asList((Object[]) data.get("inputs"));
+		List<Object> tmp = Arrays.asList((Object[]) data.get("inputs"));
 
 		List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
 		for (Object in : tmp)
@@ -356,7 +356,7 @@ public class CoSimImpl implements IDestecs
 
 		// Boolean singleStep = (Boolean) data.get("singleStep");
 
-		List tmp1 = Arrays.asList((Object[]) data.get("events"));
+		List<Object> tmp1 = Arrays.asList((Object[]) data.get("events"));
 
 		List<String> events = new Vector<String>();
 		for (Object in : tmp1)

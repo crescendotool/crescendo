@@ -104,7 +104,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			try
 			{
 				Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(
-						ctFile);
+						ctFile); 
 				clp20sim.launch();
 
 				ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(
@@ -369,7 +369,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		table.setHeaderVisible(true);
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText("Settings");
-		column.setWidth(600);
+		column.setWidth(400);
 
 		column = new TableColumn(table, SWT.NONE);
 		column.setText("Value");
