@@ -17,7 +17,7 @@
 !define PRODUCT_NAME "DESTECS"
 
 !define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.1.3.6"
+!define SIM20_VERSION "4.1.3.8"
 !define SIM20_EXE "${SIM20_NAME}${SIM20_VERSION}.exe"
 
 !define DESTECSIDE "DestecsIde-"
