@@ -80,7 +80,7 @@ public class SimulationEngine
 	private URL ctEndpoint = null;
 
 	private Contract contract = null;
-	
+
 	private ModelConfig deModelBase = null;
 	private ModelConfig ctModel = null;
 
@@ -276,9 +276,9 @@ public class SimulationEngine
 			// validate interfaces
 			validateInterfaces(contract, dtProxy, ctProxy);
 
-			//set variables to log
-			setVariablesToLog(Simulator.CT,ctProxy,ctModel);
-			
+			// set variables to log
+			setVariablesToLog(Simulator.CT, ctProxy, ctModel);
+
 			// set SDPs
 			setSharedDesignParameters(Simulator.DE, dtProxy, sharedDesignParameters);
 			setSharedDesignParameters(Simulator.CT, ctProxy, sharedDesignParameters);
@@ -296,8 +296,8 @@ public class SimulationEngine
 							+ ((int) totalSec % 60) + " mins." : totalSec
 							+ " secs."));
 
-			writeLogFiles(Simulator.CT,ctProxy);
-			
+			writeLogFiles(Simulator.CT, ctProxy);
+
 			// stop the simulators
 			stop(Simulator.DE, finishTime, dtProxy);
 			// TODO: stop(Simulator.CT, finishTime, ctProxy);
@@ -320,61 +320,73 @@ public class SimulationEngine
 		}
 	}
 
-	private void writeLogFiles(Simulator simulator, ProxyICoSimProtocol ctProxy) {
+	private void writeLogFiles(Simulator simulator, ProxyICoSimProtocol proxy)
+			throws SimulationException
+	{
 		String variablesToLog = ctModel.arguments.get(CtModelConfig.LOAD_SETTING_LOG_VARIABLES);
-		
-			engineInfo(simulator, "Writing variables to log");	
-		
-			String[] vars = variablesToLog.split(",");
-			List<String> varsList = new ArrayList<String>();
-			for (String v : vars) {
-				varsList.add(v);
+
+		engineInfo(simulator, "Writing variables to log");
+
+		String[] vars = variablesToLog.split(",");
+		List<String> varsList = new ArrayList<String>();
+		for (String v : vars)
+		{
+			varsList.add(v);
+		}
+
+		String path = null;
+
+		path = outputDirectory.getAbsolutePath() + "\\20simVariablesCSV.log";
+
+		try
+		{
+			if (!varsList.isEmpty())
+			{
+				proxy.writeCSVFile(path, false, varsList);
 			}
-			
-			String path = null;
-			
-			path = outputDirectory.getAbsolutePath() + "\\20simVariablesCSV.log";
-			
-			try {
-				ctProxy.writeCSVFile(path, false, varsList);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return;
-		
-		
+		} catch (Exception e)
+		{
+			abort(simulator, "Failed to write CSV file", e);
+		}
+		return;
+
 	}
 
-	private void setVariablesToLog(Simulator simulator, ProxyICoSimProtocol ctProxy,
-			ModelConfig ctModel) {
-		
-		String variablesToLog = ctModel.arguments.get(CtModelConfig.LOAD_SETTING_LOG_VARIABLES);
-		if(variablesToLog.trim().length() == 0)
+	private void setVariablesToLog(Simulator simulator,
+			ProxyICoSimProtocol proxy, ModelConfig modelConfig)
+			throws SimulationException
+	{
+
+		String variablesToLog = modelConfig.arguments.get(CtModelConfig.LOAD_SETTING_LOG_VARIABLES);
+		if (variablesToLog.trim().length() == 0)
 		{
-			engineInfo(simulator, "Setting variables to log: none");	
-		}
-		else
+			engineInfo(simulator, "Setting variables to log: none");
+		} else
 		{
 			String[] vars = variablesToLog.split(",");
 			List<String> varsList = new ArrayList<String>();
-			for (String v : vars) {
+			for (String v : vars)
+			{
 				varsList.add(v);
 			}
-			
+
 			String path = null;
-			
+
 			path = outputDirectory.getAbsolutePath() + "\\20simVariables.log";
-			
-			try {
-				ctProxy.setLogVariables(path, false, varsList);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+			try
+			{
+				if (!varsList.isEmpty())
+				{
+					proxy.setLogVariables(path, false, varsList);
+				}
+			} catch (Exception e)
+			{
+				abort(simulator, "Failed to set log variables", e);
 			}
 			return;
 		}
-		
+
 	}
 
 	private static void sleep()
@@ -495,12 +507,12 @@ public class SimulationEngine
 				+ " -> " + totalSimulationTime + " Current=" + time);
 
 		List<String> events = new Vector<String>();
-		
+
 		// First initialize DT
 		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 
-//		StepResult res = merge(deResult, ctResult);
+		// StepResult res = merge(deResult, ctResult);
 		// System.out.print(res.toHeaderString());
 		variableSyncInfo(merge(deResult, ctResult).getHeaders());
 		while (time <= totalSimulationTime)
@@ -511,53 +523,61 @@ public class SimulationEngine
 				break;
 			}
 			// System.out.print(res.toString());
-//			variableSyncInfo(res.getVariables());
+			// variableSyncInfo(res.getVariables());
 			// Step DT - time calculate
 			// deResult = step(Simulator.DE, dtProxy, ctProxy, res.time, res.deData, false, res.events);
 
 			// Step CT - step
 			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
-			checkStepStructVariableSize(ctResult,Simulator.CT);
+			checkStepStructVariableSize(ctResult, Simulator.CT);
 			variableSyncInfo(merge(deResult, ctResult).getVariables());
-			
+
 			// Step DT - step
 			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
-			checkStepStructVariableSize(deResult,Simulator.DE);
-//			 res = merge(deResult, ctResult);
+			checkStepStructVariableSize(deResult, Simulator.DE);
+			// res = merge(deResult, ctResult);
 
 			time = deResult.time;// res.time;
 		}
 		return time;
 	}
 
-	private void checkStepStructVariableSize(StepStruct ctResult, Simulator simulator) throws SimulationException {
-		
+	private void checkStepStructVariableSize(StepStruct ctResult,
+			Simulator simulator) throws SimulationException
+	{
+
 		IVariable varTarget = null;
 		int varSize = -1;
-		for (StepStructoutputsStruct elem : ctResult.outputs) {
-			for (IVariable var : contract.getVariables()) {
-				if(var.getName().equals(elem.name))
+		for (StepStructoutputsStruct elem : ctResult.outputs)
+		{
+			for (IVariable var : contract.getVariables())
+			{
+				if (var.getName().equals(elem.name))
 				{
 					varTarget = var;
 					varSize = calculateSizeFromShape(varTarget.getDimensions());
 					break;
 				}
 			}
-			
-			if(varTarget != null && elem.value.size() != varSize )
+
+			if (varTarget != null && elem.value.size() != varSize)
 			{
-				engineInfo(simulator, elem.name +" expected matrix size: " + varSize + " in shape: (" + varTarget.getDimensions()+ ") but received: " + elem.value.size() + "elements");
-				throw new SimulationException(simulator, "Variable " + elem.name + " does not have the appropriate size");
+				engineInfo(simulator, elem.name + " expected matrix size: "
+						+ varSize + " in shape: (" + varTarget.getDimensions()
+						+ ") but received: " + elem.value.size() + "elements");
+				throw new SimulationException(simulator, "Variable "
+						+ elem.name + " does not have the appropriate size");
 			}
 		}
-		
+
 	}
-	
+
 	private int calculateSizeFromShape(List<Integer> shape)
 	{
 		int result = 1;
-		
-		for (Integer v : shape) {
+
+		for (Integer v : shape)
+		{
 			result = result * v;
 		}
 		return result;
@@ -704,11 +724,11 @@ public class SimulationEngine
 			simulationStarting(simulator);
 			messageInfo(simulator, new Double(0), "start");
 			boolean result = proxy.start().success;
-			
-			if(result)
+
+			if (result)
 			{
 				engineInfo(simulator, "Simulator started with no errors");
-			}else
+			} else
 			{
 				engineInfo(simulator, "Simulator FAILD to start");
 			}
@@ -758,14 +778,14 @@ public class SimulationEngine
 		engineInfo(Simulator.ALL, "Validating interfaces...");
 		for (IVariable var : contract.getControlledVariables())
 		{
-			if (!interfaceContainsOuput( dtInterface,var.getName()))
+			if (!interfaceContainsOuput(dtInterface, var.getName()))
 			{
 				abort(Simulator.DE, "Missing-output controlled variable: "
 						+ var);
 				return false;
 
 			}
-			if (!interfaceContainsInput(ctInterface,var.getName()))
+			if (!interfaceContainsInput(ctInterface, var.getName()))
 			{
 				abort(Simulator.CT, "Missing-input controlled variable: " + var);
 				return false;
@@ -826,18 +846,22 @@ public class SimulationEngine
 	}
 
 	private boolean interfaceContainsInput(QueryInterfaceStruct interface_,
-			String name) {
-		for (QueryInterfaceStructinputsStruct input : interface_.inputs) {
-			if(input.name.equals(name))
+			String name)
+	{
+		for (QueryInterfaceStructinputsStruct input : interface_.inputs)
+		{
+			if (input.name.equals(name))
 				return true;
 		}
 		return false;
 	}
 
 	private boolean interfaceContainsOuput(QueryInterfaceStruct interface_,
-			String name) {
-		for (QueryInterfaceStructoutputsStruct output : interface_.outputs) {
-			if(output.name.equals(name))
+			String name)
+	{
+		for (QueryInterfaceStructoutputsStruct output : interface_.outputs)
+		{
+			if (output.name.equals(name))
 				return true;
 		}
 		return false;
@@ -970,8 +994,9 @@ public class SimulationEngine
 	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
 			ModelConfig model) throws SimulationException
 	{
-		//FIXME: This should be fixed we should not have two different load methods in the protocol.
-		if (simulator == Simulator.DE && (deVersion.equals("0.0.0.2")|| deVersion.equals("0.0.0.3")))
+		// FIXME: This should be fixed we should not have two different load methods in the protocol.
+		if (simulator == Simulator.DE
+				&& (deVersion.equals("0.0.0.2") || deVersion.equals("0.0.0.3")))
 		{
 			try
 			{
@@ -1089,7 +1114,8 @@ public class SimulationEngine
 			{
 				for (QueryInterfaceStructsharedDesignParametersStruct p : result.sharedDesignParameters)
 				{
-					sb.append("|    " + p.name/* p.name + " : " + p.value */+ "\n");
+					sb.append("|    " + p.name/* p.name + " : " + p.value */
+							+ "\n");
 				}
 			} else
 			{
@@ -1102,7 +1128,8 @@ public class SimulationEngine
 			{
 				for (QueryInterfaceStructinputsStruct p : result.inputs)
 				{
-					sb.append("|    " + p.name /* p.name + " : " + p.value */+ "\n");
+					sb.append("|    " + p.name /* p.name + " : " + p.value */
+							+ "\n");
 				}
 			} else
 			{
@@ -1115,7 +1142,8 @@ public class SimulationEngine
 			{
 				for (QueryInterfaceStructoutputsStruct p : result.outputs)
 				{
-					sb.append("|    " + p.name/* p.name + " : " + p.value */+ "\n");
+					sb.append("|    " + p.name/* p.name + " : " + p.value */
+							+ "\n");
 				}
 			} else
 			{

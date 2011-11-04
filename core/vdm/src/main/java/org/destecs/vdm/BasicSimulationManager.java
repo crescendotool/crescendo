@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.Links;
-import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
-import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
@@ -30,7 +27,6 @@ import org.overturetool.vdmj.values.ReferenceValue;
 import org.overturetool.vdmj.values.SeqValue;
 import org.overturetool.vdmj.values.TransactionValue;
 import org.overturetool.vdmj.values.Value;
-
 
 public abstract class BasicSimulationManager
 {
@@ -139,7 +135,8 @@ public abstract class BasicSimulationManager
 		this.scheduler = scheduler;
 	}
 
-	protected boolean setScalarValue(Value val, CoSimType inputType, String p, String name  ) throws RemoteSimulationException
+	protected boolean setScalarValue(Value val, CoSimType inputType, String p,
+			String name) throws RemoteSimulationException
 	{
 		if (val != null)
 		{
@@ -160,8 +157,7 @@ public abstract class BasicSimulationManager
 				{
 					case Boolean:
 					{
-						if (p.contains("true")
-								|| p.contains("false"))
+						if (p.contains("true") || p.contains("false"))
 						{
 							newval = new BooleanValue(Boolean.parseBoolean(p));
 							break;
@@ -218,65 +214,56 @@ public abstract class BasicSimulationManager
 		return true;
 
 	}
-	
+
 	protected boolean setValue(String name, CoSimType inputType,
 			ValueContents valueContents) throws RemoteSimulationException
 	{
-						
+
 		Value val = null;
-		try {
-			val = getValue(name);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		 
-		
-		if(valueContents.size.size() == 0 || (valueContents.size.size() == 1 && valueContents.size.get(0) == 1))
+		val = getValue(name);
+
+		if (valueContents.size.size() == 0
+				|| (valueContents.size.size() == 1 && valueContents.size.get(0) == 1))
 		{
-			return setScalarValue(val,inputType,valueContents.value.get(0).toString(),name);
-		}
-		else
+			return setScalarValue(val, inputType, valueContents.value.get(0).toString(), name);
+		} else
 		{
-			if(val.deref() instanceof SeqValue)
+			if (val.deref() instanceof SeqValue)
 			{
-				return setNonScalar((SeqValue) val.deref(), valueContents,name);
-			}
-			else
+				return setNonScalar((SeqValue) val.deref(), valueContents, name);
+			} else
 			{
 				return false;
 			}
 		}
-							
-		//return true;
+
+		// return true;
 	}
 
-	
-	
+	private boolean setNonScalar(SeqValue val, ValueContents valueContents,
+			String name) throws RemoteSimulationException
+	{
 
-	private boolean setNonScalar(SeqValue val, ValueContents valueContents, String name) throws RemoteSimulationException {
-		
 		List<Integer> size = valueContents.size;
 		List<Double> values = valueContents.value;
-		
-		List<List<Integer>> indexes = generateIndexes(size.subList(0, size.size()-1));
-		
-		if(indexes.size()==0) //it is a flat array
+
+		List<List<Integer>> indexes = generateIndexes(size.subList(0, size.size() - 1));
+
+		if (indexes.size() == 0) // it is a flat array
 		{
 			int sizeOfSeq = size.get(0);
-			setSeqValue(val,values,sizeOfSeq,name);
-		}
-		else
+			setSeqValue(val, values, sizeOfSeq, name);
+		} else
 		{
-			for (List<Integer> index : indexes) {
-				SeqValue seqVal = findNestedSeq(val,index);
-				int sizeOfSeq = size.get(size.size()-1);
-				setSeqValue(seqVal,values,sizeOfSeq,name);
+			for (List<Integer> index : indexes)
+			{
+				SeqValue seqVal = findNestedSeq(val, index);
+				int sizeOfSeq = size.get(size.size() - 1);
+				setSeqValue(seqVal, values, sizeOfSeq, name);
 				values = values.subList(sizeOfSeq, values.size());
 			}
 		}
-		
-		
-		
+
 		return true;
 	}
 
@@ -284,43 +271,42 @@ public abstract class BasicSimulationManager
 	{
 		List<List<Integer>> tempResult = new Vector<List<Integer>>();
 		List<List<Integer>> result = new Vector<List<Integer>>();
-		
-		
-		for(int i=0; i<shape.size(); i++)
+
+		for (int i = 0; i < shape.size(); i++)
 		{
 			List<Integer> temp = new Vector<Integer>();
-			for(Integer j=0; j<shape.get(i);j++)
+			for (Integer j = 0; j < shape.get(i); j++)
 			{
 				temp.add(j);
 			}
 			tempResult.add(temp);
 		}
-		
-		if(tempResult.size() > 1)
+
+		if (tempResult.size() > 1)
 		{
 			result.add(tempResult.get(0));
 			tempResult = tempResult.subList(1, tempResult.size());
-		} 
-		else
+		} else
 		{
 			return flatten(tempResult);
 		}
-		
-		for(int i=0; i < tempResult.size(); i++)
+
+		for (int i = 0; i < tempResult.size(); i++)
 		{
 			appendList(result, tempResult.get(i));
 		}
-		
+
 		return result;
 	}
-	
-	
 
-	private List<List<Integer>> flatten(List<List<Integer>> tempResult) {
+	private List<List<Integer>> flatten(List<List<Integer>> tempResult)
+	{
 		List<List<Integer>> result = new Vector<List<Integer>>();
-		
-		for (List<Integer> list : tempResult) {
-			for (Integer integer : list) {
+
+		for (List<Integer> list : tempResult)
+		{
+			for (Integer integer : list)
+			{
 				List<Integer> temp = new Vector<Integer>();
 				temp.add(integer);
 				result.add(temp);
@@ -329,75 +315,89 @@ public abstract class BasicSimulationManager
 		return result;
 	}
 
-	private List<List<Integer>> appendList(List<List<Integer>> l1, List<Integer> l2){
-		for (int i=0; i < l1.size(); i++) {
-			for (Integer j : l2) {
+	private List<List<Integer>> appendList(List<List<Integer>> l1,
+			List<Integer> l2)
+	{
+		for (int i = 0; i < l1.size(); i++)
+		{
+			for (Integer j : l2)
+			{
 				l1.get(i).add(j);
 			}
 		}
 		return l1;
 	}
-	
-	private SeqValue findNestedSeq(SeqValue val, List<Integer> indexes) throws RemoteSimulationException{
-		
-		if(indexes.size() == 0)
+
+	private SeqValue findNestedSeq(SeqValue val, List<Integer> indexes)
+			throws RemoteSimulationException
+	{
+
+		if (indexes.size() == 0)
 		{
 			return val;
 		}
-		
+
 		int index = indexes.get(0);
-		
-		if(index + 1 > val.values.size() )
+
+		if (index + 1 > val.values.size())
 		{
 			return null;
-		}
-		else
+		} else
 		{
 			Value valToInspect = val.values.get(index).deref();
-			if( valToInspect instanceof SeqValue)
+			if (valToInspect instanceof SeqValue)
 			{
 				return findNestedSeq((SeqValue) valToInspect, indexes.subList(1, indexes.size()));
 			}
 		}
 		return null;
-		
+
 	}
-	
-	private void setSeqValue(SeqValue val, List<Double> values, int sizeOfSeq, String name) throws RemoteSimulationException {
-		
-		if(val.values.size() > values.size())
+
+	private void setSeqValue(SeqValue val, List<Double> values, int sizeOfSeq,
+			String name) throws RemoteSimulationException
+	{
+
+		if (val.values.size() > values.size())
 		{
-			throw new RemoteSimulationException("Values received are not enough to fill matrix " + name);
+			throw new RemoteSimulationException("Values received are not enough to fill matrix "
+					+ name);
 		}
-		
-		for (int i=0; i < val.values.size(); i++) {
-				
-			setScalarValue(val.values.get(i), CoSimType.Auto, values.get(i).toString() , name);
+
+		for (int i = 0; i < val.values.size(); i++)
+		{
+
+			setScalarValue(val.values.get(i), CoSimType.Auto, values.get(i).toString(), name);
 		}
-		
+
 	}
 
 	protected Value getValue(String name) throws RemoteSimulationException
 	{
-		try {
+		try
+		{
 			NameValuePairList list = SystemDefinition.getSystemMembers();
-			if (list != null && links.getLinks().containsKey(name)){
+			if (list != null && links.getLinks().containsKey(name))
+			{
 				List<String> varName = links.getQualifiedName(name);
-				
-				Value output = digForVariable(varName.subList(1, varName.size()),list);
+
+				Value output = digForVariable(varName.subList(1, varName.size()), list);
 				return output;
 			}
-		} catch (ValueException e) {
+		} catch (ValueException e)
+		{
 			throw new RemoteSimulationException("Value: " + name + " not found");
 		}
-		return null;	
+		return null;
 	}
-	
-	private Value digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
 
-		Value value = null;				
-		
-		if(list.size() >= 1)
+	private Value digForVariable(List<String> varName, NameValuePairList list)
+			throws RemoteSimulationException, ValueException
+	{
+
+		Value value = null;
+
+		if (list.size() >= 1)
 		{
 			String namePart = varName.get(0);
 			for (NameValuePair p : list)
@@ -405,70 +405,68 @@ public abstract class BasicSimulationManager
 				if (namePart.equals(p.name.getName()))
 				{
 					value = p.value.deref();
-					
-					if(canResultBeExpanded(value))
-					{						
-						NameValuePairList newArgs = getNamePairListFromResult(value);
-						
-						Value result = digForVariable(getNewName(varName), newArgs);
-						return result;
-					}
-					else
+
+					if (canResultBeExpanded(value))
 					{
-						return p.value;
-						
+						NameValuePairList newArgs = getNamePairListFromResult(value);
+
+						Value result = digForVariable(getNewName(varName), newArgs);
+						value = result;
+						break;
+					} else
+					{
+						value = p.value;
+						break;
 					}
 				}
 			}
-		}	
-		
-		
-		if(value == null)
-		{
-			throw new RemoteSimulationException("Value: " + varName + " not found");
 		}
-		return null;
-		
-		
-	}
-	
-	private List<String> getNewName(List<String> varName) {
-		List<String> result = new ArrayList<String>();
-		
-		if(varName.size() > 1)
+
+		if (value == null)
 		{
-			for(int i=1; i< varName.size(); i++)
+			throw new RemoteSimulationException("Value: " + varName
+					+ " not found");
+		}
+
+		return value;
+
+	}
+
+	private List<String> getNewName(List<String> varName)
+	{
+		List<String> result = new ArrayList<String>();
+
+		if (varName.size() > 1)
+		{
+			for (int i = 1; i < varName.size(); i++)
 			{
 				result.add(varName.get(i));
 			}
 			return result;
-		}
-		else
+		} else
 		{
-			return null;	
+			return null;
 		}
-		
+
 	}
-	
-	private boolean canResultBeExpanded(Value result) {
-		if(result instanceof ObjectValue || result instanceof ReferenceValue)
+
+	private boolean canResultBeExpanded(Value result)
+	{
+		if (result instanceof ObjectValue || result instanceof ReferenceValue)
 		{
 			return true;
-		}
-		else
+		} else
 			return false;
 	}
-	
-	private NameValuePairList getNamePairListFromResult(Value value) {
-		if(value instanceof ObjectValue)
+
+	private NameValuePairList getNamePairListFromResult(Value value)
+	{
+		if (value instanceof ObjectValue)
 		{
 			return ((ObjectValue) value).members.asList();
-		}
-		else 
+		} else
 			return null;
 	}
-	
-	
 
 	protected Value getRawValue(List<String> name, Value v)
 	{

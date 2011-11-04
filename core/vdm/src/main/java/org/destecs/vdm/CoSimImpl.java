@@ -251,50 +251,46 @@ public class CoSimImpl implements IDestecs
 	private Integer findVariableDimension(LinkInfo linkInfo)
 	{
 		List<String> qualifiedName = linkInfo.getQualifiedName();
-		
-		if(qualifiedName.size() < 2)
+
+		if (qualifiedName.size() < 2)
 		{
 			System.out.println("qualified name is too small");
 			return -2;
 		}
-				
-		
-		try {				
-			Definition def= VDMClassHelper.findDefinitionInClass(SimulationManager.getInstance().controller.getInterpreter().getClasses(),qualifiedName);
-			if(def == null)
+
+		try
+		{
+			Definition def = VDMClassHelper.findDefinitionInClass(SimulationManager.getInstance().controller.getInterpreter().getClasses(), qualifiedName);
+			if (def == null)
 			{
 				return -2;
-			}
-			else
+			} else
 			{
 				return extractDefinitionDimensions(def);
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
+
 		}
-		
+
 		return -2;
-		
+
 	}
-	
-	
 
-	
+	private Integer extractDefinitionDimensions(Definition def)
+	{
 
-	private Integer extractDefinitionDimensions(Definition def) {
-		
-		if(def.getType().isSeq())
+		if (def.getType().isSeq())
 		{
 			return -1;
-		}
-		else
+		} else
 		{
 			return 1;
 		}
-				
+
 	}
 
 	public Map<String, Object> queryInterface()
@@ -303,23 +299,22 @@ public class CoSimImpl implements IDestecs
 		 * Shared design variables minLevel maxLevel Variables level :IN valveState :OUT Events HIGH_LEVEL LOW_LEVEL
 		 */
 		QueryInterfaceStruct s = new QueryInterfaceStruct();
-		
-		
+
 		for (LinkInfo sdp : SimulationManager.getInstance().getSharedDesignParameters().values())
 		{
-			
-			//dimension does not matter at this point
+
+			// dimension does not matter at this point
 			List<Integer> dimensions = new Vector<Integer>();
 			dimensions.add(findVariableDimension(sdp));
-			s.sharedDesignParameters.add(new QueryInterfaceStructsharedDesignParametersStruct(sdp.getIdentifier(),dimensions));
+			s.sharedDesignParameters.add(new QueryInterfaceStructsharedDesignParametersStruct(sdp.getIdentifier(), dimensions));
 		}
 
 		for (LinkInfo input : SimulationManager.getInstance().getInputVariables().values())
 		{
 			List<Integer> dimensions = new Vector<Integer>();
 			dimensions.add(findVariableDimension(input));
-			s.inputs.add(new QueryInterfaceStructinputsStruct(input.getIdentifier(),dimensions));
-			
+			s.inputs.add(new QueryInterfaceStructinputsStruct(input.getIdentifier(), dimensions));
+
 		}
 
 		for (LinkInfo output : SimulationManager.getInstance().getOutputVariables().values())
@@ -336,38 +331,39 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Object> step(Map<String, Object> data)
 			throws RemoteSimulationException
-	{try 
 	{
-		Double outputTime = (Double) data.get("outputTime");
-
-		List<Object> tmp = Arrays.asList((Object[]) data.get("inputs"));
-
-		List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
-		for (Object in : tmp)
+		try
 		{
-			if (in instanceof Map)
+			Double outputTime = (Double) data.get("outputTime");
+
+			List<Object> tmp = Arrays.asList((Object[]) data.get("inputs"));
+
+			List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
+			for (Object in : tmp)
 			{
-				inputs.add(new StepinputsStructParam((Map<String, Object>) in));
+				if (in instanceof Map)
+				{
+					inputs.add(new StepinputsStructParam((Map<String, Object>) in));
+				}
 			}
-		}
 
-		// Boolean singleStep = (Boolean) data.get("singleStep");
+			// Boolean singleStep = (Boolean) data.get("singleStep");
 
-		List<Object> tmp1 = Arrays.asList((Object[]) data.get("events"));
+			List<Object> tmp1 = Arrays.asList((Object[]) data.get("events"));
 
-		List<String> events = new Vector<String>();
-		for (Object in : tmp1)
-		{
-			if (in instanceof String)
+			List<String> events = new Vector<String>();
+			for (Object in : tmp1)
 			{
-				events.add((String) in);
+				if (in instanceof String)
+				{
+					events.add((String) in);
+				}
 			}
-		}
 
-		// Ignore single step
-		StepStruct result;
-//		try
-//		{
+			// Ignore single step
+			StepStruct result;
+			// try
+			// {
 			outputTime = new Double(SystemClock.timeToInternal(TimeUnit.seconds, outputTime));
 			result = SimulationManager.getInstance().step(outputTime, inputs, events);
 
@@ -432,10 +428,11 @@ public class CoSimImpl implements IDestecs
 			throws RemoteSimulationException
 	{
 		List<GetDesignParametersStructdesignParametersStruct> list = new Vector<GetDesignParametersStructdesignParametersStruct>();
-//		for (String name : SimulationManager.getInstance().getSharedDesignParameters())
-//		{
-//			list.add(new GetDesignParametersStructdesignParametersStruct(name, SimulationManager.getInstance().getDesignParameter(name)));
-//		}
+		// for (String name : SimulationManager.getInstance().getSharedDesignParameters())
+		// {
+		// list.add(new GetDesignParametersStructdesignParametersStruct(name,
+		// SimulationManager.getInstance().getDesignParameter(name)));
+		// }
 		return new GetDesignParametersStruct(list).toMap();
 	}
 
@@ -449,8 +446,8 @@ public class CoSimImpl implements IDestecs
 		try
 		{
 			value = SimulationManager.getInstance().getParameter(name);
-			size  = SimulationManager.getInstance().getParameterSize(name);
-			return new GetParameterStruct(value,size).toMap();
+			size = SimulationManager.getInstance().getParameterSize(name);
+			return new GetParameterStruct(value, size).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -466,7 +463,7 @@ public class CoSimImpl implements IDestecs
 		{
 			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getParameters().entrySet())
 			{
-				list.add(new GetParametersStructparametersStruct(p.getKey(), p.getValue().value,p.getValue().size));
+				list.add(new GetParametersStructparametersStruct(p.getKey(), p.getValue().value, p.getValue().size));
 			}
 		} catch (RemoteSimulationException e)
 		{
@@ -520,9 +517,35 @@ public class CoSimImpl implements IDestecs
 			throws RemoteSimulationException
 	{
 		String name = (String) data.get("name");
-		List<Double> value = (List<Double>) data.get("value");
-		List<Integer> size = (List<Integer>) data.get("size");
+		List<Double> value = new Vector<Double>();
+
+		for (Object o : (Object[]) data.get("value"))
+		{
+			if (o instanceof Double)
+			{
+				value.add((Double) o);
+			} else
+			{
+				throw new RemoteSimulationException("Internal error converting parameter: "
+						+ o + " to Double");
+			}
+		}
 		
+		List<Integer> size= new Vector<Integer>();
+
+		for (Object o : (Object[]) data.get("size"))
+		{
+			if (o instanceof Integer)
+			{
+				size.add((Integer) o);
+			} else
+			{
+				throw new RemoteSimulationException("Internal error converting parameter size: "
+						+ o + " to Integer");
+			}
+		}
+		
+
 		Boolean success;
 		try
 		{
@@ -571,48 +594,49 @@ public class CoSimImpl implements IDestecs
 	}
 
 	public Map<String, Boolean> setToolSetting(Map<String, Object> data)
-			throws Exception {
+			throws Exception
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Map<String, String> getToolSetting(Map<String, String> data)
-			throws Exception {
+			throws Exception
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public List<Map<String, Object>> queryToolSettings() throws Exception {
+	public List<Map<String, Object>> queryToolSettings() throws Exception
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Map<String, Boolean> writeCSVFile(Map<String, Object> data)
-			throws Exception {
+			throws Exception
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Map<String, Boolean> setLogVariables(Map<String, Object> data)
-			throws Exception {
+			throws Exception
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public List<Map<String, Object>> queryVariables() throws Exception {
+	public List<Map<String, Object>> queryVariables() throws Exception
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public List<Map<String, Object>> queryParameters() throws Exception {
+	public List<Map<String, Object>> queryParameters() throws Exception
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
-	
-	
-
-	
 
 }
