@@ -697,6 +697,11 @@ public class SimulationEngine
 					+ ")", e);
 		}
 		simulationInfo(simulator, result);
+		return afterStep(simulator,result);
+	}
+
+	protected StepStruct afterStep(Simulator simulator, StepStruct result)
+	{		
 		return result;
 	}
 
