@@ -10,7 +10,6 @@ import java.util.Vector;
 import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
-import org.destecs.protocol.structs.GetDesignParameterStruct;
 import org.destecs.protocol.structs.GetDesignParametersStruct;
 import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStruct;
 import org.destecs.protocol.structs.GetParameterStruct;
@@ -37,8 +36,6 @@ import org.destecs.protocol.structs.UnLoadStruct;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.Settings;
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.definitions.ClassList;
 import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
@@ -64,7 +61,7 @@ public class CoSimImpl implements IDestecs
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
 
-	private static final String version = "0.0.0.2";
+	private static final String version = "0.0.0.3";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 
 	public Map<String, Integer> getStatus()

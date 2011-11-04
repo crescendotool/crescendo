@@ -970,7 +970,8 @@ public class SimulationEngine
 	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
 			ModelConfig model) throws SimulationException
 	{
-		if (simulator == Simulator.DE && deVersion.equals("0.0.0.2"))
+		//FIXME: This should be fixed we should not have two different load methods in the protocol.
+		if (simulator == Simulator.DE && (deVersion.equals("0.0.0.2")|| deVersion.equals("0.0.0.3")))
 		{
 			try
 			{
