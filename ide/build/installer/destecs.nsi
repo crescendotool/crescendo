@@ -111,6 +111,7 @@ Section "DESTECS (required)" ;No components page, name is not important
 ;  Call 20simInstall
   
   call 20simVersionTest
+  Call writeRegistryKey 
   
   ; Registry creation
   ; Write the installation path into the registry
@@ -264,7 +265,7 @@ Function 20simInstall
   Delete "${SIM20_EXE}"
   ; Update the Windows Registry
   ;Call updateRegistry
-  Call writeRegistryKey    
+     
   ; NOT NEEDED ANYMORE - Copy the DestecsInterface.xrl to 20-sim folder
   ;Call copyXRL 
    
@@ -273,6 +274,6 @@ FunctionEnd
 
 
 Function writeRegistryKey
-WriteRegDWORD HKLM "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
+WriteRegDWORD HKCU "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
 FunctionEnd
 
