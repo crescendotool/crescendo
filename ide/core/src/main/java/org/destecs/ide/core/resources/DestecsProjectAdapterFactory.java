@@ -2,7 +2,6 @@ package org.destecs.ide.core.resources;
 
 import org.destecs.ide.core.internal.core.resources.DestecsProject;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterFactory;
 
 

@@ -6,15 +6,12 @@ import java.util.Vector;
 
 import org.destecs.core.contract.Contract;
 import org.destecs.core.contract.IVariable;
-import org.destecs.core.contract.Variable;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.IError;
 import org.destecs.core.parsers.ParserWrapper;
 import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.Links;
-
 import org.destecs.ide.core.IDestecsCoreConstants;
-import org.destecs.ide.core.metadata.DeMetadata;
 import org.destecs.ide.core.metadata.DeMetadataChecker;
 import org.destecs.ide.core.metadata.LinkError;
 import org.destecs.ide.core.resources.DestecsModel;

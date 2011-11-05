@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import org.destecs.core.contract.Contract;
 import org.destecs.core.contract.IVariable;
-import org.destecs.core.contract.Variable;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.ide.core.resources.IDestecsProject;
