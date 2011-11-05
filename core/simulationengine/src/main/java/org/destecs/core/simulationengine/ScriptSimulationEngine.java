@@ -1,9 +1,11 @@
 package org.destecs.core.simulationengine;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Vector;
 
 import org.destecs.core.dcl.Action;
 import org.destecs.core.dcl.Script;
@@ -34,32 +36,8 @@ public class ScriptSimulationEngine extends SimulationEngine
 	{
 		super.afterStep(simulator, result);
 
-		System.out.println("--- step ---");
-		System.out.println("result outputs size: " + result.outputs.size());// added
-		System.out.println(result.outputs);
-
-		// this.result = result;
-		// System.out.println("result outputs size: " + this.result.outputs.size());// added
-		// System.out.println(this.result.outputs);
-
-		// if(result.outputs.get(0).name.matches("valve")&& flag==true){
-		// System.out.println("**value before**" + result.outputs.get(0).value);
-		// result.outputs.get(0).value = 1.0;
-		// // result.outputs.get(0).toMap().put("value", double (1.0));
-		// System.out.println("**value after**" + result.outputs.get(0).value);
-		// flag = false;
-		// }
-		//
-		// if (result.outputs.get(0).name.matches("level")){
-		// System.out.println("inside the loop");
-		// Double internal = result.outputs.get(0).value;
-		// System.out.println("current level value is:" + internal);
-		// if (internal > 2.0){
-		// flag = true;
-		// }
-		// }
-
 		int counter = 0;
+		final int INDEX_IN_VAR = 0;
 		Action middle = null;
 		// ----------non-time triggered--------------
 		if (actions.peek() != null && actions.peek().time == 0.0)
@@ -73,16 +51,17 @@ public class ScriptSimulationEngine extends SimulationEngine
 			if (result.outputs.get(0).name.matches(expression.variableName))
 			{
 				System.out.println("inside the loop");
-				// TODO:
-				// Double internal = result.outputs.get(0).value;
-				// System.out.println("current level value is:" + internal);
-				// if (internal > expression.variableValue){
-				// flag = true;
-				// it.next();// the first one of the queue
-				// middle = it.next(); // the next one
-				// System.out.println("next action is :" + middle.toString());
-				// actions.poll();
-				// }
+				// TODO: Check that this is correct with the new array stuff
+				Double internal = result.outputs.get(0).value.get(INDEX_IN_VAR);
+				System.out.println("current level value is:" + internal);
+				if (internal > expression.variableValue)
+				{
+					flag = true;
+					it.next();// the first one of the queue
+					middle = it.next(); // the next one
+					System.out.println("next action is :" + middle.toString());
+					actions.poll();
+				}
 			}
 
 			if (flag == true)
@@ -90,13 +69,16 @@ public class ScriptSimulationEngine extends SimulationEngine
 				System.out.println("flag");
 				System.out.println("next action variableName is :"
 						+ actions.peek().variableName);
-				// TODO:
-				// if(result.outputs.get(0).name.matches(actions.peek().variableName) ){
-				// System.out.println("**value before**" + result.outputs.get(0).value);
-				// result.outputs.get(0).value = actions.peek().variableValue;
-				// System.out.println("**value after**" + result.outputs.get(0).value);
-				// flag = false;
-				// }
+				// TODO: Check that this is correct with the new array stuff
+				if (result.outputs.get(0).name.matches(actions.peek().variableName))
+				{
+					System.out.println("**value before**"
+							+ result.outputs.get(0).value);
+					result.outputs.get(0).value.set(INDEX_IN_VAR, actions.peek().variableValue);
+					System.out.println("**value after**"
+							+ result.outputs.get(0).value);
+					flag = false;
+				}
 			}
 			counter++;
 		}
@@ -139,6 +121,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 							engineInfo(Simulator.CT, "Setting parameter (Next time="
 									+ nextTime + "): " + action);
 							messageInfo(Simulator.CT, nextTime, "setParameter");
+							// FIXME: Parameter not send to CT
 							// ctProxy.setParameter(action.variableName, action.variableValue);
 
 							// System.out.println("result outputs size: " + this.result.outputs.size());// added
@@ -175,8 +158,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 							engineInfo(Simulator.DE, "Setting parameter (Next time="
 									+ nextTime + "): " + action);
 							messageInfo(Simulator.DE, nextTime, "setParameter");
-							// TODO:
-							// dtProxy.setParameter(action.variableName, action.variableValue);
+							dtProxy.setParameter(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
 						} catch (Exception e)
 						{
 							abort(Simulator.DE, "setParameter("
@@ -188,6 +170,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 				}
 			}
 
+			// TODO: ?? while
 			// switch (action.condition)
 			// {
 			// case WHEN:

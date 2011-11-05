@@ -70,6 +70,15 @@ public class SimulationEngine
 	}
 
 	/**
+	 * Minimum required version for the CT simulator
+	 */
+	private static final Integer[] MIN_VERSION_CT = new Integer[]{4,1,3,8};
+	/**
+	 * Minimum required version for the DE simulator
+	 */
+	private static final Integer[] MIN_VERSION_DE = new Integer[]{0,0,0,3};
+
+	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
 	 * XML-RPC -needed since Eclipse replaced the javax.xml.parsers with an older Eclipse specific version. <b>Must be
 	 * false if running standalone in console mode</b>
@@ -697,11 +706,11 @@ public class SimulationEngine
 					+ ")", e);
 		}
 		simulationInfo(simulator, result);
-		return afterStep(simulator,result);
+		return afterStep(simulator, result);
 	}
 
 	protected StepStruct afterStep(Simulator simulator, StepStruct result)
-	{		
+	{
 		return result;
 	}
 
@@ -971,9 +980,11 @@ public class SimulationEngine
 					break;
 				case CT:
 					ctVersion = version.version.trim();
+					lessOrEqualVersion(simulator, ctVersion, MIN_VERSION_CT);
 					break;
 				case DE:
 					deVersion = version.version.trim();
+					lessOrEqualVersion(simulator, ctVersion, MIN_VERSION_DE);
 					break;
 
 			}
@@ -981,6 +992,8 @@ public class SimulationEngine
 		{
 			abort(simulator, "getVersion failed", e);
 		}
+		
+		
 
 		try
 		{
@@ -1219,5 +1232,35 @@ public class SimulationEngine
 		}
 		sb.append("]");
 		return sb.toString().trim();
+	}
+
+	public boolean lessOrEqualVersion(Simulator simulator, String version,
+			Integer... number) throws SimulationException
+	{
+		try
+		{
+			String[] elements = version.split("\\.");
+			for (int i = 0; i < number.length; i++)
+			{
+				Integer num = number[i];
+
+				if (i < elements.length)
+				{
+					if (!Integer.valueOf(elements[i]).equals(num))
+					{
+						return false;
+					}
+				} else
+				{
+					return false;
+				}
+			}
+			return true;
+		} catch (NumberFormatException e)
+		{
+			abort(simulator, "Failed to parse version number: " + version
+					+ " tried to check for version: " + number);
+		}
+		return false;
 	}
 }
