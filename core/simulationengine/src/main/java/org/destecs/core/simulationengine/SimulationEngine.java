@@ -980,11 +980,9 @@ public class SimulationEngine
 					break;
 				case CT:
 					ctVersion = version.version.trim();
-					lessOrEqualVersion(simulator, ctVersion, MIN_VERSION_CT);
 					break;
 				case DE:
 					deVersion = version.version.trim();
-					lessOrEqualVersion(simulator, ctVersion, MIN_VERSION_DE);
 					break;
 
 			}
@@ -993,7 +991,21 @@ public class SimulationEngine
 			abort(simulator, "getVersion failed", e);
 		}
 		
+		switch (simulator)
+		{
+			case CT:
+				versionCheck(simulator, ctVersion, MIN_VERSION_CT);
+				break;
+			case DE:
+				versionCheck(simulator, deVersion, MIN_VERSION_DE);
+				break;
+
+		}
 		
+		if(simulator == Simulator.CT && !versionCheck(simulator, ctVersion, MIN_VERSION_CT))
+		{
+			abort(simulator, "Simulator version not supported: "+ ctVersion+" <> expected "+MIN_VERSION_CT);
+		}
 
 		try
 		{
@@ -1234,7 +1246,7 @@ public class SimulationEngine
 		return sb.toString().trim();
 	}
 
-	public boolean lessOrEqualVersion(Simulator simulator, String version,
+	public boolean versionCheck(Simulator simulator, String version,
 			Integer... number) throws SimulationException
 	{
 		try
@@ -1246,13 +1258,13 @@ public class SimulationEngine
 
 				if (i < elements.length)
 				{
-					if (!Integer.valueOf(elements[i]).equals(num))
+					if (!(Integer.valueOf(elements[i])>=num))
 					{
-						return false;
+						abort(simulator, "Simulator version not supported: "+ version+" <> expected "+number);
 					}
 				} else
 				{
-					return false;
+					abort(simulator, "Simulator version not supported: "+ version+" <> expected "+number);
 				}
 			}
 			return true;
@@ -1261,6 +1273,6 @@ public class SimulationEngine
 			abort(simulator, "Failed to parse version number: " + version
 					+ " tried to check for version: " + number);
 		}
-		return false;
+		return true;
 	}
 }

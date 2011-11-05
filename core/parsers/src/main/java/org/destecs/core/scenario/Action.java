@@ -55,7 +55,7 @@ public class Action implements Comparable<Action>
 	@Override
 	public String toString()
 	{
-	return pad( time.toString(),10)+ " " + targetSimulator.toString()+"\t" +  pad( variableName,20)+" := "+ variableValue;
+	return pad( time.toString(),10)+ " " + targetSimulator.toString()+" \t" +  pad( variableName,20)+" := "+ variableValue;
 	}
 	
 	private static String pad(String text,int size)
