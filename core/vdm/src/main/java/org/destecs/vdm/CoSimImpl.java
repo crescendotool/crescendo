@@ -138,6 +138,7 @@ public class CoSimImpl implements IDestecs
 	public Map<String, Boolean> load2(Map<String, Object> arg0)
 			throws RemoteSimulationException
 	{
+		@SuppressWarnings("rawtypes")
 		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
 
 		VDMCO.replaceNewIdentifier.clear();
@@ -500,6 +501,7 @@ public class CoSimImpl implements IDestecs
 			if (data.values().size() > 0)
 			{
 				Object s = data.values().iterator().next();
+				@SuppressWarnings("rawtypes")
 				List tmp = Arrays.asList((Object[]) s);
 
 				success = SimulationManager.getInstance().setDesignParameters(tmp);

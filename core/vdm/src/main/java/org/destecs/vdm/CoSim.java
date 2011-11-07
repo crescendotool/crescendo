@@ -4,6 +4,10 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
@@ -41,6 +45,11 @@ public class CoSim
 			}
 		}
 		WebServer webServer = new WebServer(port);
+		
+		Logger log = Logger.getLogger("org.apache.xmlrpc.server.XmlRpcStreamServer");
+		log.addAppender(new ConsoleAppender(new SimpleLayout()));
+		log.setLevel(Level.OFF);
+		
 
 		if (!DEBUG)
 		{
