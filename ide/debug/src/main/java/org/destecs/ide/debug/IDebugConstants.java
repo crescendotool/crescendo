@@ -61,4 +61,6 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX = "DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX".toLowerCase();
 
 	public static final String DESTECS_ACA_SHARED_DESIGN_PARAMETERS = "DESTECS_ACA_SHARED_DESIGN_PARAMETERS".toLowerCase();
+
+	public static final String DESTECS_LAUNCH_CONFIG_DEBUG = "DESTECS_LAUNCH_CONFIG_DEBUG";
 }

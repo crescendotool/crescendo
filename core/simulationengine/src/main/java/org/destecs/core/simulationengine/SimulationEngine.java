@@ -2,6 +2,7 @@ package org.destecs.core.simulationengine;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,6 +10,11 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.WriterAppender;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
@@ -72,11 +78,11 @@ public class SimulationEngine
 	/**
 	 * Minimum required version for the CT simulator
 	 */
-	private static final Integer[] MIN_VERSION_CT = new Integer[]{4,1,3,8};
+	private static final Integer[] MIN_VERSION_CT = new Integer[] { 4, 1, 3, 8 };
 	/**
 	 * Minimum required version for the DE simulator
 	 */
-	private static final Integer[] MIN_VERSION_DE = new Integer[]{0,0,0,3};
+	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 0, 3 };
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
@@ -990,7 +996,7 @@ public class SimulationEngine
 		{
 			abort(simulator, "getVersion failed", e);
 		}
-		
+
 		switch (simulator)
 		{
 			case CT:
@@ -1001,10 +1007,12 @@ public class SimulationEngine
 				break;
 
 		}
-		
-		if(simulator == Simulator.CT && !versionCheck(simulator, ctVersion, MIN_VERSION_CT))
+
+		if (simulator == Simulator.CT
+				&& !versionCheck(simulator, ctVersion, MIN_VERSION_CT))
 		{
-			abort(simulator, "Simulator version not supported: "+ ctVersion+" <> expected "+MIN_VERSION_CT);
+			abort(simulator, "Simulator version not supported: " + ctVersion
+					+ " <> expected " + MIN_VERSION_CT);
 		}
 
 		try
@@ -1258,13 +1266,15 @@ public class SimulationEngine
 
 				if (i < elements.length)
 				{
-					if (!(Integer.valueOf(elements[i])>=num))
+					if (!(Integer.valueOf(elements[i]) >= num))
 					{
-						abort(simulator, "Simulator version not supported: "+ version+" <> expected "+number);
+						abort(simulator, "Simulator version not supported: "
+								+ version + " <> expected " + number);
 					}
 				} else
 				{
-					abort(simulator, "Simulator version not supported: "+ version+" <> expected "+number);
+					abort(simulator, "Simulator version not supported: "
+							+ version + " <> expected " + number);
 				}
 			}
 			return true;
@@ -1274,5 +1284,22 @@ public class SimulationEngine
 					+ " tried to check for version: " + number);
 		}
 		return true;
+	}
+	
+	public void debug(boolean enable)
+	{
+		if(enable)
+		{
+			Logger log = Logger.getLogger("org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory$XmlRpcSun15HttpTransportCustomSAXReader");
+			log.addAppender(new ConsoleAppender(new SimpleLayout()));
+			try
+			{
+				log.addAppender(new WriterAppender(new SimpleLayout(),new FileWriter(new File(outputDirectory,"log_xmlrpc.txt"))));
+			} catch (IOException e)
+			{
+			}
+			
+			log.setLevel(Level.DEBUG);
+		}
 	}
 }

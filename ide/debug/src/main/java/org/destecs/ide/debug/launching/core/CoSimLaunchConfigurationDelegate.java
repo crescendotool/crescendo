@@ -96,6 +96,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	private String logVariablesVdm = null;
 	private String logVariables20Sim = null;
 	private String ourputFolderPrefix = "";
+	private boolean debug = false;;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -153,6 +154,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
 			logVariablesVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
 			logVariables20Sim = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
+			debug = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, false);
 
 			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 			if (deUrlString.length() == 0)
@@ -290,6 +292,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.setCtEndpoint(ctUrl);
 
 			engine.setOutputFolder(outputFolder);
+			engine.debug(debug );
 
 			engine.addProcessCreationListener(new IProcessCreationListener()
 			{

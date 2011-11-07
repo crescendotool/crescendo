@@ -48,6 +48,7 @@ public class DevelopLaunchConfigurationTab extends
 	}
 
 	private Button checkBoxRemoteDebug = null;
+	private Button checkBoxDebug = null;
 	private Button checkBoxEnableLogging = null;
 	private Button checkBoxShowDebugIngo = null;
 	private Text ctUrl = null;
@@ -95,6 +96,11 @@ public class DevelopLaunchConfigurationTab extends
 		checkBoxShowDebugIngo.setText("Enable runtime debug info");
 		checkBoxShowDebugIngo.setSelection(false);
 		checkBoxShowDebugIngo.addSelectionListener(fListener);
+		
+		checkBoxDebug = new Button(group, SWT.CHECK);
+		checkBoxDebug.setText("Enable General Debug");
+		checkBoxDebug.setSelection(false);
+		checkBoxDebug.addSelectionListener(fListener);
 	}
 
 	private void createConnectionGroup(Composite comp)
@@ -132,49 +138,6 @@ public class DevelopLaunchConfigurationTab extends
 		ctUrl.addModifyListener(fListener);
 	}
 
-	// private void createSyncScheme(Composite parent)
-	// {
-	// Group group = new Group(parent, parent.getStyle());
-	// group.setText("Synchronization Scheme");
-	// GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-	//
-	// group.setLayoutData(gd);
-	//
-	// GridLayout layout = new GridLayout();
-	// layout.makeColumnsEqualWidth = false;
-	// layout.numColumns = 3;
-	// group.setLayout(layout);
-	//
-	// Label label = new Label(group, SWT.MIN);
-	// label.setText("Sync Scheme:");
-	// gd = new GridData(GridData.BEGINNING);
-	// label.setLayoutData(gd);
-	//
-	// syncSchemeDropDown = new Combo(group, SWT.SINGLE | SWT.BORDER
-	// | SWT.READ_ONLY);
-	//
-	// gd = new GridData(GridData.FILL_HORIZONTAL);
-	// syncSchemeDropDown.setLayoutData(gd);
-	// syncSchemeDropDown.addModifyListener(fListener);
-	//
-	// for (SynchronizationScheme scheme : SimulationEngine.SynchronizationScheme.values())
-	// {
-	// syncSchemeDropDown.add(scheme.toString());
-	//
-	// }
-	//
-	// for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
-	// {
-	// if (syncSchemeDropDown.getItem(i).equals(SynchronizationScheme.Default.toString()))
-	// {
-	// syncSchemeDropDown.select(i);
-	// break;
-	// }
-	//
-	// }
-	//
-	// }
-
 	public String getName()
 	{
 		return "Advanced";
@@ -187,6 +150,7 @@ public class DevelopLaunchConfigurationTab extends
 		try
 		{
 			checkBoxRemoteDebug.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false));
+			checkBoxDebug.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, false));
 			checkBoxEnableLogging.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false));
 			checkBoxShowDebugIngo.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false));
 		} catch (CoreException e)
@@ -212,29 +176,13 @@ public class DevelopLaunchConfigurationTab extends
 			DestecsDebugPlugin.logError("Error fetching connections from launch configuration", e);
 		}
 
-		// syncscheme
-		// try
-		// {
-		// String scheme = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, "DEFAULT");
-		// for (int i = 0; i < syncSchemeDropDown.getItemCount(); i++)
-		// {
-		// if (syncSchemeDropDown.getItem(i).equals(scheme))
-		// {
-		// syncSchemeDropDown.select(i);
-		// break;
-		// }
-		//
-		// }
-		// } catch (Exception e)
-		// {
-		//
-		// }
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		// develop
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, checkBoxRemoteDebug.getSelection());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, checkBoxDebug.getSelection());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, checkBoxEnableLogging.getSelection());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, checkBoxShowDebugIngo.getSelection());
 		// connection
@@ -248,6 +196,7 @@ public class DevelopLaunchConfigurationTab extends
 	{
 		// develop
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false);
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, false);
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
 		// connection
