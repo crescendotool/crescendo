@@ -228,6 +228,8 @@ FunctionEnd
 
 
 Function 20simVersionTest
+
+ClearErrors
 ${If} ${RunningX64}
     ReadRegStr $0 HKLM "Software\Wow6432Node\Controllab Products B.V.\20-sim 4.1\" "Version"       
 ${Else}
@@ -235,23 +237,25 @@ ${Else}
 ${EndIf}
 
 
-IfErrors isLower
+IfErrors isError
 DetailPrint "Installed 20sim is version: $0 / 20sim present in the installer is version: ${SIM20_VERSION}"
 
 ${VersionCompare} $0 ${SIM20_VERSION} $1
-DetailPrint "Result of version compare: $1"
-
-IntCmp $1 0 isSame isHigher isLower
-isSame:
-   DetailPrint "20sim version $0 is already installed"    
-   Goto done
-isLower:  
-   DetailPrint "20sim version $0 is older than installer" 
+;    $1=0  Versions are equal
+;    $1=1  Version1 is newer
+;    $1=2  Version2 is newer
+IntCmp $1 2 higher lower 
+higher:
+   DetailPrint "Installing 20sim version $0 present in the installer" 
+   call 20simInstall   
+   Goto done 
+lower:
+    DetailPrint "20sim up to date"
+    Goto done
+isError: 
+   DetailPrint "No previous 20sim version found"  
    call 20simInstall
    Goto done
-isHigher:
-   DetailPrint "20sim version $0 is newer than installer"
-   Goto done 
 done:
   Delete "${SIM20_EXE}"
 
