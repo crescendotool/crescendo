@@ -113,6 +113,7 @@ Section "DESTECS (required)" ;No components page, name is not important
   call 20simVersionTest
   Call writeRegistryKey 
   
+  AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   ; Registry creation
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\${PRODUCT_REG_KEY} "Install_Dir" "$INSTDIR"
@@ -205,10 +206,10 @@ Function DESTECSInstall
   ; Print to detail log 
   DetailPrint "Installing DESTECS Tool"
   ; Unzip the file
- ; ZipDLL::extractall "${DESTECSZIP}" "$INSTDIR"
+   ZipDLL::extractall "${DESTECSZIP}" "$INSTDIR"
   
-  ZipDLL::extractall "${DESTECSZIP}" "$TEMP\destecs"
-  ExecWait 'xcopy /S /Y $\"$TEMP\destecs\*.*$\" $\"$INSTDIR$\"'
+ ; ZipDLL::extractall "${DESTECSZIP}" "$TEMP\destecs"
+ ; ExecWait 'xcopy /S /Y $\"$TEMP\destecs\*.*$\" $\"$INSTDIR$\"'
   ;Moving files from DESTECS folder to root of $INSTDIR
   ;!insertmacro MoveFolder "$INSTDIR\${DESTECSFOLDER}\" $INSTDIR "*.*"
   ;ExecWait 'xcopy /S /Y $\"$INSTDIR\${DESTECSFOLDER}$\" $\"$INSTDIR$\"'
@@ -242,17 +243,17 @@ DetailPrint "Result of version compare: $1"
 
 IntCmp $1 0 isSame isHigher isLower
 isSame:
-   DetailPrint "20sim version $0 is already installed"  
+   DetailPrint "20sim version $0 is already installed"    
    Goto done
 isLower:  
    DetailPrint "20sim version $0 is older than installer" 
-   Call 20simInstall
+   call 20simInstall
    Goto done
 isHigher:
    DetailPrint "20sim version $0 is newer than installer"
    Goto done 
 done:
-  
+  Delete "${SIM20_EXE}"
 
 FunctionEnd
 
@@ -262,7 +263,7 @@ Function 20simInstall
   DetailPrint "Installing 20-sim"  
   ;Executing the installer
   ExecWait  '"$INSTDIR\${SIM20_EXE}"'
-  Delete "${SIM20_EXE}"
+  
   ; Update the Windows Registry
   ;Call updateRegistry
      
