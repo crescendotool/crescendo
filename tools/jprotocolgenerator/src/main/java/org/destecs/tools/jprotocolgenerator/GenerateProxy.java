@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 2010, 2011 DESTECS Team and others.
+ *
+ * DESTECS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DESTECS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with DESTECS.  If not, see <http://www.gnu.org/licenses/>.
+ * 	
+ * The DESTECS web-site: http://destecs.org/
+ *******************************************************************************/
 package org.destecs.tools.jprotocolgenerator;
 
 import java.io.File;
@@ -18,6 +36,8 @@ import org.destecs.tools.jprotocolgenerator.ast.ListType;
 import org.destecs.tools.jprotocolgenerator.ast.MapType;
 import org.destecs.tools.jprotocolgenerator.ast.Method;
 import org.destecs.tools.jprotocolgenerator.ast.Parameter;
+import org.destecs.tools.jprotocolgenerator.ast.SuppressWarningAnnotation;
+import org.destecs.tools.jprotocolgenerator.ast.SuppressWarningAnnotation.WarningTypes;
 import org.destecs.tools.jprotocolgenerator.ast.Type;
 import org.destecs.tools.jprotocolgenerator.ast.VoidType;
 
@@ -60,7 +80,7 @@ public class GenerateProxy
 		sb.append("\n");
 		String name = "Proxy" + intf.getName();
 		sb.append("\n");
-//		sb.append("\n@SuppressWarnings(\"unused\")");
+		// sb.append("\n@SuppressWarnings(\"unused\")");
 		sb.append("\n@SuppressWarnings({\"unused\",\"unchecked\"})");
 		sb.append("\n");
 		sb.append("public class " + name);
@@ -188,7 +208,7 @@ public class GenerateProxy
 			{
 
 				ClassDefinition pClass = new ClassDefinition();
-				pClass.setName(m.name+key + "StructParam");
+				pClass.setName(m.name + key + "StructParam");
 				pClass.packageName = structPackageName;
 				pClass.imports.add(new Type(Map.class));
 				pClass.imports.add(new Type(List.class));
@@ -228,8 +248,8 @@ public class GenerateProxy
 		}
 
 		sb.append(")");
-		
-		if(!m.throwsTypes.isEmpty())
+
+		if (!m.throwsTypes.isEmpty())
 		{
 			sb.append(m.getThrowsSourceSegment());
 		}
@@ -250,25 +270,31 @@ public class GenerateProxy
 				{
 					t = new ListType(new Type(Object.class));
 				}
-				
+
 				MapType mapt = ((MapType) p1.type);
 				if (mapt.valueType instanceof ListType)
 				{
-					sb.append("\n\n\t\tList<" + ((ListType) mapt.valueType).type.toSource() + "> pTmp" + pCount
-							+ (" = new List<" + ((ListType) mapt.valueType).type.toSource()+">").replace("List", "Vector")
+					sb.append("\n\n\t\tList<"
+							+ ((ListType) mapt.valueType).type.toSource()
+							+ "> pTmp"
+							+ pCount
+							+ (" = new List<"
+									+ ((ListType) mapt.valueType).type.toSource() + ">").replace("List", "Vector")
 							+ "();");
-				}else{
-									
-				sb.append("\n\n\t\t" + t.toSource() + " pTmp" + pCount
-						+ " = new " + t.toSource().replace("List", "Vector")
-						+ "();");
+				} else
+				{
+
+					sb.append("\n\n\t\t@SuppressWarnings(\"rawtypes\")");
+					sb.append("\n\n\t\t" + t.toSource() + " pTmp" + pCount
+							+ " = new "
+							+ t.toSource().replace("List", "Vector") + "();");
 				}
-				
+
 				sb.append("\n\t\tfor( IStruct a: " + key + ")");
 				sb.append("\n\t\t{");
 
 				String cast = "";
-				
+
 				if (mapt.valueType instanceof ListType)
 				{
 					cast = ((ListType) mapt.valueType).type.toSource();
@@ -301,7 +327,6 @@ public class GenerateProxy
 		if (m.returnType instanceof Type
 				&& ((Type) m.returnType).type == Void.class)
 		{
-int i = 0;
 		} else
 		{
 			sb.append("return ");
@@ -311,9 +336,8 @@ int i = 0;
 				defs.addAll(generateStructs(returnClass, structPackageName, (MapType) m.returnType));
 				defs.add(returnClass);
 
-			}else
+			} else
 			{
-				int i = 0;
 			}
 		}
 
@@ -410,6 +434,8 @@ int i = 0;
 		Integer count = 0;
 		Parameter param = new Parameter(map, "value");
 		m.parameters.add(param);
+		SuppressWarningAnnotation swa = new SuppressWarningAnnotation();
+		m.annotation = swa;
 		for (String p : map.possibleEntries.keySet())
 		{
 			Field f = new Field();
@@ -421,6 +447,7 @@ int i = 0;
 			{
 				if (((ListType) type).type instanceof MapType)
 				{
+					swa.warnings.add(WarningTypes.unchecked);
 					ClassDefinition newRet = new ClassDefinition();
 					newRet.setName(m.name + p + appendName);
 					newRet.packageName = packageName2;
@@ -436,21 +463,22 @@ int i = 0;
 							+ " = new Vector<" + newRet.getName()
 							+ ">();\n\t\t";
 
-					
-					m.body += "if( value.keySet().contains(\""+f.getName()+"\" ))\n\t\t";
+					m.body += "if( value.keySet().contains(\"" + f.getName()
+							+ "\" ))\n\t\t";
 					m.body += "{\n\t\t\t";
 
-			
 					if (map.valueType instanceof List
 							|| map.valueType instanceof ListType)
 					{
-						m.body += "Object tmpL" + count
-						+ " = value.get(\""+f.getName()+"\");\n\t\t\t";
-						m.body += "for( Object m : (Object[])tmpL"+count+")\n\t\t\t";
+						m.body += "Object tmpL" + count + " = value.get(\""
+								+ f.getName() + "\");\n\t\t\t";
+						m.body += "for( Object m : (Object[])tmpL" + count
+								+ ")\n\t\t\t";
 
 					} else
 					{
-						m.body += "for( Object m : (Object[])value.get(\""+f.getName()+"\"))\n\t\t\t";
+						m.body += "for( Object m : (Object[])value.get(\""
+								+ f.getName() + "\"))\n\t\t\t";
 					}
 
 					m.body += "{\n\t\t\t\t";
@@ -469,35 +497,37 @@ int i = 0;
 				} else
 				{
 					f.type = map.possibleEntries.get(p);
-//					m.body += "this." + f.getName() + " = (" + f.type.getName()
-//							+ ") value.get(value.keySet().toArray()[" + count
-//							+ "]);\n\t\t";
-					m.body += "if( value.keySet().contains(\""+f.getName()+"\" ))\n\t\t";
+					// m.body += "this." + f.getName() + " = (" + f.type.getName()
+					// + ") value.get(value.keySet().toArray()[" + count
+					// + "]);\n\t\t";
+					m.body += "if( value.keySet().contains(\"" + f.getName()
+							+ "\" ))\n\t\t";
 					m.body += "{\n\t\t\t";
 
-			
 					if (map.valueType instanceof List
 							|| map.valueType instanceof ListType)
 					{
-						m.body += "Object tmpL" + count
-						+ " = value.get(\""+f.getName()+"\");\n\t\t\t";
-						m.body += "for( Object m : (Object[])tmpL"+count+")\n\t\t\t";
+						m.body += "Object tmpL" + count + " = value.get(\""
+								+ f.getName() + "\");\n\t\t\t";
+						m.body += "for( Object m : (Object[])tmpL" + count
+								+ ")\n\t\t\t";
 
 					} else
 					{
-						m.body += "for( Object m : (Object[])value.get(\""+f.getName()+"\"))\n\t\t\t";
+						m.body += "for( Object m : (Object[])value.get(\""
+								+ f.getName() + "\"))\n\t\t\t";
 					}
 
 					m.body += "{\n\t\t\t\t";
 
-					m.body += "this." + f.getName() + ".add((" + ((ListType) type).type + ") m";
+					m.body += "this." + f.getName() + ".add(("
+							+ ((ListType) type).type + ") m";
 					m.body += ");\n\t\t\t";
 
 					m.body += "}\n\t\t";
 
 					m.body += "}\n\t\t";
 
-					
 				}
 			} else if (type instanceof MapType)
 			{
@@ -518,7 +548,7 @@ int i = 0;
 			{
 				f.type = map.possibleEntries.get(p);
 				m.body += "this." + f.getName() + " = (" + f.type.getName()
-						+ ") value.get(\""+f.getName()+"\");\n\t\t";
+						+ ") value.get(\"" + f.getName() + "\");\n\t\t";
 			}
 			count++;
 		}

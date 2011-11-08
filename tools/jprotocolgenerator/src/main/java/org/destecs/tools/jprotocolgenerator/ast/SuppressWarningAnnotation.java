@@ -16,55 +16,42 @@
  * 	
  * The DESTECS web-site: http://destecs.org/
  *******************************************************************************/
-package org.destecs.ide.core.resources;
+package org.destecs.tools.jprotocolgenerator.ast;
 
-import org.destecs.core.contract.Contract;
-import org.destecs.core.vdmlink.Links;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-public class DestecsModel
+
+public class SuppressWarningAnnotation implements IAnnotation
 {
-	private Links links = null;
-	private Contract contract = null;
-	private boolean checked = false;
-	private boolean ok = false;
+	final public Set<WarningTypes> warnings = new HashSet<WarningTypes>();
+	public enum WarningTypes {unchecked,rawtypes};
 	
-	public synchronized void setLinks(Links links)
+	
+	public SuppressWarningAnnotation(WarningTypes... w)
 	{
-		this.links=links;
+		warnings.clear();
+		warnings.addAll(Arrays.asList(w));
 	}
-	
-	public synchronized Links getLinks()
-	{ 
-		return links;
-	}
-	
-	public synchronized void setContract(Contract contract)
+
+	@Override
+	public String toSource()
 	{
-		this.contract = contract;
-	}
+		String tmp = "@SuppressWarnings({";
 	
-	public synchronized Contract getContract()
-	{
-		return contract;
+			for (Iterator<WarningTypes> itr = warnings.iterator(); itr.hasNext();)
+			{
+				WarningTypes warning = (WarningTypes) itr.next();
+				tmp += "\""+warning.toString().toLowerCase()+"\"";
+				if (itr.hasNext())
+				{
+					tmp += ",";
+				}
+			}
+			tmp += "})";
+			return tmp;
 	}
-	
-	public synchronized void setChecked(boolean b)
-	{
-		this.checked = b;
-	}
-	
-	public boolean isChecked()
-	{
-		return checked;
-	}
-	
-	public synchronized void setOk(boolean b)
-	{
-		this.ok = b;
-	}
-	
-	public boolean isOk()
-	{
-		return ok;
-	}
+
 }

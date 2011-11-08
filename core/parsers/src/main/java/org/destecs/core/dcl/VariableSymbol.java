@@ -1,13 +1,23 @@
 package org.destecs.core.dcl;
 
-/***
- * Excerpted from "Language Implementation Patterns",
- * published by The Pragmatic Bookshelf.
- * Copyrights apply to this code. It may not be used to create training material, 
- * courses, books, articles, and the like. Contact us if you are in doubt.
- * We make no guarantees that this code is fit for any purpose. 
- * Visit http://www.pragmaticprogrammer.com/titles/tpdsl for more book information.
-***/
+/*******************************************************************************
+ * Copyright (c) 2010, 2011 DESTECS Team and others.
+ *
+ * DESTECS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DESTECS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with DESTECS.  If not, see <http://www.gnu.org/licenses/>.
+ * 	
+ * The DESTECS web-site: http://destecs.org/
+ *******************************************************************************/
 /** Represents a variable definition (name,type) in symbol table */
 public class VariableSymbol extends Symbol {
     public VariableSymbol(String name, Type type) { super(name, type); }

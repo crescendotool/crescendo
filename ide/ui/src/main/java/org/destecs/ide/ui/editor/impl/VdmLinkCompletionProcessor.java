@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 2010, 2011 DESTECS Team and others.
+ *
+ * DESTECS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DESTECS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with DESTECS.  If not, see <http://www.gnu.org/licenses/>.
+ * 	
+ * The DESTECS web-site: http://destecs.org/
+ *******************************************************************************/
 package org.destecs.ide.ui.editor.impl;
 
 import java.io.IOException;
@@ -12,7 +30,6 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.destecs.core.contract.IVariable;
-import org.destecs.core.contract.Variable;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.ui.editor.core.DestecsDocument;
@@ -31,14 +48,15 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Point;
 
-;
 public class VdmLinkCompletionProcessor implements IContentAssistProcessor
 {
 	final IContextInformationValidator ctxtInfoVlidator = new ContextInformationValidator(this);
 	DestecsModel model = null;
-final List<String> groups = Arrays.asList(new String[]{"input","output","event","sdp","model"});
+	final List<String> groups = Arrays.asList(new String[] { "input", "output",
+			"event", "sdp", "model" });
 	Map<String, List<String>> vdmMetadata = new Hashtable<String, List<String>>();
-//http://www.ibm.com/developerworks/opensource/library/os-ecca/
+
+	// http://www.ibm.com/developerworks/opensource/library/os-ecca/
 	// http://www.50001.com/language/javaside/lec/java_ibm/Equipping%20SWT%20%BE%D6%C7%C3%B8%AE%C4%C9%C0%CC%BC%C7%BF%A1%20content%20assistants%20%C3%DF%B0%A1%C7%CF%B1%E2%20%28%BF%B5%B9%AE%29.htm
 	// http://help.eclipse.org/helios/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/editors_jface.htm
 	public VdmLinkCompletionProcessor()
@@ -105,7 +123,7 @@ final List<String> groups = Arrays.asList(new String[]{"input","output","event",
 		public boolean dot;
 		public StringBuffer proposal = new StringBuffer();
 		public boolean postEqual;
-		public String group= new String();
+		public String group = new String();
 
 		public void add(char c)
 		{
@@ -120,12 +138,12 @@ final List<String> groups = Arrays.asList(new String[]{"input","output","event",
 			pre = pre.reverse();
 			proposal = proposal.reverse();
 		}
-		
+
 		public void checkGroup()
 		{
 			for (String g : groups)
 			{
-				if(proposal.toString().startsWith(g))
+				if (proposal.toString().startsWith(g))
 				{
 					group = g;
 					proposal.delete(0, g.length());
@@ -139,7 +157,7 @@ final List<String> groups = Arrays.asList(new String[]{"input","output","event",
 	{
 
 		// Use string buffer to collect characters
-//		StringBuffer buf = new StringBuffer();
+		// StringBuffer buf = new StringBuffer();
 		QualifierInfo info = new QualifierInfo();
 		while (true)
 		{
@@ -180,16 +198,17 @@ final List<String> groups = Arrays.asList(new String[]{"input","output","event",
 			int documentOffset, List<ICompletionProposal> propList,
 			ITextViewer viewer)
 	{
-qualifier.checkGroup();
-		
+		qualifier.checkGroup();
+
 		int qlen = qualifier.proposal.toString().trim().length();
-		
-		if(qualifier.pre.toString().trim().length()==0 && qualifier.group.isEmpty() && !qualifier.postEqual)
+
+		if (qualifier.pre.toString().trim().length() == 0
+				&& qualifier.group.isEmpty() && !qualifier.postEqual)
 		{
-			addGroups(documentOffset,qualifier,propList);
+			addGroups(documentOffset, qualifier, propList);
 			return;
 		}
-		
+
 		List<String> prop = new Vector<String>();
 		if (qualifier.pre.length() == 0 && !qualifier.postEqual)
 		{
@@ -318,8 +337,8 @@ qualifier.checkGroup();
 		}
 	}
 
-	private void addGroups(int documentOffset,
-			QualifierInfo qualifier, List<ICompletionProposal> propList)
+	private void addGroups(int documentOffset, QualifierInfo qualifier,
+			List<ICompletionProposal> propList)
 	{
 		int qlen = qualifier.proposal.length();
 		for (String text : groups)
@@ -359,18 +378,13 @@ qualifier.checkGroup();
 				}
 			}
 
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CoreException e)
+		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	
 	public IContextInformation[] computeContextInformation(ITextViewer viewer,
 			int offset)
 	{
@@ -396,13 +410,11 @@ qualifier.checkGroup();
 
 	public IContextInformationValidator getContextInformationValidator()
 	{
-		// return ctxtInfoVlidator;
 		return new ContextInformationValidator(this);
 	}
 
 	public String getErrorMessage()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
