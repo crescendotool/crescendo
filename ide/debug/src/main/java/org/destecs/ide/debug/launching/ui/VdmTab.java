@@ -71,6 +71,7 @@ import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.types.ClassType;
+import org.overturetool.vdmj.types.OptionalType;
 
 public class VdmTab extends AbstractLaunchConfigurationTab
 {
@@ -478,7 +479,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 					}
 				}
 
-				TreeItem item = new TreeItem(root, 0);
+				TreeItem item = new TreeItem(root, SWT.NONE);
 				item.setText(def.getName());
 				item.setData(def);
 
@@ -487,9 +488,9 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 					item.setChecked(true);
 				}
 
-				if (instance.type instanceof ClassType)
+				if (instance.type instanceof ClassType || (instance.type instanceof OptionalType&& ((OptionalType)instance.type).type instanceof ClassType))
 				{
-					new TreeItem(item, 0);
+					new TreeItem(item, SWT.NONE);
 				}
 			}
 		}
