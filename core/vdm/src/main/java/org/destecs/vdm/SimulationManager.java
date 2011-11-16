@@ -56,6 +56,7 @@ import org.overturetool.vdmj.definitions.ExplicitFunctionDefinition;
 import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
+import org.overturetool.vdmj.expressions.IntegerLiteralExpression;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
 import org.overturetool.vdmj.expressions.SeqExpression;
 import org.overturetool.vdmj.lex.Dialect;
@@ -567,6 +568,7 @@ public class SimulationManager extends BasicSimulationManager
 									&& vDef.isValueDefinition()
 									&& vDef.getType() instanceof RealType)
 							{
+									
 								if (vDef.exp instanceof RealLiteralExpression)
 								{
 									RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
@@ -576,6 +578,15 @@ public class SimulationManager extends BasicSimulationManager
 									valueField.setAccessible(true);
 
 									valueField.setDouble(token, newValue);
+									found = true;
+								}
+								
+								if (vDef.exp instanceof IntegerLiteralExpression)
+								{
+									RealLiteralExpression newReal = new RealLiteralExpression( new LexRealToken(newValue, vDef.exp.location));
+									Field valDefField = ValueDefinition.class.getField("exp");
+									valDefField.setAccessible(true);
+									valDefField.set(vDef, newReal);
 									found = true;
 								}
 							}
