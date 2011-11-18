@@ -18,6 +18,7 @@
  *******************************************************************************/
 package org.destecs.ide.debug.aca;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,16 +56,23 @@ public class AcaGenerator
 	public Set<ILaunchConfiguration> generate()
 	{
 		monitor.subTask("Generating ACA permutations");
-		final Set<ILaunchConfiguration> congifurations = new HashSet<ILaunchConfiguration>();
+		final Set<ILaunchConfiguration> configurations = new HashSet<ILaunchConfiguration>();
+		configurations.add(baseConfig);
 		
 		int step = maxProgress/generators.size();
 		for (IAcaGeneratorPlugin g : generators)
 		{
 			monitor.worked(step);
-			congifurations.addAll(g.generate(configuration, baseConfig, congifurations,project,outputPreFix));
+			Collection<? extends ILaunchConfiguration> temp = g.generate(configuration, baseConfig, configurations,project,outputPreFix);
+			configurations.clear();
+			configurations.addAll(temp);
 		}
 		monitor.worked(maxProgress);
-		return congifurations;
+		return configurations;
 	}
+	
+
+	
+	
 
 }

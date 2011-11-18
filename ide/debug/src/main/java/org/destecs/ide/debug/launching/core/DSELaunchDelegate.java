@@ -87,7 +87,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 
 		for (final ILaunchConfiguration config : configurations)
 		{
-			if (monitor.isCanceled())
+			if (monitor.isCanceled()||launch.isTerminated())
 			{
 				break;
 			}

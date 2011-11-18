@@ -146,10 +146,18 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 					public void modifyText(ModifyEvent me)
 					{
 						Text text = (Text) editor.getEditor();
-						editor.getItem().setText(EDITABLECOLUMN, text.getText());
+						String s = text.getText();
+						editor.getItem().setText(EDITABLECOLUMN, s);
+						if(!isParseCorrect(s))
+						{
+							
+						}
+						
 						setDirty(true);
 						updateLaunchConfigurationDialog();
 					}
+
+					
 				});
 				newEditor.addModifyListener(fListener);
 
@@ -163,6 +171,11 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		populate();
 	}
 
+	
+	private boolean isParseCorrect(String s)
+	{
+		return true;
+	}
 	private void populate()
 	{
 		table.removeAll();

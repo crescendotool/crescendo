@@ -35,22 +35,28 @@ public class IncludeBaseConfigAcaPlugin implements IAcaGeneratorPlugin
 	public Collection<? extends ILaunchConfiguration> generate(
 			ILaunchConfiguration configuration,
 			ILaunchConfiguration baseConfig,
-			Set<ILaunchConfiguration> congifurations, IProject project, String outputPreFix)
+			Set<ILaunchConfiguration> configurations, IProject project, String outputPreFix)
 	{
-		final Set<ILaunchConfiguration> configs = new HashSet<ILaunchConfiguration>();
-		ILaunchConfigurationWorkingCopy copy;
+		final Set<ILaunchConfiguration> results = new HashSet<ILaunchConfiguration>();
+		//ILaunchConfigurationWorkingCopy copy;
 		try
 		{
-			copy = baseConfig.getWorkingCopy();
-			copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
-			configs.add(copy);
+			for (ILaunchConfiguration iLaunchConf : configurations)
+			{
+				ILaunchConfigurationWorkingCopy copy = iLaunchConf.getWorkingCopy().copy(iLaunchConf.getName());
+				copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
+				results.add(copy);
+			}
+//			copy = baseConfig.getWorkingCopy();
+//			copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
+			//results.add(copy);
 		} catch (CoreException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return configs;
+		return results;
 	}
 
 }

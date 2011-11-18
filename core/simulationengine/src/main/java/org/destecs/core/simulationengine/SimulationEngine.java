@@ -336,11 +336,11 @@ public class SimulationEngine
 							+ ((int) totalSec % 60) + " mins." : totalSec
 							+ " secs."));
 
-			writeLogFiles(Simulator.CT, ctProxy);
+			//writeLogFiles(Simulator.CT, ctProxy);
 
 			// stop the simulators
 			stop(Simulator.DE, finishTime, dtProxy);
-			// TODO: stop(Simulator.CT, finishTime, ctProxy);
+			stop(Simulator.CT, finishTime, ctProxy);
 
 			terminate(Simulator.DE, finishTime, dtProxy, deLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
@@ -384,7 +384,7 @@ public class SimulationEngine
 			{
 				varsList.add(v);
 			}
-
+			engineInfo(simulator, "Setting variables to log: " + varsList.toString());
 			String path = null;
 
 			path = outputDirectory.getAbsolutePath()
@@ -431,8 +431,9 @@ public class SimulationEngine
 			}
 
 			String path = null;
-
-			path = outputDirectory.getAbsolutePath() + "\\20simVariables.log";
+			engineInfo(simulator, "Writting variables to log: " + varsList.toString());
+			path = outputDirectory.getParent() + "\\20simVariables.csv";
+			//.getAbsolutePath() + "\\20simVariables.log";
 
 			try
 			{

@@ -77,21 +77,51 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 	public Collection<? extends ILaunchConfiguration> generate(
 			ILaunchConfiguration configuration,
 			ILaunchConfiguration baseConfig,
-			Set<ILaunchConfiguration> congifurations, IProject project,
+			Set<ILaunchConfiguration> configurations, IProject project,
 			String outputPreFix)
 	{
 		final Set<ILaunchConfiguration> configs = new HashSet<ILaunchConfiguration>();
 
 		Set<SdpIncConfig> sdps = getSdps(configuration);
-		Set<ILaunchConfiguration> baseSet = new HashSet<ILaunchConfiguration>();
-		baseSet.add(baseConfig);
-
+		//Set<ILaunchConfiguration> baseSet = new HashSet<ILaunchConfiguration>();
+		//baseSet.add(baseConfig);
+		//configs.addAll(configurations);
+		boolean first = true;
 		for (SdpIncConfig sdp : sdps)
 		{
-			configs.addAll(generatePermutations(baseSet, outputPreFix, sdp));
+			if(first)
+			{
+				configs.addAll(generatePermutations(configurations, outputPreFix, sdp));
+				first = false;
+			}
+			else 
+			{
+				Set<ILaunchConfiguration> temp = generatePermutations(configs, outputPreFix, sdp);
+				configs.clear();
+				configs.addAll(temp);
+			}
 		}
-
+		
+		printPermutations(configs);
 		return configs;
+	}
+
+	private void printPermutations(Set<ILaunchConfiguration> configs)
+	{
+		System.out.println("Printing permutations");
+		for (ILaunchConfiguration iLaunchConfiguration : configs)
+		{			
+			try
+			{
+				System.out.println(iLaunchConfiguration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, ""));
+				
+			} catch (CoreException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	public Set<ILaunchConfiguration> generatePermutations(
