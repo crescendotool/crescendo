@@ -1,3 +1,5 @@
+; No need to compress anything
+SetCompress off
  
 ;--------------------------------
 ;Include Modern UI
@@ -15,6 +17,8 @@
 !define PRODUCT_VERSION "0.0.0"
 !define PRODUCT_REG_KEY "DESTECS"
 !define PRODUCT_NAME "DESTECS"
+
+!define TARBALL "combined.tar"
 
 !define SIM20_NAME "20-sim"
 !define SIM20_VERSION "4.1.3.8"
@@ -99,16 +103,18 @@ Section "DESTECS (required)" ;No components page, name is not important
   core.files:
   WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "" $INSTDIR
   WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "Version" "${PRODUCT_VERSION}"
-  
-  ; DESTECS Tool instalation file
-  File "data\${DESTECSZIP}"
+
+  ; Combined Tools instalation file
+  File "data\${TARBALL}"
+  ; Call the function to unpack the tarball before installing the tools
+  untgz::extract -znone -j -d "$INSTDIR" "${TARBALL}"
+  Delete "${TARBALL}"
+
   ; Calling the function that installs DESTECS  
   Call DESTECSInstall
   
-  ; 20-sim instalation file
-  File "data\${SIM20_EXE}"
   ; Calling the function that installs 20-sim
-;  Call 20simInstall
+  Call 20simInstall
   
   call 20simVersionTest
   Call writeRegistryKey 
