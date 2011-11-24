@@ -32,11 +32,14 @@ import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.runtime.Context;
+import org.overturetool.vdmj.runtime.ThreadState;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
+import org.overturetool.vdmj.scheduler.CPUResource;
 import org.overturetool.vdmj.scheduler.ISchedulableThread;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.values.BooleanValue;
+import org.overturetool.vdmj.values.CPUValue;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.NumericValue;
@@ -122,11 +125,13 @@ public abstract class BasicSimulationManager
 
 			public void run()
 			{
+				
 				while (true)
 				{
 					try
 					{
 						ValueUpdateRequest request = updateValueQueueRequest.take();
+						coSimCtxt.threadState = new ThreadState(null, CPUValue.vCPU);
 						request.value.set(coSimLocation, request.newValue, coSimCtxt);
 						if (request.value instanceof TransactionValue)
 						{
@@ -138,6 +143,9 @@ public abstract class BasicSimulationManager
 					} catch (ValueException e)
 					{
 						debugErr(e);
+					}catch(Exception e)
+					{
+						e.printStackTrace();
 					}
 				}
 			}
