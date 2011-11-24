@@ -425,7 +425,15 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	{
 		if (fProjectText != null && fProjectText.getText().length() > 0)
 		{
-			return ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText());
+			IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText());
+			if(p.isAccessible())
+			{
+				return p;
+			}else
+			{
+				setErrorMessage("Project not accessible");
+				return null;
+			}
 		} else
 		{
 			setErrorMessage("Project not set");
