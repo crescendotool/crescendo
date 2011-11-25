@@ -93,12 +93,23 @@ public class Links
 		return result;
 	}
 
+	@Deprecated
 	public StringPair getBoundVariable(String name)
 	{
 		if (link.containsKey(name))
 		{
 			LinkInfo lInfo = link.get(name);
 			return lInfo.getBoundedVariable();
+		}
+		return null;
+	}
+	
+	public LinkInfo getBoundVariableInfo(String name)
+	{
+		if (link.containsKey(name))
+		{
+			LinkInfo lInfo = link.get(name);
+			return lInfo;
 		}
 		return null;
 	}

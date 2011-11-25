@@ -24,10 +24,6 @@ import java.util.Vector;
 
 import org.destecs.core.contract.Contract;
 import org.destecs.core.contract.IVariable;
-import org.destecs.core.parsers.ContractParserWrapper;
-import org.destecs.core.parsers.IError;
-import org.destecs.core.parsers.ParserWrapper;
-import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.Links;
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.metadata.DeMetadataChecker;
@@ -35,6 +31,8 @@ import org.destecs.ide.core.metadata.LinkError;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.core.utility.FileUtility;
+import org.destecs.ide.core.utility.ParserUtil;
+import org.destecs.ide.core.utility.ParserUtil.IAddErrorHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -46,21 +44,33 @@ public class IncrementalProjectBuilder extends
 		org.eclipse.core.resources.IncrementalProjectBuilder
 {
 
+	private IAddErrorHandler errorHandler = new IAddErrorHandler()
+	{
+
+		public void addMarker(IFile file, String message, int lineNumber,
+				int columnNumber, int severity, String content)
+		{
+			FileUtility.addMarker(file, message, lineNumber, columnNumber, severity, content);
+		}
+	};
+
 	@Override
-	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
+	protected IProject[] build(int kind,
+			@SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
 			throws CoreException
 	{
 		IResourceDelta delta = getDelta(getProject());
-		if (!getProject().hasNature(IDestecsCoreConstants.NATURE) || (delta!=null && delta.getAffectedChildren().length==0))
+		if (!getProject().hasNature(IDestecsCoreConstants.NATURE)
+				|| (delta != null && delta.getAffectedChildren().length == 0))
 		{
 			return null;
 		}
-		
-//		System.out.println("Project: "+getProject().getName()+"-"+getDelta(getProject()).getAffectedChildren().length);
+
+		// System.out.println("Project: "+getProject().getName()+"-"+getDelta(getProject()).getAffectedChildren().length);
 
 		boolean isOk = true;
 		boolean isChecked = true;
-		
+
 		IDestecsProject project = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
 		final DestecsModel model = project.getModel();
 		try
@@ -71,8 +81,7 @@ public class IncrementalProjectBuilder extends
 				isOk = false;
 				return null;
 			}
-			ContractParserWrapper contractParser = new ContractParserWrapper();
-			Contract contract = (Contract) parse(contractParser, project.getContractFile());
+			Contract contract = ParserUtil.getContract(project, errorHandler);
 
 			if (!typeCheck(project.getContractFile(), contract))
 			{
@@ -88,10 +97,9 @@ public class IncrementalProjectBuilder extends
 				isOk = false;
 				return null;
 			}
-			VdmLinkParserWrapper vdmLinkParser = new VdmLinkParserWrapper();
-			Links vdmlinks = (Links) parse(vdmLinkParser, project.getVdmLinkFile());
+			Links vdmlinks = ParserUtil.getVdmLinks(project, errorHandler);
 
- 			if (!typeCheck(project.getVdmLinkFile(), vdmlinks, contract))
+			if (!typeCheck(project.getVdmLinkFile(), vdmlinks, contract))
 			{
 				model.setLinks(null);
 				isOk = false;
@@ -100,34 +108,34 @@ public class IncrementalProjectBuilder extends
 
 			model.setLinks(vdmlinks);
 
-			DeMetadataChecker checker = new DeMetadataChecker(project,vdmlinks);
+			DeMetadataChecker checker = new DeMetadataChecker(project, vdmlinks);
 			checker.checkLinks();
-			if(checker.hasErrors())
+			if (checker.hasErrors())
 			{
-				for (LinkError error : checker.getErrors()) {
+				for (LinkError error : checker.getErrors())
+				{
 					addError(project.getVdmLinkFile(), error.getLine() + 1, error.getReason());
 				}
 			}
-			
-			
-//			//TODO: The check below has some issues with the build order
-//			DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
-//			deMetadata.checkLinks();
-//			for (String err : deMetadata.getErrorMsgs()) {
-//				addError(project.getVdmLinkFile(), err);
-//			}
-			
+
+			// //TODO: The check below has some issues with the build order
+			// DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
+			// deMetadata.checkLinks();
+			// for (String err : deMetadata.getErrorMsgs()) {
+			// addError(project.getVdmLinkFile(), err);
+			// }
+
 		} catch (Exception e)
 		{
 			isOk = false;
 			isChecked = false;
 			e.printStackTrace();
-			//TODO build with errors, set project state to build and error
+			// TODO build with errors, set project state to build and error
 		}
 
 		model.setChecked(isChecked);
 		model.setOk(isOk);
-		
+
 		return null;
 	}
 
@@ -148,7 +156,7 @@ public class IncrementalProjectBuilder extends
 
 			if (!vdmlinks.getLinks().containsKey(var.getName()))
 			{
-				addError(file,0,  "Missing-output controlled variable link: "
+				addError(file, 0, "Missing-output controlled variable link: "
 						+ var);
 				faild = true;
 			}
@@ -173,12 +181,13 @@ public class IncrementalProjectBuilder extends
 		{
 			if (!vdmlinks.getInputs().keySet().contains(var.getName()))
 			{
-				addError(file,0, "Missing-input monitored variable: " + var);
+				addError(file, 0, "Missing-input monitored variable: " + var);
 				faild = true;
 			}
 			if (!vdmlinks.getLinks().containsKey(var.getName()))
 			{
-				addError(file,0, "Missing-input monitored variable link: " + var);
+				addError(file, 0, "Missing-input monitored variable link: "
+						+ var);
 				faild = true;
 			}
 
@@ -190,7 +199,7 @@ public class IncrementalProjectBuilder extends
 
 		if (tmp.size() > 0)
 		{
-			addError(file,0, "Too many inputs defined; no usage found for: "
+			addError(file, 0, "Too many inputs defined; no usage found for: "
 					+ tmp);
 			faild = true;
 		}
@@ -202,13 +211,13 @@ public class IncrementalProjectBuilder extends
 		{
 			if (!vdmlinks.getEvents().keySet().contains(event))
 			{
-				addError(file,0, "Missing-event: " + event);
+				addError(file, 0, "Missing-event: " + event);
 				faild = true;
 			}
 
 			if (!vdmlinks.getLinks().containsKey(event))
 			{
-				addError(file,0, "Missing-event link: " + event);
+				addError(file, 0, "Missing-event link: " + event);
 				faild = true;
 			}
 
@@ -220,7 +229,7 @@ public class IncrementalProjectBuilder extends
 
 		if (tmp.size() > 0)
 		{
-			addError(file,0, "Too many events defined; no usage found for: "
+			addError(file, 0, "Too many events defined; no usage found for: "
 					+ tmp);
 			faild = true;
 		}
@@ -284,28 +293,4 @@ public class IncrementalProjectBuilder extends
 	{
 		FileUtility.addMarker(file, message, line, IMarker.SEVERITY_ERROR);
 	}
-
-	protected Object parse(@SuppressWarnings("rawtypes") ParserWrapper parser, IFile file) throws Exception
-	{
-		Object result = parser.parse(file.getLocation().toFile());
-
-		if (file == null || !file.exists() || !file.isAccessible())
-			return result;
-
-		FileUtility.deleteMarker(file, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
-		if (parser.hasErrors())
-		{
-			for (Object err : parser.getErrors())
-			{
-				IError e = (IError) err;
-//				System.out.println(e);
-				FileUtility.addMarker(file, e.getMessage(), e.getLine(), e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, FileUtility.getCharContent(FileUtility.getContent(file)).toString());
-			}
-			throw new Exception("Parse errors in " + file);
-		} else
-		{
-			return result;
-		}
-	}
-
 }

@@ -23,7 +23,12 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.destecs.core.contract.Contract;
+import org.destecs.core.contract.IVariable;
+import org.destecs.core.vdmlink.LinkInfo;
+import org.destecs.core.vdmlink.Links;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.core.utility.ParserUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -33,8 +38,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -44,10 +53,13 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3 pages:
@@ -65,13 +77,15 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 	private TextEditor editor;
 
 	/** The font chosen in page 1. */
-	
 
 	/** The text widget used in page 2. */
 	private StyledText text;
 
-	
-	final Map<IFile,Integer> handingFiles = new Hashtable<IFile,Integer>();
+	/** The text widget used in page 3. */
+	private StyledText text3;
+
+	final Map<IFile, Integer> handingFiles = new Hashtable<IFile, Integer>();
+
 	/**
 	 * Creates a multi-page editor example.
 	 */
@@ -85,14 +99,15 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 	{
 		return this.handingFiles.keySet();
 	}
-	
+
 	public void setActivePage(IFile file)
 	{
-		if(handingFiles.containsKey(file))
+		if (handingFiles.containsKey(file))
 		{
 			setActivePage(handingFiles.get(file));
 		}
 	}
+
 	/**
 	 * Creates page 0 of the multi-page editor, which contains a text editor.
 	 */
@@ -102,7 +117,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		try
 		{
 			editor = new ContractEditor();
-			int index = addPage(editor,input);
+			int index = addPage(editor, input);
 			// setPageText(index, editor.getTitle());
 			setPageText(index, "Contract");
 			setTitle(editor.getTitle());
@@ -145,36 +160,68 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		setPageText(index, "20-Sim Link");
 	}
 
+	void createPage3()
+	{
+		Composite composite = new Composite(getContainer(), SWT.NONE);
+		FillLayout layout = new FillLayout();
+		composite.setLayout(layout);
+		text3 = new StyledText(composite, SWT.H_SCROLL | SWT.V_SCROLL|SWT.READ_ONLY);
+		text3.setEditable(false);
+
+		int index = addPage(composite);
+		setPageText(index, "Overview");
+		IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+		ITheme currentTheme = themeManager.getCurrentTheme();
+
+		FontRegistry fontRegistry = currentTheme.getFontRegistry();
+		text3.setFont( fontRegistry.get(JFaceResources.TEXT_FONT));
+		text3.addFocusListener(new FocusListener()
+		{
+
+			public void focusLost(FocusEvent e)
+			{
+			}
+
+			public void focusGained(FocusEvent e)
+			{
+				text3.setText(getOverviewDescription());
+			}
+		});
+	}
+
 	/**
 	 * Creates the pages of the multi-page editor.
 	 */
 	protected void createPages()
 	{
-		if(getProject()==null || getProject().getContractFile()==null)
+		if (getProject() == null || getProject().getContractFile() == null)
 		{
 			return;
 		}
-		IFile contractFile=getProject().getContractFile();
-		handingFiles.put(contractFile,0);
+		IFile contractFile = getProject().getContractFile();
+		handingFiles.put(contractFile, 0);
 		createPage0(createEditorInput(contractFile));
-		
-		IFile vdmLinkFile=getProject().getVdmLinkFile();
-		handingFiles.put(vdmLinkFile,1);
+
+		IFile vdmLinkFile = getProject().getVdmLinkFile();
+		handingFiles.put(vdmLinkFile, 1);
 		createPage1(createEditorInput(vdmLinkFile));
-		
+
 		createPage2();
-		
-		IFile inputFile =(IFile) getEditorInput().getAdapter(IFile.class);
-		
-		if(inputFile.equals(getProject().getContractFile()))
+
+		createPage3();
+
+		IFile inputFile = (IFile) getEditorInput().getAdapter(IFile.class);
+
+		if (inputFile.equals(getProject().getContractFile()))
 		{
 			setActivePage(0);
 		}
-		if(inputFile.equals(getProject().getVdmLinkFile()))
+		if (inputFile.equals(getProject().getVdmLinkFile()))
 		{
 			setActivePage(1);
 		}
 	}
+
 	protected IEditorInput createEditorInput(IFile file)
 	{
 		if (!file.exists())
@@ -190,7 +237,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		}
 		return new FileEditorInput(file);
 	}
-	
+
 	protected IDestecsProject getProject()
 	{
 		IProject project = ((IFile) getEditorInput().getAdapter(IFile.class)).getProject();
@@ -223,13 +270,13 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		}
 		// getEditor(0).doSave(monitor);
 	}
-	
+
 	@Override
 	public boolean isDirty()
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			if (getEditor(i) != null &&getEditor(i).isDirty())
+			if (getEditor(i) != null && getEditor(i).isDirty())
 			{
 				return true;
 			}
@@ -270,11 +317,11 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		super.init(site, editorInput);
 
 	}
-	
+
 	@Override
 	public String getTitle()
 	{
-	return "Configuration Editor";
+		return "Configuration Editor";
 	}
 
 	/*
@@ -322,7 +369,82 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		}
 	}
 
+	public String getOverviewDescription()
+	{
+		IDestecsProject p = getProject();
+		StringBuilder sb = new StringBuilder();
+		try
+		{
+			if (p != null)
+			{
+				Contract contract = ParserUtil.getContract(p, null);
+				Links vdmLinks = ParserUtil.getVdmLinks(p, null);
 
+				sb.append("--- \n");
+				sb.append("--- Shared Design Parameters ---\n");
+				sb.append("--- \n");
+				for (IVariable sdp : contract.getSharedDesignParameters())
+				{
+					LinkInfo info = vdmLinks.getBoundVariableInfo(sdp.getName());
+					String id = "?";
+					if (info != null)
+					{
+						id = info.toString();
+					}
+					sb.append(id + " <-> " + sdp.getName() + " <-> "
+							+ sdp.getName() + " not checked\n");
+				}
 
+				sb.append("\n\n");
+				sb.append("--- \n");
+				sb.append("--- Monitored Variables ---\n");
+				sb.append("--- \n");
+				for (IVariable sdp : contract.getMonitoredVariables())
+				{
+					LinkInfo info = vdmLinks.getBoundVariableInfo(sdp.getName());
+					String id = "?";
+					if (info != null)
+					{
+						id = info.toString();
+					}
+					sb.append(id + " <-> " + sdp.getName() + " <-> "
+							+ sdp.getName() + " not checked\n");
+				}
+				sb.append("\n\n");
+				sb.append("--- \n");
+				sb.append("--- Controlled Variables ---\n");
+				sb.append("--- \n");
+				for (IVariable sdp : contract.getControlledVariables())
+				{
+					LinkInfo info = vdmLinks.getBoundVariableInfo(sdp.getName());
+					String id = "?";
+					if (info != null)
+					{
+						id = info.toString();
+					}
+					sb.append(id + " <-> " + sdp.getName() + " <-> "
+							+ sdp.getName() + " not checked\n");
+				}
+				sb.append("\n\n");
+				sb.append("--- \n");
+				sb.append("--- Events ---\n");
+				sb.append("--- \n");
+				for (String event : contract.getEvents())
+				{
+					LinkInfo info = vdmLinks.getBoundVariableInfo(event);
+					String id = "?";
+					if (info != null)
+					{
+						id = info.toString();
+					}
+					sb.append(id + " <-> " + event + " <-> not supported\n");
+				}
+			}
+		} catch (Exception e)
+		{
+			sb.append("No info avaliable");
+		}
+		return sb.toString();
+	}
 
 }

@@ -18,7 +18,6 @@
  *******************************************************************************/
 package org.destecs.ide.ui.editor.impl;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +34,6 @@ import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.ui.editor.core.DestecsDocument;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;

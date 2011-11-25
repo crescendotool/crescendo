@@ -18,6 +18,7 @@
  *******************************************************************************/
 package org.destecs.core.vdmlink;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class LinkInfo {
@@ -34,6 +35,11 @@ public class LinkInfo {
 		this.line = line;
 	}
 	
+	/**
+	 * This does not return the full name, only a fraction of it. use getQualifiedName instead.
+	 * @return
+	 */
+	@Deprecated
 	public StringPair getBoundedVariable()
 	{
 		if(qualifiedName.size() > 1)
@@ -55,6 +61,23 @@ public class LinkInfo {
 
 	public List<String> getQualifiedName() {
 		return qualifiedName;
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(getIdentifier()+".");
+		for (Iterator<String> itr = getQualifiedName().iterator(); itr.hasNext();)
+		{
+			sb.append( itr.next());
+			if(itr.hasNext())
+			{
+				sb.append(".");
+			}
+			
+		}
+		return sb.toString();
 	}
 	
 }
