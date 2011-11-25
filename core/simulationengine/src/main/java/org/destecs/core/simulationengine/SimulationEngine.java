@@ -574,7 +574,7 @@ public class SimulationEngine
 		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime,
 				new Vector<StepinputsStructParam>(), false, events);
 		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime,
-				new Vector<StepinputsStructParam>(), false, events);
+				outputToInput(deResult.outputs), false, events);
 
 		// StepResult res = merge(deResult, ctResult);
 		// System.out.print(res.toHeaderString());
