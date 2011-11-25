@@ -360,51 +360,6 @@ public class SimulationEngine
 		}
 	}
 
-	private void writeLogFiles(Simulator simulator, ProxyICoSimProtocol proxy)
-			throws SimulationException
-	{
-		String variablesToLog = ctModel.arguments
-				.get(CtModelConfig.LOAD_SETTING_LOG_VARIABLES);
-
-		if (variablesToLog == null)
-		{
-			return;
-		}
-
-		if (variablesToLog.trim().length() == 0)
-		{
-			engineInfo(simulator, "Writting variables to log: none");
-		} else
-		{
-			engineInfo(simulator, "Writing variables to log");
-
-			String[] vars = variablesToLog.split(",");
-			List<String> varsList = new ArrayList<String>();
-			for (String v : vars)
-			{
-				varsList.add(v);
-			}
-			engineInfo(simulator, "Setting variables to log: " + varsList.toString());
-			String path = null;
-
-			path = outputDirectory.getAbsolutePath()
-					+ "\\20simVariablesCSV.log";
-
-			try
-			{
-				if (!varsList.isEmpty())
-				{
-					proxy.writeCSVFile(path, false, varsList);
-				}
-			} catch (Exception e)
-			{
-				abort(simulator, "Failed to write CSV file", e);
-			}
-			return;
-		}
-
-	}
-
 	private void setVariablesToLog(Simulator simulator,
 			ProxyICoSimProtocol proxy, ModelConfig modelConfig)
 			throws SimulationException
