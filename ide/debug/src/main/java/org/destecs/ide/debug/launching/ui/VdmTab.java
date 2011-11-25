@@ -591,7 +591,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 				if (elem instanceof SystemDefinition)
 				{
 					TreeItem root = new TreeItem(logTree, 0);
-					root.setText(elem.toString());
+					root.setText(elem.getName());
 					root.setData(elem);
 					new TreeItem(root, 0);
 				}
