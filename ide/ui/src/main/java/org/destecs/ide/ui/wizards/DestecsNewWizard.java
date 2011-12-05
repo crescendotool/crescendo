@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.overture.ide.core.resources.IVdmProject;
+import org.overture.ide.core.resources.ModelBuildPath;
 import org.overture.ide.vdmrt.core.IVdmRtCoreConstants;
 import org.overturetool.vdmj.Release;
 
@@ -73,10 +74,12 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 			
 			
 			IDestecsProject dp = (IDestecsProject) prj.getAdapter(IDestecsProject.class);
-			p.getModelBuildPath().add(dp.getVdmModelFolder());
-			p.getModelBuildPath().remove(prj);
-			p.getModelBuildPath().save();
-			p.getModelBuildPath().setOutput(dp.getOutputFolder());
+			ModelBuildPath modelPath = p.getModelBuildPath();
+			modelPath.add(dp.getVdmModelFolder());
+			modelPath.remove(prj);
+			modelPath.setOutput(dp.getOutputFolder());
+			modelPath.setLibrary(dp.getVdmModelFolder().getFolder("lib"));
+			modelPath.save();
 			p.getModel().clean();
 			prj.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 			//TODO: add builder if needed
