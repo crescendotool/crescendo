@@ -114,8 +114,6 @@ Section "DESTECS (required)" ;No components page, name is not important
   Call DESTECSInstall
   
   ; Calling the function that installs 20-sim
-  Call 20simInstall
-  
   call 20simVersionTest
   Call writeRegistryKey 
   
