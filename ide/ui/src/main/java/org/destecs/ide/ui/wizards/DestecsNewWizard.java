@@ -57,6 +57,15 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 			setDestecsSettings(prj);
 		}
 
+		try
+		{					
+			prj.touch(new NullProgressMonitor());
+		} catch (CoreException e)
+		{			
+			e.printStackTrace();
+		}
+		
+		
 		return ok;
 	}
 
@@ -82,7 +91,7 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 			modelPath.save();
 			p.getModel().clean();
 			prj.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			//TODO: add builder if needed
+			//add builder if needed
 			
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
