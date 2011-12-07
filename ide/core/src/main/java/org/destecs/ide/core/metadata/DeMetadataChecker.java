@@ -99,7 +99,7 @@ public class DeMetadataChecker {
 		String systemName = findSystemClass();
 
 		if (systemName == null) {
-			errors.add(new LinkError(0, "Model has no system class"));
+			errors.add(new LinkError(1, "Model has no system class"));
 			return;
 		}
 
@@ -153,6 +153,7 @@ public class DeMetadataChecker {
 						{
 							validateLinkTypeWithMetadata(linkType,metadataProperties,linkInfo,linkId);
 						}	
+						break;
 					case SDP:
 						metadataProperties =  validate(linkId, links.getLinks().get(linkId), false);						
 						if(metadataProperties == null)
@@ -163,6 +164,7 @@ public class DeMetadataChecker {
 						{
 							validateLinkTypeWithMetadata(linkType,metadataProperties,linkInfo,linkId);
 						}
+						break;
 					}
 					
 					
@@ -171,7 +173,6 @@ public class DeMetadataChecker {
 			}
 			
 		}
-		System.out.println(errors);
 	}
 
 	private void validateLinkTypeWithMetadata(LinkType linkType,

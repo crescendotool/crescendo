@@ -46,7 +46,7 @@ public class FileUtility
 			{
 				if (marker.getAttribute(IMarker.MESSAGE).equals(message)
 						&& marker.getAttribute(IMarker.SEVERITY).equals(severity)
-						&& marker.getAttribute(IMarker.LINE_NUMBER).equals(lineNumber))
+						&& (marker.getAttribute(IMarker.LINE_NUMBER)!=null && marker.getAttribute(IMarker.LINE_NUMBER).equals(lineNumber)))
 					return;
 
 			}

@@ -1,12 +1,13 @@
 package org.destecs.ide.core.utility;
 
+import java.io.IOException;
+
 import org.destecs.core.contract.Contract;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.IError;
 import org.destecs.core.parsers.ParserWrapper;
 import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.Links;
-import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -31,14 +32,16 @@ public class ParserUtil
 			IAddErrorHandler errorHandler) throws Exception
 	{
 		ContractParserWrapper contractParser = new ContractParserWrapper();
-		Contract contract = (Contract) parse(contractParser, project.getContractFile(), errorHandler);
+		Contract contract = (Contract) parse(contractParser,
+				project.getContractFile(), errorHandler);
 		return contract;
 	}
 
 	/**
 	 * 
 	 * @param project
-	 * @param errorHandler may be null
+	 * @param errorHandler
+	 *            may be null
 	 * @return
 	 * @throws Exception
 	 */
@@ -46,30 +49,33 @@ public class ParserUtil
 			IAddErrorHandler errorHandler) throws Exception
 	{
 		VdmLinkParserWrapper vdmLinkParser = new VdmLinkParserWrapper();
-		Links vdmlinks = (Links) parse(vdmLinkParser, project.getVdmLinkFile(), errorHandler);
+		Links vdmlinks = (Links) parse(vdmLinkParser, project.getVdmLinkFile(),
+				errorHandler);
 		return vdmlinks;
 	}
 
-	protected static Object parse(@SuppressWarnings("rawtypes") ParserWrapper parser,
-			IFile file, IAddErrorHandler errorHandler) throws Exception
+	protected static Object parse(
+			@SuppressWarnings("rawtypes") ParserWrapper parser, IFile file,
+			IAddErrorHandler errorHandler) throws IOException
 	{
 		Object result = parser.parse(file.getLocation().toFile());
 
 		if (file == null || !file.exists() || !file.isAccessible())
 			return result;
 
-		FileUtility.deleteMarker(file, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
 		if (parser.hasErrors() && errorHandler != null)
 		{
 			for (Object err : parser.getErrors())
 			{
 				IError e = (IError) err;
-				errorHandler.addMarker(file, e.getMessage(), e.getLine(), e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, FileUtility.getCharContent(FileUtility.getContent(file)).toString());
+				errorHandler.addMarker(file, e.getMessage(), e.getLine() + 1, e
+						.getCharPositionInLine(), IMarker.SEVERITY_ERROR,
+						FileUtility
+								.getCharContent(FileUtility.getContent(file))
+								.toString());
 			}
-			throw new Exception("Parse errors in " + file);
-		} else
-		{
-			return result;
+			return null;
 		}
+		return result;
 	}
 }
