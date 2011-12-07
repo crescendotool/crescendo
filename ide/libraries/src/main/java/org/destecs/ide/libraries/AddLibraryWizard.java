@@ -21,12 +21,12 @@ package org.destecs.ide.libraries;
 import org.destecs.ide.libraries.util.LibraryUtil;
 import org.destecs.ide.libraries.wizard.LibraryIncludePage;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
-
 
 public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 {
@@ -34,7 +34,8 @@ public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 	private IProject project = null;
 	private LibraryIncludePage _pageTwo;
 
-	public AddLibraryWizard() {
+	public AddLibraryWizard()
+	{
 		setWindowTitle(WIZARD_NAME);
 	}
 
@@ -43,10 +44,11 @@ public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 	{
 		try
 		{
-			LibraryUtil.createSelectedLibraries(project,_pageTwo.getLibrarySelection());
+			LibraryUtil.createSelectedLibraries(project,
+					_pageTwo.getLibrarySelection());
 		} catch (CoreException e)
 		{
-//			if (VdmUIPlugin.DEBUG)
+			// if (VdmUIPlugin.DEBUG)
 			{
 				e.printStackTrace();
 			}
@@ -57,24 +59,13 @@ public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 
 	public void init(IWorkbench workbench, IStructuredSelection selection)
 	{
-		
-		if(selection.getFirstElement() instanceof IProject ){
-			IProject project = (IProject) selection.getFirstElement();
-			this.project = project;//(IVdmProject) project.getAdapter(IVdmProject.class);
+
+		if (selection.getFirstElement() instanceof IResource)
+		{
+			IProject project = (IProject) ((IResource) selection
+					.getFirstElement()).getProject();
+			this.project = project;
 		}
-//		if (selection.getFirstElement() instanceof IVdmProject)
-//		{					
-//			this.project = (IVdmProject) selection.getFirstElement();
-//		}else if(selection.getFirstElement() instanceof IFolder)
-//		{
-//			IProject project = ((IFolder)selection.getFirstElement()).getProject();
-//			this.project = (IVdmProject) project.getAdapter(IVdmProject.class);
-//			
-//			if(this.project == null)
-//			{
-//				MessageDialog.openError(getShell(), "Project type error", "Project is not a VDM project");
-//			}
-//		}
 
 	}
 
@@ -84,13 +75,13 @@ public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 		_pageTwo = new LibraryIncludePage("Add Library");
 		addPage(_pageTwo);
 	}
-	
 
-//@Override
-//public boolean canFinish()
-//{
-//	
-//	return super.canFinish()&&_pageTwo.getLibrarySelection().getSelectedLibs().size()>0;
-//}
+	// @Override
+	// public boolean canFinish()
+	// {
+	//
+	// return
+	// super.canFinish()&&_pageTwo.getLibrarySelection().getSelectedLibs().size()>0;
+	// }
 
 }
