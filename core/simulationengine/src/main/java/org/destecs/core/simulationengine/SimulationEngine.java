@@ -508,7 +508,7 @@ public class SimulationEngine
 			return proxy.stop().success;
 		} catch (Exception e)
 		{
-			abort(simulator, "stop faild", e);
+			abort(simulator, "stop failed", e);
 		}
 		return false;
 	}

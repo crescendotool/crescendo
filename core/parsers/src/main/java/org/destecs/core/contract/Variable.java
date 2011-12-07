@@ -26,13 +26,15 @@ import java.util.Vector;
 public class Variable implements IVariable
 {
 	protected List<Integer> dimensions = new Vector<Integer>();
+	protected int line;
 	
-	public Variable(String name, VariableType vType, DataType dType, Object value ) {
+	public Variable(String name, VariableType vType, DataType dType, Object value, int line) {
 		this.setName(name);
 		this.setType(vType);
 		this.setDataType(dType);
 		this.value = value;
 		this.dimensions.add(1);
+		this.line = line;
 	}
 	
 	
@@ -119,6 +121,11 @@ public class Variable implements IVariable
 
 	public List<Integer> getDimensions() {
 		return dimensions;
+	}
+
+	public int getLine()
+	{
+		return line;
 	}
 	
 }

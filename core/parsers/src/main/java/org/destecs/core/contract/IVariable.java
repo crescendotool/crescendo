@@ -39,5 +39,7 @@ public interface IVariable {
 	
 	public abstract List<Integer> getDimensions();
 	
+	public abstract int getLine();
+	
 
 }

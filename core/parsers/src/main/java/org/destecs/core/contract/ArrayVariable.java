@@ -26,8 +26,8 @@ public class ArrayVariable extends Variable{
 	
 	
 	public ArrayVariable(String name, VariableType vType,
-			Object value, List<Integer> sizes) {
-		super(name, vType, DataType.array, value);
+			Object value, List<Integer> sizes,int line) {
+		super(name, vType, DataType.array, value,line);
 		this.dimensions.addAll(sizes);
 	
 	}

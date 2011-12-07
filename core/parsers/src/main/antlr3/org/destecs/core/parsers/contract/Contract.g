@@ -280,7 +280,7 @@ body
 
 parameters 
 	: sharedDesignParamater t=type ID ';' 
-	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null)); }
+	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null,$ID.getLine())); }
 	;
 
 
@@ -291,9 +291,9 @@ sharedDesignParamater
   
 variables 
 	: k=kind t=type ID ASSIGN v=value ';' 
-	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v));}
+	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v,$ID.getLine()));}
 	| k=kind MATRIX ID sizes=arrayspec ';'
-	 {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes));}
+	 {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
 	;
 
 arrayspec returns [List<Integer> sizes]
