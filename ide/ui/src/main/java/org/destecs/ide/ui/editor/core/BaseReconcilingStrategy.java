@@ -50,7 +50,8 @@ public abstract class BaseReconcilingStrategy implements IReconcilingStrategy
 					for (Object err : parser.getErrors())
 					{
 						IError e = (IError) err;						
-						FileUtility.addMarker(currentDocument.getFile(), e.getMessage(), e.getLine(), e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, currentDocument.get());
+//						FileUtility.addMarker(currentDocument.getFile(), e.getMessage(), e.getLine()+1, e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, currentDocument.get());
+						FileUtility.addMarker(currentDocument.getFile(),  e.getMessage(), e.getLine()+1, IMarker.SEVERITY_ERROR);
 					}
 				}
 
