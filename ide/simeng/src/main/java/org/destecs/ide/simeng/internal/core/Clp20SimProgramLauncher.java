@@ -20,6 +20,7 @@ package org.destecs.ide.simeng.internal.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,17 +58,41 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 				return null; // 20-sim is already running
 			} else
 			{
+				String path = null;
+				try
+				{
+					path = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Controllab Products B.V.\\20-sim 4.1","PATH" );
+					if(path == null)
+					{
+						return null;
+					}
+					path += "\\bin\\20sim.exe";
+				} catch (IllegalArgumentException e)
+				{
+					return null;
+				} catch (IllegalAccessException e)
+				{
+					return null;
+				} catch (InvocationTargetException e)
+				{
+					return null;
+				}
+				
 				List<String> commandList = new ArrayList<String>();
 				// commandList.add("explorer");
-				commandList.add("cmd.exe /C");
-				commandList.add(toPlatformPath(this.model.getAbsolutePath()));
-				p = Runtime.getRuntime().exec(getArgumentString(commandList), null, model.getParentFile());
-
-				new ProcessConsolePrinter(p.getInputStream()).start();
-				new ProcessConsolePrinter(p.getErrorStream()).start();
-
-				sleep(5000);
-				return p;
+				//commandList.add("cmd.exe /C");
+				//commandList.add(toPlatformPath(this.model.getAbsolutePath()));
+				if(path !=null)
+				{
+					commandList.add(path);
+					p = Runtime.getRuntime().exec(getArgumentString(commandList), null, model.getParentFile());
+	
+					new ProcessConsolePrinter(p.getInputStream()).start();
+					new ProcessConsolePrinter(p.getErrorStream()).start();
+	
+					sleep(5000);
+					return p;
+				}
 			}
 
 		} catch (IOException e)
