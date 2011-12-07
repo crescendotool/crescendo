@@ -20,12 +20,12 @@ package org.destecs.ide.core.internal.core.resources;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import org.destecs.ide.core.DestecsCorePlugin;
 import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.internal.builder.SafeBuilder;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.internal.core.ResourceManager;
@@ -34,18 +34,21 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
 
 
 public class DestecsProject implements
 		org.destecs.ide.core.resources.IDestecsProject
 {
 
-	private final static List<IDestecsProject> loadedProjects = new ArrayList<IDestecsProject>();
+//	private final static List<IDestecsProject> loadedProjects = new ArrayList<IDestecsProject>();
 
 	public final IProject project;
 	private final DestecsModel model = new DestecsModel();
@@ -263,6 +266,66 @@ public class DestecsProject implements
 	public String getName()
 	{
 		return this.project.getName();
+	}
+	
+	
+	public boolean typeCheck(IProgressMonitor monitor) throws CoreException
+	{
+
+		// getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
+		DestecsModel model = getModel();
+		if (model.isOk())
+		{
+			return true; // no need to do any work
+		} else
+		{
+			final IDestecsProject currentProject = this;
+
+			final IProgressMonitor mon = monitor;
+			ISafeRunnable runnable = new ISafeRunnable()
+			{
+
+				public void handleException(Throwable e)
+				{
+					DestecsCorePlugin.log("DestecsProject typeCheck ISafeRunnable", e);
+				}
+
+				@SuppressWarnings("deprecation")
+				public void run() throws Exception
+				{
+
+					final SafeBuilder builder = new SafeBuilder(currentProject, mon);
+					builder.start();
+					while (builder.isAlive())
+					{
+						Thread.sleep(100);
+						if (mon.isCanceled())
+						{
+							builder.stop();
+						}
+					}
+
+				}
+
+			};
+			SafeRunner.run(runnable);
+
+			return model.isOk();
+		}
+	}
+
+	public void typeCheck(boolean clean, IProgressMonitor monitor)
+			throws CoreException
+	{
+		if (clean)
+			getProject().build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		else
+			getProject().build(IncrementalProjectBuilder.AUTO_BUILD, monitor);
+	}
+
+	public IProject getProject()
+	{
+		return project;
 	}
 
 }

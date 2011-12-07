@@ -61,12 +61,14 @@ import org.destecs.ide.simeng.listener.ListenerToLog;
 import org.destecs.ide.simeng.listener.MessageListener;
 import org.destecs.ide.simeng.listener.SimulationListener;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
+import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -88,6 +90,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
+import org.overture.ide.core.resources.IVdmProject;
+import org.overture.ide.ui.utility.VdmTypeCheckerUi;
 
 public class CoSimLaunchConfigurationDelegate extends
 		LaunchConfigurationDelegate
@@ -123,6 +127,32 @@ public class CoSimLaunchConfigurationDelegate extends
 		try
 		{
 			loadSettings(configuration);
+			
+			IDestecsProject destecsProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
+
+			Assert.isNotNull(destecsProject, " Project not found: "
+					+ configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
+
+			
+			IVdmProject vdmProject = (IVdmProject) project.getAdapter(IVdmProject.class);
+			if (vdmProject == null
+					|| !VdmTypeCheckerUi.typeCheck(vdmProject, monitor))
+			{
+				abort("Cannot launch a project (" + vdmProject
+						+ ") with type errors, please check the problems view", null);
+			}
+			
+			
+			if (destecsProject == null
+					|| !DestecsTypeCheckerUi.typeCheck(destecsProject, monitor))
+			{
+				abort("Cannot launch a project (" + destecsProject
+						+ ") with errors, please check the problems view", null);
+			}
+			
+			
+			
+			
 			this.launch = launch;
 			target = new DestecsDebugTarget(launch, project, outputFolder);
 			this.launch.addDebugTarget(target);
@@ -722,6 +752,23 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 
 		return wc;
+	}
+	
+	
+	/**
+	 * Throws an exception with a new status containing the given message and optional exception.
+	 * 
+	 * @param message
+	 *            error message
+	 * @param e
+	 *            underlying exception
+	 * @throws CoreException
+	 */
+	private void abort(String message, Throwable e) throws CoreException
+	{
+		// TODO: the plug-in code should be the example plug-in, not Perl debug
+		// model id
+		throw new CoreException((IStatus) new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, 0, message, e));
 	}
 
 	/**

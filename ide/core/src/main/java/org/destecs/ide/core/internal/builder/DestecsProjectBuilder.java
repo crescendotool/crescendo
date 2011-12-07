@@ -16,42 +16,34 @@
  * 	
  * The DESTECS web-site: http://destecs.org/
  *******************************************************************************/
-package org.destecs.ide.core.resources;
+package org.destecs.ide.core.internal.builder;
 
-import java.util.List;
+import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
+import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.resources.IDestecsProject;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-public interface IDestecsProject extends IAdaptable
+public class DestecsProjectBuilder extends
+		org.eclipse.core.resources.IncrementalProjectBuilder
 {
-	IFolder getVdmModelFolder();
-	
-	IFile getVdmLinkFile();
-	
-	IFile getContractFile();
+	@Override
+	protected IProject[] build(int kind,
+			@SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
+			throws CoreException
+	{
+		IResourceDelta delta = getDelta(getProject());
+		if (!getProject().hasNature(IDestecsCoreConstants.NATURE)
+				|| (delta != null && delta.getAffectedChildren().length == 0))
+		{
+			return null;
+		}
 
-	IFolder getScenarioFolder();
+		DestecsBuilder.build((IDestecsProject) getProject().getAdapter(IDestecsProject.class));
+		return new IProject[0];
+	}
 
-	List<IFile> getScenarioFiles() throws CoreException;
-
-	IFile getSharedDesignParameterFile();
-	
-	IFolder getOutputFolder();
-	
-	void createStructure();
-	 
-	DestecsModel getModel();
-	
-	String getName();
-	
-	IProject getProject();
-	
-	boolean typeCheck(IProgressMonitor monitor) throws CoreException;
-	
-	void typeCheck(boolean clean, IProgressMonitor monitor) throws CoreException;
 }

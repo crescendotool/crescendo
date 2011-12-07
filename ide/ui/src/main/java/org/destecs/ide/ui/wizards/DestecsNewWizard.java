@@ -39,50 +39,53 @@ import org.overture.ide.core.resources.ModelBuildPath;
 import org.overture.ide.vdmrt.core.IVdmRtCoreConstants;
 import org.overturetool.vdmj.Release;
 
-public class DestecsNewWizard extends BasicNewProjectResourceWizard {
+public class DestecsNewWizard extends BasicNewProjectResourceWizard
+{
 
 	private static final String WIZARD_NAME = "DESTECS New Project Wizard";
 
-	public DestecsNewWizard() {
+	public DestecsNewWizard()
+	{
 		setWindowTitle(WIZARD_NAME);
 
 	}
 
 	@Override
-	public boolean performFinish() {
+	public boolean performFinish()
+	{
 		boolean ok = super.performFinish();
 
 		IProject prj = getNewProject();
 
-		if (prj != null) {
+		if (prj != null)
+		{
 			setDestecsSettings(prj);
+			try
+			{
+				prj.touch(new NullProgressMonitor());
+			} catch (CoreException e)
+			{
+				e.printStackTrace();
+			}
 		}
 
-		try
-		{					
-			prj.touch(new NullProgressMonitor());
-		} catch (CoreException e)
-		{			
-			e.printStackTrace();
-		}
-		
-		
 		return ok;
 	}
 
-	private void setDestecsSettings(IProject prj) {
-		try {
-			
-			addNature(prj, IVdmRtCoreConstants.NATURE) ;
+	private void setDestecsSettings(IProject prj)
+	{
+		try
+		{
+
+			addNature(prj, IVdmRtCoreConstants.NATURE);
 			IVdmProject p = (IVdmProject) prj.getAdapter(IVdmProject.class);
 			Assert.isNotNull(p, "Project could not be adapted");
 			p.setBuilder(Release.DEFAULT);
 			addNature(prj, IDestecsCoreConstants.NATURE);
-			
+
 			addBuilder(prj, "org.destecs.ide.vdmmetadatabuilder.builder", null, null);
 			addBuilder(prj, IDestecsCoreConstants.BUILDER_ID, null, null);
-			
-			
+
 			IDestecsProject dp = (IDestecsProject) prj.getAdapter(IDestecsProject.class);
 			ModelBuildPath modelPath = p.getModelBuildPath();
 			modelPath.add(dp.getVdmModelFolder());
@@ -92,9 +95,10 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 			modelPath.save();
 			p.getModel().clean();
 			prj.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			//add builder if needed
-			
-		} catch (CoreException e) {
+			// add builder if needed
+
+		} catch (CoreException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -102,22 +106,23 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard {
 	}
 
 	private static void addNature(IProject project, String nature)
-			throws CoreException {
+			throws CoreException
+	{
 
-		if (!project.hasNature(nature)) {
+		if (!project.hasNature(nature))
+		{
 			IProjectDescription description = project.getDescription();
 			String[] prevNatures = description.getNatureIds();
 			String[] newNatures = new String[prevNatures.length + 1];
 			System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
 			newNatures[prevNatures.length] = nature;
 			description.setNatureIds(newNatures);
-			
 
 			IProgressMonitor monitor = null;
 			project.setDescription(description, monitor);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static void addBuilder(IProject project, String name,
 			String argumentKey, String argumentValue) throws CoreException

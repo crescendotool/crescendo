@@ -18,5 +18,6 @@ Require-Bundle: org.eclipse.debug.core;bundle-version="3.5.0",
  org.destecs.ide.simeng;bundle-version="1.0.0",
  org.destecs.ide.core;bundle-version="1.0.0",
  org.overture.ide.core;bundle-version="0.3.2",
- org.overture.ide.ui;bundle-version="0.3.2"
+ org.overture.ide.ui;bundle-version="0.3.2",
+ org.destecs.ide.ui;bundle-version="1.0.1"
 Bundle-Activator: org.destecs.ide.debug.DestecsDebugPlugin

@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
+import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -492,6 +494,17 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		}
 
 		selectScenarioButton.setEnabled(true);
+		
+		IDestecsProject destecsProject = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
+		DestecsModel destecsModel = destecsProject.getModel();
+		if (!destecsModel.isOk())
+		{
+			if (!DestecsTypeCheckerUi.typeCheck(getShell(), destecsProject))
+			{
+				setErrorMessage("Errors in Model Configuration.: (Contract or VDM Link)");
+				return false;
+			}
+		}
 
 		return true;
 	}

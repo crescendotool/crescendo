@@ -42,7 +42,7 @@
             hasNature="true"
             isConfigurable="false">
          <run
-               class="org.destecs.ide.core.internal.builder.IncrementalProjectBuilder">
+               class="org.destecs.ide.core.internal.builder.DestecsProjectBuilder">
          </run>
       </builder>
    </extension>

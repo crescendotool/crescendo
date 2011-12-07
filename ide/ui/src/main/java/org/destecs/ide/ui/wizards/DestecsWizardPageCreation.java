@@ -58,7 +58,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 public class DestecsWizardPageCreation extends WizardPage
 {
 
-	class WidgetListener implements ModifyListener, SelectionListener
+	static class WidgetListener implements ModifyListener, SelectionListener
 	{
 		public boolean suspended = false;
 

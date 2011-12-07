@@ -121,7 +121,7 @@ public class VdmLinkCompletionProcessor implements IContentAssistProcessor
 		public boolean dot;
 		public StringBuffer proposal = new StringBuffer();
 		public boolean postEqual;
-		public String group = new String();
+		public String group =  "";
 
 		public void add(char c)
 		{
@@ -390,9 +390,9 @@ public class VdmLinkCompletionProcessor implements IContentAssistProcessor
 		IContextInformation[] result = new IContextInformation[5];
 		for (int i = 0; i < result.length; i++)
 			result[i] = new ContextInformation(MessageFormat.format("private", new Object[] {
-					new Integer(i), new Integer(offset) }), MessageFormat.format("private", new Object[] {
-					new Integer(i), new Integer(offset - 5),
-					new Integer(offset + 5) }));
+					Integer.valueOf(i), Integer.valueOf(offset) }), MessageFormat.format("private", new Object[] {
+					Integer.valueOf(i), Integer.valueOf(offset - 5),
+					 Integer.valueOf(offset + 5) }));
 		return result;
 	}
 

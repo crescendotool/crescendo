@@ -25,4 +25,5 @@ Export-Package: org.destecs.ide.ui,
  org.destecs.ide.ui.editor.core,
  org.destecs.ide.ui.editor.syntax,
  org.destecs.ide.ui.navigator,
+ org.destecs.ide.ui.utility,
  org.destecs.ide.ui.wizards
