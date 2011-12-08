@@ -61,6 +61,8 @@ import org.destecs.ide.simeng.listener.ListenerToLog;
 import org.destecs.ide.simeng.listener.MessageListener;
 import org.destecs.ide.simeng.listener.SimulationListener;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
+import org.destecs.ide.ui.DestecsUIPlugin;
+import org.destecs.ide.ui.IDestecsPreferenceConstants;
 import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
@@ -85,6 +87,7 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -123,6 +126,9 @@ public class CoSimLaunchConfigurationDelegate extends
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{
+		IPreferenceStore store = DestecsUIPlugin.getDefault().getPreferenceStore();
+		Boolean typeCheck = store.getBoolean(IDestecsPreferenceConstants.ACTIVATE_DESTECSCHECK_PREFERENCE);
+		
 		this.configuration = configuration;
 		try
 		{
@@ -136,17 +142,17 @@ public class CoSimLaunchConfigurationDelegate extends
 			
 			IVdmProject vdmProject = (IVdmProject) project.getAdapter(IVdmProject.class);
 			if (vdmProject == null
-					|| !VdmTypeCheckerUi.typeCheck(vdmProject, monitor))
+					|| (typeCheck && !VdmTypeCheckerUi.typeCheck(vdmProject, monitor)))
 			{
-				abort("Cannot launch a project (" + vdmProject
+				abort("Cannot launch a project (" + vdmProject.getName()
 						+ ") with type errors, please check the problems view", null);
 			}
 			
 			
 			if (destecsProject == null
-					|| !DestecsTypeCheckerUi.typeCheck(destecsProject, monitor))
+					|| (typeCheck &&!DestecsTypeCheckerUi.typeCheck(destecsProject, monitor)))
 			{
-				abort("Cannot launch a project (" + destecsProject
+				abort("Cannot launch a project (" + destecsProject.getName()
 						+ ") with errors, please check the problems view", null);
 			}
 			
