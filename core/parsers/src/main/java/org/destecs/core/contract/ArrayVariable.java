@@ -37,4 +37,9 @@ public class ArrayVariable extends Variable{
 		return SharedVariableType.Matrix;
 	}
 
+	@Override
+	public String toString()
+	{
+		return getType() + " "+getDataType()+ " "+getName();
+	}
 }

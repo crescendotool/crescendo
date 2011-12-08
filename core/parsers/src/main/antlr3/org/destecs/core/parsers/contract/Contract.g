@@ -16,6 +16,7 @@ tokens {
 	END = 'end';
 	ASSIGN = ':=';
 	MATRIX = 'matrix';
+	ARRAY = 'array';
 }
 
 @header {
@@ -294,7 +295,16 @@ variables
 	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v,$ID.getLine()));}
 	| k=kind MATRIX ID sizes=arrayspec ';'
 	 {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
+	| k=kind ARRAY ID sizes=oneDimArrayspec ';'
+   {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
 	;
+
+oneDimArrayspec returns [List<Integer> sizes]
+@init{
+  sizes = new Vector<Integer>();
+  }
+  : '[' a=INT {$sizes.add(new Integer($a.text));}']'
+  ;
 
 arrayspec returns [List<Integer> sizes]
 @init{
