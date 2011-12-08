@@ -159,7 +159,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			startSimulation();
 		} catch (Exception e)
 		{
-			System.err.println("Aborting launch because of config error");
+			abort("Aborting launch because of config error", e);
 			launch.terminate();
 			// target.terminate();
 		}
