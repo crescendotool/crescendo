@@ -20,8 +20,7 @@ import org.eclipse.core.resources.IMarker;
 
 public class DestecsBuilder
 {
-	private static IAddErrorHandler errorHandler = new IAddErrorHandler()
-	{
+	private static IAddErrorHandler errorHandler = new IAddErrorHandler() {
 
 		public void addMarker(IFile file, String message, int lineNumber,
 				int columnNumber, int severity, String content)
@@ -64,7 +63,8 @@ public class DestecsBuilder
 				return;
 			}
 
-			if (!typeCheckContract(project.getContractFile(), model.getLinks(), model.getContract()))
+			if (!typeCheckContract(project.getContractFile(), model.getLinks(),
+					model.getContract()))
 			{
 				model.setLinks(null);
 				model.setChecked(false);
@@ -72,15 +72,18 @@ public class DestecsBuilder
 				return;
 			}
 
-			typeCheckLinks(project.getVdmLinkFile(), model.getLinks(), model.getContract());
+			typeCheckLinks(project.getVdmLinkFile(), model.getLinks(),
+					model.getContract());
 
-			DeMetadataChecker checker = new DeMetadataChecker(project, model.getLinks());
+			DeMetadataChecker checker = new DeMetadataChecker(project,
+					model.getLinks());
 			checker.checkLinks();
 			if (checker.hasErrors())
 			{
 				for (LinkError error : checker.getErrors())
 				{
-					addError(project.getVdmLinkFile(), error.getLine() + 1, error.getReason());
+					addError(project.getVdmLinkFile(), error.getLine() + 1,
+							error.getReason());
 				}
 				model.setOk(false);
 				model.setChecked(true);
@@ -101,13 +104,14 @@ public class DestecsBuilder
 			// TODO build with errors, set project state to build and error
 		}
 
-//		model.setChecked(isChecked);
-//		model.setOk(isOk);
+		// model.setChecked(isChecked);
+		// model.setOk(isOk);
 
 	}
 
 	/**
-	 * Re-parses the vdmlinks and clears all problem markers for the vdm link file
+	 * Re-parses the vdmlinks and clears all problem markers for the vdm link
+	 * file
 	 * 
 	 * @param project
 	 */
@@ -118,22 +122,27 @@ public class DestecsBuilder
 		{
 			model.setLinks(null);
 			model.setOk(false);
-		}
+		} else
+		{
 
-		FileUtility.deleteMarker(project.getVdmLinkFile(), IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
-		try
-		{
-			model.setLinks(ParserUtil.getVdmLinks(project, errorHandler));
-		} catch (Exception e)
-		{
-			addError(project.getVdmLinkFile(), 0, "Internal error: Failed to parse");
-			model.setLinks(null);
-			model.setOk(false);
+			FileUtility.deleteMarker(project.getVdmLinkFile(), IMarker.PROBLEM,
+					IDestecsCoreConstants.PLUGIN_ID);
+			try
+			{
+				model.setLinks(ParserUtil.getVdmLinks(project, errorHandler));
+			} catch (Exception e)
+			{
+				addError(project.getVdmLinkFile(), 0,
+						"Internal error: Failed to parse");
+				model.setLinks(null);
+				model.setOk(false);
+			}
 		}
 	}
 
 	/**
-	 * Re-parses the contract and clears all problem markers for the contract file
+	 * Re-parses the contract and clears all problem markers for the contract
+	 * file
 	 * 
 	 * @param project
 	 */
@@ -144,21 +153,27 @@ public class DestecsBuilder
 		{
 			model.setContract(null);
 			model.setOk(false);
-		}
-		FileUtility.deleteMarker(project.getContractFile(), IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
-		try
+		} else
 		{
-			model.setContract(ParserUtil.getContract(project, errorHandler));
-		} catch (Exception e)
-		{
-			addError(project.getContractFile(), 0, "Internal error: Failed to parse");
-			model.setContract(null);
-			model.setOk(false);
+
+			FileUtility.deleteMarker(project.getContractFile(),
+					IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
+			try
+			{
+				model.setContract(ParserUtil.getContract(project, errorHandler));
+			} catch (Exception e)
+			{
+				addError(project.getContractFile(), 0,
+						"Internal error: Failed to parse");
+				model.setContract(null);
+				model.setOk(false);
+			}
 		}
 	}
 
 	/**
-	 * Checks the link against the contract file and adds error markers to the link file
+	 * Checks the link against the contract file and adds error markers to the
+	 * link file
 	 * 
 	 * @param file
 	 *            this file is the link
@@ -174,7 +189,8 @@ public class DestecsBuilder
 		// check outputs
 		for (LinkInfo var : vdmlinks.getSharedDesignParameters().values())// )
 		{
-			if (!hasVariable(var.getIdentifier(), contract.getSharedDesignParameters()))
+			if (!hasVariable(var.getIdentifier(),
+					contract.getSharedDesignParameters()))
 			{
 				addWarning(file, var.getLine() + 1, "Shared design parameter ["
 						+ var.getIdentifier() + "] not present in the contract");
@@ -184,20 +200,24 @@ public class DestecsBuilder
 		// check outputs
 		for (LinkInfo var : vdmlinks.getOutputs().values())
 		{
-			if (!hasVariable(var.getIdentifier(), contract.getControlledVariables()))
+			if (!hasVariable(var.getIdentifier(),
+					contract.getControlledVariables()))
 			{
-				addWarning(file, var.getLine() + 1, "Output variable ["
-						+ var.getIdentifier() + "] not present in the contract");
+				addWarning(file, var.getLine() + 1,
+						"Output variable [" + var.getIdentifier()
+								+ "] not present in the contract");
 			}
 		}
 
 		// check inputs
 		for (LinkInfo var : vdmlinks.getInputs().values())
 		{
-			if (!hasVariable(var.getIdentifier(), contract.getMonitoredVariables()))
+			if (!hasVariable(var.getIdentifier(),
+					contract.getMonitoredVariables()))
 			{
-				addWarning(file, var.getLine() + 1, "Input variable ["
-						+ var.getIdentifier() + "] not present in the contract");
+				addWarning(file, var.getLine() + 1,
+						"Input variable [" + var.getIdentifier()
+								+ "] not present in the contract");
 			}
 		}
 
@@ -227,7 +247,8 @@ public class DestecsBuilder
 	}
 
 	/**
-	 * Checks the contract against the link file and adds error markers to the contract file
+	 * Checks the contract against the link file and adds error markers to the
+	 * contract file
 	 * 
 	 * @param file
 	 *            this file is the contract
@@ -243,15 +264,16 @@ public class DestecsBuilder
 		// check outputs
 		for (IVariable var : contract.getSharedDesignParameters())
 		{
-			if (!vdmlinks.getSharedDesignParameters().keySet().contains(var.getName()))
+			if (!vdmlinks.getSharedDesignParameters().keySet()
+					.contains(var.getName()))
 			{
-				addError(file, var.getLine() + 1, "Unlinked shared design parameter: "
-						+ var);
+				addError(file, var.getLine() + 1,
+						"Unlinked shared design parameter: " + var);
 				failed = true;
 			} else if (!vdmlinks.getLinks().containsKey(var.getName()))
 			{
-				addError(file, var.getLine() + 1, "Unlinked  shared design parameter link: "
-						+ var);
+				addError(file, var.getLine() + 1,
+						"Unlinked  shared design parameter link: " + var);
 				failed = true;
 			}
 		}
@@ -261,8 +283,8 @@ public class DestecsBuilder
 		{
 			if (!vdmlinks.getOutputs().keySet().contains(var.getName()))
 			{
-				addError(file, var.getLine() + 1, "Unlinked controlled variable: "
-						+ var);
+				addError(file, var.getLine() + 1,
+						"Unlinked controlled variable: " + var);
 				failed = true;
 			} else if (!vdmlinks.getLinks().containsKey(var.getName()))
 			{
@@ -278,11 +300,13 @@ public class DestecsBuilder
 		{
 			if (!vdmlinks.getInputs().keySet().contains(var.getName()))
 			{
-				addError(file, 0, "Unlinked monitored variable: " + var);
+				addError(file, var.getLine() + 1,
+						"Unlinked monitored variable: " + var);
 				failed = true;
 			} else if (!vdmlinks.getLinks().containsKey(var.getName()))
 			{
-				addError(file, 0, "Unlinked monitored variable link: " + var);
+				addError(file, var.getLine() + 1,
+						"Unlinked monitored variable link: " + var);
 				failed = true;
 			}
 
@@ -313,7 +337,8 @@ public class DestecsBuilder
 		{
 			if (names.contains(var.getName()))
 			{
-				FileUtility.addMarker(file, "Dublicate variable name: " + var, 0, IMarker.SEVERITY_ERROR);
+				FileUtility.addMarker(file, "Dublicate variable name: " + var,
+						0, IMarker.SEVERITY_ERROR);
 				failed = true;
 			} else
 			{
@@ -328,28 +353,30 @@ public class DestecsBuilder
 	{
 		switch (variable.getDataType())
 		{
-			case bool:
-				try
-				{
-					Boolean.parseBoolean(variable.getValue().toString());
-				} catch (Exception e)
-				{
-					FileUtility.addMarker(file, "Type error in variable expected 'true' or 'false' in: "
-							+ variable, 0, IMarker.SEVERITY_ERROR);
-					return false;
-				}
-				break;
-			case real:
-				try
-				{
-					Double.parseDouble(variable.getValue().toString());
-				} catch (Exception e)
-				{
-					FileUtility.addMarker(file, "Type error in variable expected 'true' or 'false' in: "
-							+ variable, 0, IMarker.SEVERITY_ERROR);
-					return false;
-				}
-				break;
+		case bool:
+			try
+			{
+				Boolean.parseBoolean(variable.getValue().toString());
+			} catch (Exception e)
+			{
+				FileUtility.addMarker(file,
+						"Type error in variable expected 'true' or 'false' in: "
+								+ variable, 0, IMarker.SEVERITY_ERROR);
+				return false;
+			}
+			break;
+		case real:
+			try
+			{
+				Double.parseDouble(variable.getValue().toString());
+			} catch (Exception e)
+			{
+				FileUtility.addMarker(file,
+						"Type error in variable expected 'true' or 'false' in: "
+								+ variable, 0, IMarker.SEVERITY_ERROR);
+				return false;
+			}
+			break;
 
 		}
 		return true;
