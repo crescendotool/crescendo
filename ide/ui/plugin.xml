@@ -361,6 +361,14 @@
             name="Shared Design Parameter Editor">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.destecs.ide.ui.DestecsPreferencePage"
+            id="org.destecs.ide.ui.page"
+            name="DESTECS">
+      </page>
+   </extension>
    
 <!-- 
 	New contract  command

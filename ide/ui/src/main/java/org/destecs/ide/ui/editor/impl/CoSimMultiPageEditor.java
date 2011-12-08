@@ -19,6 +19,9 @@
 package org.destecs.ide.ui.editor.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +40,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.JFaceResources;
@@ -60,6 +64,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
+
+import com.sun.imageio.plugins.common.InputStreamAdapter;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3 pages:
@@ -204,8 +210,17 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 
 		IFile vdmLinkFile = getProject().getVdmLinkFile();
 		handingFiles.put(vdmLinkFile, 1);
-		createPage1(createEditorInput(vdmLinkFile));
-
+		
+		if(!vdmLinkFile.exists())
+		{
+			createPage1(createEditorInput(vdmLinkFile));
+			createVdmLinkInitialTemplate(vdmLinkFile);
+		}
+		else
+		{
+			createPage1(createEditorInput(vdmLinkFile));
+		}
+		
 		createPage2();
 
 		createPage3();
@@ -220,6 +235,38 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		{
 			setActivePage(1);
 		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	protected void createVdmLinkInitialTemplate(IFile vdmLinkFile)
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("-- Linking of Shared Design Parameters\n");
+		sb.append("--sdp maxlevel=Controller.maxLevel;\n");
+		sb.append("--sdp minlevel=Controller.minLevel;\n\n");
+		
+		sb.append("-- Linking of Monitored Variables\n");
+		sb.append("--input level=System.levelSensor.level;\n\n");
+		
+		sb.append("-- Linking of Controlled Variables\n");
+		sb.append("--output valve=System.valveActuator.valveState;\n\n");
+		
+		sb.append("-- Linking of Events\n");
+		sb.append("--event HIGH=System.eventHandler.high;\n\n");
+				
+		sb.append("-- other linked names used in scenarios\n");
+		sb.append("--model fault=levelSensor.fault\n");
+				
+				
+		try
+		{
+			vdmLinkFile.setContents(new StringBufferInputStream(sb.toString()), true, true, new NullProgressMonitor());
+		} catch (CoreException e)
+		{
+			//DO nothing
+		}
+		
 	}
 
 	protected IEditorInput createEditorInput(IFile file)
