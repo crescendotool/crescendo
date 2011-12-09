@@ -12,6 +12,9 @@
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.perspective"
             name="DESTECS">
+         <description>
+            %DestecsPerspectiveDescription
+         </description>
       </perspective>
    </extension>
    
@@ -368,6 +371,19 @@
             id="org.destecs.ide.ui.page"
             name="DESTECS">
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.destecs.ide.ui.perspective">
+         <view
+               id="org.destecs.ide.ui.destecsExplorer"
+               minimized="false"
+               ratio="0.25"
+               relationship="left"
+               relative="org.eclipse.ui.editorss">
+         </view>
+      </perspectiveExtension>
    </extension>
    
 <!-- 

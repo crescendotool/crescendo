@@ -40,13 +40,13 @@ public class DestecsPerspectiveFactory implements IPerspectiveFactory {
 		bottomArea.addView(IPageLayout.ID_PROBLEM_VIEW);
 		
 		
-		IFolderLayout projectExplorerFolder = layout.createFolder("left", IPageLayout.LEFT, 0.20f,editorArea);
+//		IFolderLayout projectExplorerFolder = layout.createFolder("left", IPageLayout.LEFT, 0.20f,editorArea);
 		//projectExplorerFolder.addView("org.eclipse.ui.navigator.ProjectExplorer");
-		projectExplorerFolder.addView("org.destecs.ide.ui.destecsExplorer");
+//		projectExplorerFolder.addView("org.destecs.ide.ui.destecsExplorer");
 		
-		IFolderLayout rightArea = layout.createFolder("right", IPageLayout.RIGHT, 0.75f,editorArea);
-		rightArea.addView(IPageLayout.ID_OUTLINE);//CoSimStarterView.VIEW_ID);
-		
+	//	IFolderLayout rightArea = layout.createFolder("right", IPageLayout.RIGHT, 0.75f,editorArea);
+		//rightArea.addView(IPageLayout.ID_OUTLINE);//CoSimStarterView.VIEW_ID);
+		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, (float)0.75, editorArea);//CoSimStarterView.VIEW_ID);
 		
 				
 		

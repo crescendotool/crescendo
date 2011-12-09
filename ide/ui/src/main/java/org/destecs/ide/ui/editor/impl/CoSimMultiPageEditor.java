@@ -19,8 +19,6 @@
 package org.destecs.ide.ui.editor.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.util.Hashtable;
 import java.util.Map;
@@ -65,7 +63,6 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
 
-import com.sun.imageio.plugins.common.InputStreamAdapter;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3 pages:
@@ -75,6 +72,7 @@ import com.sun.imageio.plugins.common.InputStreamAdapter;
  * <li>page 2 shows the words in page 0 in sorted order
  * </ul>
  */
+@SuppressWarnings("deprecation")
 public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		IResourceChangeListener
 {
@@ -117,7 +115,6 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 	/**
 	 * Creates page 0 of the multi-page editor, which contains a text editor.
 	 */
-	@SuppressWarnings("deprecation")
 	void createPage0(IEditorInput input)
 	{
 		try
@@ -237,7 +234,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
+	
 	protected void createVdmLinkInitialTemplate(IFile vdmLinkFile)
 	{
 		StringBuffer sb = new StringBuffer();
