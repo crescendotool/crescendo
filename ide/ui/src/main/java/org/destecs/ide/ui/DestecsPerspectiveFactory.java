@@ -26,41 +26,28 @@ import org.eclipse.ui.IPerspectiveFactory;
 public class DestecsPerspectiveFactory implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
+		
 		String editorArea = layout.getEditorArea();
-
 		
-		//layout.setEditorAreaVisible(false);
-		//layout.addView(CoSimStarterView.VIEW_ID, IPageLayout.TOP, 0.75f, editorArea);
+		IFolderLayout bottomArea = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.75f,editorArea);
 		
-//		IFolderLayout mainArea = layout.createFolder("main", IPageLayout.TOP, 0.70f,editorArea);
-//		mainArea.addView("org.eclipse.ui.editorss");
-		IFolderLayout bottomArea = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.60f,editorArea);
-		
-		bottomArea.addView(InfoTableView.SIMULATION_MESSAGES_VIEW_ID);
+		bottomArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);
 		bottomArea.addView(IPageLayout.ID_PROBLEM_VIEW);
 		
 		
-//		IFolderLayout projectExplorerFolder = layout.createFolder("left", IPageLayout.LEFT, 0.20f,editorArea);
-		//projectExplorerFolder.addView("org.eclipse.ui.navigator.ProjectExplorer");
-//		projectExplorerFolder.addView("org.destecs.ide.ui.destecsExplorer");
-		
-	//	IFolderLayout rightArea = layout.createFolder("right", IPageLayout.RIGHT, 0.75f,editorArea);
-		//rightArea.addView(IPageLayout.ID_OUTLINE);//CoSimStarterView.VIEW_ID);
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, (float)0.75, editorArea);//CoSimStarterView.VIEW_ID);
 		
-				
 		
-		
-		IFolderLayout bottomLeftArea = layout.createFolder("bottomLeft", IPageLayout.LEFT, 0.50f,"bottom");
-		bottomLeftArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);
-		
-		IFolderLayout bottomRightArea = layout.createFolder("bottomRight", IPageLayout.RIGHT, 0.50f,"bottom");
-		bottomRightArea.addView(InfoTableView.SIMULATION_VIEW_ID);
+//		IFolderLayout bottomLeftArea = layout.createFolder("bottomLeft", IPageLayout.LEFT, 0.50f,"bottom");
+//		bottomLeftArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);
+//		
+//		IFolderLayout bottomRightArea = layout.createFolder("bottomRight", IPageLayout.RIGHT, 0.50f,"bottom");
+//		bottomRightArea.addView(InfoTableView.SIMULATION_VIEW_ID);
 		
 		
 		
 		
-		layout.addActionSet("org.eclipse.debug.ui.launchActionSet");
+//		layout.addActionSet("org.eclipse.debug.ui.launchActionSet");
 		
 		
 		
