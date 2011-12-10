@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.ide.simeng.actions.TerminationAction;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelection;
@@ -70,11 +68,11 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		{
 		}
 
-		@SuppressWarnings("unchecked")
 		public Object[] getElements(Object inputElement)
 		{
 			if (inputElement instanceof List)
 			{
+				@SuppressWarnings("rawtypes")
 				List list = (List) inputElement;
 				return list.toArray();
 			}
@@ -87,11 +85,11 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 			ITableLabelProvider
 	{
 
-		@SuppressWarnings("unchecked")
 		public String getColumnText(Object element, int columnIndex)
 		{
 			if (element instanceof List)
 			{
+				@SuppressWarnings("rawtypes")
 				List list = (List) element;
 				if (list.size() > columnIndex)
 				{
@@ -120,15 +118,6 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		this.terminationAction = new TerminationAction();
 	}
 
-	/**
-	 * Create menu.
-	 */
-	private void createMenu()
-	{
-		IMenuManager mgr = getViewSite().getActionBars().getMenuManager();
-		
-		mgr.add(terminationAction );
-	}
 	
 	public TerminationAction getTerminationAction()
 	{
