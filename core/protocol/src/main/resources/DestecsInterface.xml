@@ -37,7 +37,6 @@ Text:
 <li>Start the simulator
 <li>Step until simulation completed it's time
 <li>Stop the simulator. No future simulation is possible after this call.
-<li>UnLoad the model
 <li>Terminate the external tool if no more simulations should be performed
 </ol>
 
@@ -56,8 +55,6 @@ Commands:
 <li>Start
 <li>Step
 <li>Stop
-
-<li>UnLoad
 
 <li>Terminate
 
@@ -189,45 +186,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--UnLoad -->
-		<method>
-			<description>Unloads a file from its path</description>
-			<methodCall>
-				<methodName>Destecs.UnLoad</methodName>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>name</name>
-									<value>
-										<string>C:\My Models\PID_Controller.emx</string>
-									</value>
-									<description>name of the file or project to unload.</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
+
 		<!--QueryInterface -->
 		<method>
 			<description>
@@ -1326,195 +1285,70 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--WriteCSVFile -->
-		<method>
-			<description>Create a CSV file for the given list of variables.</description>
-			<methodCall>
-				<methodName>Destecs.WriteCSVFile</methodName>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>filePath</name>
-									<value>
-										<string>Location\filename.csv</string>
-									</value>
-								</member>
-								<member>
-									<name>variables</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<string>varName</string>
-												</value>
-											</data>
-										</array>
-									</value>
-									<description>list of variables</description>
-								</member>
-								<member>
-									<name>overwrite</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
+
 		<!-- Load2 -->
-
 		<method>
-
 			<description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
-
 			<methodCall>
-
 				<methodName>Destecs.Load2</methodName>
-
 				<params>
-
 					<param>
-
 						<value>
-
 							<struct>
-
 								<member>
-
 									<name>arguments</name>
-
 									<value>
-
 										<array>
-
 											<data>
-
 												<value>
-
 													<struct>
-
 														<member>
-
 															<name>argumentName</name>
-
 															<value>
-
 																<string>modelName</string>
-
 															</value>
-
 															<description>argument name</description>
-
 														</member>
-
 														<member>
-
 															<name>argumentValue</name>
-
 															<value>
-
 																<string>mymodel.vdm</string>
-
 															</value>
-
 															<description>argument value</description>
-
 														</member>
-
 													</struct>
-
 												</value>
-
 											</data>
-
 										</array>
-
 									</value>
-
-									<description>argument list for the tool to load and prepare a simulation</description>
-
+									<description>argument list for the tool to load and prepare 
+								a simulation</description>
 								</member>
-
-								<member>
-
-									<name>outputDir</name>
-
-									<value>
-
-										<string>c:\temp</string>
-
-									</value>
-
-									<description>output directory (relative or absolute) for the simulator to store e.g. logfiles</description>
-
-								</member>
-
+								<!-- member> <name>outputDir</name> <value> <string>c:\temp</string> 
+									</value> <description>output directory (relative or absolute) for the simulator 
+									to store e.g. logfiles</description> </member -->
 							</struct>
-
 						</value>
-
 					</param>
-
 				</params>
-
 			</methodCall>
-
 			<methodResponse>
-
 				<params>
-
 					<param>
-
 						<value>
-
 							<struct>
-
 								<member>
-
 									<name>success</name>
-
 									<value>
-
 										<boolean>true</boolean>
-
 									</value>
-
 									<description>if failed then the function will return a fault response</description>
-
 								</member>
-
 							</struct>
-
 						</value>
-
 					</param>
-
 				</params>
-
 			</methodResponse>
-
 		</method>
 		<!--SetLogVariables -->
 		<method>

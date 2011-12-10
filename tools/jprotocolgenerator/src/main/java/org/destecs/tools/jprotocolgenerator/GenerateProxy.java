@@ -154,7 +154,7 @@ public class GenerateProxy
 
 	private String generate(Method m)
 	{
-		if (hasMapParameter(m) && m.parameters.size() == 1)
+		if (hasMapParameter(m) /*&& m.parameters.size() == 1*/)
 		{
 			return generateExtendedMethod(m);
 		} else

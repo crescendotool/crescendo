@@ -37,13 +37,13 @@ import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.Load2Struct;
 import org.destecs.protocol.structs.Load2argumentsStructParam;
-import org.destecs.protocol.structs.LoadStruct;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructinputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructoutputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructsharedDesignParametersStruct;
 import org.destecs.protocol.structs.SetDesignParameterStruct;
 import org.destecs.protocol.structs.SetDesignParametersStruct;
+import org.destecs.protocol.structs.SetLogVariablesStruct;
 import org.destecs.protocol.structs.SetParametersStruct;
 import org.destecs.protocol.structs.StartStruct;
 import org.destecs.protocol.structs.StepStruct;
@@ -69,6 +69,7 @@ public class CoSimImpl implements IDestecs
 	private static final String LOAD_FILE = "file";
 	private static final String LOAD_BASE_DIR = "basedir";
 	private static final String LOAD_DEBUG_PORT = "dbgp_port";
+	public static final String LOAD_OUTPUT_DIR = "output_dir";
 	// settings
 	public static final String LOAD_SETTING_DISABLE_PRE = "settings_disable_pre";
 	public static final String LOAD_SETTING_DISABLE_POST = "settings_disable_post";
@@ -79,7 +80,7 @@ public class CoSimImpl implements IDestecs
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
 
-	private static final String version = "0.0.0.3";
+	private static final String version = "0.0.0.4";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 
 	public Map<String, Integer> getStatus()
@@ -104,62 +105,13 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> load(Map<String, String> data)
+	public Map<String, Boolean> load2(
+			Map<String, List<Map<String, Object>>> data)
 			throws RemoteSimulationException
 	{
-		String path = data.get(data.keySet().toArray()[0]);
-
-		try
-		{
-			final String linkFileName = "vdm.link";
-			final String specFileExtension = "vdmrt";
-			File root = new File(path);
-			File linkFile = new File(new File(root.getParentFile(), "configuration"), linkFileName);
-			final List<File> files = new Vector<File>();
-
-			files.addAll(getFiles(root, specFileExtension));
-
-			File outputFolder = new File(root.getParentFile(), "output");
-			return new LoadStruct(SimulationManager.getInstance().load(files, outputFolder, linkFile, files.get(0).getParentFile(), false, new Vector<String>())).toMap();
-		} catch (RemoteSimulationException e)
-		{
-			ErrorLog.log(e);
-			throw e;
-		}
-	}
-
-	/***
-	 * local helper function of load
-	 * 
-	 * @param path
-	 * @param extension
-	 * @return
-	 */
-	private static List<File> getFiles(File path, String extension)
-	{
-		List<File> files = new Vector<File>();
-
-		if (path.isFile() && path.getName().toLowerCase().endsWith(extension))
-		{
-			files.add(path);
-		} else if (path.isDirectory())
-		{
-			for (File file : path.listFiles())
-			{
-				files.addAll(getFiles(file, extension));
-			}
-
-		}
-		return files;
-	}
-
-	public Map<String, Boolean> load2(Map<String, Object> arg0)
-			throws RemoteSimulationException
-	{
-		@SuppressWarnings("rawtypes")
-		List tmp = Arrays.asList((Object[]) arg0.get("arguments"));
-
 		VDMCO.replaceNewIdentifier.clear();
+		Object o = data.get("arguments");
+		Object[] oo = (Object[]) o;
 
 		Settings.prechecks = true;
 		Settings.postchecks = true;
@@ -172,7 +124,8 @@ public class CoSimImpl implements IDestecs
 		File linkFile = null;
 		File baseDirFile = null;
 		List<String> variablesToLog = new Vector<String>();
-		for (Object in : tmp)
+		String outputDir = null;
+		for (Object in : oo)
 		{
 			if (in instanceof Map)
 			{
@@ -252,14 +205,18 @@ public class CoSimImpl implements IDestecs
 					String[] variables = arg.argumentValue.split(",");
 					variablesToLog.addAll(Arrays.asList(variables));
 				}
+				if (arg.argumentName.startsWith(LOAD_OUTPUT_DIR))
+				{
+					outputDir = arg.argumentValue;
+				}
 			}
 		}
 
-		String outputDir = (String) arg0.get("outputDir");
+		// String outputDir = (String) arg0.get("outputDir");
 
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog, variablesToLog)).toMap();
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog)).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -550,8 +507,8 @@ public class CoSimImpl implements IDestecs
 						+ o + " to Double");
 			}
 		}
-		
-		List<Integer> size= new Vector<Integer>();
+
+		List<Integer> size = new Vector<Integer>();
 
 		for (Object o : (Object[]) data.get("size"))
 		{
@@ -564,7 +521,6 @@ public class CoSimImpl implements IDestecs
 						+ o + " to Integer");
 			}
 		}
-		
 
 		Boolean success;
 		try
@@ -633,18 +589,26 @@ public class CoSimImpl implements IDestecs
 		return null;
 	}
 
-	public Map<String, Boolean> writeCSVFile(Map<String, Object> data)
-			throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public Map<String, Boolean> setLogVariables(Map<String, Object> data)
 			throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		try
+		{
+			List<String> logVariables = new Vector<String>();
+
+			for (Object o : (Object[]) data.get("variables"))
+			{
+				logVariables.add(o.toString());
+			}
+
+			SimulationManager.getInstance().setLogVariables(new File(data.get("filePath").toString()), logVariables);
+
+			return new SetLogVariablesStruct(true).toMap();
+		} catch (Exception e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
 	}
 
 	public List<Map<String, Object>> queryVariables() throws Exception
@@ -657,6 +621,12 @@ public class CoSimImpl implements IDestecs
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Deprecated
+	public Map<String, Boolean> load(Map<String, String> data) throws Exception
+	{
+		throw new RemoteSimulationException("Deprecated: Load not supported, use Load2");
 	}
 
 }

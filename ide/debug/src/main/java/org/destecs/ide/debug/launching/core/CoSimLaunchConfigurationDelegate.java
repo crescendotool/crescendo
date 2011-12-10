@@ -118,8 +118,8 @@ public class CoSimLaunchConfigurationDelegate extends
 	private ILaunchConfiguration configuration;
 	private boolean enableLogging = false;
 	private boolean showDebugInfo = false;
-	private String logVariablesVdm = null;
-	private String logVariables20Sim = null;
+	private List<String> logVariablesVdm = new Vector<String>();;
+	private List<String> logVariables20Sim = new Vector<String>();;
 	private String ourputFolderPrefix = "";
 	private boolean debug = false;;
 
@@ -133,13 +133,12 @@ public class CoSimLaunchConfigurationDelegate extends
 		try
 		{
 			loadSettings(configuration);
-			
+
 			IDestecsProject destecsProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 
 			Assert.isNotNull(destecsProject, " Project not found: "
 					+ configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
-			
 			IVdmProject vdmProject = (IVdmProject) project.getAdapter(IVdmProject.class);
 			if (vdmProject == null
 					|| (typeCheck && !VdmTypeCheckerUi.typeCheck(vdmProject, monitor)))
@@ -147,18 +146,14 @@ public class CoSimLaunchConfigurationDelegate extends
 				abort("Cannot launch a project (" + vdmProject.getName()
 						+ ") with type errors, please check the problems view", null);
 			}
-			
-			
+
 			if (destecsProject == null
 					|| (typeCheck &&!DestecsTypeCheckerUi.typeCheck(destecsProject, monitor)))
 			{
 				abort("Cannot launch a project (" + destecsProject.getName()
 						+ ") with errors, please check the problems view", null);
 			}
-			
-			
-			
-			
+
 			this.launch = launch;
 			target = new DestecsDebugTarget(launch, project, outputFolder);
 			this.launch.addDebugTarget(target);
@@ -206,8 +201,19 @@ public class CoSimLaunchConfigurationDelegate extends
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
 			enableLogging = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
-			logVariablesVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
-			logVariables20Sim = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
+			logVariablesVdm.clear();
+			String tmpVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
+			for (String var : tmpVdm.split(","))
+			{
+				logVariablesVdm.add(var);
+			}
+			logVariables20Sim.clear();
+			String tmp20Sim = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
+			for (String var : tmp20Sim.split(","))
+			{
+				logVariables20Sim.add(var);
+			}
+
 			debug = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, false);
 
 			String deUrlString = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
@@ -287,8 +293,7 @@ public class CoSimLaunchConfigurationDelegate extends
 								launch.terminate();
 							} catch (DebugException e)
 							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								DestecsDebugPlugin.logError("Failed to terminate launch", e);
 							}
 						}
 					});
@@ -342,11 +347,11 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.setDeEndpoint(deUrl);
 
 			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
-			engine.setCtModel(getCtModelConfig(ctFile)); 	
+			engine.setCtModel(getCtModelConfig(ctFile));
 			engine.setCtEndpoint(ctUrl);
 
 			engine.setOutputFolder(outputFolder);
-			engine.debug(debug );
+			engine.debug(debug);
 
 			engine.addProcessCreationListener(new IProcessCreationListener()
 			{
@@ -416,10 +421,11 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 	}
 
-	private ModelConfig getCtModelConfig(File ctFile) {
+	private ModelConfig getCtModelConfig(File ctFile)
+	{
 		CtModelConfig ctConfig = new CtModelConfig(ctFile);
-		ctConfig.arguments.put(CtModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariables20Sim);
-		
+		ctConfig.logVariables.addAll(logVariables20Sim);
+
 		return ctConfig;
 	}
 
@@ -427,14 +433,16 @@ public class CoSimLaunchConfigurationDelegate extends
 	{
 		final IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
 		final DeModelConfig model = new DeModelConfig();
+		model.logVariables.addAll(logVariablesVdm);
+		model.arguments.put(DeModelConfig.LOAD_OUTPUT_DIR, outputFolder.getAbsolutePath());
 		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);
 		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
 		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder().getLocation().toFile().getAbsolutePath());
 
-		if (logVariablesVdm != null && !logVariablesVdm.trim().isEmpty())
-		{
-			model.arguments.put(DeModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariablesVdm);
-		}
+		// if (logVariablesVdm != null && !logVariablesVdm.trim().isEmpty())
+		// {
+		// model.arguments.put(DeModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariablesVdm);
+		// }
 		if (deArchitectureFile != null && deArchitectureFile.exists())
 		{
 			StringBuffer architecture = new StringBuffer();
@@ -487,7 +495,6 @@ public class CoSimLaunchConfigurationDelegate extends
 			{
 				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_PRE, "true");
 			}
-
 			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_POST_CHECKS, true))// vdmProject.hasPostchecks())
 			{
 				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_POST, "true");
@@ -539,8 +546,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			return model;
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to create VDM model config", e);
 			return null;
 		}
 
@@ -555,10 +561,9 @@ public class CoSimLaunchConfigurationDelegate extends
 		try
 		{
 			return new ListenerToLog(outputFolder);
-		} catch (FileNotFoundException e1)
+		} catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to make log listener", e);
 		}
 		return null;
 	}
@@ -600,14 +605,14 @@ public class CoSimLaunchConfigurationDelegate extends
 				value.add((Double) result.get(name));
 				List<Integer> size = new Vector<Integer>();
 				size.add(1);
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value,size));
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
 			} else if (result.get(name) instanceof Integer)
 			{
 				List<Double> value = new Vector<Double>();
 				value.add(((Integer) result.get(name)).doubleValue());
 				List<Integer> size = new Vector<Integer>();
 				size.add(1);
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value,size ));
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
 			} else if (result.get(name) instanceof Boolean)
 			{
 				boolean r = ((Boolean) result.get(name)).booleanValue();
@@ -620,7 +625,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				value.add(val);
 				List<Integer> size = new Vector<Integer>();
 				size.add(1);
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value,size));
+				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
 			} else
 			{
 				throw new Exception("Design parameter type not supported by protocol: "
@@ -645,10 +650,9 @@ public class CoSimLaunchConfigurationDelegate extends
 			}
 			return null;
 
-		} catch (PartInitException e1)
+		} catch (PartInitException e)
 		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to create info table view", e);
 			return null;
 		}
 	}
@@ -753,14 +757,12 @@ public class CoSimLaunchConfigurationDelegate extends
 
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to create vdm launch config", e);
 		}
 
 		return wc;
 	}
-	
-	
+
 	/**
 	 * Throws an exception with a new status containing the given message and optional exception.
 	 * 

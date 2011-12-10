@@ -35,7 +35,6 @@ import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ThreadState;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.CPUResource;
 import org.overturetool.vdmj.scheduler.ISchedulableThread;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.values.BooleanValue;

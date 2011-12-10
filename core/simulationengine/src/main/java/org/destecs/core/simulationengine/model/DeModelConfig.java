@@ -30,6 +30,7 @@ public class DeModelConfig extends ModelConfig
 	public static final String LOAD_REPLACE = "replace";
 	public static final String LOAD_BASE_DIR = "basedir";
 	public static final String LOAD_DEBUG_PORT = "dbgp_port";
+	public static final String LOAD_OUTPUT_DIR = "output_dir";
 	// settings
 	public static final String LOAD_SETTING_DISABLE_PRE = "settings_disable_pre";
 	public static final String LOAD_SETTING_DISABLE_POST = "settings_disable_post";
@@ -41,6 +42,7 @@ public class DeModelConfig extends ModelConfig
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
 	
 	public static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
+	
 	
 	
 	private int fileCount = 0;

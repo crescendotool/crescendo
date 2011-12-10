@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 public class CtModelConfig extends ModelConfig
 {
 	
-	public static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
+//	public static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 	
 	public CtModelConfig(File file)
 	{

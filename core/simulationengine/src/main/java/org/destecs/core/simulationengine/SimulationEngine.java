@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -50,7 +49,6 @@ import org.destecs.core.simulationengine.listener.IProcessCreationListener;
 import org.destecs.core.simulationengine.listener.ISimulationListener;
 import org.destecs.core.simulationengine.listener.ISimulationStartListener;
 import org.destecs.core.simulationengine.listener.IVariableSyncListener;
-import org.destecs.core.simulationengine.model.CtModelConfig;
 import org.destecs.core.simulationengine.model.ModelConfig;
 import org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory;
 import org.destecs.core.xmlrpc.extensions.AnnotationClientFactory;
@@ -100,13 +98,12 @@ public class SimulationEngine
 	/**
 	 * Minimum required version for the DE simulator
 	 */
-	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 0, 3 };
+	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 0, 4 };
 
 	/**
-	 * Indicated that the class is used in the Eclipse Runtime environment. Used
-	 * to change loading of SAX Parser for XML-RPC -needed since Eclipse
-	 * replaced the javax.xml.parsers with an older Eclipse specific version.
-	 * <b>Must be false if running standalone in console mode</b>
+	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
+	 * XML-RPC -needed since Eclipse replaced the javax.xml.parsers with an older Eclipse specific version. <b>Must be
+	 * false if running standalone in console mode</b>
 	 */
 	public static boolean eclipseEnvironment = false;
 
@@ -222,14 +219,12 @@ public class SimulationEngine
 
 		if (deLauncher == null)
 		{
-			throw new InvalidSimulationLauncher(Simulator.DE,
-					"Launcher not set");
+			throw new InvalidSimulationLauncher(Simulator.DE, "Launcher not set");
 		}
 
 		if (ctLauncher == null)
 		{
-			throw new InvalidSimulationLauncher(Simulator.CT,
-					"Launcher not set");
+			throw new InvalidSimulationLauncher(Simulator.CT, "Launcher not set");
 		}
 	}
 
@@ -271,9 +266,8 @@ public class SimulationEngine
 				}
 			} catch (Exception e)
 			{
-				abort(Simulator.ALL,
-						"Could not parse contract "
-								+ contractFile.getAbsolutePath(), e);
+				abort(Simulator.ALL, "Could not parse contract "
+						+ contractFile.getAbsolutePath(), e);
 				return;
 			}
 
@@ -286,9 +280,9 @@ public class SimulationEngine
 			launchSimulator(Simulator.CT, ctLauncher);
 
 			// connect to the simulators
-			ProxyICoSimProtocol dtProxy = connect(Simulator.DE, deEndpoint);
+			ProxyICoSimProtocol deProxy = connect(Simulator.DE, deEndpoint);
 
-			initialize(Simulator.DE, dtProxy);
+			initialize(Simulator.DE, deProxy);
 
 			ProxyICoSimProtocol ctProxy = connect(Simulator.CT, ctEndpoint);
 
@@ -301,34 +295,35 @@ public class SimulationEngine
 			{
 				if (client.getClientConfig() instanceof XmlRpcClientConfigImpl)
 				{
-					((XmlRpcClientConfigImpl) client.getClientConfig())
-							.setReplyTimeout(0);
+					((XmlRpcClientConfigImpl) client.getClientConfig()).setReplyTimeout(0);
 				}
 			}
 
 			// load the models
-			loadModel(Simulator.DE, dtProxy, deModelBase);
+			loadModel(Simulator.DE, deProxy, deModelBase);
 
 			loadModel(Simulator.CT, ctProxy, ctModel);
 
 			// validate interfaces
-			validateInterfaces(contract, dtProxy, ctProxy);
+			validateInterfaces(contract, deProxy, ctProxy);
 
 			// set variables to log
-			setVariablesToLog(Simulator.CT, ctProxy, ctModel);
+			setLogVariables(Simulator.DE, deProxy, deModelBase);
+			setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			// set SDPs
-			setSharedDesignParameters(Simulator.DE, dtProxy,
-					sharedDesignParameters);
-			setSharedDesignParameters(Simulator.CT, ctProxy,
-					sharedDesignParameters);
+			setSharedDesignParameters(Simulator.DE, deProxy, sharedDesignParameters);
+			setSharedDesignParameters(Simulator.CT, ctProxy, sharedDesignParameters);
 
 			// start simulation
-			startSimulator(Simulator.DE, dtProxy);
+			startSimulator(Simulator.DE, deProxy);
 			startSimulator(Simulator.CT, ctProxy);
+			
+			//FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim at the moment
+			setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			long before = System.currentTimeMillis();
-			Double finishTime = simulate(totalSimulationTime, dtProxy, ctProxy);
+			Double finishTime = simulate(totalSimulationTime, deProxy, ctProxy);
 			long after = System.currentTimeMillis();
 			double totalSec = (double) (after - before) / 1000;
 			engineInfo(Simulator.ALL, "Simulation executed in "
@@ -336,13 +331,13 @@ public class SimulationEngine
 							+ ((int) totalSec % 60) + " mins." : totalSec
 							+ " secs."));
 
-			//writeLogFiles(Simulator.CT, ctProxy);
+			// writeLogFiles(Simulator.CT, ctProxy);
 
 			// stop the simulators
-			stop(Simulator.DE, finishTime, dtProxy);
+			stop(Simulator.DE, finishTime, deProxy);
 			stop(Simulator.CT, finishTime, ctProxy);
 
-			terminate(Simulator.DE, finishTime, dtProxy, deLauncher);
+			terminate(Simulator.DE, finishTime, deProxy, deLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
 		}
 		// catch(Exception e)
@@ -360,49 +355,42 @@ public class SimulationEngine
 		}
 	}
 
-	private void setVariablesToLog(Simulator simulator,
+	private void setLogVariables(Simulator simulator,
 			ProxyICoSimProtocol proxy, ModelConfig modelConfig)
 			throws SimulationException
 	{
-
-		String variablesToLog = modelConfig.arguments
-				.get(CtModelConfig.LOAD_SETTING_LOG_VARIABLES);
-
-		if (variablesToLog == null)
+		try
 		{
-			return;
-		}
-
-		if (variablesToLog.trim().length() == 0)
-		{
-			engineInfo(simulator, "Setting variables to log: none");
-		} else
-		{
-			String[] vars = variablesToLog.split(",");
-			List<String> varsList = new ArrayList<String>();
-			for (String v : vars)
+			if (modelConfig.logVariables.isEmpty())
 			{
-				varsList.add(v);
+				return;
 			}
 
-			String path = null;
-			engineInfo(simulator, "Writting variables to log: " + varsList.toString());
-			path = outputDirectory.getParent() + "\\20simVariables.csv";
-			//.getAbsolutePath() + "\\20simVariables.log";
+			String name = null;
+			switch (simulator)
+			{
+				case CT:
+					name = "20simVariables.csv";
+					break;
+				case DE:
+					name = "VdmVariables.csv";
+					break;
 
-			try
-			{
-				if (!varsList.isEmpty())
-				{
-					proxy.setLogVariables(path, false, varsList);
-				}
-			} catch (Exception e)
-			{
-				abort(simulator, "Failed to set log variables", e);
 			}
-			return;
-		}
 
+			if (name == null)
+			{
+				abort(simulator, "Could not construct name for variable log file.");
+			}
+
+			engineInfo(simulator, "Enable logging for:"
+					+ modelConfig.logVariables);
+			proxy.setLogVariables(new File(outputDirectory,name).getAbsolutePath(), false, new Vector<String>(modelConfig.logVariables));
+
+		} catch (Exception e)
+		{
+			abort(simulator, "Failed to set log variables", e);
+		}
 	}
 
 	private static void sleep()
@@ -471,9 +459,8 @@ public class SimulationEngine
 			}
 			if (!found)
 			{
-				abort(Simulator.ALL,
-						"Shared design parameter invalid to contract: \""
-								+ p.name + "\" in " + contractFile);
+				abort(Simulator.ALL, "Shared design parameter invalid to contract: \""
+						+ p.name + "\" in " + contractFile);
 				return false;
 			}
 		}
@@ -526,10 +513,8 @@ public class SimulationEngine
 		List<String> events = new Vector<String>();
 
 		// First initialize DT
-		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime,
-				new Vector<StepinputsStructParam>(), false, events);
-		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime,
-				outputToInput(deResult.outputs), false, events);
+		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
+		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, outputToInput(deResult.outputs), false, events);
 
 		// StepResult res = merge(deResult, ctResult);
 		// System.out.print(res.toHeaderString());
@@ -548,14 +533,12 @@ public class SimulationEngine
 			// res.deData, false, res.events);
 
 			// Step CT - step
-			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time,
-					outputToInput(deResult.outputs), false, deResult.events);
+			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
 			checkStepStructVariableSize(ctResult, Simulator.CT);
 			variableSyncInfo(merge(deResult, ctResult).getVariables());
 
 			// Step DT - step
-			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time,
-					outputToInput(ctResult.outputs), false, ctResult.events);
+			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
 			checkStepStructVariableSize(deResult, Simulator.DE);
 			// res = merge(deResult, ctResult);
 
@@ -607,9 +590,7 @@ public class SimulationEngine
 
 	private StepResult merge(StepStruct deResult, StepStruct ctResult)
 	{
-		return new StepResult(ctResult.time, deResult.time,
-				outputToInput(ctResult.outputs),
-				outputToInput(deResult.outputs), ctResult.events);
+		return new StepResult(ctResult.time, deResult.time, outputToInput(ctResult.outputs), outputToInput(deResult.outputs), ctResult.events);
 	}
 
 	public static class StepResult
@@ -740,8 +721,7 @@ public class SimulationEngine
 		List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
 		for (StepStructoutputsStruct stepStructoutputsStruct : outputs)
 		{
-			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name,
-					stepStructoutputsStruct.value, stepStructoutputsStruct.size));
+			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name, stepStructoutputsStruct.value, stepStructoutputsStruct.size));
 		}
 		return inputs;
 	}
@@ -938,8 +918,7 @@ public class SimulationEngine
 
 		}
 		engineInfo(source, "[Abort] " + reason + extendedReason);
-		throw new SimulationException(source, reason + extendedReason,
-				throwable);
+		throw new SimulationException(source, reason + extendedReason, throwable);
 	}
 
 	private static String getXmlRpcCause(RemoteSimulationException exception)
@@ -965,17 +944,14 @@ public class SimulationEngine
 
 			if (SimulationEngine.eclipseEnvironment)
 			{
-				client.setTransportFactory(new CustomSAXParserTransportFactory(
-						client));
+				client.setTransportFactory(new CustomSAXParserTransportFactory(client));
 			}
 
 			clients.add(client);
 			// add factory for annotations for generated protocol
-			AnnotationClientFactory factory = new AnnotationClientFactory(
-					client);
+			AnnotationClientFactory factory = new AnnotationClientFactory(client);
 
-			ICoSimProtocol protocol = (ICoSimProtocol) factory
-					.newInstance(ICoSimProtocol.class);
+			ICoSimProtocol protocol = (ICoSimProtocol) factory.newInstance(ICoSimProtocol.class);
 
 			protocolProxy = new ProxyICoSimProtocol(protocol);
 		} catch (Exception e)
@@ -996,14 +972,14 @@ public class SimulationEngine
 
 			switch (simulator)
 			{
-			case ALL:
-				break;
-			case CT:
-				ctVersion = version.version.trim();
-				break;
-			case DE:
-				deVersion = version.version.trim();
-				break;
+				case ALL:
+					break;
+				case CT:
+					ctVersion = version.version.trim();
+					break;
+				case DE:
+					deVersion = version.version.trim();
+					break;
 
 			}
 		} catch (Exception e)
@@ -1013,12 +989,12 @@ public class SimulationEngine
 
 		switch (simulator)
 		{
-		case CT:
-			versionCheck(simulator, ctVersion, MIN_VERSION_CT);
-			break;
-		case DE:
-			versionCheck(simulator, deVersion, MIN_VERSION_DE);
-			break;
+			case CT:
+				versionCheck(simulator, ctVersion, MIN_VERSION_CT);
+				break;
+			case DE:
+				versionCheck(simulator, deVersion, MIN_VERSION_DE);
+				break;
 
 		}
 
@@ -1046,50 +1022,35 @@ public class SimulationEngine
 	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
 			ModelConfig model) throws SimulationException
 	{
-		// FIXME: This should be fixed we should not have two different load
-		// methods in the protocol.
-		if (simulator == Simulator.DE
-				&& (deVersion.equals("0.0.0.2") || deVersion.equals("0.0.0.3")))
+		String absolutePath = new File(model.arguments.values().iterator().next()).getAbsolutePath();
+		try
 		{
-			try
+			engineInfo(simulator, "Loading model: " + model);
+			messageInfo(simulator, new Double(0), "load");
+			boolean success = false;
+			if (simulator == Simulator.CT)
+			{// FIXME: this call to load should be removed, it is only keept in the protocol because 20sim isnt updated
+				// yet.
+				success = proxy.load(absolutePath).success;
+			} else
 			{
-				engineInfo(simulator, "Loading model: " + model);
-				messageInfo(simulator, new Double(0), "load");
 				List<Load2argumentsStructParam> arguments = new Vector<Load2argumentsStructParam>();
 				for (Entry<String, String> entry : model.arguments.entrySet())
 				{
-					arguments.add(new Load2argumentsStructParam(entry
-							.getValue(), entry.getKey()));
+					arguments.add(new Load2argumentsStructParam(entry.getValue(), entry.getKey()));
 				}
 
-				boolean success = proxy.load2(
-						outputDirectory.getAbsolutePath(), arguments).success;
-				engineInfo(simulator,
-						"Loading model completed with no errors: " + success);
-				return success;
-			} catch (Exception e)
-			{
-				abort(simulator, "Could not load model", e);
+				success = proxy.load2(arguments).success;
 			}
-			abort(simulator, "Could not load model: " + model);
-		} else
+			engineInfo(simulator, "Loading model completed with no errors: "
+					+ success);
+			return success;
+		} catch (Exception e)
 		{
-			String absolutePath = new File(model.arguments.values().iterator()
-					.next()).getAbsolutePath();
-			try
-			{
-				engineInfo(simulator, "Loading model: " + model);
-				messageInfo(simulator, new Double(0), "load");
-				boolean success = proxy.load(absolutePath).success;
-				engineInfo(simulator,
-						"Loading model completed with no errors: " + success);
-				return success;
-			} catch (Exception e)
-			{
-				abort(simulator, "Could not load model: " + absolutePath, e);
-			}
-			abort(simulator, "Could not load model: " + absolutePath);
+			abort(simulator, "Could not load model: " + absolutePath, e);
 		}
+		abort(simulator, "Could not load model: " + absolutePath);
+		// }
 		return false;
 	}
 
@@ -1308,19 +1269,25 @@ public class SimulationEngine
 	{
 		if (enable)
 		{
-			Logger log = Logger
-					.getLogger("org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory$XmlRpcSun15HttpTransportCustomSAXReader");
+			Logger log = Logger.getLogger("org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory$XmlRpcSun15HttpTransportCustomSAXReader");
 			log.addAppender(new ConsoleAppender(new SimpleLayout()));
 			try
 			{
-				log.addAppender(new WriterAppender(new SimpleLayout(),
-						new FileWriter(new File(outputDirectory,
-								"log_xmlrpc.txt"))));
+				log.addAppender(new WriterAppender(new SimpleLayout(), new FileWriter(new File(outputDirectory, "log_xmlrpc.txt"))));
 			} catch (IOException e)
 			{
 			}
 
 			log.setLevel(Level.DEBUG);
+		} else
+		{
+			Logger log = Logger.getLogger("org.destecs.core.simulationengine.xmlrpc.client.CustomSAXParserTransportFactory$XmlRpcSun15HttpTransportCustomSAXReader");
+			// log.addAppender(new ConsoleAppender(new SimpleLayout()));
+			log.setLevel(Level.OFF);
+
+			log = Logger.getLogger("org.apache.xmlrpc.server.XmlRpcErrorLogger");
+			log.setLevel(Level.OFF);
+
 		}
 	}
 }

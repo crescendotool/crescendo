@@ -68,6 +68,11 @@ public class CoSim
 		log.addAppender(new ConsoleAppender(new SimpleLayout()));
 		log.setLevel(Level.OFF);
 		
+		log = Logger.getLogger("org.apache.xmlrpc.server.XmlRpcErrorLogger");
+		log.addAppender(new ConsoleAppender(new SimpleLayout()));
+		log.setLevel(Level.OFF);
+		
+		
 
 		if (!DEBUG)
 		{

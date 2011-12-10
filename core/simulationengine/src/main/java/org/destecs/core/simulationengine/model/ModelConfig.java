@@ -18,25 +18,33 @@
  *******************************************************************************/
 package org.destecs.core.simulationengine.model;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public abstract class ModelConfig
 {
 	public final Map<String, String> arguments = new Hashtable<String, String>();
+	public final Set<String> logVariables = new HashSet<String>();
 
 	public abstract boolean isValid();
-	
+
 	@Override
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();
-		
+
 		sb.append("Model(");
 		for (Entry<String, String> entry : arguments.entrySet())
 		{
-			sb.append(entry.getKey()+"="+entry.getValue());
+			String v = entry.getValue();
+			if ((v + "").isEmpty())
+			{
+				v = "\"\"";
+			}
+			sb.append(entry.getKey() + "=" + v + " ");
 		}
 		sb.append(")");
 		return sb.toString();

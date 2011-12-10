@@ -264,13 +264,13 @@ public class SimulationManager extends BasicSimulationManager
 	
 
 	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
-			File baseDirFile, boolean disableRtLog, List<String> variablesToLog)
+			File baseDirFile, boolean disableRtLog)
 			throws RemoteSimulationException
 	{
 		try
 		{
 			this.variablesToLog.clear();
-			this.variablesToLog.addAll(variablesToLog);
+//			this.variablesToLog.addAll(variablesToLog);
 			if (!linkFile.exists() || linkFile.isDirectory())
 			{
 				throw new RemoteSimulationException("The VDM link file does not exist: "
@@ -289,7 +289,7 @@ public class SimulationManager extends BasicSimulationManager
 				RTLogger.enable(false);
 			} else
 			{
-				controller.setLogFile(new File(outputDir, "logFile.logrt"));
+				controller.setLogFile(new File(outputDir, "ExecutionTrace.logrt"));
 			}
 
 			if (this.variablesToLog.isEmpty())
@@ -457,24 +457,37 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		this.mainContext = ctxt;
 
-		// This is called from the scheduler so we have a running system. So add listeners for log variables
-		if (!variablesToLog.isEmpty())
-		{
+		setLogVariables(simulationLogFile,new Vector<String>(variablesToLog));
+	}
 
+	protected void setLogVariables(File logFile, List<String> logVariables)
+	{
+		//Cache info it called before execution is started.
+		this.simulationLogFile = logFile;
+		this.variablesToLog.clear();
+		this.variablesToLog.addAll(logVariables);
+		
+		if(this.mainContext==null)
+		{
+			return;//Cant set log variables we dont have a running system.
+		}
+		// This is called from the scheduler so we have a running system. So add listeners for log variables
+		if (!logVariables.isEmpty())
+		{
 			try
 			{
-				PrintWriter p = new PrintWriter(new FileOutputStream(simulationLogFile, false));
-				SimulationLogger.setLogfile(p);
-
-				p = new PrintWriter(new FileOutputStream(new File(simulationLogFile.getAbsolutePath()
-						+ ".csv"), false));
+				PrintWriter p = new PrintWriter(new FileOutputStream(logFile, false));
 				SimulationLogger.setLogfileCsv(p);
+
+				p = new PrintWriter(new FileOutputStream(new File(logFile.getAbsolutePath()
+						+ ".log"), false));
+				SimulationLogger.setLogfile(p);
 			} catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
 			}
 
-			for (String name : variablesToLog)
+			for (String name : logVariables)
 			{
 				String[] names = name.split("\\.");
 				Value v = getRawValue(Arrays.asList(names), null);
