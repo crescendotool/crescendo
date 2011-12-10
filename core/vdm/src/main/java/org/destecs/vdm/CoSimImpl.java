@@ -50,7 +50,6 @@ import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.protocol.structs.StopStruct;
 import org.destecs.protocol.structs.TerminateStruct;
-import org.destecs.protocol.structs.UnLoadStruct;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.Settings;
@@ -374,11 +373,6 @@ public class CoSimImpl implements IDestecs
 		});
 		shutdown.start();
 		return new TerminateStruct(true).toMap();
-	}
-
-	public Map<String, Boolean> unLoad(Map<String, String> data)
-	{
-		return new UnLoadStruct(true).toMap();
 	}
 
 	public Map<String, Boolean> stop() throws RemoteSimulationException
