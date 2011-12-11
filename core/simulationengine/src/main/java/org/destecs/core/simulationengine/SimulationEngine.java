@@ -366,26 +366,14 @@ public class SimulationEngine
 				return;
 			}
 
-			String name = null;
-			switch (simulator)
+			if (modelConfig.logFile== null)
 			{
-				case CT:
-					name = "20simVariables.csv";
-					break;
-				case DE:
-					name = "VdmVariables.csv";
-					break;
-
-			}
-
-			if (name == null)
-			{
-				abort(simulator, "Could not construct name for variable log file.");
+				abort(simulator, "Preset logfile location is undefined.");
 			}
 
 			engineInfo(simulator, "Enable logging for:"
 					+ modelConfig.logVariables);
-			proxy.setLogVariables(new File(outputDirectory,name).getAbsolutePath(), false, new Vector<String>(modelConfig.logVariables));
+			proxy.setLogVariables(modelConfig.logFile.getAbsolutePath(), false, new Vector<String>(modelConfig.logVariables));
 
 		} catch (Exception e)
 		{

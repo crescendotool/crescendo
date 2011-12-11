@@ -18,6 +18,7 @@
  *******************************************************************************/
 package org.destecs.core.simulationengine.model;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
@@ -28,6 +29,7 @@ public abstract class ModelConfig
 {
 	public final Map<String, String> arguments = new Hashtable<String, String>();
 	public final Set<String> logVariables = new HashSet<String>();
+	public File logFile = null;
 
 	public abstract boolean isValid();
 

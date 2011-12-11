@@ -343,11 +343,13 @@ public class CoSimLaunchConfigurationDelegate extends
 			}
 
 			final int deDebugPort = findFreePort();
-			engine.setDeModel(getDeModelConfig(project, deDebugPort));
+			ModelConfig deModel = getDeModelConfig(project, deDebugPort);
+			engine.setDeModel(deModel);
 			engine.setDeEndpoint(deUrl);
 
 			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
-			engine.setCtModel(getCtModelConfig(ctFile));
+			ModelConfig ctModel = getCtModelConfig(ctFile);
+			engine.setCtModel(ctModel);
 			engine.setCtEndpoint(ctUrl);
 
 			engine.setOutputFolder(outputFolder);
@@ -360,6 +362,9 @@ public class CoSimLaunchConfigurationDelegate extends
 					launch.addProcess(DebugPlugin.newProcess(launch, p, name));
 				}
 			});
+			
+			target.setDeCsvFile(deModel.logFile);
+			target.setCtCsvFile(ctModel.logFile);
 
 			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
 
@@ -423,10 +428,14 @@ public class CoSimLaunchConfigurationDelegate extends
 
 	private ModelConfig getCtModelConfig(File ctFile)
 	{
-		CtModelConfig ctConfig = new CtModelConfig(ctFile);
-		ctConfig.logVariables.addAll(logVariables20Sim);
-
-		return ctConfig;
+		CtModelConfig model = new CtModelConfig(ctFile);
+		model.logVariables.addAll(logVariables20Sim);
+		if(!model.logVariables.isEmpty())
+		{
+			model.logFile = new File(outputFolder,"20simVariables.csv");
+		}
+		
+		return model;
 	}
 
 	private ModelConfig getDeModelConfig(IProject project2, int port)
@@ -434,6 +443,10 @@ public class CoSimLaunchConfigurationDelegate extends
 		final IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
 		final DeModelConfig model = new DeModelConfig();
 		model.logVariables.addAll(logVariablesVdm);
+		if(!model.logVariables.isEmpty())
+		{
+			model.logFile = new File(outputFolder,"VdmVariables.csv");
+		}
 		model.arguments.put(DeModelConfig.LOAD_OUTPUT_DIR, outputFolder.getAbsolutePath());
 		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);
 		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
@@ -720,7 +733,7 @@ public class CoSimLaunchConfigurationDelegate extends
 
 			wc.setAttribute(VDM_LAUNCH_CONFIG_STATIC_OPERATION, false);
 
-			wc.setAttribute(VDM_LAUNCH_CONFIG_ENABLE_LOGGING, true);
+			wc.setAttribute(VDM_LAUNCH_CONFIG_ENABLE_LOGGING, showDebugInfo);
 
 			wc.setAttribute(VDM_LAUNCH_CONFIG_REMOTE_DEBUG, true);
 

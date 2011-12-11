@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.SimulationEngine;
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.simeng.listener.ListenerToLog;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
@@ -83,16 +84,15 @@ public class CoSimulationThread extends Thread
 		{
 			log.close();
 		}
-		refreshProject();
 
 		try
 		{
 			target.terminate();
 		} catch (DebugException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to terminate destecs target", e);
 		}
+		refreshProject();
 
 		engine.shutdownSimulators();
 	}

@@ -18,9 +18,14 @@
  *******************************************************************************/
 package org.destecs.ide.debug.core.model.internal;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.debug.octave.OctaveFactory;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.PlatformObject;
@@ -42,8 +47,11 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 	final private IProject project;
 	private CoSimulationThread simulationThread;
 	private File outputFolder;
+	private File deCsvFile;
+	private File ctCsvFile;
 
-	public DestecsDebugTarget(ILaunch launch, IProject project, File outputFolder)
+	public DestecsDebugTarget(ILaunch launch, IProject project,
+			File outputFolder)
 	{
 		this.launch = launch;
 		this.project = project;
@@ -137,13 +145,39 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 	public void terminate() throws DebugException
 	{
 		this.isTerminated = true;
-		
-		if(simulationThread != null)
+
+		if (simulationThread != null)
 		{
 			simulationThread.stopSimulation();
 		}
-		
+
 		DebugEventHelper.fireTerminateEvent(this);
+
+		handlePostTerminationActions();
+	}
+
+	private void handlePostTerminationActions()
+	{
+		if (deCsvFile != null || ctCsvFile != null)
+		{
+			try
+			{
+				String content = OctaveFactory.createResultScript(outputFolder.getName(), deCsvFile, ctCsvFile);
+				writeFile(outputFolder, "results.m", content);
+			} catch (IOException e)
+			{
+				DestecsDebugPlugin.logError("Failed to write Octave script file.", e);
+			}
+		}
+	}
+
+	public static void writeFile(File outputFolder, String fileName,
+			String content) throws IOException
+	{
+		FileWriter outputFileReader = new FileWriter(new File(outputFolder, fileName));
+		BufferedWriter outputStream = new BufferedWriter(outputFileReader);
+		outputStream.write(content);
+		outputStream.close();
 	}
 
 	public boolean canResume()
@@ -221,10 +255,19 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 	{
 		this.simulationThread = simThread;
 	}
-	
+
 	public File getOutputFolder()
 	{
 		return this.outputFolder;
 	}
 
+	public void setCtCsvFile(File file)
+	{
+		this.ctCsvFile = file;
+	}
+
+	public void setDeCsvFile(File file)
+	{
+		this.deCsvFile = file;
+	}
 }
