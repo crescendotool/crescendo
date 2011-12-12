@@ -36,7 +36,41 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 
 public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 {
-	private static class SdpIncConfig
+	private static class SdpValueSetConfig implements ISdpContainer
+	{
+		public final String name;
+		public final Set<Double> values;
+		
+		
+		public SdpValueSetConfig(String[] colls) {
+			this.name = colls[0];
+			this.values = new HashSet<Double>();
+			
+			String[] valueStrings = colls[1].split(";");
+			
+			
+			for (int i = 0; i < valueStrings.length; i++) {
+				values.add(Double.parseDouble(valueStrings[i]));
+			}
+		}
+
+		public Set<Double> getValues()
+		{
+			return values;
+		}
+		
+		@Override
+		public String toString() {
+			return name + "=" + values.toString();
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
+	
+	
+	private static class SdpIncConfig implements ISdpContainer
 	{
 		public final String name;
 		public final Double from;
@@ -72,6 +106,10 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 		{
 			return name + " " + from + " to " + to + " by " + by;
 		}
+
+		public String getName() {
+			return name;
+		}
 	}
 
 	public Collection<? extends ILaunchConfiguration> generate(
@@ -82,12 +120,13 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 	{
 		final Set<ILaunchConfiguration> configs = new HashSet<ILaunchConfiguration>();
 
-		Set<SdpIncConfig> sdps = getSdps(configuration);
-		//Set<ILaunchConfiguration> baseSet = new HashSet<ILaunchConfiguration>();
-		//baseSet.add(baseConfig);
-		//configs.addAll(configurations);
+		
+		//generating incremental permutations
+		Set<ISdpContainer> sdps = getIncrementalSdps(configuration);
+		sdps.addAll(getValueSetSdps(configuration));
+		
 		boolean first = true;
-		for (SdpIncConfig sdp : sdps)
+		for (ISdpContainer sdp : sdps)
 		{
 			if(first)
 			{
@@ -105,6 +144,8 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 		printPermutations(configs);
 		return configs;
 	}
+
+	
 
 	private void printPermutations(Set<ILaunchConfiguration> configs)
 	{
@@ -126,7 +167,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 
 	public Set<ILaunchConfiguration> generatePermutations(
 			Set<ILaunchConfiguration> input, String outputPreFix,
-			SdpIncConfig sdp)
+			ISdpContainer sdp)
 	{
 		Set<ILaunchConfiguration> configs = new HashSet<ILaunchConfiguration>();
 
@@ -139,7 +180,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 					ILaunchConfigurationWorkingCopy copy;
 					copy = baseConfig.getWorkingCopy();
 					copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
-					setSharedDesignParameter(sdp.name, value, copy);
+					setSharedDesignParameter(sdp.getName(), value, copy);
 					configs.add(copy);
 				} catch (CoreException e)
 				{
@@ -184,12 +225,38 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 
 	}
 
-	public Set<SdpIncConfig> getSdps(ILaunchConfiguration baseConfig)
-	{
-		Set<SdpIncConfig> sdps = new HashSet<SharedDesignParameterAcaPlugin.SdpIncConfig>();
+	private Set<SdpValueSetConfig> getValueSetSdps(
+			ILaunchConfiguration baseConfig) {
+		
+		Set<SdpValueSetConfig> sdps = new HashSet<SharedDesignParameterAcaPlugin.SdpValueSetConfig>();
+		
 		try
 		{
-			String data = baseConfig.getAttribute(IDebugConstants.DESTECS_ACA_SHARED_DESIGN_PARAMETERS, "");
+			String data = baseConfig.getAttribute(IDebugConstants.DESTECS_ACA_VALUESET_SDPS, "");
+			if (data != null && !data.isEmpty())
+			{
+				String[] items = data.split(",");
+				for (String item : items)
+				{
+					String[] colls = item.split("\\|");
+					sdps.add(new SdpValueSetConfig(colls));
+				}
+			}
+		} catch (CoreException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		return sdps;
+	}
+	
+	public Set<ISdpContainer> getIncrementalSdps(ILaunchConfiguration baseConfig)
+	{
+		Set<ISdpContainer> sdps = new HashSet<ISdpContainer>();
+		try
+		{
+			String data = baseConfig.getAttribute(IDebugConstants.DESTECS_ACA_INCREMENTAL_SDPS, "");
 			if (data != null && !data.isEmpty())
 			{
 				String[] items = data.split(",");
