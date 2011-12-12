@@ -336,6 +336,8 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		final Table table = logViewer.getTable();
 
 		table.setHeaderVisible(true);
+		logViewer.setSorter(new Clp20simLogViewerSorter());
+		
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText("Variable Name");
 		column.setWidth(500);
