@@ -650,7 +650,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		return shareadDesignParameters;
 	}
 
-	private static InfoTableView getInfoTableView(String id)
+	public static InfoTableView getInfoTableView(String id)
 	{
 		IViewPart v;
 		try

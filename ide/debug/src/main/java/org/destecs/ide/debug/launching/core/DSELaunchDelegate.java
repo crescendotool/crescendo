@@ -19,40 +19,40 @@
 package org.destecs.ide.debug.launching.core;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 
+import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.AcaGenerator;
 import org.destecs.ide.debug.aca.plugin.ArchitectureAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.IncludeBaseConfigAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.SharedDesignParameterAcaPlugin;
-import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
+import org.destecs.ide.debug.core.model.internal.AcaSimulationManager;
+import org.destecs.ide.debug.core.model.internal.DestecsAcaDebugTarget;
+import org.destecs.ide.simeng.actions.ITerminationProxy;
+import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.eclipse.debug.ui.DebugUITools;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.progress.UIJob;
 
 public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 {
 
 	public void launch(ILaunchConfiguration configuration, final String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException
+			final ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{
 		monitor.beginTask("ACA execution", 100);
 		String baseLaunchName = launch.getLaunchConfiguration().getAttribute(IDebugConstants.DESTECS_ACA_BASE_CONFIG, "");
@@ -81,59 +81,42 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		monitor.worked(10);
 		final Set<ILaunchConfiguration> configurations = generator.generate();
 
-		int step = 90 / configurations.size();
-		monitor.setTaskName("Evaluating ACA generated launch configurations (total count "
-				+ configurations.size() + ")");
+		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
+		File base = dProject.getOutputFolder().getLocation().toFile();
 
-		for (final ILaunchConfiguration config : configurations)
+		DestecsAcaDebugTarget acaTarget = new DestecsAcaDebugTarget(launch, project, new File(base, outputPreFix), configurations);
+		launch.addDebugTarget(acaTarget);
+
+		AcaSimulationManager manager = new AcaSimulationManager(acaTarget);
+		manager.start();
+		acaTarget.setAcaSimulationManager(manager);
+		
+		UIJob listeners = new UIJob("Set Listeners")
 		{
-			if (monitor.isCanceled()||launch.isTerminated())
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
-				break;
-			}
-			monitor.worked(step);
-			System.out.println("Running ACA with: " + config.getName());
-			ILaunch acaLaunch = launch(config, mode);
-			IDebugTarget target = acaLaunch.getDebugTarget();
-			File outputFolder = target == null ? null
-					: ((DestecsDebugTarget) target).getOutputFolder();
-
-			while (!acaLaunch.isTerminated() && !monitor.isCanceled())
-			{
-				sleep(100);
-			}
-
-			if (acaLaunch != null && !acaLaunch.isTerminated())
-			{
-				acaLaunch.terminate();
-			}
-
-			@SuppressWarnings("unchecked")
-			Map<Object, Object> attributes = config.getAttributes();
-			String data = "** launch summery for ACA: " + config.getName();
-			for (Map.Entry<Object, Object> entry : attributes.entrySet())
-			{
-				data += entry.getKey() + " = " + entry.getValue() + "\n";
-			}
-
-			data += "\n\n----------------------- MEMENTO -------------------------------\n\n";
-			data += config.getMemento();
-
-			if (outputFolder != null)
-			{
-				try
+				final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
+				final InfoTableView engineView = CoSimLaunchConfigurationDelegate.getInfoTableView(engineViewId);
+				engineView.getTerminationAction().setTerminationProxy(new ITerminationProxy()
 				{
-					FileWriter outFile = new FileWriter(new File(outputFolder, "launch"));
-					PrintWriter out = new PrintWriter(outFile);
-					out.println(data);
-					out.close();
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+
+					public void terminate()
+					{
+						try
+						{
+							launch.terminate();
+						} catch (DebugException e)
+						{
+							DestecsDebugPlugin.logError("Failed to terminate launch", e);
+						}
+					}
+				});
+				return new Status(IStatus.OK, IDebugConstants.PLUGIN_ID, "Listeners OK");
 			}
-			sleep(1000);// just let the tools calm down.
-		}
+		};
+		listeners.schedule();
+
 		monitor.done();
 	}
 
@@ -148,49 +131,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 			}
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public void sleep(long millis)
-	{
-		try
-		{
-			Thread.sleep(millis);
-		} catch (InterruptedException e)
-		{
-		}
-	}
-
-	public abstract class UILaunchJob extends UIJob
-	{
-		public boolean isFinished = false;
-
-		public UILaunchJob(Display jobDisplay, String name)
-		{
-			super(jobDisplay, name);
-		}
-
-	}
-
-	private ILaunch launch(ILaunchConfiguration config, String mode)
-	{
-		if (config != null)
-		{
-			// DebugUITools.launch(config, mode);
-			try
-			{
-				ILaunch launch = DebugUITools.buildAndLaunch(config, mode, new NullProgressMonitor());
-				return launch;
-			} catch (CoreException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// DebugUIPlugin.launchInForeground(config,mode);
-
+			DestecsDebugPlugin.logError("Failed to get project from config for ACA launch", e);
 		}
 		return null;
 	}

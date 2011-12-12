@@ -73,6 +73,7 @@ public class ArchitectureAcaPlugin implements IAcaGeneratorPlugin
 							{
 								ILaunchConfigurationWorkingCopy copy = iLaunchConf.getWorkingCopy().copy(iLaunchConf.getName());
 								copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, resource.getProjectRelativePath().toString());
+								copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
 								results.add(copy);
 							}
 							
