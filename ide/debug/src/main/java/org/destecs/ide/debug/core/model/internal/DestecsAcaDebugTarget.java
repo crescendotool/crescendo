@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.debug.html.HtmlFactory;
 import org.destecs.ide.debug.octave.OctaveFactory;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
@@ -42,7 +43,8 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.ITerminate;
 import org.eclipse.debug.core.model.IThread;
 
-public class DestecsAcaDebugTarget extends PlatformObject implements IDebugTarget
+public class DestecsAcaDebugTarget extends PlatformObject implements
+		IDebugTarget
 {
 
 	private ILaunch launch;
@@ -58,7 +60,7 @@ public class DestecsAcaDebugTarget extends PlatformObject implements IDebugTarge
 		this.launch = launch;
 		this.project = project;
 		this.outputFolder = outputFolder;
-		this.acaConfigs =configurations;
+		this.acaConfigs = configurations;
 	}
 
 	public String getName() throws DebugException
@@ -161,15 +163,22 @@ public class DestecsAcaDebugTarget extends PlatformObject implements IDebugTarge
 
 	private void handlePostTerminationActions()
 	{
-		
-			try
-			{
-				String content = OctaveFactory.createAcaResultScript(outputFolder.getName(),acaManager.getCompletedTargets());
-				writeFile(outputFolder, "results.m", content);
-			} catch (IOException e)
-			{
-				DestecsDebugPlugin.logError("Failed to write Octave script file for ACA debug target.", e);
-			}
+		try
+		{
+			String content = HtmlFactory.createAcaResultOverview(outputFolder.getName(), acaManager.getCompletedTargets());
+			writeFile(outputFolder, "index.html", content);
+		} catch (IOException e)
+		{
+			DestecsDebugPlugin.logError("Failed to write HTML overview file for ACA debug target.", e);
+		}
+		try
+		{
+			String content = OctaveFactory.createAcaResultScript(outputFolder.getName(), acaManager.getCompletedTargets());
+			writeFile(outputFolder, "results.m", content);
+		} catch (IOException e)
+		{
+			DestecsDebugPlugin.logError("Failed to write Octave script file for ACA debug target.", e);
+		}
 	}
 
 	public static void writeFile(File outputFolder, String fileName,
