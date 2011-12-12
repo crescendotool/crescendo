@@ -31,15 +31,16 @@ public class DestecsPerspectiveFactory implements IPerspectiveFactory {
 		
 		IFolderLayout bottomArea = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.75f,editorArea);
 		
-		bottomArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);
+		//bottomArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);
 		bottomArea.addView(IPageLayout.ID_PROBLEM_VIEW);
 		
 		
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, (float)0.75, editorArea);//CoSimStarterView.VIEW_ID);
 		
 		
-//		IFolderLayout bottomLeftArea = layout.createFolder("bottomLeft", IPageLayout.LEFT, 0.50f,"bottom");
-//		bottomLeftArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);
+		IFolderLayout bottomLeftArea = layout.createFolder("bottomLeft", IPageLayout.LEFT, 0.50f,"bottom");
+		bottomLeftArea.addView(InfoTableView.SIMULATION_ENGINE_VIEW_ID);
+		
 //		
 //		IFolderLayout bottomRightArea = layout.createFolder("bottomRight", IPageLayout.RIGHT, 0.50f,"bottom");
 //		bottomRightArea.addView(InfoTableView.SIMULATION_VIEW_ID);
