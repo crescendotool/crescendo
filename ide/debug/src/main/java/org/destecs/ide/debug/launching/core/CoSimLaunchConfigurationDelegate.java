@@ -128,7 +128,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	{
 		IPreferenceStore store = DestecsUIPlugin.getDefault().getPreferenceStore();
 		Boolean typeCheck = store.getBoolean(IDestecsPreferenceConstants.ACTIVATE_DESTECSCHECK_PREFERENCE);
-		
+
 		this.configuration = configuration;
 		try
 		{
@@ -148,7 +148,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			}
 
 			if (destecsProject == null
-					|| (typeCheck &&!DestecsTypeCheckerUi.typeCheck(destecsProject, monitor)))
+					|| (typeCheck && !DestecsTypeCheckerUi.typeCheck(destecsProject, monitor)))
 			{
 				abort("Cannot launch a project (" + destecsProject.getName()
 						+ ") with errors, please check the problems view", null);
@@ -205,13 +205,19 @@ public class CoSimLaunchConfigurationDelegate extends
 			String tmpVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
 			for (String var : tmpVdm.split(","))
 			{
-				logVariablesVdm.add(var);
+				if (var.trim().length() > 0)
+				{
+					logVariablesVdm.add(var);
+				}
 			}
 			logVariables20Sim.clear();
 			String tmp20Sim = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
 			for (String var : tmp20Sim.split(","))
 			{
-				logVariables20Sim.add(var);
+				if (var.trim().length() > 0)
+				{
+					logVariables20Sim.add(var);
+				}
 			}
 
 			debug = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, false);
@@ -362,7 +368,7 @@ public class CoSimLaunchConfigurationDelegate extends
 					launch.addProcess(DebugPlugin.newProcess(launch, p, name));
 				}
 			});
-			
+
 			target.setDeCsvFile(deModel.logFile);
 			target.setCtCsvFile(ctModel.logFile);
 
@@ -430,11 +436,11 @@ public class CoSimLaunchConfigurationDelegate extends
 	{
 		CtModelConfig model = new CtModelConfig(ctFile);
 		model.logVariables.addAll(logVariables20Sim);
-		if(!model.logVariables.isEmpty())
+		if (!model.logVariables.isEmpty())
 		{
-			model.logFile = new File(outputFolder,"20simVariables.csv");
+			model.logFile = new File(outputFolder, "20simVariables.csv");
 		}
-		
+
 		return model;
 	}
 
@@ -443,9 +449,9 @@ public class CoSimLaunchConfigurationDelegate extends
 		final IDestecsProject p = (IDestecsProject) project2.getAdapter(IDestecsProject.class);
 		final DeModelConfig model = new DeModelConfig();
 		model.logVariables.addAll(logVariablesVdm);
-		if(!model.logVariables.isEmpty())
+		if (!model.logVariables.isEmpty())
 		{
-			model.logFile = new File(outputFolder,"VdmVariables.csv");
+			model.logFile = new File(outputFolder, "VdmVariables.csv");
 		}
 		model.arguments.put(DeModelConfig.LOAD_OUTPUT_DIR, outputFolder.getAbsolutePath());
 		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);
