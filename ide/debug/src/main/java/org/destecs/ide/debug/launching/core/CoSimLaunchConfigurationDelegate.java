@@ -289,7 +289,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 					final InfoTableView engineView = getInfoTableView(engineViewId);
-					engineView.getTerminationAction().setTerminationProxy(new ITerminationProxy()
+					engineView.getTerminationAction().addTerminationProxy(new ITerminationProxy()
 					{
 
 						public void terminate()

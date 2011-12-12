@@ -20,6 +20,8 @@ package org.destecs.ide.simeng.actions;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Vector;
 
 import org.destecs.ide.simeng.Activator;
 import org.eclipse.jface.action.Action;
@@ -34,7 +36,7 @@ public class TerminationAction extends Action
 
 	public TerminationAction(ITerminationProxy proxy)
 	{
-		this.proxy = proxy;
+		this.proxy.add( proxy);
 	}
 
 	@Override
@@ -67,19 +69,35 @@ public class TerminationAction extends Action
 		}
 	}
 
-	ITerminationProxy proxy;
+	final List<ITerminationProxy> proxy = new Vector<ITerminationProxy>();
 
-	public void setTerminationProxy(ITerminationProxy proxy)
+	public synchronized void addTerminationProxy(ITerminationProxy proxy)
 	{
-		this.proxy = proxy;
+		this.proxy.add(proxy);
+	}
+
+	public synchronized void removeTerminationProxy(ITerminationProxy proxy)
+	{
+		this.proxy.remove(proxy);
 	}
 
 	@Override
 	public void run()
 	{
-		if (this.proxy != null)
+		List<ITerminationProxy> proxies = new Vector<ITerminationProxy>(proxy);
+		for (ITerminationProxy p : proxies)
 		{
-			this.proxy.terminate();
+			if (p != null)
+			{
+				try
+				{
+					p.terminate();
+				} catch (Exception e)
+				{
+					// Ignore
+				}
+				removeTerminationProxy(p);
+			}
 		}
 	}
 }
