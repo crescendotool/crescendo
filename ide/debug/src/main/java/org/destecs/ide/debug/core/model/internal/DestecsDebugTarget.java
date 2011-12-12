@@ -270,4 +270,14 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 	{
 		this.deCsvFile = file;
 	}
+
+	public File getCtCsvFile()
+	{
+		return this.ctCsvFile;
+	}
+
+	public File getDeCsvFile()
+	{
+		return this.deCsvFile;
+	}
 }

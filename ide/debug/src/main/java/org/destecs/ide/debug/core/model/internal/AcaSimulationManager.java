@@ -44,6 +44,7 @@ public class AcaSimulationManager extends Thread
 	final private DestecsAcaDebugTarget target;
 	ILaunch activeLaunch;
 	boolean shouldStop = false;
+	final List<DestecsDebugTarget> completedTargets = new Vector<DestecsDebugTarget>();
 
 	public AcaSimulationManager(DestecsAcaDebugTarget target)
 	{
@@ -74,6 +75,7 @@ public class AcaSimulationManager extends Thread
 				ILaunch acaRunLaunch = launch(config, ILaunchManager.DEBUG_MODE);
 				setActiveLaunch(acaRunLaunch);
 				IDebugTarget target = acaRunLaunch.getDebugTarget();
+				completedTargets.add((DestecsDebugTarget) target);
 				File outputFolder = target == null ? null
 						: ((DestecsDebugTarget) target).getOutputFolder();
 
@@ -120,7 +122,7 @@ public class AcaSimulationManager extends Thread
 				e.printStackTrace();
 			}
 		}
-		
+
 		try
 		{
 			target.terminate();
@@ -200,5 +202,10 @@ public class AcaSimulationManager extends Thread
 		{
 			DestecsDebugPlugin.logError("Failed to stop ACA Manager.", e);
 		}
+	}
+
+	public List<DestecsDebugTarget> getCompletedTargets()
+	{
+		return this.completedTargets;
 	}
 }

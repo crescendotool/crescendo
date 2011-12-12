@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.debug.octave.OctaveFactory;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.PlatformObject;
@@ -49,8 +51,6 @@ public class DestecsAcaDebugTarget extends PlatformObject implements IDebugTarge
 	private AcaSimulationManager acaManager;
 	private File outputFolder;
 	private Set<ILaunchConfiguration> acaConfigs;
-//	private File deCsvFile;
-//	private File ctCsvFile;
 
 	public DestecsAcaDebugTarget(ILaunch launch, IProject project,
 			File outputFolder, Set<ILaunchConfiguration> configurations)
@@ -161,17 +161,15 @@ public class DestecsAcaDebugTarget extends PlatformObject implements IDebugTarge
 
 	private void handlePostTerminationActions()
 	{
-//		if (deCsvFile != null || ctCsvFile != null)
-//		{
-//			try
-//			{
-//				String content = OctaveFactory.createResultScript(outputFolder.getName(), deCsvFile, ctCsvFile);
-//				writeFile(outputFolder, "results.m", content);
-//			} catch (IOException e)
-//			{
-//				DestecsDebugPlugin.logError("Failed to write Octave script file.", e);
-//			}
-//		}
+		
+			try
+			{
+				String content = OctaveFactory.createAcaResultScript(outputFolder.getName(),acaManager.getCompletedTargets());
+				writeFile(outputFolder, "results.m", content);
+			} catch (IOException e)
+			{
+				DestecsDebugPlugin.logError("Failed to write Octave script file for ACA debug target.", e);
+			}
 	}
 
 	public static void writeFile(File outputFolder, String fileName,
