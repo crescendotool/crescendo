@@ -196,7 +196,10 @@ public class AcaSimulationManager extends Thread
 		try
 		{
 			ILaunch l = getActiveLaunch();
-			l.terminate();
+			if(l != null)
+			{
+				l.terminate();
+			}
 			this.interrupt();
 		} catch (Exception e)
 		{

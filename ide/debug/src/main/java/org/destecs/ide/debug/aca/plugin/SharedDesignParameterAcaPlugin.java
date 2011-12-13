@@ -239,7 +239,10 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 				for (String item : items)
 				{
 					String[] colls = item.split("\\|");
-					sdps.add(new SdpValueSetConfig(colls));
+					if(colls.length == 2)
+					{
+						sdps.add(new SdpValueSetConfig(colls));
+					}
 				}
 			}
 		} catch (CoreException e1)
