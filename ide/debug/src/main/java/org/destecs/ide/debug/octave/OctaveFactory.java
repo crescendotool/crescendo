@@ -33,6 +33,12 @@ public class OctaveFactory
 
 		sb.append("## Author: Kenneth Lausdahl\n");
 		sb.append("1;\n");
+
+		sb.append(getPlotDataFunction() + "\n\n\n");
+		sb.append(getCsvParseHeaderFunction() + "\n\n\n");
+		sb.append(getPlotLastFunction() + "\n\n\n");
+
+		sb.append("\n\n");
 		sb.append("function result = readResult ()\n");
 
 		sb.append(createResultStruct("result", name, deCsvFile == null ? null
@@ -44,6 +50,11 @@ public class OctaveFactory
 		sb.append("\n");
 		sb.append("## Load last result automatically\n");
 		sb.append("lastrun = readResult();\n");
+		sb.append("\n");
+		sb.append("\n");
+		sb.append("#Comment the lines below to disable auto plotting\n");
+		sb.append("plotrun(lastrun);\n");
+		sb.append("pause;\n");
 
 		return sb.toString();
 	}
@@ -54,16 +65,26 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
 
-		sb.append("de" + index + " = "
+		sb.append("de_header" + index + " = "
+				+ (deFile == null ? "\"\"" : "parseheader(\"" + deFile + "\")")
+				+ ";\n");
+		sb.append("de_data" + index + " = "
 				+ (deFile == null ? "\"\"" : "csvread(\"" + deFile + "\")")
 				+ ";\n");
-		sb.append("ct" + index + " = "
+
+		sb.append("ct_header" + index + " = "
+				+ (ctFile == null ? "\"\"" : "parseheader(\"" + ctFile + "\")")
+				+ ";\n");
+		sb.append("ct_data" + index + " = "
 				+ (ctFile == null ? "\"\"" : "csvread(\"" + ctFile + "\")")
 				+ ";\n");
+
 		sb.append("\n");
-		sb.append(variableName + " = struct(\"name\", \"" + name + "\",\n");
-		sb.append("\"de\",de" + index + ",\n");
-		sb.append("\"ct\",ct" + index + "\n");
+		sb.append(variableName + " = struct(\"name\", \"" + name.replace("_", "-") + "\",\n");
+		sb.append("\"de\",struct(\"header\",de_header" + index
+				+ ",\"data\",de_data" + index + "),\n");
+		sb.append("\"ct\",struct(\"header\",ct_header" + index
+				+ ",\"data\",ct_data" + index + ")\n");
 		sb.append(");\n");
 		sb.append("\n");
 		return sb.toString();
@@ -96,7 +117,7 @@ public class OctaveFactory
 		}
 
 		sb.append("\n");
-		sb.append("result = struct(\"name\", \"" + name + "\",\n");
+		sb.append("result = struct(\"name\", \"" + name.replace("_", "-") + "\",\n");
 		sb.append("\"runs\",{");
 		for (int j = 0; j < i; j++)
 		{
@@ -116,5 +137,60 @@ public class OctaveFactory
 		sb.append("lastaca = readAcaResult();\n");
 
 		return sb.toString();
+	}
+
+	private static String getPlotLastFunction()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("function plotrun (runx) \n");
+		sb.append("figure(1);\n");
+		sb.append("subplot(2,1,1);\n");
+		sb.append("plotdata(strcat(\"20-sim-\",runx.name), {runx.ct.header}, runx.ct.data);\n");
+		sb.append("\n");
+		//sb.append("figure(2);\n");
+		sb.append("subplot(2,1,2);\n");
+		sb.append("plotdata(strcat(\"VDM-\",runx.name), {runx.de.header}, runx.de.data);\n");
+		sb.append("endfunction\n");
+		return sb.toString();
+	}
+
+	private static String getCsvParseHeaderFunction()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("function header = parseheader (filename) \n");
+		sb.append("#open the file\n");
+		sb.append("[vfid, vmsg] = fopen (filename, \"r\");\n");
+		sb.append("if (isempty (vmsg) == false), error (vmsg); endif\n");
+		sb.append("\n");
+		sb.append("#Get the first line in the file (the header)\n");
+		sb.append("vstr = fgetl (vfid);\n");
+		sb.append("\n");
+		sb.append("#split the string and remove all the spaces\n");
+		sb.append("header = strtrim( strsplit(vstr,\",\",true) );\n");
+		sb.append("fclose(vfid);\n");
+		sb.append("endfunction\n");
+		return sb.toString();
+	}
+
+	private static String getPlotDataFunction()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("function plotdata (titleStr, header, data)\n");
+		sb.append("#number of curves in the file\n");
+		sb.append("curveCount = length(header);\n");
+		sb.append("\n");
+		sb.append("l = header;\n");
+		sb.append("l(1)=[];\n");
+		sb.append("\n");
+		sb.append("#plot the data\n");
+		sb.append("plot( data(:,1), data(:, 2:curveCount ) );\n");
+		sb.append("title(titleStr);\n");
+		sb.append("xlabel( header{1} );\n");
+		// sb.append("ylabel( (strvcat(header))(2:curveCount) );\n");
+		sb.append("legend(strvcat(l));\n");
+		sb.append("\n");
+		sb.append("endfunction\n");
+		return sb.toString();
+
 	}
 }

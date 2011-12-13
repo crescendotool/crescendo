@@ -280,7 +280,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 						// Set the control into the editor
 						editor.setEditor(text, item, column);
 
-						text.addModifyListener(fListener);
+//						text.addModifyListener(fListener);
 
 						// Add a handler to transfer the text back to the cell
 						// any time it's modified
@@ -294,6 +294,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 								{
 									Double.parseDouble(text.getText());
 									item.setText(col, text.getText());
+									updateLaunchConfigurationDialog();
 								} catch (Exception e)
 								{
 									setMessage("Specified value is not a double");
@@ -389,7 +390,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 						combo.setFocus();
 						editor.setEditor(combo, item, column);
 
-						combo.addModifyListener(fListener);
+//						combo.addModifyListener(fListener);
 
 						// Add a listener to set the selected item back into the cell
 						final int col = column;
@@ -400,7 +401,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 								item.setText(col, combo.getText());
 								// setDirty(true);
 								// updateLaunchConfigurationDialog();
-
+								updateLaunchConfigurationDialog();
 								// They selected an item; end the editing session
 								combo.dispose();
 							}
@@ -425,7 +426,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 						// Set the control into the editor
 						editor.setEditor(text, item, column);
 
-						text.addModifyListener(fListener);
+//						text.addModifyListener(fListener);
 
 						// Add a handler to transfer the text back to the cell
 						// any time it's modified
@@ -455,6 +456,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 
 								// setDirty(true);
 								// updateLaunchConfigurationDialog();
+									updateLaunchConfigurationDialog();
 							}
 
 							private boolean parseInputText(String text) {
