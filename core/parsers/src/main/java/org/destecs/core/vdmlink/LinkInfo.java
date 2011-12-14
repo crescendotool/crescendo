@@ -63,6 +63,20 @@ public class LinkInfo {
 		return qualifiedName;
 	}
 	
+	public String getQualifiedNameString() {
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<String> itr = getQualifiedName().iterator(); itr.hasNext();)
+		{
+			sb.append( itr.next());
+			if(itr.hasNext())
+			{
+				sb.append(".");
+			}
+			
+		}
+		return sb.toString();
+	}
+	
 	@Override
 	public String toString()
 	{

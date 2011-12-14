@@ -433,7 +433,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 					String id = "?";
 					if (info != null)
 					{
-						id = info.toString();
+						id = info.getQualifiedNameString();
 					}
 					sb.append(id + " <-> " + sdp.getName() + " <-> "
 							+ sdp.getName() + " not checked\n");
@@ -449,7 +449,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 					String id = "?";
 					if (info != null)
 					{
-						id = info.toString();
+						id = info.getQualifiedNameString();
 					}
 					sb.append(id + " <-> " + sdp.getName() + " <-> "
 							+ sdp.getName() + " not checked\n");
@@ -464,7 +464,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 					String id = "?";
 					if (info != null)
 					{
-						id = info.toString();
+						id = info.getQualifiedNameString();
 					}
 					sb.append(id + " <-> " + sdp.getName() + " <-> "
 							+ sdp.getName() + " not checked\n");
@@ -479,7 +479,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 					String id = "?";
 					if (info != null)
 					{
-						id = info.toString();
+						id = info.getQualifiedNameString();
 					}
 					sb.append(id + " <-> " + event + " <-> not supported\n");
 				}
