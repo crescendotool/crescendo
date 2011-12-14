@@ -26,6 +26,8 @@ import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.ui.DestecsUIPlugin;
+import org.destecs.ide.ui.IDestecsPreferenceConstants;
 import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
@@ -37,6 +39,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -497,9 +500,13 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		
 		IDestecsProject destecsProject = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
 		DestecsModel destecsModel = destecsProject.getModel();
+		
+		IPreferenceStore store = DestecsUIPlugin.getDefault().getPreferenceStore();
+		Boolean typeCheck = store.getBoolean(IDestecsPreferenceConstants.ACTIVATE_DESTECSCHECK_PREFERENCE);
+		
 		if (!destecsModel.isOk())
 		{
-			if (!DestecsTypeCheckerUi.typeCheck(getShell(), destecsProject))
+			if (typeCheck && !DestecsTypeCheckerUi.typeCheck(getShell(), destecsProject))
 			{
 				setErrorMessage("Errors in Model Configuration.: (Contract or VDM Link)");
 				return false;
