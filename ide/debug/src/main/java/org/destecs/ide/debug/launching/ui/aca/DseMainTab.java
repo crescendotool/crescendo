@@ -71,6 +71,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 
 	protected WidgetListener fListener = new WidgetListener();
 	private Text fBaseLaunchConfigNameText;
+	private Button checkBoxShowOctavePlot = null;
 
 	public void createControl(Composite parent)
 	{
@@ -103,7 +104,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 
 		GridLayout layout = new GridLayout();
 		layout.makeColumnsEqualWidth = false;
-		layout.numColumns = 3;
+		layout.numColumns = 2;
 		group.setLayout(layout);
 
 		fBaseLaunchConfigNameText = new Text(group, SWT.SINGLE | SWT.BORDER
@@ -188,6 +189,13 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 				}
 			}
 		});
+		
+		
+		
+		checkBoxShowOctavePlot = new Button(group, SWT.CHECK);
+		checkBoxShowOctavePlot.setText("Show Octave Plots From Script");
+		checkBoxShowOctavePlot.setSelection(false);
+		checkBoxShowOctavePlot.addSelectionListener(fListener);
 
 	}
 
@@ -206,6 +214,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		try
 		{
 			fBaseLaunchConfigNameText.setText(configuration.getAttribute(IDebugConstants.DESTECS_ACA_BASE_CONFIG, ""));
+			checkBoxShowOctavePlot.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
 
 		} catch (CoreException e)
 		{
@@ -280,10 +289,12 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_ACA_BASE_CONFIG, fBaseLaunchConfigNameText.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, checkBoxShowOctavePlot.getSelection());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false);
 	}
 
 }

@@ -27,7 +27,7 @@ public class OctaveFactory
 {
 
 	public static String createResultScript(String name, File deCsvFile,
-			File ctCsvFile)
+			File ctCsvFile, boolean autoShow)
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -52,10 +52,12 @@ public class OctaveFactory
 		sb.append("lastrun = readResult();\n");
 		sb.append("\n");
 		sb.append("\n");
-		sb.append("#Comment the lines below to disable auto plotting\n");
-		sb.append("plotrun(lastrun);\n");
-		sb.append("pause;\n");
-
+		if (autoShow)
+		{
+			sb.append("#Comment the lines below to disable auto plotting\n");
+			sb.append("plotrun(lastrun);\n");
+			sb.append("pause;\n");
+		}
 		return sb.toString();
 	}
 
@@ -80,23 +82,34 @@ public class OctaveFactory
 				+ ";\n");
 
 		sb.append("\n");
-		sb.append(variableName + " = struct(\"name\", \"" + name.replace("_", "-") + "\",\n");
-		sb.append("\"de\",struct(\"header\",de_header" + index
-				+ ",\"data\",de_data" + index + "),\n");
-		sb.append("\"ct\",struct(\"header\",ct_header" + index
-				+ ",\"data\",ct_data" + index + ")\n");
+		sb.append(variableName + " = struct(\"name\", \""
+				+ name.replace("_", "-") + "\",\n");
+		sb.append("\"de\",struct(\"header\",{de_header" + index
+				+ "},\"data\",{de_data" + index + "}),\n");
+		sb.append("\"ct\",struct(\"header\",{ct_header" + index
+				+ "},\"data\",{ct_data" + index + "})\n");
 		sb.append(");\n");
 		sb.append("\n");
 		return sb.toString();
 	}
 
 	public static String createAcaResultScript(String name,
-			List<DestecsDebugTarget> completedTargets)
+			List<DestecsDebugTarget> completedTargets, boolean autoShow)
 	{
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("## Author: Kenneth Lausdahl\n");
 		sb.append("1;\n");
+
+		sb.append(getCsvParseHeaderFunction());
+		sb.append("\n");
+		sb.append("\n");
+		sb.append(getAddnumtolegend());
+		sb.append("\n");
+		sb.append("\n");
+		sb.append(getPlotMultipleRuns());
+		sb.append("\n");
+		sb.append("\n");
 		sb.append("function result = readAcaResult ()\n");
 
 		sb.append("\n");
@@ -117,8 +130,9 @@ public class OctaveFactory
 		}
 
 		sb.append("\n");
-		sb.append("result = struct(\"name\", \"" + name.replace("_", "-") + "\",\n");
-		sb.append("\"runs\",{");
+		sb.append("result = struct(\"name\", \"" + name.replace("_", "-")
+				+ "\",\n");
+		sb.append("\"runs\",{{");
 		for (int j = 0; j < i; j++)
 		{
 			sb.append("result" + j);
@@ -127,7 +141,7 @@ public class OctaveFactory
 				sb.append(", ");
 			}
 		}
-		sb.append("}\n");
+		sb.append("}}\n");
 		sb.append(");\n");
 		sb.append("\n");
 		sb.append("endfunction\n");
@@ -136,6 +150,13 @@ public class OctaveFactory
 		sb.append("## Load last result automatically\n");
 		sb.append("lastaca = readAcaResult();\n");
 
+		if (autoShow)
+		{
+			sb.append("#Comment the lines below to disable auto plotting\n");
+			sb.append("plotmultipleruns(lastaca);\n");
+			sb.append("pause;\n");
+		}
+		
 		return sb.toString();
 	}
 
@@ -145,11 +166,11 @@ public class OctaveFactory
 		sb.append("function plotrun (runx) \n");
 		sb.append("figure(1);\n");
 		sb.append("subplot(2,1,1);\n");
-		sb.append("plotdata(strcat(\"20-sim-\",runx.name), {runx.ct.header}, runx.ct.data);\n");
+		sb.append("plotdata(strcat(\"20-sim-\",runx.name), runx.ct.header, runx.ct.data);\n");
 		sb.append("\n");
-		//sb.append("figure(2);\n");
+		// sb.append("figure(2);\n");
 		sb.append("subplot(2,1,2);\n");
-		sb.append("plotdata(strcat(\"VDM-\",runx.name), {runx.de.header}, runx.de.data);\n");
+		sb.append("plotdata(strcat(\"VDM-\",runx.name), runx.de.header, runx.de.data);\n");
 		sb.append("endfunction\n");
 		return sb.toString();
 	}
@@ -192,5 +213,94 @@ public class OctaveFactory
 		sb.append("endfunction\n");
 		return sb.toString();
 
+	}
+
+	private static String getAddnumtolegend()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("function runlegend = addnumtolegend (count)\n");
+		sb.append("runlegend = {};\n");
+		sb.append("	    \n");
+		sb.append("for i=1:count\n");
+		sb.append("		runlegend{i} = [\"run\" int2str(i)];\n");
+		sb.append("end\n");
+		sb.append("   \n");
+		sb.append("endfunction\n");
+		return sb.toString();
+	}
+
+	private static String getPlotMultipleRuns()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("function plotmultipleruns (data)\n");
+		sb.append("	    #data must be a struct with name and runs field.\n");
+		sb.append("	    #name field will be used as title for the plot\n");
+		sb.append("	    #runs field contains each run. each run has the DE & CT Data\n");
+		sb.append("\n");
+		sb.append("	    #number of runs\n");
+		sb.append("	    runs = data.runs;\n");
+		sb.append("	    runCount = length(runs);\n");
+		sb.append("\n");
+		sb.append("	    #\n");
+		sb.append("	    #plot the ct data\n");
+		sb.append("	    #\n");
+		sb.append("	    ct_header = runs{1}.ct.header;\n");
+		sb.append("	    ct_curveCount = length(ct_header) - 1;\n");
+		sb.append("\n");
+		sb.append("	    #create new figure\n");
+		sb.append("	    figure(1, \"name\", [\"ct-\" data.name] );\n");
+		sb.append("\n");
+		sb.append("	    plotindex = 1;\n");
+		sb.append("	    for i=1:ct_curveCount\n");
+		sb.append("\n");
+		sb.append("	        subplot( ct_curveCount , 1, plotindex);\n");
+		sb.append("	        hold on;\n");
+		sb.append("\n");
+		sb.append("	        for j=1:runCount\n");
+		sb.append("	            ct_time = runs{j}.ct.data(:,1);\n");
+		sb.append("	            ct_data = runs{j}.ct.data(:,1+i);\n");
+		sb.append("\n");
+		sb.append("	            plot( ct_time, ct_data, int2str(j) );\n");
+		sb.append("	        end\n");
+		sb.append("\n");
+		sb.append("	        ylabel( ct_header{1+i} );\n");
+		sb.append("			legend ('right');legend('boxon');\n");
+		sb.append("	        legend( addnumtolegend(runCount), \"location\", 'rightoutside' );\n");
+		sb.append("	        plotindex = plotindex + 1;\n");
+		sb.append("	    end\n");
+		sb.append("	    xlabel(\"time {s}\");\n");
+		sb.append("\n");
+		sb.append("	    #\n");
+		sb.append("	    #plot the de data\n");
+		sb.append("	    #\n");
+		sb.append("	    de_header = runs{1}.de.header;\n");
+		sb.append("	    de_curveCount = length(de_header) - 1;\n");
+		sb.append("\n");
+		sb.append("	    #create new figure\n");
+		sb.append("	    figure(2, \"name\", [\"de-\" data.name] );\n");
+		sb.append("\n");
+		sb.append("	    plotindex = 1;\n");
+		sb.append("	    for i=1:ct_curveCount\n");
+		sb.append("\n");
+		sb.append("	        subplot( de_curveCount , 1, plotindex);\n");
+		sb.append("	        hold on;\n");
+		sb.append("\n");
+		sb.append("	        for j=1:runCount\n");
+		sb.append("				de_time = runs{j}.de.data(:,1);\n");
+		sb.append("         	de_data = runs{j}.de.data(:,1+i);\n");
+		sb.append("\n");
+		sb.append("        		stairs( de_time, de_data, int2str(j) );\n");
+		sb.append("     	end\n");
+		sb.append("\n");
+		sb.append("     	ylabel( de_header{1+i} );\n");
+		sb.append("			legend ('right');legend('boxon');\n");
+		sb.append("     	legend( addnumtolegend(runCount) , \"location\", 'rightoutside');\n");
+		sb.append("    		plotindex = plotindex + 1;\n");
+		sb.append("		end\n");
+		sb.append("		xlabel(\"time {s}\");\n");
+		sb.append("   \n");
+		sb.append("endfunction\n");
+		return sb.toString();
 	}
 }

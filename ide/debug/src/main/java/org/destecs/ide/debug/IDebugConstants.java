@@ -39,6 +39,7 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_DE_REPLACE = "DESTECS_LAUNCH_CONFIG_DE_REPLACE".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE = "DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE".toLowerCase();
 	
+	public static final String DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS = "DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS".toLowerCase();
 	
 	public static final String ATTR_DESTECS_PROGRAM = "org.destecs.ide.debug.launchConfigurationType";
 	

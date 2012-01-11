@@ -28,6 +28,7 @@ import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.octave.OctaveFactory;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
@@ -162,11 +163,14 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 		{
 			try
 			{
-				String content = OctaveFactory.createResultScript(outputFolder.getName(), deCsvFile, ctCsvFile);
+				String content = OctaveFactory.createResultScript(outputFolder.getName(), deCsvFile, ctCsvFile,launch.getLaunchConfiguration().getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
 				writeFile(outputFolder, "results.m", content);
 			} catch (IOException e)
 			{
 				DestecsDebugPlugin.logError("Failed to write Octave script file.", e);
+			}catch (CoreException e)
+			{
+				DestecsDebugPlugin.logError("Failed to get Octave shoew option from launchconfig in destecs debug target.", e);
 			}
 		}
 	}
