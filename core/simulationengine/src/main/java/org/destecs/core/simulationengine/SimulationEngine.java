@@ -557,6 +557,12 @@ public class SimulationEngine
 			checkStepStructVariableSize(ctResult, Simulator.CT);
 			variableSyncInfo(merge(deResult, ctResult).getVariables());
 
+			//This is added to protect 20-sim from being flooded with steps to the same time, when it already reported that it could not do it.
+			if(ctResult.time < deResult.time && ctResult.events.isEmpty())
+			{
+				abort(Simulator.CT, "Simulator not able to progress to "+deResult.time+ " could only do "+ctResult.time+" with not events detected. Simulation is stuck!");
+			}
+			
 			// Step DT - step
 			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
 			checkStepStructVariableSize(deResult, Simulator.DE);
