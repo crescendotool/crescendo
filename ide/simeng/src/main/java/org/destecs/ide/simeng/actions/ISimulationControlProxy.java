@@ -18,7 +18,9 @@
  *******************************************************************************/
 package org.destecs.ide.simeng.actions;
 
-public interface ITerminationProxy
+public interface ISimulationControlProxy
 {
 	public void terminate();
+	public void pause();
+	public void resume();
 }

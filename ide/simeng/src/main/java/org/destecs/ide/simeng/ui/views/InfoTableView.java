@@ -21,6 +21,9 @@ package org.destecs.ide.simeng.ui.views;
 import java.util.List;
 import java.util.Vector;
 
+import org.destecs.ide.simeng.actions.BaseSimulationControlAction;
+import org.destecs.ide.simeng.actions.PauseAction;
+import org.destecs.ide.simeng.actions.ResumeAction;
 import org.destecs.ide.simeng.actions.TerminationAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -56,7 +59,9 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	// private Action actionSetProvedFilter;
 
 	public int elementCount = 200;
-	private TerminationAction terminationAction;
+	private BaseSimulationControlAction terminationAction;
+	private PauseAction pauseAction;
+	private ResumeAction resumeAction;
 
 	static class ViewContentProvider implements IStructuredContentProvider
 	{
@@ -116,12 +121,28 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	{
 		// createMenu();
 		this.terminationAction = new TerminationAction();
+		this.pauseAction = new PauseAction();
+		this.resumeAction = new ResumeAction();
+		this.resumeAction.setEnabled(false);
+		
+		this.pauseAction.setResume(this.resumeAction);
+		this.resumeAction.setPause(this.pauseAction);
 	}
 
 	
-	public TerminationAction getTerminationAction()
+	public BaseSimulationControlAction getTerminationAction()
 	{
 		return terminationAction;
+	}
+	
+	public PauseAction getPauseAction()
+	{
+		return pauseAction;
+	}
+	
+	public ResumeAction getResumeAction()
+	{
+		return resumeAction;
 	}
 
 	/**
@@ -132,6 +153,8 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
 		// mgr.add(addItemAction);
 		// mgr.add(deleteItemAction);
+		mgr.add(resumeAction);
+		mgr.add(pauseAction);
 		mgr.add(terminationAction);
 	}
 

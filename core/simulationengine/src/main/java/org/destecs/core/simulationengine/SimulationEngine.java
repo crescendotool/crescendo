@@ -85,6 +85,35 @@ public class SimulationEngine
 			return name;
 		}
 	}
+	
+	public static class SimulationLock
+	{
+		private boolean lock = false;
+		
+		public synchronized void check()
+		{
+			if(lock)
+			{
+				try
+				{
+					wait();
+				} catch (InterruptedException e)
+				{
+				}
+			}
+		}
+		
+		public synchronized void lock()
+		{
+			lock = true;
+		}
+		
+		public synchronized void unLock()
+		{
+			lock = false;
+			notify();
+		}
+	}
 
 	public enum SynchronizationScheme
 	{
@@ -136,6 +165,8 @@ public class SimulationEngine
 	private String ctVersion = "";
 
 	private File outputDirectory = null;
+	
+	private SimulationLock lock = new SimulationLock();
 
 	public SimulationEngine(File contractFile)
 	{
@@ -509,6 +540,7 @@ public class SimulationEngine
 		variableSyncInfo(merge(deResult, ctResult).getHeaders());
 		while (time <= totalSimulationTime)
 		{
+			lock.check();
 			if (forceStopSimulation)
 			{
 				// simulation stop requested, stop simulation loop
@@ -1277,5 +1309,15 @@ public class SimulationEngine
 			log.setLevel(Level.OFF);
 
 		}
+	}
+	
+	public void pause()
+	{
+		lock.lock();
+	}
+	
+	public void resume()
+	{
+		lock.unLock();
 	}
 }

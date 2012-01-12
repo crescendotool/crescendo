@@ -33,7 +33,7 @@ import org.destecs.ide.debug.aca.plugin.IncludeBaseConfigAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.SharedDesignParameterAcaPlugin;
 import org.destecs.ide.debug.core.model.internal.AcaSimulationManager;
 import org.destecs.ide.debug.core.model.internal.DestecsAcaDebugTarget;
-import org.destecs.ide.simeng.actions.ITerminationProxy;
+import org.destecs.ide.simeng.actions.ISimulationControlProxy;
 import org.destecs.ide.simeng.ui.views.InfoTableView;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -52,7 +52,8 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 {
 
 	public void launch(ILaunchConfiguration configuration, final String mode,
-			final ILaunch launch, IProgressMonitor monitor) throws CoreException
+			final ILaunch launch, IProgressMonitor monitor)
+			throws CoreException
 	{
 		monitor.beginTask("ACA execution", 100);
 		String baseLaunchName = launch.getLaunchConfiguration().getAttribute(IDebugConstants.DESTECS_ACA_BASE_CONFIG, "");
@@ -90,7 +91,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		AcaSimulationManager manager = new AcaSimulationManager(acaTarget);
 		manager.start();
 		acaTarget.setAcaSimulationManager(manager);
-		
+
 		UIJob listeners = new UIJob("Set Listeners")
 		{
 			@Override
@@ -98,7 +99,8 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 			{
 				final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 				final InfoTableView engineView = CoSimLaunchConfigurationDelegate.getInfoTableView(engineViewId);
-				engineView.getTerminationAction().addTerminationProxy(new ITerminationProxy()
+
+				ISimulationControlProxy simulationControl = new ISimulationControlProxy()
 				{
 
 					public void terminate()
@@ -111,7 +113,22 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 							DestecsDebugPlugin.logError("Failed to terminate launch", e);
 						}
 					}
-				});
+
+					public void pause()
+					{
+						// not supported
+					}
+
+					public void resume()
+					{
+						// not supported
+					}
+				};
+
+				engineView.getTerminationAction().addSimulationControlProxy(simulationControl);
+				engineView.getPauseAction().addSimulationControlProxy(simulationControl);
+				engineView.getResumeAction().addSimulationControlProxy(simulationControl);
+
 				return new Status(IStatus.OK, IDebugConstants.PLUGIN_ID, "Listeners OK");
 			}
 		};

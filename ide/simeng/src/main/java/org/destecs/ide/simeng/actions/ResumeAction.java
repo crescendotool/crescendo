@@ -5,17 +5,19 @@ import java.util.Vector;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
-public class TerminationAction extends BaseSimulationControlAction
+public class ResumeAction extends BaseSimulationControlAction
 {
+	private PauseAction pauseAction;
+
 	@Override
 	public String getText()
 	{
-		return "Terminate All";
+		return "Terminate";
 	}
 
 	public ImageDescriptor getImageDescriptor()
 	{
-		return getImageDescriptor("terminatedlaunch_obj.gif");
+		return getImageDescriptor("resume_co.gif");
 	}
 	
 	@Override
@@ -28,13 +30,22 @@ public class TerminationAction extends BaseSimulationControlAction
 			{
 				try
 				{
-					p.terminate();
+					p.resume();
 				} catch (Exception e)
 				{
 					// Ignore
 				}
-				removeSimulationControlProxy(p);
 			}
 		}
+		if(pauseAction!=null)
+		{
+			pauseAction.setEnabled(true);
+			setEnabled(false);
+		}
+	}
+
+	public void setPause(PauseAction pauseAction)
+	{
+		this.pauseAction = pauseAction;
 	}
 }

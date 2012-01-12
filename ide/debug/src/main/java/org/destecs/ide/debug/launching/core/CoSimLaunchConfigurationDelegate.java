@@ -53,7 +53,7 @@ import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.core.model.internal.CoSimulationThread;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
-import org.destecs.ide.simeng.actions.ITerminationProxy;
+import org.destecs.ide.simeng.actions.ISimulationControlProxy;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
 import org.destecs.ide.simeng.listener.EngineListener;
@@ -289,7 +289,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 					final InfoTableView engineView = getInfoTableView(engineViewId);
-					engineView.getTerminationAction().addTerminationProxy(new ITerminationProxy()
+					ISimulationControlProxy simulationControl = new ISimulationControlProxy()
 					{
 
 						public void terminate()
@@ -302,7 +302,21 @@ public class CoSimLaunchConfigurationDelegate extends
 								DestecsDebugPlugin.logError("Failed to terminate launch", e);
 							}
 						}
-					});
+
+						public void pause()
+						{
+							engine.pause();
+						}
+
+						public void resume()
+						{
+							engine.resume();
+						}
+					};
+
+					engineView.getTerminationAction().addSimulationControlProxy(simulationControl);
+					engineView.getPauseAction().addSimulationControlProxy(simulationControl);
+					engineView.getResumeAction().addSimulationControlProxy(simulationControl);
 
 					views.add(engineView);
 					engine.engineListeners.add(new EngineListener(engineView));
