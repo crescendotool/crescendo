@@ -573,6 +573,10 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		}
 		
 		logManager.selectedVariables.removeAll(varsToRemove);
+		if(!varsToRemove.isEmpty())
+		{
+			updateLaunchConfigurationDialog();
+		}
 		
 	}
 
