@@ -35,12 +35,14 @@ import org.destecs.protocol.structs.GetParametersStruct;
 import org.destecs.protocol.structs.GetParametersStructparametersStruct;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
+import org.destecs.protocol.structs.InitializeStruct;
 import org.destecs.protocol.structs.Load2Struct;
 import org.destecs.protocol.structs.Load2argumentsStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructinputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructoutputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructsharedDesignParametersStruct;
+import org.destecs.protocol.structs.ResumeStruct;
 import org.destecs.protocol.structs.SetDesignParameterStruct;
 import org.destecs.protocol.structs.SetDesignParametersStruct;
 import org.destecs.protocol.structs.SetLogVariablesStruct;
@@ -49,11 +51,14 @@ import org.destecs.protocol.structs.StartStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.protocol.structs.StopStruct;
+import org.destecs.protocol.structs.SuspendStruct;
 import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.definitions.Definition;
+import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
+import org.overturetool.vdmj.scheduler.Signal;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 
@@ -96,7 +101,7 @@ public class CoSimImpl implements IDestecs
 	{
 		try
 		{
-			return new StartStruct(SimulationManager.getInstance().initialize()).toMap();
+			return new InitializeStruct(SimulationManager.getInstance().initialize()).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -621,6 +626,28 @@ public class CoSimImpl implements IDestecs
 	public Map<String, Boolean> load(Map<String, String> data) throws Exception
 	{
 		throw new RemoteSimulationException("Deprecated: Load not supported, use Load2");
+	}
+
+	public Map<String, Boolean> suspend() throws Exception
+	{
+		try
+		{
+			BasicSchedulableThread.signalAll(Signal.SUSPEND);
+			return new SuspendStruct(true).toMap();
+		} catch (Exception e)
+		{
+			throw new RemoteSimulationException("Failed to suspend the VDM debugger");
+		}
+
+	}
+
+	/**
+	 * This method is just a skip, we need to resume from the IDE. This is needed because the IDE hold a state
+	 * representing the state of the threads
+	 */
+	public Map<String, Boolean> resume() throws Exception
+	{
+		return new ResumeStruct(true).toMap();
 	}
 
 }

@@ -86,6 +86,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IViewPart;
@@ -100,6 +101,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		LaunchConfigurationDelegate
 {
 
+	private static final String VDM_LAUNCH_CONFIG_TYPE = "org.overture.ide.vdmrt.debug.launchConfigurationType";
 	private File deFile = null;
 	private File ctFile = null;
 	private File contractFile = null;
@@ -310,6 +312,23 @@ public class CoSimLaunchConfigurationDelegate extends
 
 						public void resume()
 						{
+							ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+
+							ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType(VDM_LAUNCH_CONFIG_TYPE);
+							for (IDebugTarget target : launch.getDebugTargets())
+							{
+								try
+								{
+									if(target.getLaunch().getLaunchConfiguration().getType()== configType)
+									{
+										target.resume();
+									}
+								} catch (CoreException e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
 							engine.resume();
 						}
 					};
@@ -710,7 +729,7 @@ public class CoSimLaunchConfigurationDelegate extends
 
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 
-		ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType("org.overture.ide.vdmrt.debug.launchConfigurationType");// IVdmRtDebugConstants.ATTR_VDM_PROGRAM);
+		ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType(VDM_LAUNCH_CONFIG_TYPE);// IVdmRtDebugConstants.ATTR_VDM_PROGRAM);
 		try
 		{
 			wc = configType.newInstance(null, launchManager.generateUniqueLaunchConfigurationNameFrom(project.getName()));

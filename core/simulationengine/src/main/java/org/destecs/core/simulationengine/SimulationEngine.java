@@ -167,6 +167,9 @@ public class SimulationEngine
 	private File outputDirectory = null;
 	
 	private SimulationLock lock = new SimulationLock();
+	
+	ProxyICoSimProtocol deProxy;
+	ProxyICoSimProtocol ctProxy;
 
 	public SimulationEngine(File contractFile)
 	{
@@ -311,11 +314,11 @@ public class SimulationEngine
 			launchSimulator(Simulator.CT, ctLauncher);
 
 			// connect to the simulators
-			ProxyICoSimProtocol deProxy = connect(Simulator.DE, deEndpoint);
+			deProxy = connect(Simulator.DE, deEndpoint);
 
 			initialize(Simulator.DE, deProxy);
 
-			ProxyICoSimProtocol ctProxy = connect(Simulator.CT, ctEndpoint);
+			ctProxy = connect(Simulator.CT, ctEndpoint);
 
 			initialize(Simulator.CT, ctProxy);
 
@@ -1320,6 +1323,12 @@ public class SimulationEngine
 	public void pause()
 	{
 		lock.lock();
+		try{
+			deProxy.suspend();
+		}catch(Exception e)
+		{
+			
+		}
 	}
 	
 	public void resume()

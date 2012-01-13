@@ -147,6 +147,54 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
+		<!--Suspend -->
+        <method>
+            <description>Suspends the simulator tool. Must be resumed to continoue</description>
+            <methodCall>
+                <methodName>Destecs.Suspend</methodName>
+            </methodCall>
+            <methodResponse>
+                <params>
+                    <param>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>success</name>
+                                    <value>
+                                        <boolean>true</boolean>
+                                    </value>
+                                    <description>if failed then the function will return a fault response</description>
+                                </member>
+                            </struct>
+                        </value>
+                    </param>
+                </params>
+            </methodResponse>
+        </method>
+        <!--Resume -->
+        <method>
+            <description>Resume the simulator tool.</description>
+            <methodCall>
+                <methodName>Destecs.Resume</methodName>
+            </methodCall>
+            <methodResponse>
+                <params>
+                    <param>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>success</name>
+                                    <value>
+                                        <boolean>true</boolean>
+                                    </value>
+                                    <description>if failed then the function will return a fault response</description>
+                                </member>
+                            </struct>
+                        </value>
+                    </param>
+                </params>
+            </methodResponse>
+        </method>
 		<!--Load -->
 		<method>
 			<description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
