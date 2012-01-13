@@ -84,7 +84,7 @@ public class CoSimImpl implements IDestecs
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
 
-	private static final String version = "0.0.0.4";
+	private static final String version = "0.0.1.0";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 
 	public Map<String, Integer> getStatus()

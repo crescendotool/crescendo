@@ -127,7 +127,7 @@ public class SimulationEngine
 	/**
 	 * Minimum required version for the DE simulator
 	 */
-	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 0, 4 };
+	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 1, 0 };
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
@@ -1278,6 +1278,11 @@ public class SimulationEngine
 					{
 						abort(simulator, "Simulator version not supported: "
 								+ version + " <> expected " + number);
+					}
+					
+					if (Integer.valueOf(elements[i]) > num)
+					{
+						return true;//newer major version
 					}
 				} else
 				{
