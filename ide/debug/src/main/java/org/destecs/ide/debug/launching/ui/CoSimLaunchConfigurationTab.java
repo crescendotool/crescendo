@@ -208,7 +208,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 				}
 			}
 		});
-		
+
 		removeScenarioButton = createPushButton(group, "Remove", null);
 
 		if (fScenarioText.getText().equals(""))
@@ -416,7 +416,13 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		if (getProject() != null)
 		{
 			IDestecsProject p = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
-			configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, p.getContractFile().getProjectRelativePath().toString());
+			if (p.getContractFile() != null)
+			{
+				configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, p.getContractFile().getProjectRelativePath().toString());
+			}else
+			{
+				
+			}
 		}
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, fProjectText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ctPath.getText());
@@ -431,10 +437,10 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		if (fProjectText != null && fProjectText.getText().length() > 0)
 		{
 			IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText());
-			if(p.isAccessible())
+			if (p.isAccessible())
 			{
 				return p;
-			}else
+			} else
 			{
 				setErrorMessage("Project not accessible");
 				return null;
@@ -497,16 +503,17 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		}
 
 		selectScenarioButton.setEnabled(true);
-		
+
 		IDestecsProject destecsProject = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
 		DestecsModel destecsModel = destecsProject.getModel();
-		
+
 		IPreferenceStore store = DestecsUIPlugin.getDefault().getPreferenceStore();
 		Boolean typeCheck = store.getBoolean(IDestecsPreferenceConstants.ACTIVATE_DESTECSCHECK_PREFERENCE);
-		
+
 		if (!destecsModel.isOk())
 		{
-			if (typeCheck && !DestecsTypeCheckerUi.typeCheck(getShell(), destecsProject))
+			if (typeCheck
+					&& !DestecsTypeCheckerUi.typeCheck(getShell(), destecsProject))
 			{
 				setErrorMessage("Errors in Model Configuration.: (Contract or VDM Link)");
 				return false;
@@ -521,7 +528,8 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		return "Main";
 	}
 
-	public String getCtPath() {
+	public String getCtPath()
+	{
 		return ctPath.getText();
 	}
 
