@@ -3,8 +3,8 @@ grammar Script;
 options {
 //  k=2;
   language = Java;
-  output = AST;
-  ASTLabelType= CommonTree;
+//  output = AST;
+//  ASTLabelType= CommonTree;
 //   ASTLabelType = CymbolAST;
 }
 
@@ -55,7 +55,15 @@ import org.destecs.core.dcl.Action;
 //import org.destecs.core.dcl.Action.Condition;
 import org.destecs.core.dcl.Interpreter;
 //import org.destecs.core.simulationengine.SimulationEngine.Simulator;
-
+import org.destecs.script.ast.*;
+import org.destecs.script.ast.node.*;
+import org.destecs.script.ast.expressions.*;
+import org.destecs.script.ast.expressions.unop.*;
+import org.destecs.script.ast.expressions.binop.*;
+import org.destecs.script.ast.statement.*;
+import org.destecs.script.ast.types.*;
+import org.destecs.script.ast.preprocessing.*;
+import java.util.Vector;
 }
 
 @lexer::header{  
@@ -147,31 +155,11 @@ package org.destecs.core.parsers.dcl;
 
 @members {
 
-	 SymbolTable symtab;		
-	 
-	 Action action;
-   public ScriptParser(TokenStream input, Action action) {
-       this(input);
-       this.action = action;
-   }
-   
-   Interpreter interp;
-   public ScriptParser(TokenStream input, Interpreter interp) {
-       this(input);
-       this.interp = interp;
-   }
-
     private boolean mMessageCollectionEnabled = false;
     private boolean mHasErrors = false;
-    private ScriptFactory script = new ScriptFactory();
     private List<String> mMessages;
     private List<RecognitionException> mExceptions = new ArrayList<RecognitionException>();
 
-    public Script getScript()
-    {
-        return script.getScript();
-    }
-  
     public boolean hasExceptions()
     {
         return mExceptions.size() > 0;
@@ -247,174 +235,161 @@ package org.destecs.core.parsers.dcl;
     }
       
 }
-compilationUnit[SymbolTable symtab]
-@init {this.symtab = symtab;}       // set the parser's field
-    : toplevelStatement* 
-//    {
-//      script.addAction(action);    // script here is scriptfactory, the first element of the queue won't be null
-//     }
-    ; 
+root returns [List<INode> nodes]
+ @init
+    {
+      $nodes = new Vector<INode>();
+    }
+  : (toplevelStatement {$nodes.add($toplevelStatement.value);})*
+  ;
 
 //***Statements start***
-toplevelStatement
-  : includeStatement
-  | whenStatement
+toplevelStatement returns [INode value]
+  : includeStatement {$value = $includeStatement.value;}
+  | whenStatement {$value = $whenStatement.value;}
   ;
 
-includeStatement
+includeStatement returns [AScriptInclude value]
   : INCLUDE STRING
-    -> ^(INCLUDE STRING )
+{
+  $value = new AScriptInclude($STRING.getText());
+}
   ; 
 
-whenStatement
+whenStatement returns [AWhenStm value]
   :WHEN expression DO
-    statement *
-   (AFTER
-    statement)?         
-    ->^(WHEN expression DO 
-      statement *
-       ^(AFTER
-       statement)?) //replace by ->
-  ;
-  
-statement
-  : assignStatement
-  | blockStatement 
-  | revertStatement
-  | printStatement
-  | errorStatement
-  | warnStatement
-  | QUIT
-  ;
-
-assignStatement 
-  : 
-//  identifier ':=' expression
-//   {script.addAction(action);
-//    action = new Action( $singletonexpression.value.toString(),
-//            Double.valueOf($expression.value.toString()).doubleValue()            
-//            );
-//   }  
-    domain type IDENT ':=' expression
+    '('  statementList ')'
+   (AFTER '(' revertStatementList ')')?  
     {
-//      if (script.actions.size()!= 0){
-        action = new Action($domain.value.toString(), $IDENT.text.toString(),
-                Double.valueOf($expression.value.toString()).doubleValue()            
-                );
-        script.addAction(action);
-//      }
-//	    else{
-//		    action = new Action($domain.value.toString(), $IDENT.text.toString(),
-//		            Double.valueOf($expression.value.toString()).doubleValue()            
-//		            );
-//		    
-//	    }
-    }
-//    -> ^(':=' identifier expression)
-      -> ^(':=' domain type IDENT  expression)
+      $value = new AWhenStm($expression.value,$statementList.valueList,$revertStatementList.valueList);
+    }       
   ;
-
-blockStatement  
-  : '(' statement (';' statement)* (';')? ')'  
-//  {script.addAction(action);} //TO-DO
+statementList returns [List<PStm> valueList]
+ @init
+    {
+      $valueList = new Vector<PStm>();
+    }
+  : (statement ';'{$valueList.add($statement.value);})*
   ;
   
-revertStatement
+  
+revertStatementList returns [List<ARevertStm> valueList]
+ @init
+    {
+      $valueList = new Vector<ARevertStm>();
+    }
+  : (revertStatement ';' {$valueList.add($revertStatement.value);})*
+  ;  
+  
+  
+  
+statement returns [PStm value]
+  : assignStatement {$value = $assignStatement.value;}
+  | revertStatement {$value = $revertStatement.value;}
+  | printStatement {$value = $printStatement.value;}
+  | errorStatement {$value = $errorStatement.value;}
+  | warnStatement {$value = $warnStatement.value;}
+  | QUIT {$value = new AQuitStm();}
+  ;
+
+assignStatement returns [AAssignStm value]
+  : 
+    domain type IDENT ':=' expression
+  {
+    $value = new AAssignStm($domain.value,$IDENT.text,$expression.value);
+  }
+  ;
+
+revertStatement returns [ARevertStm value]
   : REVERT identifier
-  -> ^(REVERT identifier)
+  {
+    $value = new ARevertStm($identifier.text);
+  }
   ; 
 
-printStatement
-  : PRINT STRING {interp.print($STRING.text);}
-  -> ^(PRINT STRING)
+printStatement returns [APrintMessageStm value]
+  : PRINT STRING 
+  {
+    $value = new APrintMessageStm($STRING.getText());
+  }
   ;
 
-errorStatement
-  : ERROR STRING {interp.print($STRING.text);}
-  -> ^(ERROR STRING)
+errorStatement returns [AErrorMessageStm value]
+  : ERROR STRING 
+  {
+    $value = new AErrorMessageStm($STRING.text);
+  }
   ;
 
-warnStatement
-  : WARN STRING {interp.print($STRING.text);}
-  -> ^(WARN STRING)
+warnStatement returns [AWarnMessageStm value]
+  : WARN STRING 
+  {
+    $value = new AWarnMessageStm($STRING.text);
+  }
   ;
 //***Statements end***
 
 
 //***Expression start***
-expression returns [Object value]
+expression returns [PExp value]
   : singletonexpression {$value = $singletonexpression.value ;}
   | unaryexpression     {$value = $unaryexpression.value ;}
   | binaryexpression    {$value = $binaryexpression.value ;}
-//  {script.addAction(action);}  
   ;
     
-unaryexpression returns [Object value]
+unaryexpression returns [AUnaryExp value]
   : unaryoperator expression
-  // TO-DO
-  ->  ^(EXPR unaryoperator expression)
+  {$value = new AUnaryExp($unaryoperator.value,$expression.value);}
   ;
   
-unaryoperator
-  : 'add'
-  | 'minus'
-  | 'abs'
-  | 'floor'
-  | 'ceil'
+unaryoperator returns [PUnop value]
+  : 'add' {$value = new AAddUnop();}
+  | 'minus' {$value = new AMinusUnop();}
+  | 'abs' {$value = new AAbsUnop();}
+  | 'floor' {$value = new AFloorUnop();}
+  | 'ceil' {$value = new ACeilUnop();}
   ;
   
-binaryexpression returns [Object value]
+binaryexpression returns [ABinaryExp value]
   : 
-//    singletonexpression binaryoperator expression
-//   {        
-//         $value = $singletonexpression.value;
-//    }      
     singletonexpression binaryoperator expression
     {
-      $value = $expression.value;
-      action = new Action($singletonexpression.value.toString(),
-                Double.valueOf($expression.value.toString()).doubleValue()            
-                );    
-      script.addAction(action);  
+      $value = new ABinaryExp($singletonexpression.value,$binaryoperator.value,$expression.value);
     }
-  -> singletonexpression
-   ^(EXPR binaryoperator expression)
   ;
   
 
-singletonexpression returns [Object value]
-  : booleanliteral {$value = $booleanliteral.value;}
-  | numericliteral {$value = Double.parseDouble($numericliteral.text);}
+singletonexpression returns [SSingleExp value]
+  : booleanliteral {$value = new ABoolSingleExp( $booleanliteral.value);}
+  | numericliteral {$value = new ANumericalSingleExp(Double.parseDouble($numericliteral.text));}
   | timeliteral    {$value = $timeliteral.value;}
-  | TIME           {$value = $TIME.text;}
+  | TIME           {$value = new ASystemTimeSingleExp();}
   | identifier     {$value = $identifier.value;}// for the binaryexpression
   ;
 
 //***Expression start***
   
-booleanliteral returns [Object value]
-  : TRUE  {$value = $TRUE.text ;}
-  | FALSE {$value = $FALSE.text ;}
+booleanliteral returns [Boolean value]
+  : TRUE  {$value = true ;}
+  | FALSE {$value = false;}
   ;
   
 numericliteral
   : numeral ('.' numeral )?  (exponent)?
   ;
 
-timeliteral returns [Object value]
+timeliteral returns [ATimeSingleExp value]
   :  numericliteral ('{')? (timeunit) ('}')?
-//  'Time:' numericliteral ('{')? (timeunit) ('}')?
-// TODO, needs to lookahead
-  {$value = Double.parseDouble($numericliteral.text);
+  {$value = new ATimeSingleExp(Double.parseDouble($numericliteral.text), $timeunit.value);
   }
   ;
 
-timeunit
-  : ('microseconds'  | 'us')
-  | ('milliseconds'  | 'ms')
-  | ('second'        | 's' )
-  | ('minutes'       | 'm' )
-  | ('hours'         | 'h' )
+timeunit returns [PTimeunit value]
+  : ('microseconds'  | 'us' {$value = new AUsTimeunit();}) 
+  | ('milliseconds'  | 'ms') {$value = new AMsTimeunit();}
+  | ('second'        | 's' ) {$value = new ASTimeunit();}
+  | ('minutes'       | 'm' ) {$value = new AMTimeunit();}
+  | ('hours'         | 'h' ) {$value = new AHTimeunit();}
   ;
 
 exponent
@@ -425,84 +400,55 @@ numeral
   : INTEGER
   ;
 
-identifier returns [Object value]
-  : 
-  (domain)? type IDENT
-//  domain type IDENT
-//  {
-//////  new Action.Name($ident.text);
-////    action.Name($IDENT.text);  
-//      id = $IDENT.text;
-//  }
-    {$value = $IDENT.text;}
+identifier returns [AIdentifierSingleExp value]
+  : (domain)? type IDENT
+    {$value = new AIdentifierSingleExp($domain.value, $type.value,$IDENT.text);}
   ;
 
-domain returns [Object value]
-  : DE {$value = $DE.text;}
-  | CT {$value = $CT.text;}
+domain returns [PDomain value]
+  : DE {$value = new ADeDomain();}
+  | CT {$value = new ACtDomain();}
   ;
-  
 
 
-binaryoperator
-  : '+'
-  | '-'
-  | '*'
-  | '/'
-  | 'div'
-  | 'mod'
-  | '<'
-  | '<='
-  | '>'
-  | '>='
-  | '=' // equals
-  | '<>'
-  | 'or'
-  | 'and'
-  | '=>'
-  | '<=>'
-  | 'for'
+binaryoperator returns [PBinop value]
+  : '+' {$value = new APlusBinop();}
+  | '-' {$value = new AMinusBinop();}
+  | '*' {$value = new AMultiplyBinop();}
+  | '/' {$value = new ADivideBinop();}
+  | 'div' {$value = new ADivBinop();}
+  | 'mod' {$value = new AModBinop();}
+  | '<' {$value = new ALessThanBinop();}
+  | '<=' {$value = new ALessEqualBinop();}
+  | '>' {$value = new AMoreThanBinop();}
+  | '>=' {$value = new AMoreEqualBinop();}
+  | '=' {$value = new AEqualBinop();} // equals
+  | '<>' {$value = new ADifferentBinop();}
+  | 'or' {$value = new AOrBinop();}
+  | 'and' {$value = new AAndBinop();}
+  | '=>' {$value = new AImpliesBinop();}
+  | '<=>' {$value = new AEquivBinop();}
+  | 'for' {$value = new AForBinop();}
   ;
   
 
-type 
-    :   REAL  
-    |   INT
-    |   BOOL 
-    |   TIME   
+type returns[PType value]
+    :   REAL  {$value = new ARealType();}
+    |   INT   {$value = new AIntType();}
+    |   BOOL  {$value = new ABoolType();}
+    |   TIME  {$value = new ATimeType();}
     ; 
 
-//ident:
-//    IDENT
-//    ;
  
-STRING
-  :
-//  '"'
-//  ( '"' '"'
-//  | ~('"'|'\r'|'\n')
-//  )*
-//  '"'
-//  ;
-  
-    '"'
-    .*
-    '"'
-    ;
+STRING : '"' .* '"' ;
     
-
-
-
-  
-FORMATTEDSTRING
-  : STRING 
-  ('%' IDENT (',' IDENT)?)?
-  ;
-
 fragment LETTER : ('a'..'z' | 'A'..'Z') ;
 fragment DIGIT : '0'..'9';
 INTEGER : DIGIT+ ;
 IDENT: LETTER (LETTER | DIGIT)*;
 WS : (' ' | '\t' | '\n' | '\r' | '\f')+ {$channel = HIDDEN;};
-COMMENT : '//' .* ('\n'|'\r') {$channel = HIDDEN;};
-
+COMMENT
+    :   '--' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
+    |   '//' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}
+    |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+    ;

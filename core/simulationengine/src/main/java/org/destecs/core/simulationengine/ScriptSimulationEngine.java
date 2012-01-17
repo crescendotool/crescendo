@@ -20,32 +20,181 @@ package org.destecs.core.simulationengine;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 import java.util.Vector;
 
-import org.destecs.core.dcl.Action;
-import org.destecs.core.dcl.Script;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
+import org.destecs.core.simulationengine.script.ISimulatorControl;
+import org.destecs.core.simulationengine.script.ScriptEvaluator;
 import org.destecs.protocol.ProxyICoSimProtocol;
 import org.destecs.protocol.structs.StepStruct;
+import org.destecs.protocol.structs.StepStructoutputsStruct;
+import org.destecs.script.ast.node.INode;
 
 public class ScriptSimulationEngine extends SimulationEngine
 {
-	Script script;// list of actions
-	public Queue<Action> actions;
-	boolean flag = false;
+	public class SimulationInterpreter implements ISimulatorControl
+	{
 
-	// public StepStruct result;
+		public void setVariable(Simulator simulator, String name, boolean value)
+		{
+			boolean found = false;
+			if (inAfter && result != null)
+			{
+				for (StepStructoutputsStruct out : result.outputs)
+				{
+					if (out.name.equals(name))
+					{
+						out.value.clear();
+						out.value.add(value == true ? 1.0 : 0.0);
+						engineInfo(simulator, "Replacing output (Next time="
+								+ getSystemTime() + "): " + name + " = "
+								+ value);
+						found = true;
+					}
+				}
+			}
 
-	public ScriptSimulationEngine(File contractFile, Script script)
+			if (!found)
+			{
+				try
+				{
+					engineInfo(simulator, "Setting parameter (Next time="
+							+ getSystemTime() + "): " + name + " = " + value);
+					messageInfo(simulator, getSystemTime(), "setParameter");
+					switch (simulator)
+					{
+						case CT:
+							// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
+							// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							break;
+						case DE:
+
+							deProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value == true ? 1.0
+									: 0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							break;
+
+					}
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+
+		public void setVariable(Simulator simulator, String name, double value)
+		{
+			boolean found = false;
+			if (inAfter && result != null)
+			{
+				for (StepStructoutputsStruct out : result.outputs)
+				{
+					if (out.name.equals(name))
+					{
+						out.value.clear();
+						out.value.add(value);
+						found = true;
+					}
+				}
+			}
+
+			if (!found)
+			{
+				try
+				{
+					switch (simulator)
+					{
+						case CT:
+							// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
+							// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							break;
+						case DE:
+							deProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							break;
+
+					}
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		public double getSystemTime()
+		{
+			if (result != null)
+			{
+				return result.time;
+			}
+			return 0;
+		}
+
+		public void showMessage(String type, String message)
+		{
+			engineInfo(Simulator.ALL, type + " " + message);
+		}
+
+		public void quite()
+		{
+			engineInfo(Simulator.ALL, "Quite by script");
+			forceSimulationStop();
+		}
+
+		public Object getVariableValue(Simulator simulator, String name)
+		{
+			if (inAfter && result != null)
+			{
+				for (StepStructoutputsStruct out : result.outputs)
+				{
+					if (out.name.equals(name))
+					{
+						return out.value.get(0);
+					}
+				}
+			}
+
+			try
+			{
+				switch (simulator)
+				{
+					case CT:
+						// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
+						// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+						break;
+					case DE:
+
+						return deProxy.getParameter(name);
+
+				}
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		public void scriptError(String string)
+		{
+			engineInfo(Simulator.ALL, "Error in script: "+string);
+			quite();
+		}
+
+	}
+
+	final public List<INode> script = new Vector<INode>();
+	boolean inAfter = false;
+
+	public StepStruct result;
+	ScriptEvaluator eval = new ScriptEvaluator(new SimulationInterpreter());
+	ProxyICoSimProtocol dtProxy;
+	ProxyICoSimProtocol ctProxy;
+
+	public ScriptSimulationEngine(File contractFile, List<INode> script)
 	{
 		super(contractFile);
-		this.script = script;
-
-		actions = new LinkedList<Action>();
-		actions.addAll(this.script.actions);
+		this.script.clear();
+		this.script.addAll(script);
 
 	}
 
@@ -53,52 +202,11 @@ public class ScriptSimulationEngine extends SimulationEngine
 	protected StepStruct afterStep(Simulator simulator, StepStruct result)
 	{
 		super.afterStep(simulator, result);
-
-		int counter = 0;
-		final int INDEX_IN_VAR = 0;
-		Action middle = null;
-		// ----------non-time triggered--------------
-		if (actions.peek() != null && actions.peek().time == 0.0)
+		this.result = result;
+		this.inAfter = true;
+		for (INode stm : script)
 		{
-
-			System.out.println("---Counter:  " + counter);
-			System.out.println(actions.toString());
-			Action expression = actions.peek();
-			Iterator<Action> it = actions.iterator();
-
-			if (result.outputs.get(0).name.matches(expression.variableName))
-			{
-				System.out.println("inside the loop");
-				// TODO: Check that this is correct with the new array stuff
-				Double internal = result.outputs.get(0).value.get(INDEX_IN_VAR);
-				System.out.println("current level value is:" + internal);
-				if (internal > expression.variableValue)
-				{
-					flag = true;
-					it.next();// the first one of the queue
-					middle = it.next(); // the next one
-					System.out.println("next action is :" + middle.toString());
-					actions.poll();
-				}
-			}
-
-			if (flag == true)
-			{
-				System.out.println("flag");
-				System.out.println("next action variableName is :"
-						+ actions.peek().variableName);
-				// TODO: Check that this is correct with the new array stuff
-				if (result.outputs.get(0).name.matches(actions.peek().variableName))
-				{
-					System.out.println("**value before**"
-							+ result.outputs.get(0).value);
-					result.outputs.get(0).value.set(INDEX_IN_VAR, actions.peek().variableValue);
-					System.out.println("**value after**"
-							+ result.outputs.get(0).value);
-					flag = false;
-				}
-			}
-			counter++;
+			stm.apply(eval);
 		}
 		return result;
 	}
@@ -109,123 +217,12 @@ public class ScriptSimulationEngine extends SimulationEngine
 			throws SimulationException
 	{
 		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy);
-		System.out.println("---before step 0---");
-		System.out.println("Time:" + nextTime);
-		// Iterator it = actions.iterator();
-		System.out.println("Initial Size of Queue :" + actions.size());
-		System.out.println(actions.toString());
-		// not working?!
-		// while(it.hasNext())
-		// {
-		// String iteratorValue = (String)it.next();
-		// System.out.println("Queue Next Value :" + iteratorValue);
-		// }
-
-		// *******time-triggered*******
-		if (actions.peek().time > 0.0)
+		this.inAfter = false;
+		this.ctProxy = ctProxy;
+		this.deProxy = dtProxy;
+		for (INode stm : script)
 		{
-
-			while (!actions.isEmpty() && actions.peek().time <= nextTime)
-			{
-				System.out.println("---before step 1---");
-				Action action = actions.poll();
-				switch (action.targetSimulator)
-				{
-					case ALL:
-						break;
-					case CT:
-						try
-						{
-							engineInfo(Simulator.CT, "Setting parameter (Next time="
-									+ nextTime + "): " + action);
-							messageInfo(Simulator.CT, nextTime, "setParameter");
-							// FIXME: Parameter not send to CT
-							// ctProxy.setParameter(action.variableName, action.variableValue);
-
-							// System.out.println("result outputs size: " + this.result.outputs.size());// added
-							// System.out.println(this.result.outputs);
-							//
-							// if(this.result.outputs.get(0).name.matches(action.variableName)&& flag==true){
-							// System.out.println("**value before**" + this.result.outputs.get(0).value);
-							// this.result.outputs.get(0).value = action.variableValue;
-							// // result.outputs.get(0).toMap().put("value", double (1.0));
-							// System.out.println("**value after**" + this.result.outputs.get(0).value);
-							// flag = false;
-							// }
-							//
-							// if (this.result.outputs.get(0).name.matches(action.variableName)){
-							// System.out.println("inside the loop");
-							// Double internal = this.result.outputs.get(0).value;
-							// System.out.println("current level value is:" + internal);
-							// if (internal > action.variableValue){
-							// flag = true;
-							// System.out.println("action.variableValue" + action.variableValue);
-							// }
-							// }
-
-						} catch (Exception e)
-						{
-							abort(Simulator.CT, "setParameter("
-									+ action.variableName + "="
-									+ action.variableValue + ") failed", e);
-						}
-						break;
-					case DE:
-						try
-						{
-							engineInfo(Simulator.DE, "Setting parameter (Next time="
-									+ nextTime + "): " + action);
-							messageInfo(Simulator.DE, nextTime, "setParameter");
-							dtProxy.setParameter(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
-						} catch (Exception e)
-						{
-							abort(Simulator.DE, "setParameter("
-									+ action.variableName + "="
-									+ action.variableValue + ") failed", e);
-						}
-						break;
-
-				}
-			}
-
-			// TODO: ?? while
-			// switch (action.condition)
-			// {
-			// case WHEN:
-			// try
-			// {
-			// System.out.println("---when condition--1-");
-			// // engineInfo(Simulator.DE, "Setting parameter (Next time="
-			// // + nextTime + "): " + action);
-			// // engineInfo(Simulator.DE, "Setting parameter ( " + action.variableName
-			// // + "): " + action);
-			// System.out.println("---when condition--2-");// why not here?
-			// messageInfo(Simulator.CT, nextTime, "setParameter");
-			// System.out.println("---when condition--3-");// why not here?
-			// // System.out.println("dtProxy parameters "+ dtProxy.getParameters());// check what kind of parameters
-			// that exist in the list
-			// System.out.println("variable value: "+ action.variableValue);
-			// // System.out.println("ctProxy parameter value: "+ ctProxy.getParameter(action.variableName).value);
-			//
-			// // ctProxy.getParameter(action.variableName);
-			// // dtProxy.getParameter(action.variableName);
-			//
-			// System.out.println(dtProxy.getParameter(action.variableName).value);
-			// dtProxy.setParameter("valve2", 1.0);
-			//
-			// // if( dtProxy.getParameter(action.variableName).value== action.variableValue)//hard coding here
-			// // {
-			// // System.out.println("dtProxy.getParameter");
-			// // ctProxy.setParameter(action.variableName, action.variableValue);
-			// // }
-			//
-			// } catch (Exception e)
-			// {
-			// abort(Simulator.DE, "getParameter("+action.variableName+"="+action.variableValue+") failed", e);
-			// }
-			// break;
-			// }
-			//
+			stm.apply(eval);
 		}
 	}
 

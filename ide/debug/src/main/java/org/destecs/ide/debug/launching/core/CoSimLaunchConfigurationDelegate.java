@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.destecs.core.dcl.Script;
 import org.destecs.core.parsers.ScenarioParserWrapper;
 import org.destecs.core.parsers.ScriptParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
@@ -65,6 +64,7 @@ import org.destecs.ide.ui.DestecsUIPlugin;
 import org.destecs.ide.ui.IDestecsPreferenceConstants;
 import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
+import org.destecs.script.ast.node.INode;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -627,7 +627,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			if (scenarioFile.getName().endsWith("script2"))
 			{
-				Script script = new ScriptParserWrapper().parse(scenarioFile);
+				List<INode> script = new ScriptParserWrapper().parse(scenarioFile);
 				return new ScriptSimulationEngine(contractFile, script);
 			}
 
