@@ -95,6 +95,7 @@
 		<echo message="Eclipse base location: ${eclipseLocation}" />
 		<echo message="Base location: ${base}" />
 		<echo message="Product: ${product}" />
+        <echo message="java.io.tmpdir: ${java.io.tmpdir}" />
 		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
 			<arg value="-application" />
 			<arg value="org.eclipse.ant.core.antRunner" />
@@ -109,6 +110,7 @@
 			<arg value="-Dbaseos=${baseos}" />
 			<arg value="-Dbasews=${basews}" />
 			<arg value="-Dbasearch=${basearch}" />
+            <arf value="-Djava.io.tmpdir=${java.io.tmpdir}" />
 
 			<classpath>
 				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
