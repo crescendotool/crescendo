@@ -110,7 +110,7 @@
 			<arg value="-Dbaseos=${baseos}" />
 			<arg value="-Dbasews=${basews}" />
 			<arg value="-Dbasearch=${basearch}" />
-            <arf value="-Djava.io.tmpdir=${java.io.tmpdir}" />
+            <arg value="-Djava.io.tmpdir=${java.io.tmpdir}" />
 
 			<classpath>
 				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
