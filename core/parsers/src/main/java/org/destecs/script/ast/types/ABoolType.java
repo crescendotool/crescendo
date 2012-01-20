@@ -44,6 +44,8 @@ public class ABoolType extends PTypeBase
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link ABoolType} node with no children.
 	 */
@@ -51,8 +53,6 @@ public class ABoolType extends PTypeBase
 	{
 
 	}
-
-
 
 
 
@@ -67,32 +67,17 @@ public class ABoolType extends PTypeBase
 	return false; }
 	
 	/**
-	 * Returns the {@link EType} corresponding to the
-	 * type of this {@link EType} node.
-	 * @return the {@link EType} for this node
-	 */
-	@Override
-	public EType kindPType()
-	{
-		return EType.BOOL;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link ABoolType} node.
+	 * Creates a deep clone of this {@link ABoolType} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link ABoolType} node
 	 */
-	public ABoolType clone()
+	public ABoolType clone(Map<INode,INode> oldToNewMap)
 	{
-		return new ABoolType(
+		ABoolType node = new ABoolType(
 		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -109,18 +94,33 @@ public class ABoolType extends PTypeBase
 	}
 
 
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
-	 * Creates a deep clone of this {@link ABoolType} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns the {@link EType} corresponding to the
+	 * type of this {@link EType} node.
+	 * @return the {@link EType} for this node
+	 */
+	@Override
+	public EType kindPType()
+	{
+		return EType.BOOL;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link ABoolType} node.
 	 * @return a deep clone of this {@link ABoolType} node
 	 */
-	public ABoolType clone(Map<INode,INode> oldToNewMap)
+	public ABoolType clone()
 	{
-		ABoolType node = new ABoolType(
+		return new ABoolType(
 		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

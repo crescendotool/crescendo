@@ -65,6 +65,7 @@ import org.destecs.ide.ui.IDestecsPreferenceConstants;
 import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.preprocessing.AScriptInclude;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -319,7 +320,7 @@ public class CoSimLaunchConfigurationDelegate extends
 							{
 								try
 								{
-									if(target.getLaunch().getLaunchConfiguration().getType()== configType)
+									if (target.getLaunch().getLaunchConfiguration().getType() == configType)
 									{
 										target.resume();
 									}
@@ -627,7 +628,10 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			if (scenarioFile.getName().endsWith("script2"))
 			{
-				List<INode> script = new ScriptParserWrapper().parse(scenarioFile);
+				ScriptParserWrapper parser = new ScriptParserWrapper();
+				List<INode> script = parser.parse(scenarioFile);
+
+				script = expandScript(script, scenarioFile);
 				return new ScriptSimulationEngine(contractFile, script);
 			}
 
@@ -638,6 +642,28 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			return new SimulationEngine(contractFile);
 		}
+	}
+
+	public List<INode> expandScript(List<INode> script, File scriptFile)
+			throws IOException
+	{
+
+		List<INode> expandedScript = new Vector<INode>();
+		for (INode node : script)
+		{
+			if (node instanceof AScriptInclude)
+			{
+				ScriptParserWrapper parser = new ScriptParserWrapper();
+				File file = new File(scriptFile.getParentFile(), ((AScriptInclude) node).getFilename().replace('\"', ' ').trim());
+				List<INode> subScript = parser.parse(file);
+				expandedScript.addAll(expandScript(subScript, file));
+			} else
+			{
+				expandedScript.add(node);
+			}
+		}
+
+		return expandedScript;
 	}
 
 	private static List<SetDesignParametersdesignParametersStructParam> loadSharedDesignParameters(

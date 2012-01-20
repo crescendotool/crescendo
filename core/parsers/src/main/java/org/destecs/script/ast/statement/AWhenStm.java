@@ -27,14 +27,14 @@ import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.List;
 import org.destecs.script.ast.statement.PStmBase;
-import java.lang.String;
 import org.destecs.script.ast.statement.EStm;
+import java.lang.String;
 import org.destecs.script.ast.node.NodeList;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.statement.PStm;
 import org.destecs.script.ast.expressions.PExp;
-import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.statement.AWhenStm;
+import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -54,6 +54,15 @@ public class AWhenStm extends PStmBase
 	private NodeList<ARevertStm> _after = new NodeList<ARevertStm>(this);
 
 	/**
+	 * Creates a new {@link AWhenStm} node with no children.
+	 */
+	public AWhenStm()
+	{
+
+	}
+
+
+	/**
 	* Creates a new {@code AWhenStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
 	* @param test_ the {@link PExp} node for the {@code test} child of this {@link AWhenStm} node
@@ -71,15 +80,6 @@ public class AWhenStm extends PStmBase
 
 
 
-	/**
-	 * Creates a new {@link AWhenStm} node with no children.
-	 */
-	public AWhenStm()
-	{
-
-	}
-
-
 
 
 	/**
@@ -91,6 +91,32 @@ public class AWhenStm extends PStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
+	{
+		return EStm.WHEN;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AWhenStm} node.
+	 * @return a deep clone of this {@link AWhenStm} node
+	 */
+	public AWhenStm clone()
+	{
+		return new AWhenStm(
+			cloneNode(_test),
+			cloneList(_then),
+			cloneList(_after)
+		);
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AWhenStm} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -115,6 +141,13 @@ public class AWhenStm extends PStmBase
 	}
 
 
+
+	public String toString()
+	{
+		return (_test!=null?_test.toString():this.getClass().getSimpleName())+ (_then!=null?_then.toString():this.getClass().getSimpleName())+ (_after!=null?_after.toString():this.getClass().getSimpleName());
+	}
+
+
 	/**
 	 * Creates a deep clone of this {@link AWhenStm} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -130,39 +163,6 @@ public class AWhenStm extends PStmBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return (_test!=null?_test.toString():this.getClass().getSimpleName())+ (_then!=null?_then.toString():this.getClass().getSimpleName())+ (_after!=null?_after.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AWhenStm} node.
-	 * @return a deep clone of this {@link AWhenStm} node
-	 */
-	public AWhenStm clone()
-	{
-		return new AWhenStm(
-			cloneNode(_test),
-			cloneList(_then),
-			cloneList(_after)
-		);
-	}
-
-
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
-	{
-		return EStm.WHEN;
 	}
 
 

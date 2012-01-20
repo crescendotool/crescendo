@@ -44,6 +44,7 @@ public final class TInt extends Token
 
 	private String _text;
 
+
 	/**
 	* Creates a new {@code TInt} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -55,7 +56,6 @@ public final class TInt extends Token
 		this.setText(text_);
 
 	}
-
 
 
 
@@ -76,10 +76,13 @@ public final class TInt extends Token
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
+	/**
+	 * Returns a deep clone of this {@link TInt} node.
+	 * @return a deep clone of this {@link TInt} node
+	 */
+	public TInt clone()
 	{
-		return (_text!=null?_text.toString():this.getClass().getSimpleName());
+		return new TInt( getText());
 	}
 
 
@@ -97,13 +100,10 @@ public final class TInt extends Token
 	}
 
 
-	/**
-	 * Returns a deep clone of this {@link TInt} node.
-	 * @return a deep clone of this {@link TInt} node
-	 */
-	public TInt clone()
+
+	public String toString()
 	{
-		return new TInt( getText());
+		return (_text!=null?_text.toString():this.getClass().getSimpleName());
 	}
 
 

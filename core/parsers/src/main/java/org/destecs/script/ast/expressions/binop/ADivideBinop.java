@@ -45,6 +45,7 @@ public class ADivideBinop extends PBinopBase
 
 
 
+
 	/**
 	 * Creates a new {@link ADivideBinop} node with no children.
 	 */
@@ -52,7 +53,6 @@ public class ADivideBinop extends PBinopBase
 	{
 
 	}
-
 
 
 
@@ -66,17 +66,6 @@ public class ADivideBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link ADivideBinop} node.
-	 * @return a deep clone of this {@link ADivideBinop} node
-	 */
-	public ADivideBinop clone()
-	{
-		return new ADivideBinop(
-		);
-	}
-
-
 
 	public String toString()
 	{
@@ -98,18 +87,6 @@ public class ADivideBinop extends PBinopBase
 
 
 	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
-	{
-		return EBinop.DIVIDE;
-	}
-
-
-	/**
 	 * Creates a deep clone of this {@link ADivideBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -121,6 +98,29 @@ public class ADivideBinop extends PBinopBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link ADivideBinop} node.
+	 * @return a deep clone of this {@link ADivideBinop} node
+	 */
+	public ADivideBinop clone()
+	{
+		return new ADivideBinop(
+		);
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.DIVIDE;
 	}
 
 

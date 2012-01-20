@@ -26,8 +26,8 @@ import org.destecs.script.ast.statement.SMessageStm;
 import java.util.Map;
 import org.destecs.script.ast.statement.EMessageStm;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.statement.EStm;
 import java.lang.String;
+import org.destecs.script.ast.statement.EStm;
 import org.destecs.script.ast.statement.PStm;
 
 
@@ -37,15 +37,7 @@ import org.destecs.script.ast.statement.PStm;
 *
 */
 public interface SMessageStm extends PStm
-{
-	public String toString();
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	public EStm kindPStm();
-	/**
+{	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link SMessageStmBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -60,17 +52,25 @@ public interface SMessageStm extends PStm
 	 */
 	public abstract EMessageStm kindSMessageStm();
 	/**
-	 * Returns a deep clone of this {@link SMessageStmBase} node.
-	 * @return a deep clone of this {@link SMessageStmBase} node
-	 */
-	public abstract SMessageStm clone();
-	/**
 	 * Creates a deep clone of this {@link SMessageStmBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link SMessageStmBase} node
 	 */
 	public abstract SMessageStm clone(Map<INode,INode> oldToNewMap);
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	public EStm kindPStm();
+
+	public String toString();
+	/**
+	 * Returns a deep clone of this {@link SMessageStmBase} node.
+	 * @return a deep clone of this {@link SMessageStmBase} node
+	 */
+	public abstract SMessageStm clone();
 	/**
 	 * Sets the {@code _message} child of this {@link SMessageStmBase} node.
 	 * @param value the new {@code _message} child of this {@link SMessageStmBase} node

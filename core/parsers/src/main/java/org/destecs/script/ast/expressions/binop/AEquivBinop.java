@@ -44,6 +44,8 @@ public class AEquivBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link AEquivBinop} node with no children.
 	 */
@@ -51,8 +53,6 @@ public class AEquivBinop extends PBinopBase
 	{
 
 	}
-
-
 
 
 
@@ -66,6 +66,30 @@ public class AEquivBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Returns a deep clone of this {@link AEquivBinop} node.
+	 * @return a deep clone of this {@link AEquivBinop} node
+	 */
+	public AEquivBinop clone()
+	{
+		return new AEquivBinop(
+		);
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AEquivBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AEquivBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AEquivBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
 	/**
 	 * Creates a deep clone of this {@link AEquivBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -89,19 +113,6 @@ public class AEquivBinop extends PBinopBase
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AEquivBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AEquivBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AEquivBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
 	 * Returns the {@link EBinop} corresponding to the
 	 * type of this {@link EBinop} node.
 	 * @return the {@link EBinop} for this node
@@ -110,17 +121,6 @@ public class AEquivBinop extends PBinopBase
 	public EBinop kindPBinop()
 	{
 		return EBinop.EQUIV;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AEquivBinop} node.
-	 * @return a deep clone of this {@link AEquivBinop} node
-	 */
-	public AEquivBinop clone()
-	{
-		return new AEquivBinop(
-		);
 	}
 
 

@@ -22,8 +22,8 @@
 package org.destecs.script.ast.expressions.unop;
 
 
-import org.destecs.script.ast.expressions.unop.EUnop;
 import org.destecs.script.ast.expressions.unop.AMinusUnop;
+import org.destecs.script.ast.expressions.unop.EUnop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
@@ -44,7 +44,6 @@ public class AMinusUnop extends PUnopBase
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link AMinusUnop} node with no children.
 	 */
@@ -52,6 +51,7 @@ public class AMinusUnop extends PUnopBase
 	{
 
 	}
+
 
 
 
@@ -67,15 +67,21 @@ public class AMinusUnop extends PUnopBase
 	return false; }
 	
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AMinusUnop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AMinusUnop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AMinusUnop} node
+	 * Returns the {@link EUnop} corresponding to the
+	 * type of this {@link EUnop} node.
+	 * @return the {@link EUnop} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public EUnop kindPUnop()
 	{
-		throw new RuntimeException("Not a child.");
+		return EUnop.MINUS;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 
@@ -91,6 +97,19 @@ public class AMinusUnop extends PUnopBase
 
 
 	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AMinusUnop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AMinusUnop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AMinusUnop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
 	 * Creates a deep clone of this {@link AMinusUnop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -102,25 +121,6 @@ public class AMinusUnop extends PUnopBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Returns the {@link EUnop} corresponding to the
-	 * type of this {@link EUnop} node.
-	 * @return the {@link EUnop} for this node
-	 */
-	@Override
-	public EUnop kindPUnop()
-	{
-		return EUnop.MINUS;
 	}
 
 

@@ -66,6 +66,13 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ASystemTimeSingleExp} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -80,20 +87,17 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 
 
 	/**
-	 * Returns a deep clone of this {@link ASystemTimeSingleExp} node.
+	 * Creates a deep clone of this {@link ASystemTimeSingleExp} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link ASystemTimeSingleExp} node
 	 */
-	public ASystemTimeSingleExp clone()
+	public ASystemTimeSingleExp clone(Map<INode,INode> oldToNewMap)
 	{
-		return new ASystemTimeSingleExp(
+		ASystemTimeSingleExp node = new ASystemTimeSingleExp(
 		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -110,17 +114,13 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 
 
 	/**
-	 * Creates a deep clone of this {@link ASystemTimeSingleExp} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link ASystemTimeSingleExp} node.
 	 * @return a deep clone of this {@link ASystemTimeSingleExp} node
 	 */
-	public ASystemTimeSingleExp clone(Map<INode,INode> oldToNewMap)
+	public ASystemTimeSingleExp clone()
 	{
-		ASystemTimeSingleExp node = new ASystemTimeSingleExp(
+		return new ASystemTimeSingleExp(
 		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

@@ -24,8 +24,8 @@ package org.destecs.script.ast.expressions;
 
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
-import org.destecs.script.ast.expressions.ETimeunit;
 import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.expressions.ETimeunit;
 import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
 import org.destecs.script.ast.expressions.PTimeunit;
@@ -42,7 +42,6 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 
 
 
-
 	/**
 	 * Creates a new {@link PTimeunitBase} node with no children.
 	 */
@@ -50,6 +49,7 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 	{
 
 	}
+
 
 
 
@@ -63,22 +63,6 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link PTimeunitBase} node.
-	 * @return a deep clone of this {@link PTimeunitBase} node
-	 */
-	@Override
-	public abstract PTimeunit clone();
-
-	/**
-	 * Creates a deep clone of this {@link PTimeunitBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PTimeunitBase} node
-	 */
-	@Override
-	public abstract PTimeunit clone(Map<INode,INode> oldToNewMap);
-
 
 	public String toString()
 	{
@@ -86,6 +70,20 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 
 	}
 
+
+	/**
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
+	 */
+	public abstract ETimeunit kindPTimeunit();
+
+	/**
+	 * Returns a deep clone of this {@link PTimeunitBase} node.
+	 * @return a deep clone of this {@link PTimeunitBase} node
+	 */
+	@Override
+	public abstract PTimeunit clone();
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PTimeunitBase} node.
@@ -101,6 +99,15 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 
 
 	/**
+	 * Creates a deep clone of this {@link PTimeunitBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PTimeunitBase} node
+	 */
+	@Override
+	public abstract PTimeunit clone(Map<INode,INode> oldToNewMap);
+
+	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
@@ -111,13 +118,6 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 		return NodeEnum.TIMEUNIT;
 	}
 
-
-	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
-	 */
-	public abstract ETimeunit kindPTimeunit();
 
 
 }

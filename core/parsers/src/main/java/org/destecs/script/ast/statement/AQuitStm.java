@@ -28,8 +28,8 @@ import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.statement.AQuitStm;
 import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.statement.EStm;
 import java.lang.String;
+import org.destecs.script.ast.statement.EStm;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
@@ -66,25 +66,15 @@ public class AQuitStm extends PStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
-	 * Creates a deep clone of this {@link AQuitStm} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AQuitStm} node
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
 	 */
-	public AQuitStm clone(Map<INode,INode> oldToNewMap)
+	@Override
+	public EStm kindPStm()
 	{
-		AQuitStm node = new AQuitStm(
-		);
-		oldToNewMap.put(this, node);
-		return node;
+		return EStm.QUIT;
 	}
 
 
@@ -112,15 +102,25 @@ public class AQuitStm extends PStmBase
 	}
 
 
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
+
+	public String toString()
 	{
-		return EStm.QUIT;
+		return super.toString();
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AQuitStm} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AQuitStm} node
+	 */
+	public AQuitStm clone(Map<INode,INode> oldToNewMap)
+	{
+		AQuitStm node = new AQuitStm(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

@@ -25,8 +25,8 @@ package org.destecs.script.ast.expressions;
 import org.destecs.script.ast.expressions.PExp;
 import java.util.Map;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.expressions.EExp;
 
 
@@ -36,25 +36,14 @@ import org.destecs.script.ast.expressions.EExp;
 *
 */
 public interface PExp extends INode
-{	/**
-	 * Returns a deep clone of this {@link PExpBase} node.
-	 * @return a deep clone of this {@link PExpBase} node
-	 */
-	public abstract PExp clone();
-	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	public abstract EExp kindPExp();
+{
+	public String toString();
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
-
-	public String toString();
 	/**
 	 * Creates a deep clone of this {@link PExpBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -70,5 +59,16 @@ public interface PExp extends INode
 	 * @throws RuntimeException if {@code child} is not a child of this {@link PExpBase} node
 	 */
 	public void removeChild(INode child);
+	/**
+	 * Returns a deep clone of this {@link PExpBase} node.
+	 * @return a deep clone of this {@link PExpBase} node
+	 */
+	public abstract PExp clone();
+	/**
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
+	 */
+	public abstract EExp kindPExp();
 
 }

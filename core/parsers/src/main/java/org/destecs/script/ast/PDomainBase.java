@@ -26,8 +26,8 @@ import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.PDomain;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.EDomain;
 
 
@@ -64,33 +64,19 @@ public abstract class PDomainBase extends Node implements PDomain
 	return false; }
 	
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PDomainBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PDomainBase} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link PDomainBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PDomainBase} node
-	 */
-	@Override
-	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
-
-	/**
 	 * Returns a deep clone of this {@link PDomainBase} node.
 	 * @return a deep clone of this {@link PDomainBase} node
 	 */
 	@Override
 	public abstract PDomain clone();
+
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
 
 	/**
 	 * Returns the {@link EDomain} corresponding to the
@@ -111,11 +97,25 @@ public abstract class PDomainBase extends Node implements PDomain
 	}
 
 
+	/**
+	 * Creates a deep clone of this {@link PDomainBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PDomainBase} node
+	 */
+	@Override
+	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
 
-	public String toString()
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PDomainBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PDomainBase} node
+	 */
+	public void removeChild(INode child)
 	{
-		return super.toString();
-
+		throw new RuntimeException("Not a child.");
 	}
 
 

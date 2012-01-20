@@ -45,16 +45,6 @@ public class AScriptInclude extends PIncludeBase
 
 	private String _filename;
 
-
-	/**
-	 * Creates a new {@link AScriptInclude} node with no children.
-	 */
-	public AScriptInclude()
-	{
-
-	}
-
-
 	/**
 	* Creates a new {@code AScriptInclude} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -66,6 +56,16 @@ public class AScriptInclude extends PIncludeBase
 		this.setFilename(filename_);
 
 	}
+
+
+	/**
+	 * Creates a new {@link AScriptInclude} node with no children.
+	 */
+	public AScriptInclude()
+	{
+
+	}
+
 
 
 
@@ -80,37 +80,14 @@ public class AScriptInclude extends PIncludeBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link AScriptInclude} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link AScriptInclude} node.
 	 * @return a deep clone of this {@link AScriptInclude} node
 	 */
-	public AScriptInclude clone(Map<INode,INode> oldToNewMap)
+	public AScriptInclude clone()
 	{
-		AScriptInclude node = new AScriptInclude(
+		return new AScriptInclude(
 			_filename
 		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return (_filename!=null?_filename.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
-	 * Returns the {@link EInclude} corresponding to the
-	 * type of this {@link EInclude} node.
-	 * @return the {@link EInclude} for this node
-	 */
-	@Override
-	public EInclude kindPInclude()
-	{
-		return EInclude.SCRIPT;
 	}
 
 
@@ -128,14 +105,37 @@ public class AScriptInclude extends PIncludeBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AScriptInclude} node.
+	 * Creates a deep clone of this {@link AScriptInclude} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link AScriptInclude} node
 	 */
-	public AScriptInclude clone()
+	public AScriptInclude clone(Map<INode,INode> oldToNewMap)
 	{
-		return new AScriptInclude(
+		AScriptInclude node = new AScriptInclude(
 			_filename
 		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+	/**
+	 * Returns the {@link EInclude} corresponding to the
+	 * type of this {@link EInclude} node.
+	 * @return the {@link EInclude} for this node
+	 */
+	@Override
+	public EInclude kindPInclude()
+	{
+		return EInclude.SCRIPT;
+	}
+
+
+
+	public String toString()
+	{
+		return (_filename!=null?_filename.toString():this.getClass().getSimpleName());
 	}
 
 

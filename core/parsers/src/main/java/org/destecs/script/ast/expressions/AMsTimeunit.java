@@ -44,6 +44,8 @@ public class AMsTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link AMsTimeunit} node with no children.
 	 */
@@ -51,8 +53,6 @@ public class AMsTimeunit extends PTimeunitBase
 	{
 
 	}
-
-
 
 
 
@@ -66,24 +66,6 @@ public class AMsTimeunit extends PTimeunitBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AMsTimeunit} node.
-	 * @return a deep clone of this {@link AMsTimeunit} node
-	 */
-	public AMsTimeunit clone()
-	{
-		return new AMsTimeunit(
-		);
-	}
-
-
 	/**
 	 * Returns the {@link ETimeunit} corresponding to the
 	 * type of this {@link ETimeunit} node.
@@ -109,6 +91,13 @@ public class AMsTimeunit extends PTimeunitBase
 	}
 
 
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
 	 * Creates a deep clone of this {@link AMsTimeunit} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -121,6 +110,17 @@ public class AMsTimeunit extends PTimeunitBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AMsTimeunit} node.
+	 * @return a deep clone of this {@link AMsTimeunit} node
+	 */
+	public AMsTimeunit clone()
+	{
+		return new AMsTimeunit(
+		);
 	}
 
 

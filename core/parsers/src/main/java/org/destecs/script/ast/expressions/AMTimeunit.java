@@ -45,6 +45,7 @@ public class AMTimeunit extends PTimeunitBase
 
 
 
+
 	/**
 	 * Creates a new {@link AMTimeunit} node with no children.
 	 */
@@ -52,7 +53,6 @@ public class AMTimeunit extends PTimeunitBase
 	{
 
 	}
-
 
 
 
@@ -66,40 +66,6 @@ public class AMTimeunit extends PTimeunitBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Creates a deep clone of this {@link AMTimeunit} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AMTimeunit} node
-	 */
-	public AMTimeunit clone(Map<INode,INode> oldToNewMap)
-	{
-		AMTimeunit node = new AMTimeunit(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
-	 */
-	@Override
-	public ETimeunit kindPTimeunit()
-	{
-		return ETimeunit.M;
-	}
-
-
 	/**
 	 * Returns a deep clone of this {@link AMTimeunit} node.
 	 * @return a deep clone of this {@link AMTimeunit} node
@@ -121,6 +87,40 @@ public class AMTimeunit extends PTimeunitBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
+	 */
+	@Override
+	public ETimeunit kindPTimeunit()
+	{
+		return ETimeunit.M;
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AMTimeunit} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AMTimeunit} node
+	 */
+	public AMTimeunit clone(Map<INode,INode> oldToNewMap)
+	{
+		AMTimeunit node = new AMTimeunit(
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 

@@ -44,6 +44,7 @@ public class AMoreThanBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link AMoreThanBinop} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class AMoreThanBinop extends PBinopBase
 	{
 
 	}
-
 
 
 

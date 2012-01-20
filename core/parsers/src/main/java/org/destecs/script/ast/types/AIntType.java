@@ -45,6 +45,7 @@ public class AIntType extends PTypeBase
 
 
 
+
 	/**
 	 * Creates a new {@link AIntType} node with no children.
 	 */
@@ -52,7 +53,6 @@ public class AIntType extends PTypeBase
 	{
 
 	}
-
 
 
 
@@ -66,24 +66,6 @@ public class AIntType extends PTypeBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AIntType} node.
-	 * @return a deep clone of this {@link AIntType} node
-	 */
-	public AIntType clone()
-	{
-		return new AIntType(
-		);
-	}
-
-
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AIntType} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -94,6 +76,13 @@ public class AIntType extends PTypeBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 
@@ -121,6 +110,17 @@ public class AIntType extends PTypeBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AIntType} node.
+	 * @return a deep clone of this {@link AIntType} node
+	 */
+	public AIntType clone()
+	{
+		return new AIntType(
+		);
 	}
 
 

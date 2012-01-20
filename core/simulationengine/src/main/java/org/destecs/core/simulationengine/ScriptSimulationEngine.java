@@ -93,6 +93,9 @@ public class ScriptSimulationEngine extends SimulationEngine
 					{
 						out.value.clear();
 						out.value.add(value);
+						engineInfo(simulator, "Replacing output (Next time="
+								+ getSystemTime() + "): " + name + " = "
+								+ value);
 						found = true;
 					}
 				}
@@ -102,6 +105,9 @@ public class ScriptSimulationEngine extends SimulationEngine
 			{
 				try
 				{
+					engineInfo(simulator, "Setting parameter (Next time="
+							+ getSystemTime() + "): " + name + " = " + value);
+					messageInfo(simulator, getSystemTime(), "setParameter");
 					switch (simulator)
 					{
 						case CT:

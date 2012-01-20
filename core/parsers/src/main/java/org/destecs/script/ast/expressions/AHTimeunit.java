@@ -27,8 +27,8 @@ import org.destecs.script.ast.expressions.PTimeunitBase;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.expressions.ETimeunit;
 import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.expressions.ETimeunit;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -44,8 +44,6 @@ public class AHTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link AHTimeunit} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class AHTimeunit extends PTimeunitBase
 	{
 
 	}
+
+
 
 
 
@@ -66,14 +66,37 @@ public class AHTimeunit extends PTimeunitBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
-	 * Returns a deep clone of this {@link AHTimeunit} node.
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
+	 */
+	@Override
+	public ETimeunit kindPTimeunit()
+	{
+		return ETimeunit.H;
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AHTimeunit} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link AHTimeunit} node
 	 */
-	public AHTimeunit clone()
+	public AHTimeunit clone(Map<INode,INode> oldToNewMap)
 	{
-		return new AHTimeunit(
+		AHTimeunit node = new AHTimeunit(
 		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -91,36 +114,13 @@ public class AHTimeunit extends PTimeunitBase
 
 
 	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
-	 */
-	@Override
-	public ETimeunit kindPTimeunit()
-	{
-		return ETimeunit.H;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AHTimeunit} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link AHTimeunit} node.
 	 * @return a deep clone of this {@link AHTimeunit} node
 	 */
-	public AHTimeunit clone(Map<INode,INode> oldToNewMap)
+	public AHTimeunit clone()
 	{
-		AHTimeunit node = new AHTimeunit(
+		return new AHTimeunit(
 		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

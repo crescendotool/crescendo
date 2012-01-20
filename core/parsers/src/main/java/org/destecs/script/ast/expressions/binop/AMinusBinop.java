@@ -44,6 +44,7 @@ public class AMinusBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link AMinusBinop} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class AMinusBinop extends PBinopBase
 	{
 
 	}
-
 
 
 
@@ -66,6 +66,26 @@ public class AMinusBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AMinusBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AMinusBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AMinusBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link AMinusBinop} node.
 	 * @return a deep clone of this {@link AMinusBinop} node
@@ -74,13 +94,6 @@ public class AMinusBinop extends PBinopBase
 	{
 		return new AMinusBinop(
 		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 
@@ -96,19 +109,6 @@ public class AMinusBinop extends PBinopBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AMinusBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AMinusBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AMinusBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
 	}
 
 

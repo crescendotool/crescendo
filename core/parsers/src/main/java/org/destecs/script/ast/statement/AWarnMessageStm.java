@@ -45,6 +45,15 @@ public class AWarnMessageStm extends SMessageStmBase
 
 
 	/**
+	 * Creates a new {@link AWarnMessageStm} node with no children.
+	 */
+	public AWarnMessageStm()
+	{
+
+	}
+
+
+	/**
 	* Creates a new {@code AWarnMessageStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
 	*/
@@ -54,15 +63,6 @@ public class AWarnMessageStm extends SMessageStmBase
 
 	}
 
-
-
-	/**
-	 * Creates a new {@link AWarnMessageStm} node with no children.
-	 */
-	public AWarnMessageStm()
-	{
-
-	}
 
 
 
@@ -77,19 +77,6 @@ public class AWarnMessageStm extends SMessageStmBase
 	return false; }
 	
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AWarnMessageStm} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AWarnMessageStm} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AWarnMessageStm} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
 	 * Returns the {@link EMessageStm} corresponding to the
 	 * type of this {@link EMessageStm} node.
 	 * @return the {@link EMessageStm} for this node
@@ -98,25 +85,6 @@ public class AWarnMessageStm extends SMessageStmBase
 	public EMessageStm kindSMessageStm()
 	{
 		return EMessageStm.WARN;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AWarnMessageStm} node.
-	 * @return a deep clone of this {@link AWarnMessageStm} node
-	 */
-	public AWarnMessageStm clone()
-	{
-		return new AWarnMessageStm(
-			_message
-		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 
@@ -133,6 +101,38 @@ public class AWarnMessageStm extends SMessageStmBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AWarnMessageStm} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AWarnMessageStm} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AWarnMessageStm} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AWarnMessageStm} node.
+	 * @return a deep clone of this {@link AWarnMessageStm} node
+	 */
+	public AWarnMessageStm clone()
+	{
+		return new AWarnMessageStm(
+			_message
+		);
 	}
 
 

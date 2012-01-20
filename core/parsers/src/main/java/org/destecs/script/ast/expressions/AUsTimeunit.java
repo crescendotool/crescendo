@@ -44,8 +44,6 @@ public class AUsTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link AUsTimeunit} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class AUsTimeunit extends PTimeunitBase
 	{
 
 	}
+
+
 
 
 

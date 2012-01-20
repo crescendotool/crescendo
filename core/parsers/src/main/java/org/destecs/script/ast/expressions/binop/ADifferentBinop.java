@@ -45,6 +45,7 @@ public class ADifferentBinop extends PBinopBase
 
 
 
+
 	/**
 	 * Creates a new {@link ADifferentBinop} node with no children.
 	 */
@@ -52,7 +53,6 @@ public class ADifferentBinop extends PBinopBase
 	{
 
 	}
-
 
 
 
@@ -66,6 +66,19 @@ public class ADifferentBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link ADifferentBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ADifferentBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ADifferentBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
 
 	public String toString()
 	{
@@ -85,21 +98,6 @@ public class ADifferentBinop extends PBinopBase
 
 
 	/**
-	 * Creates a deep clone of this {@link ADifferentBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ADifferentBinop} node
-	 */
-	public ADifferentBinop clone(Map<INode,INode> oldToNewMap)
-	{
-		ADifferentBinop node = new ADifferentBinop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
 	 * Returns the {@link EBinop} corresponding to the
 	 * type of this {@link EBinop} node.
 	 * @return the {@link EBinop} for this node
@@ -112,15 +110,17 @@ public class ADifferentBinop extends PBinopBase
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ADifferentBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ADifferentBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ADifferentBinop} node
+	 * Creates a deep clone of this {@link ADifferentBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ADifferentBinop} node
 	 */
-	public void removeChild(INode child)
+	public ADifferentBinop clone(Map<INode,INode> oldToNewMap)
 	{
-		throw new RuntimeException("Not a child.");
+		ADifferentBinop node = new ADifferentBinop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

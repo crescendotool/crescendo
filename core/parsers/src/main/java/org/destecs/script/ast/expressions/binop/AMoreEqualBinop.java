@@ -44,8 +44,6 @@ public class AMoreEqualBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link AMoreEqualBinop} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class AMoreEqualBinop extends PBinopBase
 	{
 
 	}
+
+
 
 
 
@@ -66,16 +66,10 @@ public class AMoreEqualBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AMoreEqualBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AMoreEqualBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AMoreEqualBinop} node
-	 */
-	public void removeChild(INode child)
+
+	public String toString()
 	{
-		throw new RuntimeException("Not a child.");
+		return super.toString();
 	}
 
 
@@ -91,24 +85,15 @@ public class AMoreEqualBinop extends PBinopBase
 
 
 	/**
-	 * Creates a deep clone of this {@link AMoreEqualBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AMoreEqualBinop} node
+	 * Removes the {@link INode} {@code child} as a child of this {@link AMoreEqualBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AMoreEqualBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AMoreEqualBinop} node
 	 */
-	public AMoreEqualBinop clone(Map<INode,INode> oldToNewMap)
+	public void removeChild(INode child)
 	{
-		AMoreEqualBinop node = new AMoreEqualBinop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
+		throw new RuntimeException("Not a child.");
 	}
 
 
@@ -121,6 +106,21 @@ public class AMoreEqualBinop extends PBinopBase
 	public EBinop kindPBinop()
 	{
 		return EBinop.MOREEQUAL;
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AMoreEqualBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AMoreEqualBinop} node
+	 */
+	public AMoreEqualBinop clone(Map<INode,INode> oldToNewMap)
+	{
+		AMoreEqualBinop node = new AMoreEqualBinop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

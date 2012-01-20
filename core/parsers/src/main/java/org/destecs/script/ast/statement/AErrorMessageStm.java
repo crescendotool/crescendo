@@ -23,8 +23,8 @@ package org.destecs.script.ast.statement;
 
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
-import java.util.Map;
 import org.destecs.script.ast.statement.EMessageStm;
+import java.util.Map;
 import org.destecs.script.ast.statement.AErrorMessageStm;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
@@ -97,14 +97,18 @@ public class AErrorMessageStm extends SMessageStmBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AErrorMessageStm} node.
+	 * Creates a deep clone of this {@link AErrorMessageStm} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link AErrorMessageStm} node
 	 */
-	public AErrorMessageStm clone()
+	public AErrorMessageStm clone(Map<INode,INode> oldToNewMap)
 	{
-		return new AErrorMessageStm(
+		AErrorMessageStm node = new AErrorMessageStm(
 			_message
 		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -121,18 +125,14 @@ public class AErrorMessageStm extends SMessageStmBase
 
 
 	/**
-	 * Creates a deep clone of this {@link AErrorMessageStm} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link AErrorMessageStm} node.
 	 * @return a deep clone of this {@link AErrorMessageStm} node
 	 */
-	public AErrorMessageStm clone(Map<INode,INode> oldToNewMap)
+	public AErrorMessageStm clone()
 	{
-		AErrorMessageStm node = new AErrorMessageStm(
+		return new AErrorMessageStm(
 			_message
 		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

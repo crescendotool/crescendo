@@ -42,7 +42,6 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 
 	protected String _message;
 
-
 	/**
 	* Creates a new {@code SMessageStmBase} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -67,6 +66,7 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 
 
 
+
 	/**
 	 * Essentially this.toString().equals(o.toString()).
 	**/
@@ -76,26 +76,6 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
-	{
-		return EStm.MESSAGE;
-	}
-
-
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link SMessageStmBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -117,13 +97,6 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	public abstract EMessageStm kindSMessageStm();
 
 	/**
-	 * Returns a deep clone of this {@link SMessageStmBase} node.
-	 * @return a deep clone of this {@link SMessageStmBase} node
-	 */
-	@Override
-	public abstract SMessageStm clone();
-
-	/**
 	 * Creates a deep clone of this {@link SMessageStmBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -131,6 +104,33 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	 */
 	@Override
 	public abstract SMessageStm clone(Map<INode,INode> oldToNewMap);
+
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
+	{
+		return EStm.MESSAGE;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link SMessageStmBase} node.
+	 * @return a deep clone of this {@link SMessageStmBase} node
+	 */
+	@Override
+	public abstract SMessageStm clone();
 
 	/**
 	 * Sets the {@code _message} child of this {@link SMessageStmBase} node.

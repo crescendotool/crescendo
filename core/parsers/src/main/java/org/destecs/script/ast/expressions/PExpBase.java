@@ -26,8 +26,8 @@ import org.destecs.script.ast.expressions.PExp;
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.expressions.EExp;
 
 
@@ -39,6 +39,7 @@ import org.destecs.script.ast.expressions.EExp;
 public abstract class PExpBase extends Node implements PExp
 {
 	private static final long serialVersionUID = 1L;
+
 
 
 	/**
@@ -53,7 +54,6 @@ public abstract class PExpBase extends Node implements PExp
 
 
 
-
 	/**
 	 * Essentially this.toString().equals(o.toString()).
 	**/
@@ -63,19 +63,13 @@ public abstract class PExpBase extends Node implements PExp
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link PExpBase} node.
-	 * @return a deep clone of this {@link PExpBase} node
-	 */
-	@Override
-	public abstract PExp clone();
 
-	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	public abstract EExp kindPExp();
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
 
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
@@ -86,14 +80,6 @@ public abstract class PExpBase extends Node implements PExp
 	public NodeEnum kindNode()
 	{
 		return NodeEnum.EXP;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-
 	}
 
 
@@ -118,6 +104,20 @@ public abstract class PExpBase extends Node implements PExp
 		throw new RuntimeException("Not a child.");
 	}
 
+
+	/**
+	 * Returns a deep clone of this {@link PExpBase} node.
+	 * @return a deep clone of this {@link PExpBase} node
+	 */
+	@Override
+	public abstract PExp clone();
+
+	/**
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
+	 */
+	public abstract EExp kindPExp();
 
 
 }

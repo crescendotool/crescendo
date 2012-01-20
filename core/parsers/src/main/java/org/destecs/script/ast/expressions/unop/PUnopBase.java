@@ -41,7 +41,6 @@ public abstract class PUnopBase extends Node implements PUnop
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link PUnopBase} node with no children.
 	 */
@@ -49,6 +48,7 @@ public abstract class PUnopBase extends Node implements PUnop
 	{
 
 	}
+
 
 
 
@@ -63,6 +63,21 @@ public abstract class PUnopBase extends Node implements PUnop
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link PUnopBase} node.
+	 * @return a deep clone of this {@link PUnopBase} node
+	 */
+	@Override
+	public abstract PUnop clone();
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PUnopBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -77,26 +92,14 @@ public abstract class PUnopBase extends Node implements PUnop
 
 
 	/**
-	 * Returns a deep clone of this {@link PUnopBase} node.
-	 * @return a deep clone of this {@link PUnopBase} node
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
 	 */
 	@Override
-	public abstract PUnop clone();
-
-	/**
-	 * Creates a deep clone of this {@link PUnopBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PUnopBase} node
-	 */
-	@Override
-	public abstract PUnop clone(Map<INode,INode> oldToNewMap);
-
-
-	public String toString()
+	public NodeEnum kindNode()
 	{
-		return super.toString();
-
+		return NodeEnum.UNOP;
 	}
 
 
@@ -108,16 +111,13 @@ public abstract class PUnopBase extends Node implements PUnop
 	public abstract EUnop kindPUnop();
 
 	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
+	 * Creates a deep clone of this {@link PUnopBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PUnopBase} node
 	 */
 	@Override
-	public NodeEnum kindNode()
-	{
-		return NodeEnum.UNOP;
-	}
-
+	public abstract PUnop clone(Map<INode,INode> oldToNewMap);
 
 
 }

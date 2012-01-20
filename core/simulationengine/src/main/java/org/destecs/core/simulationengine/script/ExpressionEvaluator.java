@@ -9,6 +9,7 @@ import org.destecs.script.ast.expressions.ABinaryExp;
 import org.destecs.script.ast.expressions.AIdentifierSingleExp;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.expressions.ASystemTimeSingleExp;
+import org.destecs.script.ast.expressions.ATimeSingleExp;
 import org.destecs.script.ast.expressions.AUnaryExp;
 
 public class ExpressionEvaluator extends AnswerAdaptor<Value>
@@ -28,6 +29,34 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 	public Value caseASystemTimeSingleExp(ASystemTimeSingleExp node)
 	{
 		return new DoubleValue(interpreter.getSystemTime());
+	}
+
+	@Override
+	public Value caseATimeSingleExp(ATimeSingleExp node)
+	{
+		if (node.getUnit() == null)
+		{
+			return Value.valueOf(node.getValue());
+		}
+		switch (node.getUnit().kindPTimeunit())
+		{
+			case H:
+				//1 hours = 3600 seconds
+				return Value.valueOf(node.getValue()*3600);
+			case M:
+				//1 minute = 60 seconds
+				return Value.valueOf(node.getValue()*60);
+			case MS:
+				//1 millisecond = 0.001 seconds
+				return Value.valueOf(node.getValue()*0.001);
+			case S:
+				return Value.valueOf(node.getValue());
+			case US:
+				//1 microsecond = 1.0 × 10-6 seconds
+				return Value.valueOf(node.getValue()*(10E-6));
+
+		}
+		return Value.valueOf(0);
 	}
 
 	@Override
@@ -94,8 +123,11 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 			}
 				break;
 			case DIV:
-				// TODO
-				break;
+				if (left instanceof DoubleValue)
+				{
+					return new DoubleValue(new Double(((DoubleValue) left).value
+							/ ((DoubleValue) right).value).intValue());
+				}
 			case DIVIDE:
 			{
 				if (left instanceof DoubleValue)
@@ -106,6 +138,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 			}
 				break;
 			case EQUAL:
+			case EQUIV:
 			{
 				if (left instanceof DoubleValue)
 				{
@@ -115,11 +148,11 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 					return new BooleanValue(((BooleanValue) left).value == ((BooleanValue) right).value);
 				}
 			}
-			case EQUIV:
-				// TODO
-				break;
+			
+				
 			case FOR:
-				// TODO
+				//TODO
+				interpreter.scriptError("No idea what a binop \'for\' is!");
 				break;
 			case IMPLIES:
 			{
@@ -175,7 +208,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 			{
 				if (left instanceof DoubleValue)
 				{
-					return new BooleanValue(((DoubleValue) left).value > ((DoubleValue) right).value);
+					return new BooleanValue(((DoubleValue) left).value >= ((DoubleValue) right).value);
 				}
 			}
 				break;
@@ -183,7 +216,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 			{
 				if (left instanceof DoubleValue)
 				{
-					return new BooleanValue(((DoubleValue) left).value >= ((DoubleValue) right).value);
+					return new BooleanValue(((DoubleValue) left).value > ((DoubleValue) right).value);
 				}
 			}
 				break;
@@ -233,6 +266,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 				break;
 			case ADD:
 				// TODO
+				interpreter.scriptError("No idea what a unop \'add' is!");
 				break;
 			case CEIL:
 				if (val instanceof DoubleValue)

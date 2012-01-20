@@ -22,17 +22,16 @@
 package org.destecs.script.ast.expressions;
 
 
-import org.destecs.script.ast.expressions.SSingleExp;
-import java.util.Map;
-import org.destecs.script.ast.analysis.intf.IAnalysis;
-import org.destecs.script.ast.expressions.ABinaryExp;
-import java.lang.String;
-import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.PExp;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import java.util.Map;
+import org.destecs.script.ast.expressions.ABinaryExp;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
+import java.lang.String;
 import org.destecs.script.ast.expressions.PExpBase;
 import org.destecs.script.ast.expressions.EExp;
+import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.PBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
@@ -46,9 +45,10 @@ public class ABinaryExp extends PExpBase
 {
 	private static final long serialVersionUID = 1L;
 
-	private SSingleExp _left;
+	private PExp _left;
 	private PBinop _operator;
 	private PExp _right;
+
 
 	/**
 	 * Creates a new {@link ABinaryExp} node with no children.
@@ -62,11 +62,11 @@ public class ABinaryExp extends PExpBase
 	/**
 	* Creates a new {@code ABinaryExp} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
-	* @param left_ the {@link SSingleExp} node for the {@code left} child of this {@link ABinaryExp} node
+	* @param left_ the {@link PExp} node for the {@code left} child of this {@link ABinaryExp} node
 	* @param operator_ the {@link PBinop} node for the {@code operator} child of this {@link ABinaryExp} node
 	* @param right_ the {@link PExp} node for the {@code right} child of this {@link ABinaryExp} node
 	*/
-	public ABinaryExp(SSingleExp left_, PBinop operator_, PExp right_)
+	public ABinaryExp(PExp left_, PBinop operator_, PExp right_)
 	{
 		super();
 		this.setLeft(left_);
@@ -74,7 +74,6 @@ public class ABinaryExp extends PExpBase
 		this.setRight(right_);
 
 	}
-
 
 
 
@@ -88,6 +87,25 @@ public class ABinaryExp extends PExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return (_left!=null?_left.toString():this.getClass().getSimpleName())+ (_operator!=null?_operator.toString():this.getClass().getSimpleName())+ (_right!=null?_right.toString():this.getClass().getSimpleName());
+	}
+
+
+	/**
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
+	 */
+	@Override
+	public EExp kindPExp()
+	{
+		return EExp.BINARY;
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link ABinaryExp} node.
 	 * @return a deep clone of this {@link ABinaryExp} node
@@ -148,30 +166,11 @@ public class ABinaryExp extends PExpBase
 	}
 
 
-
-	public String toString()
-	{
-		return (_left!=null?_left.toString():this.getClass().getSimpleName())+ (_operator!=null?_operator.toString():this.getClass().getSimpleName())+ (_right!=null?_right.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	@Override
-	public EExp kindPExp()
-	{
-		return EExp.BINARY;
-	}
-
-
 	/**
 	 * Sets the {@code _left} child of this {@link ABinaryExp} node.
 	 * @param value the new {@code _left} child of this {@link ABinaryExp} node
 	*/
-	public void setLeft(SSingleExp value)
+	public void setLeft(PExp value)
 	{
 		if (this._left != null) {
 			this._left.parent(null);
@@ -188,9 +187,9 @@ public class ABinaryExp extends PExpBase
 
 
 	/**
-	 * @return the {@link SSingleExp} node which is the {@code _left} child of this {@link ABinaryExp} node
+	 * @return the {@link PExp} node which is the {@code _left} child of this {@link ABinaryExp} node
 	*/
-	public SSingleExp getLeft()
+	public PExp getLeft()
 	{
 		return this._left;
 	}

@@ -26,8 +26,8 @@ import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.preprocessing.PInclude;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.preprocessing.EInclude;
 
 
@@ -42,7 +42,6 @@ public abstract class PIncludeBase extends Node implements PInclude
 
 
 
-
 	/**
 	 * Creates a new {@link PIncludeBase} node with no children.
 	 */
@@ -50,6 +49,7 @@ public abstract class PIncludeBase extends Node implements PInclude
 	{
 
 	}
+
 
 
 
@@ -63,22 +63,11 @@ public abstract class PIncludeBase extends Node implements PInclude
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link PIncludeBase} node.
-	 * @return a deep clone of this {@link PIncludeBase} node
-	 */
-	@Override
-	public abstract PInclude clone();
 
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	@Override
-	public NodeEnum kindNode()
+	public String toString()
 	{
-		return NodeEnum.INCLUDE;
+		return super.toString();
+
 	}
 
 
@@ -99,6 +88,25 @@ public abstract class PIncludeBase extends Node implements PInclude
 	public abstract PInclude clone(Map<INode,INode> oldToNewMap);
 
 	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
+	 */
+	@Override
+	public NodeEnum kindNode()
+	{
+		return NodeEnum.INCLUDE;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link PIncludeBase} node.
+	 * @return a deep clone of this {@link PIncludeBase} node
+	 */
+	@Override
+	public abstract PInclude clone();
+
+	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PIncludeBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -108,14 +116,6 @@ public abstract class PIncludeBase extends Node implements PInclude
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-
 	}
 
 

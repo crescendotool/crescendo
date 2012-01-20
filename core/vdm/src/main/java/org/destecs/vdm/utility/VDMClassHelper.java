@@ -35,6 +35,7 @@ import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.ReferenceValue;
 import org.overturetool.vdmj.values.SeqValue;
+import org.overturetool.vdmj.values.TransactionValue;
 import org.overturetool.vdmj.values.Value;
 
 public class VDMClassHelper {
@@ -123,6 +124,11 @@ public class VDMClassHelper {
 	public static List<Double> getDoubleListFromValue(Value value) throws ValueException
 	{
 		List<Double> result = new Vector<Double>();
+		
+		if(value instanceof TransactionValue)
+		{
+			value = ((TransactionValue)value).deref();
+		}
 		
 		if(value instanceof SeqValue)
 		{

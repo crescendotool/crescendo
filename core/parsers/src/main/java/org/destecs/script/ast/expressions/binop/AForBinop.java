@@ -44,7 +44,6 @@ public class AForBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link AForBinop} node with no children.
 	 */
@@ -52,6 +51,7 @@ public class AForBinop extends PBinopBase
 	{
 
 	}
+
 
 
 
@@ -67,30 +67,13 @@ public class AForBinop extends PBinopBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link AForBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link AForBinop} node.
 	 * @return a deep clone of this {@link AForBinop} node
 	 */
-	public AForBinop clone(Map<INode,INode> oldToNewMap)
+	public AForBinop clone()
 	{
-		AForBinop node = new AForBinop(
+		return new AForBinop(
 		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AForBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AForBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AForBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
 	}
 
 
@@ -107,13 +90,17 @@ public class AForBinop extends PBinopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AForBinop} node.
+	 * Creates a deep clone of this {@link AForBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link AForBinop} node
 	 */
-	public AForBinop clone()
+	public AForBinop clone(Map<INode,INode> oldToNewMap)
 	{
-		return new AForBinop(
+		AForBinop node = new AForBinop(
 		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -121,6 +108,19 @@ public class AForBinop extends PBinopBase
 	public String toString()
 	{
 		return super.toString();
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AForBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AForBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AForBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
 	}
 
 

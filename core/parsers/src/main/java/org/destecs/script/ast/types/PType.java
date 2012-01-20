@@ -25,8 +25,8 @@ package org.destecs.script.ast.types;
 import java.util.Map;
 import org.destecs.script.ast.types.EType;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.types.PType;
 
 
@@ -36,19 +36,13 @@ import org.destecs.script.ast.types.PType;
 *
 */
 public interface PType extends INode
-{	/**
+{
+	public String toString();
+	/**
 	 * Returns a deep clone of this {@link PTypeBase} node.
 	 * @return a deep clone of this {@link PTypeBase} node
 	 */
 	public abstract PType clone();
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PTypeBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PTypeBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PTypeBase} node
-	 */
-	public void removeChild(INode child);
 	/**
 	 * Creates a deep clone of this {@link PTypeBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -63,12 +57,18 @@ public interface PType extends INode
 	 */
 	public NodeEnum kindNode();
 	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PTypeBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PTypeBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PTypeBase} node
+	 */
+	public void removeChild(INode child);
+	/**
 	 * Returns the {@link EType} corresponding to the
 	 * type of this {@link EType} node.
 	 * @return the {@link EType} for this node
 	 */
 	public abstract EType kindPType();
-
-	public String toString();
 
 }

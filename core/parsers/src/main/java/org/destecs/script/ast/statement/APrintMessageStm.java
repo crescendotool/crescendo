@@ -23,8 +23,8 @@ package org.destecs.script.ast.statement;
 
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
-import org.destecs.script.ast.statement.EMessageStm;
 import java.util.Map;
+import org.destecs.script.ast.statement.EMessageStm;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.statement.APrintMessageStm;
 import org.destecs.script.ast.node.INode;
@@ -44,6 +44,7 @@ public class APrintMessageStm extends SMessageStmBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link APrintMessageStm} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class APrintMessageStm extends SMessageStmBase
 	{
 
 	}
-
 
 
 	/**
@@ -76,13 +76,6 @@ public class APrintMessageStm extends SMessageStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link APrintMessageStm} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -93,22 +86,6 @@ public class APrintMessageStm extends SMessageStmBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link APrintMessageStm} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link APrintMessageStm} node
-	 */
-	public APrintMessageStm clone(Map<INode,INode> oldToNewMap)
-	{
-		APrintMessageStm node = new APrintMessageStm(
-			_message
-		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 
@@ -133,6 +110,29 @@ public class APrintMessageStm extends SMessageStmBase
 	public EMessageStm kindSMessageStm()
 	{
 		return EMessageStm.PRINT;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link APrintMessageStm} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link APrintMessageStm} node
+	 */
+	public APrintMessageStm clone(Map<INode,INode> oldToNewMap)
+	{
+		APrintMessageStm node = new APrintMessageStm(
+			_message
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

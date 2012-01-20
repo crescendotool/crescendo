@@ -37,20 +37,7 @@ import org.destecs.script.ast.expressions.EExp;
 *
 */
 public interface SSingleExp extends PExp
-{
-	public String toString();
-	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	public EExp kindPExp();
-	/**
-	 * Returns a deep clone of this {@link SSingleExpBase} node.
-	 * @return a deep clone of this {@link SSingleExpBase} node
-	 */
-	public abstract SSingleExp clone();
-	/**
+{	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link SSingleExpBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -59,17 +46,30 @@ public interface SSingleExp extends PExp
 	 */
 	public void removeChild(INode child);
 	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	public abstract ESingleExp kindSSingleExp();
-	/**
 	 * Creates a deep clone of this {@link SSingleExpBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link SSingleExpBase} node
 	 */
 	public abstract SSingleExp clone(Map<INode,INode> oldToNewMap);
+
+	public String toString();
+	/**
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
+	 */
+	public EExp kindPExp();
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	public abstract ESingleExp kindSSingleExp();
+	/**
+	 * Returns a deep clone of this {@link SSingleExpBase} node.
+	 * @return a deep clone of this {@link SSingleExpBase} node
+	 */
+	public abstract SSingleExp clone();
 
 }

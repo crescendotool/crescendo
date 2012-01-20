@@ -25,8 +25,8 @@ package org.destecs.script.ast.expressions.binop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.expressions.binop.AEqualBinop;
 import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.expressions.binop.AEqualBinop;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
@@ -44,7 +44,6 @@ public class AEqualBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link AEqualBinop} node with no children.
 	 */
@@ -52,6 +51,7 @@ public class AEqualBinop extends PBinopBase
 	{
 
 	}
+
 
 
 
@@ -66,41 +66,6 @@ public class AEqualBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Creates a deep clone of this {@link AEqualBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AEqualBinop} node
-	 */
-	public AEqualBinop clone(Map<INode,INode> oldToNewMap)
-	{
-		AEqualBinop node = new AEqualBinop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AEqualBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AEqualBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AEqualBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
 	 * Returns the {@link EBinop} corresponding to the
 	 * type of this {@link EBinop} node.
@@ -121,6 +86,41 @@ public class AEqualBinop extends PBinopBase
 	{
 		return new AEqualBinop(
 		);
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AEqualBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AEqualBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AEqualBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AEqualBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AEqualBinop} node
+	 */
+	public AEqualBinop clone(Map<INode,INode> oldToNewMap)
+	{
+		AEqualBinop node = new AEqualBinop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 

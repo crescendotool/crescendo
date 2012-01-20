@@ -46,7 +46,6 @@ public class ABoolSingleExp extends SSingleExpBase
 
 	private Boolean _value;
 
-
 	/**
 	* Creates a new {@code ABoolSingleExp} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -58,6 +57,7 @@ public class ABoolSingleExp extends SSingleExpBase
 		this.setValue(value_);
 
 	}
+
 
 
 	/**
@@ -80,6 +80,25 @@ public class ABoolSingleExp extends SSingleExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
+	{
+		return ESingleExp.BOOL;
+	}
+
+
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName());
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link ABoolSingleExp} node.
 	 * @return a deep clone of this {@link ABoolSingleExp} node
@@ -105,25 +124,6 @@ public class ABoolSingleExp extends SSingleExpBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
-	{
-		return ESingleExp.BOOL;
-	}
-
-
-
-	public String toString()
-	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 

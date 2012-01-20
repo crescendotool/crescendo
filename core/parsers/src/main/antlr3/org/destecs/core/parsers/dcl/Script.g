@@ -10,7 +10,7 @@ options {
 
 tokens{
   WHEN = 'when';  
-  FOR = 'for';
+//  FOR = 'for';
   INCLUDE = 'include';
   TIME = 'time';
   DO = 'do';
@@ -29,7 +29,25 @@ tokens{
   BOOL = 'boolean';
 // new part 
   ASSIGN=':=';
-  EXPR; 
+  //EXPR;
+  
+  PLUS = '+';
+  MINUS = '-';
+  MULTIPLU =  '*';
+  DIVIDE = '/' ;
+  DIV = 'div' ;
+  MOD = 'mod' ;
+  LESSS = '<' ;
+  LESSEQUAL= '<=' ;
+  GREATER = '>';
+  GREATEREQUAL= '>=' ;
+  EQUAL = '=';
+  DIFFERENT = '<>';
+  OR = 'or' ;
+  AND =  'and' ;
+  IMPLIES = '=>' ;
+  EQUIV= '<=>' ;
+  FOR= 'for'; 
 }
  
 @header {
@@ -240,19 +258,19 @@ root returns [List<INode> nodes]
     {
       $nodes = new Vector<INode>();
     }
-  : (toplevelStatement {$nodes.add($toplevelStatement.value);})*
+  : (toplevelStatement {$nodes.add($toplevelStatement.value);})* EOF
   ;
 
 //***Statements start***
 toplevelStatement returns [INode value]
-  : includeStatement {$value = $includeStatement.value;}
-  | whenStatement {$value = $whenStatement.value;}
+  : includeStatement ';' {$value = $includeStatement.value;}
+  | whenStatement ';' {$value = $whenStatement.value;}
   ;
 
 includeStatement returns [AScriptInclude value]
   : INCLUDE STRING
 {
-  $value = new AScriptInclude($STRING.getText());
+  $value = new AScriptInclude($STRING.text);
 }
   ; 
 
@@ -317,14 +335,14 @@ printStatement returns [APrintMessageStm value]
 errorStatement returns [AErrorMessageStm value]
   : ERROR STRING 
   {
-    $value = new AErrorMessageStm($STRING.text);
+    $value = new AErrorMessageStm($STRING.getText());
   }
   ;
 
 warnStatement returns [AWarnMessageStm value]
   : WARN STRING 
   {
-    $value = new AWarnMessageStm($STRING.text);
+    $value = new AWarnMessageStm($STRING.getText());
   }
   ;
 //***Statements end***
@@ -332,41 +350,78 @@ warnStatement returns [AWarnMessageStm value]
 
 //***Expression start***
 expression returns [PExp value]
-  : singletonexpression {$value = $singletonexpression.value ;}
-  | unaryexpression     {$value = $unaryexpression.value ;}
-  | binaryexpression    {$value = $binaryexpression.value ;}
+  : expression0 {$value = $expression0.value ;}
   ;
-    
+
+expression0 returns [PExp value]
+  : left=expression1 (expressionOp right=expression0)? 
+  { if($right.value==null) 
+      { $value = $left.value;}
+      else{$value = new ABinaryExp($left.value, $expressionOp.value, $right.value);}
+    }
+  ;
+  
+expressionOp returns [PBinop value]
+  : AND     {$value = new AAndBinop();}
+  | OR      {$value = new AOrBinop();}//TODO sub rule or to make the precedence correct.
+  | IMPLIES {$value = new AImpliesBinop();}
+  | EQUIV   {$value = new AEquivBinop();}
+  ;
+  
+expression1 returns [PExp value]
+    : left=expression2 (expression1Op right=expression2)? 
+    { if($right.value==null) 
+      { $value = $left.value;}
+      else{$value = new ABinaryExp($left.value, $expression1Op.value, $right.value);}
+    }
+  ;
+  
+expression1Op returns [PBinop value]
+  : LESSS         {$value = new ALessThanBinop();}
+  | LESSEQUAL     {$value = new ALessEqualBinop();}
+  | GREATER       {$value = new AMoreThanBinop();}
+  | GREATEREQUAL  {$value = new AMoreEqualBinop();}
+  | EQUAL         {$value = new AEqualBinop();}
+  | DIFFERENT     {$value = new ADifferentBinop();}
+  ;
+  
+expression2 returns [PExp value]
+  : left=expressionAtom expression2Op right=expression2 {$value = new ABinaryExp($left.value, $expression2Op.value, $right.value);}
+  | unaryoperator unexp=expression2 {$value =new AUnaryExp($unaryoperator.value,$unexp.value);}
+  | expressionAtom {$value = $expressionAtom.value;}
+  ;
+
+expression2Op returns [PBinop value]
+  : PLUS      {$value = new APlusBinop();}
+  | MINUS     {$value = new AMinusBinop();}
+  | MULTIPLU  {$value = new AMultiplyBinop();}
+  | DIVIDE    {$value = new ADivideBinop();}
+  | MOD       {$value = new AModBinop();}
+  | DIV       {$value = new ADivBinop();}
+  ;  
+ 
+//Do not delete - the unaryexpression has a side effect on the parser that makes the expression2 work.
 unaryexpression returns [AUnaryExp value]
   : unaryoperator expression
   {$value = new AUnaryExp($unaryoperator.value,$expression.value);}
   ;
   
 unaryoperator returns [PUnop value]
-  : 'add' {$value = new AAddUnop();}
+  : 'add'   {$value = new AAddUnop();}
   | 'minus' {$value = new AMinusUnop();}
-  | 'abs' {$value = new AAbsUnop();}
+  | 'abs'   {$value = new AAbsUnop();}
   | 'floor' {$value = new AFloorUnop();}
-  | 'ceil' {$value = new ACeilUnop();}
+  | 'ceil'  {$value = new ACeilUnop();}
   ;
   
-binaryexpression returns [ABinaryExp value]
-  : 
-    singletonexpression binaryoperator expression
-    {
-      $value = new ABinaryExp($singletonexpression.value,$binaryoperator.value,$expression.value);
-    }
-  ;
-  
-
-singletonexpression returns [SSingleExp value]
+expressionAtom returns [SSingleExp value]
   : booleanliteral {$value = new ABoolSingleExp( $booleanliteral.value);}
   | numericliteral {$value = new ANumericalSingleExp(Double.parseDouble($numericliteral.text));}
   | timeliteral    {$value = $timeliteral.value;}
   | TIME           {$value = new ASystemTimeSingleExp();}
   | identifier     {$value = $identifier.value;}// for the binaryexpression
   ;
-
+  
 //***Expression start***
   
 booleanliteral returns [Boolean value]
@@ -410,28 +465,6 @@ domain returns [PDomain value]
   | CT {$value = new ACtDomain();}
   ;
 
-
-binaryoperator returns [PBinop value]
-  : '+' {$value = new APlusBinop();}
-  | '-' {$value = new AMinusBinop();}
-  | '*' {$value = new AMultiplyBinop();}
-  | '/' {$value = new ADivideBinop();}
-  | 'div' {$value = new ADivBinop();}
-  | 'mod' {$value = new AModBinop();}
-  | '<' {$value = new ALessThanBinop();}
-  | '<=' {$value = new ALessEqualBinop();}
-  | '>' {$value = new AMoreThanBinop();}
-  | '>=' {$value = new AMoreEqualBinop();}
-  | '=' {$value = new AEqualBinop();} // equals
-  | '<>' {$value = new ADifferentBinop();}
-  | 'or' {$value = new AOrBinop();}
-  | 'and' {$value = new AAndBinop();}
-  | '=>' {$value = new AImpliesBinop();}
-  | '<=>' {$value = new AEquivBinop();}
-  | 'for' {$value = new AForBinop();}
-  ;
-  
-
 type returns[PType value]
     :   REAL  {$value = new ARealType();}
     |   INT   {$value = new AIntType();}
@@ -440,7 +473,7 @@ type returns[PType value]
     ; 
 
  
-STRING : '"' .* '"' ;
+STRING : '"' .* '"';
     
 fragment LETTER : ('a'..'z' | 'A'..'Z') ;
 fragment DIGIT : '0'..'9';

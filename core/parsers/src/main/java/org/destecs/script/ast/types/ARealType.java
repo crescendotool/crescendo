@@ -26,8 +26,8 @@ import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.types.PTypeBase;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.types.EType;
 import org.destecs.script.ast.types.ARealType;
+import org.destecs.script.ast.types.EType;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
@@ -67,30 +67,14 @@ public class ARealType extends PTypeBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link ARealType} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ARealType} node
+	 * Returns the {@link EType} corresponding to the
+	 * type of this {@link EType} node.
+	 * @return the {@link EType} for this node
 	 */
-	public ARealType clone(Map<INode,INode> oldToNewMap)
+	@Override
+	public EType kindPType()
 	{
-		ARealType node = new ARealType(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ARealType} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ARealType} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ARealType} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
+		return EType.REAL;
 	}
 
 
@@ -113,14 +97,30 @@ public class ARealType extends PTypeBase
 
 
 	/**
-	 * Returns the {@link EType} corresponding to the
-	 * type of this {@link EType} node.
-	 * @return the {@link EType} for this node
+	 * Removes the {@link INode} {@code child} as a child of this {@link ARealType} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ARealType} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ARealType} node
 	 */
-	@Override
-	public EType kindPType()
+	public void removeChild(INode child)
 	{
-		return EType.REAL;
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link ARealType} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ARealType} node
+	 */
+	public ARealType clone(Map<INode,INode> oldToNewMap)
+	{
+		ARealType node = new ARealType(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

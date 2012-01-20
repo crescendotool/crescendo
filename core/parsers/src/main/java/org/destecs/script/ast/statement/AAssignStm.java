@@ -49,7 +49,6 @@ public class AAssignStm extends PStmBase
 	private String _name;
 	private PExp _value;
 
-
 	/**
 	* Creates a new {@code AAssignStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -78,6 +77,7 @@ public class AAssignStm extends PStmBase
 
 
 
+
 	/**
 	 * Essentially this.toString().equals(o.toString()).
 	**/
@@ -87,6 +87,20 @@ public class AAssignStm extends PStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Returns a deep clone of this {@link AAssignStm} node.
+	 * @return a deep clone of this {@link AAssignStm} node
+	 */
+	public AAssignStm clone()
+	{
+		return new AAssignStm(
+			cloneNode(_domain),
+			_name,
+			cloneNode(_value)
+		);
+	}
+
+
 	/**
 	 * Creates a deep clone of this {@link AAssignStm} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -105,15 +119,10 @@ public class AAssignStm extends PStmBase
 	}
 
 
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
+
+	public String toString()
 	{
-		return EStm.ASSIGN;
+		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName())+ (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -141,23 +150,14 @@ public class AAssignStm extends PStmBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AAssignStm} node.
-	 * @return a deep clone of this {@link AAssignStm} node
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
 	 */
-	public AAssignStm clone()
+	@Override
+	public EStm kindPStm()
 	{
-		return new AAssignStm(
-			cloneNode(_domain),
-			_name,
-			cloneNode(_value)
-		);
-	}
-
-
-
-	public String toString()
-	{
-		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName())+ (_value!=null?_value.toString():this.getClass().getSimpleName());
+		return EStm.ASSIGN;
 	}
 
 

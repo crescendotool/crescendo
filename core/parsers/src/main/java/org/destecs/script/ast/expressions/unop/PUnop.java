@@ -36,7 +36,14 @@ import java.lang.String;
 *
 */
 public interface PUnop extends INode
-{	/**
+{
+	public String toString();
+	/**
+	 * Returns a deep clone of this {@link PUnopBase} node.
+	 * @return a deep clone of this {@link PUnopBase} node
+	 */
+	public abstract PUnop clone();
+	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PUnopBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -45,19 +52,11 @@ public interface PUnop extends INode
 	 */
 	public void removeChild(INode child);
 	/**
-	 * Returns a deep clone of this {@link PUnopBase} node.
-	 * @return a deep clone of this {@link PUnopBase} node
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
 	 */
-	public abstract PUnop clone();
-	/**
-	 * Creates a deep clone of this {@link PUnopBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PUnopBase} node
-	 */
-	public abstract PUnop clone(Map<INode,INode> oldToNewMap);
-
-	public String toString();
+	public NodeEnum kindNode();
 	/**
 	 * Returns the {@link EUnop} corresponding to the
 	 * type of this {@link EUnop} node.
@@ -65,10 +64,11 @@ public interface PUnop extends INode
 	 */
 	public abstract EUnop kindPUnop();
 	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
+	 * Creates a deep clone of this {@link PUnopBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PUnopBase} node
 	 */
-	public NodeEnum kindNode();
+	public abstract PUnop clone(Map<INode,INode> oldToNewMap);
 
 }

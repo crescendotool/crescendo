@@ -45,6 +45,7 @@ public class ALessThanBinop extends PBinopBase
 
 
 
+
 	/**
 	 * Creates a new {@link ALessThanBinop} node with no children.
 	 */
@@ -52,7 +53,6 @@ public class ALessThanBinop extends PBinopBase
 	{
 
 	}
-
 
 
 
@@ -66,36 +66,6 @@ public class ALessThanBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
-	{
-		return EBinop.LESSTHAN;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link ALessThanBinop} node.
-	 * @return a deep clone of this {@link ALessThanBinop} node
-	 */
-	public ALessThanBinop clone()
-	{
-		return new ALessThanBinop(
-		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
 	 * Creates a deep clone of this {@link ALessThanBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -111,6 +81,25 @@ public class ALessThanBinop extends PBinopBase
 	}
 
 
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.LESSTHAN;
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ALessThanBinop} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -121,6 +110,17 @@ public class ALessThanBinop extends PBinopBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link ALessThanBinop} node.
+	 * @return a deep clone of this {@link ALessThanBinop} node
+	 */
+	public ALessThanBinop clone()
+	{
+		return new ALessThanBinop(
+		);
 	}
 
 

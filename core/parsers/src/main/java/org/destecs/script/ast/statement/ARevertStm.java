@@ -45,7 +45,6 @@ public class ARevertStm extends PStmBase
 
 	private String _name;
 
-
 	/**
 	* Creates a new {@code ARevertStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -57,6 +56,7 @@ public class ARevertStm extends PStmBase
 		this.setName(name_);
 
 	}
+
 
 
 	/**
@@ -79,27 +79,10 @@ public class ARevertStm extends PStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link ARevertStm} node.
-	 * @return a deep clone of this {@link ARevertStm} node
-	 */
-	public ARevertStm clone()
-	{
-		return new ARevertStm(
-			_name
-		);
-	}
 
-
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
+	public String toString()
 	{
-		return EStm.REVERT;
+		return (_name!=null?_name.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -119,10 +102,27 @@ public class ARevertStm extends PStmBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
 	{
-		return (_name!=null?_name.toString():this.getClass().getSimpleName());
+		return EStm.REVERT;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link ARevertStm} node.
+	 * @return a deep clone of this {@link ARevertStm} node
+	 */
+	public ARevertStm clone()
+	{
+		return new ARevertStm(
+			_name
+		);
 	}
 
 

@@ -48,14 +48,6 @@ public class AUnaryExp extends PExpBase
 	private PUnop _operator;
 	private PExp _exp;
 
-	/**
-	 * Creates a new {@link AUnaryExp} node with no children.
-	 */
-	public AUnaryExp()
-	{
-
-	}
-
 
 	/**
 	* Creates a new {@code AUnaryExp} node with the given nodes as children.
@@ -72,6 +64,14 @@ public class AUnaryExp extends PExpBase
 	}
 
 
+	/**
+	 * Creates a new {@link AUnaryExp} node with no children.
+	 */
+	public AUnaryExp()
+	{
+
+	}
+
 
 
 
@@ -84,19 +84,6 @@ public class AUnaryExp extends PExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link AUnaryExp} node.
-	 * @return a deep clone of this {@link AUnaryExp} node
-	 */
-	public AUnaryExp clone()
-	{
-		return new AUnaryExp(
-			cloneNode(_operator),
-			cloneNode(_exp)
-		);
-	}
-
-
 	/**
 	 * Returns the {@link EExp} corresponding to the
 	 * type of this {@link EExp} node.
@@ -153,6 +140,19 @@ public class AUnaryExp extends PExpBase
 		}
 
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AUnaryExp} node.
+	 * @return a deep clone of this {@link AUnaryExp} node
+	 */
+	public AUnaryExp clone()
+	{
+		return new AUnaryExp(
+			cloneNode(_operator),
+			cloneNode(_exp)
+		);
 	}
 
 

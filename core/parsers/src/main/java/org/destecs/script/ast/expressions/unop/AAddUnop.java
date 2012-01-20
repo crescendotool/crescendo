@@ -67,15 +67,32 @@ public class AAddUnop extends PUnopBase
 	return false; }
 	
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AAddUnop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AAddUnop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AAddUnop} node
+	 * Returns the {@link EUnop} corresponding to the
+	 * type of this {@link EUnop} node.
+	 * @return the {@link EUnop} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public EUnop kindPUnop()
 	{
-		throw new RuntimeException("Not a child.");
+		return EUnop.ADD;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AAddUnop} node.
+	 * @return a deep clone of this {@link AAddUnop} node
+	 */
+	public AAddUnop clone()
+	{
+		return new AAddUnop(
+		);
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 
@@ -95,32 +112,15 @@ public class AAddUnop extends PUnopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AAddUnop} node.
-	 * @return a deep clone of this {@link AAddUnop} node
+	 * Removes the {@link INode} {@code child} as a child of this {@link AAddUnop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AAddUnop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AAddUnop} node
 	 */
-	public AAddUnop clone()
+	public void removeChild(INode child)
 	{
-		return new AAddUnop(
-		);
-	}
-
-
-	/**
-	 * Returns the {@link EUnop} corresponding to the
-	 * type of this {@link EUnop} node.
-	 * @return the {@link EUnop} for this node
-	 */
-	@Override
-	public EUnop kindPUnop()
-	{
-		return EUnop.ADD;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
+		throw new RuntimeException("Not a child.");
 	}
 
 

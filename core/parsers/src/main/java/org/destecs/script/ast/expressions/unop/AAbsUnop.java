@@ -44,6 +44,7 @@ public class AAbsUnop extends PUnopBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link AAbsUnop} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class AAbsUnop extends PUnopBase
 	{
 
 	}
-
 
 
 
@@ -67,30 +67,14 @@ public class AAbsUnop extends PUnopBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link AAbsUnop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AAbsUnop} node
+	 * Returns the {@link EUnop} corresponding to the
+	 * type of this {@link EUnop} node.
+	 * @return the {@link EUnop} for this node
 	 */
-	public AAbsUnop clone(Map<INode,INode> oldToNewMap)
+	@Override
+	public EUnop kindPUnop()
 	{
-		AAbsUnop node = new AAbsUnop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AAbsUnop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AAbsUnop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AAbsUnop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
+		return EUnop.ABS;
 	}
 
 
@@ -113,14 +97,30 @@ public class AAbsUnop extends PUnopBase
 
 
 	/**
-	 * Returns the {@link EUnop} corresponding to the
-	 * type of this {@link EUnop} node.
-	 * @return the {@link EUnop} for this node
+	 * Removes the {@link INode} {@code child} as a child of this {@link AAbsUnop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AAbsUnop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AAbsUnop} node
 	 */
-	@Override
-	public EUnop kindPUnop()
+	public void removeChild(INode child)
 	{
-		return EUnop.ABS;
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AAbsUnop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AAbsUnop} node
+	 */
+	public AAbsUnop clone(Map<INode,INode> oldToNewMap)
+	{
+		AAbsUnop node = new AAbsUnop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

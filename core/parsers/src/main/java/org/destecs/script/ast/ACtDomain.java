@@ -44,8 +44,6 @@ public class ACtDomain extends PDomainBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link ACtDomain} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class ACtDomain extends PDomainBase
 	{
 
 	}
+
+
 
 
 
@@ -66,6 +66,28 @@ public class ACtDomain extends PDomainBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link ACtDomain} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ACtDomain} node
+	 */
+	public ACtDomain clone(Map<INode,INode> oldToNewMap)
+	{
+		ACtDomain node = new ACtDomain(
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ACtDomain} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -99,28 +121,6 @@ public class ACtDomain extends PDomainBase
 	public EDomain kindPDomain()
 	{
 		return EDomain.CT;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link ACtDomain} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ACtDomain} node
-	 */
-	public ACtDomain clone(Map<INode,INode> oldToNewMap)
-	{
-		ACtDomain node = new ACtDomain(
-		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

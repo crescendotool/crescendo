@@ -25,8 +25,8 @@ package org.destecs.script.ast;
 import java.util.Map;
 import org.destecs.script.ast.PDomain;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.EDomain;
 
 
@@ -37,25 +37,12 @@ import org.destecs.script.ast.EDomain;
 */
 public interface PDomain extends INode
 {	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PDomainBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PDomainBase} node
-	 */
-	public void removeChild(INode child);
-	/**
-	 * Creates a deep clone of this {@link PDomainBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PDomainBase} node
-	 */
-	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
-	/**
 	 * Returns a deep clone of this {@link PDomainBase} node.
 	 * @return a deep clone of this {@link PDomainBase} node
 	 */
 	public abstract PDomain clone();
+
+	public String toString();
 	/**
 	 * Returns the {@link EDomain} corresponding to the
 	 * type of this {@link EDomain} node.
@@ -68,7 +55,20 @@ public interface PDomain extends INode
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
-
-	public String toString();
+	/**
+	 * Creates a deep clone of this {@link PDomainBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PDomainBase} node
+	 */
+	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PDomainBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PDomainBase} node
+	 */
+	public void removeChild(INode child);
 
 }

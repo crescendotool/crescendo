@@ -45,6 +45,7 @@ public class ADivBinop extends PBinopBase
 
 
 
+
 	/**
 	 * Creates a new {@link ADivBinop} node with no children.
 	 */
@@ -52,7 +53,6 @@ public class ADivBinop extends PBinopBase
 	{
 
 	}
-
 
 
 
@@ -66,25 +66,6 @@ public class ADivBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
-	{
-		return EBinop.DIV;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
 	 * Creates a deep clone of this {@link ADivBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -121,6 +102,25 @@ public class ADivBinop extends PBinopBase
 	{
 		return new ADivBinop(
 		);
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.DIV;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 

@@ -45,6 +45,7 @@ public class ACeilUnop extends PUnopBase
 
 
 
+
 	/**
 	 * Creates a new {@link ACeilUnop} node with no children.
 	 */
@@ -52,7 +53,6 @@ public class ACeilUnop extends PUnopBase
 	{
 
 	}
-
 
 
 
@@ -66,6 +66,13 @@ public class ACeilUnop extends PUnopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link ACeilUnop} node.
 	 * @return a deep clone of this {@link ACeilUnop} node
@@ -74,28 +81,6 @@ public class ACeilUnop extends PUnopBase
 	{
 		return new ACeilUnop(
 		);
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link ACeilUnop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ACeilUnop} node
-	 */
-	public ACeilUnop clone(Map<INode,INode> oldToNewMap)
-	{
-		ACeilUnop node = new ACeilUnop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 
@@ -121,6 +106,21 @@ public class ACeilUnop extends PUnopBase
 	public EUnop kindPUnop()
 	{
 		return EUnop.CEIL;
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link ACeilUnop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ACeilUnop} node
+	 */
+	public ACeilUnop clone(Map<INode,INode> oldToNewMap)
+	{
+		ACeilUnop node = new ACeilUnop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

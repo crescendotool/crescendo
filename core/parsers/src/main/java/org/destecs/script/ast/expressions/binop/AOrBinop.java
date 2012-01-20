@@ -44,7 +44,6 @@ public class AOrBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link AOrBinop} node with no children.
 	 */
@@ -52,6 +51,7 @@ public class AOrBinop extends PBinopBase
 	{
 
 	}
+
 
 
 
@@ -79,10 +79,18 @@ public class AOrBinop extends PBinopBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Creates a deep clone of this {@link AOrBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AOrBinop} node
+	 */
+	public AOrBinop clone(Map<INode,INode> oldToNewMap)
 	{
-		return super.toString();
+		AOrBinop node = new AOrBinop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -98,6 +106,13 @@ public class AOrBinop extends PBinopBase
 	}
 
 
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link AOrBinop} node.
 	 * @return a deep clone of this {@link AOrBinop} node
@@ -106,21 +121,6 @@ public class AOrBinop extends PBinopBase
 	{
 		return new AOrBinop(
 		);
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AOrBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AOrBinop} node
-	 */
-	public AOrBinop clone(Map<INode,INode> oldToNewMap)
-	{
-		AOrBinop node = new AOrBinop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

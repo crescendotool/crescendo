@@ -25,8 +25,8 @@ package org.destecs.script.ast.expressions.binop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.expressions.binop.AImpliesBinop;
 import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.expressions.binop.AImpliesBinop;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
@@ -44,8 +44,6 @@ public class AImpliesBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link AImpliesBinop} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class AImpliesBinop extends PBinopBase
 	{
 
 	}
+
+
 
 
 
@@ -66,6 +66,17 @@ public class AImpliesBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Returns a deep clone of this {@link AImpliesBinop} node.
+	 * @return a deep clone of this {@link AImpliesBinop} node
+	 */
+	public AImpliesBinop clone()
+	{
+		return new AImpliesBinop(
+		);
+	}
+
+
 	/**
 	 * Creates a deep clone of this {@link AImpliesBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -82,19 +93,6 @@ public class AImpliesBinop extends PBinopBase
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AImpliesBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AImpliesBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AImpliesBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
 	 * Returns the {@link EBinop} corresponding to the
 	 * type of this {@link EBinop} node.
 	 * @return the {@link EBinop} for this node
@@ -106,21 +104,23 @@ public class AImpliesBinop extends PBinopBase
 	}
 
 
-	/**
-	 * Returns a deep clone of this {@link AImpliesBinop} node.
-	 * @return a deep clone of this {@link AImpliesBinop} node
-	 */
-	public AImpliesBinop clone()
-	{
-		return new AImpliesBinop(
-		);
-	}
-
-
 
 	public String toString()
 	{
 		return super.toString();
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AImpliesBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AImpliesBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AImpliesBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
 	}
 
 

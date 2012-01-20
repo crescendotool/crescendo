@@ -24,9 +24,9 @@ package org.destecs.script.ast.statement;
 
 import java.util.Map;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.statement.EStm;
+import java.lang.String;
 import org.destecs.script.ast.statement.PStm;
 
 
@@ -36,11 +36,8 @@ import org.destecs.script.ast.statement.PStm;
 *
 */
 public interface PStm extends INode
-{	/**
-	 * Returns a deep clone of this {@link PStmBase} node.
-	 * @return a deep clone of this {@link PStmBase} node
-	 */
-	public abstract PStm clone();
+{
+	public String toString();
 	/**
 	 * Returns the {@link EStm} corresponding to the
 	 * type of this {@link EStm} node.
@@ -48,20 +45,23 @@ public interface PStm extends INode
 	 */
 	public abstract EStm kindPStm();
 	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
+	 */
+	public NodeEnum kindNode();
+	/**
+	 * Returns a deep clone of this {@link PStmBase} node.
+	 * @return a deep clone of this {@link PStmBase} node
+	 */
+	public abstract PStm clone();
+	/**
 	 * Creates a deep clone of this {@link PStmBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link PStmBase} node
 	 */
 	public abstract PStm clone(Map<INode,INode> oldToNewMap);
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	public NodeEnum kindNode();
-
-	public String toString();
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PStmBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's

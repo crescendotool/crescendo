@@ -26,8 +26,8 @@ import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.types.EType;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.types.PType;
 
 
@@ -63,25 +63,20 @@ public abstract class PTypeBase extends Node implements PType
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link PTypeBase} node.
 	 * @return a deep clone of this {@link PTypeBase} node
 	 */
 	@Override
 	public abstract PType clone();
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PTypeBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PTypeBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PTypeBase} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
 
 	/**
 	 * Creates a deep clone of this {@link PTypeBase} node while putting all
@@ -105,19 +100,24 @@ public abstract class PTypeBase extends Node implements PType
 
 
 	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PTypeBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PTypeBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PTypeBase} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
 	 * Returns the {@link EType} corresponding to the
 	 * type of this {@link EType} node.
 	 * @return the {@link EType} for this node
 	 */
 	public abstract EType kindPType();
-
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
 
 
 }

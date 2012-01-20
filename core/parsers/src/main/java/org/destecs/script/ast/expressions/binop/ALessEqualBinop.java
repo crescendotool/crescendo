@@ -44,6 +44,7 @@ public class ALessEqualBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link ALessEqualBinop} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class ALessEqualBinop extends PBinopBase
 	{
 
 	}
-
 
 
 
@@ -66,6 +66,42 @@ public class ALessEqualBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Returns a deep clone of this {@link ALessEqualBinop} node.
+	 * @return a deep clone of this {@link ALessEqualBinop} node
+	 */
+	public ALessEqualBinop clone()
+	{
+		return new ALessEqualBinop(
+		);
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.LESSEQUAL;
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link ALessEqualBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ALessEqualBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ALessEqualBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
 	/**
 	 * Creates a deep clone of this {@link ALessEqualBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -85,42 +121,6 @@ public class ALessEqualBinop extends PBinopBase
 	public String toString()
 	{
 		return super.toString();
-	}
-
-
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
-	{
-		return EBinop.LESSEQUAL;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link ALessEqualBinop} node.
-	 * @return a deep clone of this {@link ALessEqualBinop} node
-	 */
-	public ALessEqualBinop clone()
-	{
-		return new ALessEqualBinop(
-		);
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ALessEqualBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ALessEqualBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ALessEqualBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
 	}
 
 

@@ -46,15 +46,6 @@ public class ANumericalSingleExp extends SSingleExpBase
 
 	private Double _value;
 
-	/**
-	 * Creates a new {@link ANumericalSingleExp} node with no children.
-	 */
-	public ANumericalSingleExp()
-	{
-
-	}
-
-
 
 	/**
 	* Creates a new {@code ANumericalSingleExp} node with the given nodes as children.
@@ -65,6 +56,15 @@ public class ANumericalSingleExp extends SSingleExpBase
 	{
 		super();
 		this.setValue(value_);
+
+	}
+
+
+	/**
+	 * Creates a new {@link ANumericalSingleExp} node with no children.
+	 */
+	public ANumericalSingleExp()
+	{
 
 	}
 
@@ -81,18 +81,6 @@ public class ANumericalSingleExp extends SSingleExpBase
 	return false; }
 	
 	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
-	{
-		return ESingleExp.NUMERICAL;
-	}
-
-
-	/**
 	 * Creates a deep clone of this {@link ANumericalSingleExp} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -105,6 +93,18 @@ public class ANumericalSingleExp extends SSingleExpBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
+	{
+		return ESingleExp.NUMERICAL;
 	}
 
 

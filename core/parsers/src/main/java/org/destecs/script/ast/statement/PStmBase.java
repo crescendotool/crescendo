@@ -25,9 +25,9 @@ package org.destecs.script.ast.statement;
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.statement.EStm;
+import java.lang.String;
 import org.destecs.script.ast.statement.PStm;
 
 
@@ -41,8 +41,6 @@ public abstract class PStmBase extends Node implements PStm
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link PStmBase} node with no children.
 	 */
@@ -50,6 +48,8 @@ public abstract class PStmBase extends Node implements PStm
 	{
 
 	}
+
+
 
 
 
@@ -63,12 +63,13 @@ public abstract class PStmBase extends Node implements PStm
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link PStmBase} node.
-	 * @return a deep clone of this {@link PStmBase} node
-	 */
-	@Override
-	public abstract PStm clone();
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
 
 	/**
 	 * Returns the {@link EStm} corresponding to the
@@ -76,15 +77,6 @@ public abstract class PStmBase extends Node implements PStm
 	 * @return the {@link EStm} for this node
 	 */
 	public abstract EStm kindPStm();
-
-	/**
-	 * Creates a deep clone of this {@link PStmBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PStmBase} node
-	 */
-	@Override
-	public abstract PStm clone(Map<INode,INode> oldToNewMap);
 
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
@@ -98,13 +90,21 @@ public abstract class PStmBase extends Node implements PStm
 	}
 
 
+	/**
+	 * Returns a deep clone of this {@link PStmBase} node.
+	 * @return a deep clone of this {@link PStmBase} node
+	 */
+	@Override
+	public abstract PStm clone();
 
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
+	/**
+	 * Creates a deep clone of this {@link PStmBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PStmBase} node
+	 */
+	@Override
+	public abstract PStm clone(Map<INode,INode> oldToNewMap);
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PStmBase} node.

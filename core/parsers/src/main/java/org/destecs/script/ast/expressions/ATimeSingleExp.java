@@ -29,8 +29,8 @@ import org.destecs.script.ast.expressions.ESingleExp;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.SSingleExpBase;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.expressions.ATimeSingleExp;
+import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.PTimeunit;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -47,6 +47,7 @@ public class ATimeSingleExp extends SSingleExpBase
 
 	private Double _value;
 	private PTimeunit _unit;
+
 
 	/**
 	* Creates a new {@code ATimeSingleExp} node with the given nodes as children.
@@ -74,7 +75,6 @@ public class ATimeSingleExp extends SSingleExpBase
 
 
 
-
 	/**
 	 * Essentially this.toString().equals(o.toString()).
 	**/
@@ -85,19 +85,6 @@ public class ATimeSingleExp extends SSingleExpBase
 	return false; }
 	
 	/**
-	 * Returns a deep clone of this {@link ATimeSingleExp} node.
-	 * @return a deep clone of this {@link ATimeSingleExp} node
-	 */
-	public ATimeSingleExp clone()
-	{
-		return new ATimeSingleExp(
-			_value,
-			cloneNode(_unit)
-		);
-	}
-
-
-	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
 	 * @return the {@link ESingleExp} for this node
@@ -106,6 +93,13 @@ public class ATimeSingleExp extends SSingleExpBase
 	public ESingleExp kindSSingleExp()
 	{
 		return ESingleExp.TIME;
+	}
+
+
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName())+ (_unit!=null?_unit.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -127,6 +121,19 @@ public class ATimeSingleExp extends SSingleExpBase
 
 
 	/**
+	 * Returns a deep clone of this {@link ATimeSingleExp} node.
+	 * @return a deep clone of this {@link ATimeSingleExp} node
+	 */
+	public ATimeSingleExp clone()
+	{
+		return new ATimeSingleExp(
+			_value,
+			cloneNode(_unit)
+		);
+	}
+
+
+	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ATimeSingleExp} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -141,13 +148,6 @@ public class ATimeSingleExp extends SSingleExpBase
 		}
 
 		throw new RuntimeException("Not a child.");
-	}
-
-
-
-	public String toString()
-	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName())+ (_unit!=null?_unit.toString():this.getClass().getSimpleName());
 	}
 
 

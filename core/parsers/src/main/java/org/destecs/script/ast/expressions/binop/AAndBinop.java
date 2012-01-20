@@ -44,8 +44,6 @@ public class AAndBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link AAndBinop} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class AAndBinop extends PBinopBase
 	{
 
 	}
+
+
 
 
 
@@ -66,10 +66,46 @@ public class AAndBinop extends PBinopBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AAndBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AAndBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AAndBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AAndBinop} node.
+	 * @return a deep clone of this {@link AAndBinop} node
+	 */
+	public AAndBinop clone()
+	{
+		return new AAndBinop(
+		);
+	}
+
+
 
 	public String toString()
 	{
 		return super.toString();
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.AND;
 	}
 
 
@@ -85,42 +121,6 @@ public class AAndBinop extends PBinopBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AAndBinop} node.
-	 * @return a deep clone of this {@link AAndBinop} node
-	 */
-	public AAndBinop clone()
-	{
-		return new AAndBinop(
-		);
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AAndBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AAndBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AAndBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
-	{
-		return EBinop.AND;
 	}
 
 

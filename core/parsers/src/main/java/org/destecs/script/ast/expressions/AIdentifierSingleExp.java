@@ -23,8 +23,8 @@ package org.destecs.script.ast.expressions;
 
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
-import org.destecs.script.ast.PDomain;
 import java.util.Map;
+import org.destecs.script.ast.PDomain;
 import org.destecs.script.ast.expressions.ESingleExp;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.SSingleExpBase;
@@ -48,6 +48,7 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	private PDomain _domain;
 	private PType _type;
 	private String _name;
+
 
 	/**
 	 * Creates a new {@link AIdentifierSingleExp} node with no children.
@@ -77,7 +78,6 @@ public class AIdentifierSingleExp extends SSingleExpBase
 
 
 
-
 	/**
 	 * Essentially this.toString().equals(o.toString()).
 	**/
@@ -87,20 +87,6 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link AIdentifierSingleExp} node.
-	 * @return a deep clone of this {@link AIdentifierSingleExp} node
-	 */
-	public AIdentifierSingleExp clone()
-	{
-		return new AIdentifierSingleExp(
-			cloneNode(_domain),
-			cloneNode(_type),
-			_name
-		);
-	}
-
-
 
 	public String toString()
 	{
@@ -109,20 +95,14 @@ public class AIdentifierSingleExp extends SSingleExpBase
 
 
 	/**
-	 * Creates a deep clone of this {@link AIdentifierSingleExp} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AIdentifierSingleExp} node
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
 	 */
-	public AIdentifierSingleExp clone(Map<INode,INode> oldToNewMap)
+	@Override
+	public ESingleExp kindSSingleExp()
 	{
-		AIdentifierSingleExp node = new AIdentifierSingleExp(
-			cloneNode(_domain, oldToNewMap),
-			cloneNode(_type, oldToNewMap),
-			_name
-		);
-		oldToNewMap.put(this, node);
-		return node;
+		return ESingleExp.IDENTIFIER;
 	}
 
 
@@ -150,14 +130,34 @@ public class AIdentifierSingleExp extends SSingleExpBase
 
 
 	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
+	 * Returns a deep clone of this {@link AIdentifierSingleExp} node.
+	 * @return a deep clone of this {@link AIdentifierSingleExp} node
 	 */
-	@Override
-	public ESingleExp kindSSingleExp()
+	public AIdentifierSingleExp clone()
 	{
-		return ESingleExp.IDENTIFIER;
+		return new AIdentifierSingleExp(
+			cloneNode(_domain),
+			cloneNode(_type),
+			_name
+		);
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AIdentifierSingleExp} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AIdentifierSingleExp} node
+	 */
+	public AIdentifierSingleExp clone(Map<INode,INode> oldToNewMap)
+	{
+		AIdentifierSingleExp node = new AIdentifierSingleExp(
+			cloneNode(_domain, oldToNewMap),
+			cloneNode(_type, oldToNewMap),
+			_name
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

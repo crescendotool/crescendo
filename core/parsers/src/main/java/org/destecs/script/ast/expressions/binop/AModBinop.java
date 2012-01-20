@@ -44,6 +44,7 @@ public class AModBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link AModBinop} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class AModBinop extends PBinopBase
 	{
 
 	}
-
 
 
 
@@ -67,17 +67,25 @@ public class AModBinop extends PBinopBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link AModBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.MOD;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AModBinop} node.
 	 * @return a deep clone of this {@link AModBinop} node
 	 */
-	public AModBinop clone(Map<INode,INode> oldToNewMap)
+	public AModBinop clone()
 	{
-		AModBinop node = new AModBinop(
+		return new AModBinop(
 		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 
@@ -102,25 +110,17 @@ public class AModBinop extends PBinopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AModBinop} node.
+	 * Creates a deep clone of this {@link AModBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link AModBinop} node
 	 */
-	public AModBinop clone()
+	public AModBinop clone(Map<INode,INode> oldToNewMap)
 	{
-		return new AModBinop(
+		AModBinop node = new AModBinop(
 		);
-	}
-
-
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
-	{
-		return EBinop.MOD;
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

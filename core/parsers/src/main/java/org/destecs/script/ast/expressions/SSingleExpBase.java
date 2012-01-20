@@ -63,6 +63,28 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	 return toString().equals(o.toString());
 	return false; }
 	
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link SSingleExpBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link SSingleExpBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link SSingleExpBase} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link SSingleExpBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link SSingleExpBase} node
+	 */
+	@Override
+	public abstract SSingleExp clone(Map<INode,INode> oldToNewMap);
+
 
 	public String toString()
 	{
@@ -84,26 +106,6 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 
 
 	/**
-	 * Returns a deep clone of this {@link SSingleExpBase} node.
-	 * @return a deep clone of this {@link SSingleExpBase} node
-	 */
-	@Override
-	public abstract SSingleExp clone();
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link SSingleExpBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link SSingleExpBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link SSingleExpBase} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
 	 * @return the {@link ESingleExp} for this node
@@ -111,13 +113,11 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	public abstract ESingleExp kindSSingleExp();
 
 	/**
-	 * Creates a deep clone of this {@link SSingleExpBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link SSingleExpBase} node.
 	 * @return a deep clone of this {@link SSingleExpBase} node
 	 */
 	@Override
-	public abstract SSingleExp clone(Map<INode,INode> oldToNewMap);
+	public abstract SSingleExp clone();
 
 
 }
