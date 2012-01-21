@@ -8,4 +8,10 @@ public class BooleanValue extends Value
 	{
 		value = v;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "" + value;
+	}
 }

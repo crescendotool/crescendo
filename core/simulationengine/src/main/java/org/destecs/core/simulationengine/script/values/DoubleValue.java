@@ -8,4 +8,10 @@ public class DoubleValue extends Value
 	{
 		value = v;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "" + value;
+	}
 }

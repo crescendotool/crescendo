@@ -21,6 +21,7 @@ package org.destecs.core.simulationengine;
 import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Vector;
 
@@ -28,6 +29,7 @@ import org.destecs.core.scenario.Action;
 import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.protocol.ProxyICoSimProtocol;
+import org.destecs.protocol.structs.StepinputsStructParam;
 
 public class ScenarioSimulationEngine extends SimulationEngine
 {
@@ -45,10 +47,10 @@ public class ScenarioSimulationEngine extends SimulationEngine
 
 	@Override
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
-			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy, List<StepinputsStructParam> inputs, Boolean singleStep, List<String> events)
 			throws SimulationException
 	{
-		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy);
+		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy, inputs, singleStep,events);
 
 		while (!actions.isEmpty() && actions.peek().time <= nextTime)
 		{

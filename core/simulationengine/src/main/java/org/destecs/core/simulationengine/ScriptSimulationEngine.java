@@ -29,8 +29,14 @@ import org.destecs.core.simulationengine.script.ScriptEvaluator;
 import org.destecs.protocol.ProxyICoSimProtocol;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
+import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.script.ast.node.INode;
 
+/**
+ * Custom simulation engine that evaluates a script as past of the stepping
+ * @author kela
+ *
+ */
 public class ScriptSimulationEngine extends SimulationEngine
 {
 	public class SimulationInterpreter implements ISimulatorControl
@@ -38,15 +44,20 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 		public void setVariable(Simulator simulator, String name, boolean value)
 		{
+			setVariable(simulator, name, value == true ? 1.0: 0.0 );
+		}
+
+		public void setVariable(Simulator simulator, String name, double value)
+		{
 			boolean found = false;
-			if (inAfter && result != null)
+			if (inAfter && resultAfter != null)
 			{
-				for (StepStructoutputsStruct out : result.outputs)
+				for (StepStructoutputsStruct out : resultAfter.outputs)
 				{
 					if (out.name.equals(name))
 					{
 						out.value.clear();
-						out.value.add(value == true ? 1.0 : 0.0);
+						out.value.add(value);
 						engineInfo(simulator, "Replacing output (Next time="
 								+ getSystemTime() + "): " + name + " = "
 								+ value);
@@ -54,40 +65,10 @@ public class ScriptSimulationEngine extends SimulationEngine
 					}
 				}
 			}
-
-			if (!found)
+			
+			if (!inAfter && inputsBefore != null)
 			{
-				try
-				{
-					engineInfo(simulator, "Setting parameter (Next time="
-							+ getSystemTime() + "): " + name + " = " + value);
-					messageInfo(simulator, getSystemTime(), "setParameter");
-					switch (simulator)
-					{
-						case CT:
-							// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
-							// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
-							break;
-						case DE:
-
-							deProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value == true ? 1.0
-									: 0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
-							break;
-
-					}
-				} catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
-		public void setVariable(Simulator simulator, String name, double value)
-		{
-			boolean found = false;
-			if (inAfter && result != null)
-			{
-				for (StepStructoutputsStruct out : result.outputs)
+				for (StepinputsStructParam out : inputsBefore)
 				{
 					if (out.name.equals(name))
 					{
@@ -129,9 +110,9 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 		public double getSystemTime()
 		{
-			if (result != null)
+			if (resultAfter != null)
 			{
-				return result.time;
+				return resultAfter.time;
 			}
 			return 0;
 		}
@@ -149,9 +130,20 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 		public Object getVariableValue(Simulator simulator, String name)
 		{
-			if (inAfter && result != null)
+			if (inAfter && resultAfter != null)
 			{
-				for (StepStructoutputsStruct out : result.outputs)
+				for (StepStructoutputsStruct out : resultAfter.outputs)
+				{
+					if (out.name.equals(name))
+					{
+						return out.value.get(0);
+					}
+				}
+			}
+			
+			if (!inAfter && inputsBefore!= null)
+			{
+				for (StepinputsStructParam out : inputsBefore)
 				{
 					if (out.name.equals(name))
 					{
@@ -191,10 +183,11 @@ public class ScriptSimulationEngine extends SimulationEngine
 	final public List<INode> script = new Vector<INode>();
 	boolean inAfter = false;
 
-	public StepStruct result;
+	public StepStruct resultAfter;
 	ScriptEvaluator eval = new ScriptEvaluator(new SimulationInterpreter());
 	ProxyICoSimProtocol dtProxy;
 	ProxyICoSimProtocol ctProxy;
+	private List<StepinputsStructParam> inputsBefore;
 
 	public ScriptSimulationEngine(File contractFile, List<INode> script)
 	{
@@ -208,7 +201,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 	protected StepStruct afterStep(Simulator simulator, StepStruct result)
 	{
 		super.afterStep(simulator, result);
-		this.result = result;
+		this.resultAfter = result;
 		this.inAfter = true;
 		for (INode stm : script)
 		{
@@ -219,13 +212,14 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 	@Override
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
-			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy, List<StepinputsStructParam> inputs, Boolean singleStep, List<String> events)
 			throws SimulationException
 	{
-		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy);
+		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy, inputs, singleStep, events);
 		this.inAfter = false;
 		this.ctProxy = ctProxy;
 		this.deProxy = dtProxy;
+		this.inputsBefore = inputs;
 		for (INode stm : script)
 		{
 			stm.apply(eval);

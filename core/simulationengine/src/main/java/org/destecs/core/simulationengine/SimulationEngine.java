@@ -700,7 +700,7 @@ public class SimulationEngine
 	}
 
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
-			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy, List<StepinputsStructParam> inputs, Boolean singleStep, List<String> events)
 			throws SimulationException
 	{
 
@@ -711,7 +711,7 @@ public class SimulationEngine
 			List<StepinputsStructParam> inputs, Boolean singleStep,
 			List<String> events) throws SimulationException
 	{
-		beforeStep(simulator, outputTime, dtProxy, ctProxy);
+		beforeStep(simulator, outputTime, dtProxy, ctProxy, inputs, singleStep, events);
 		messageInfo(simulator, outputTime, "step");
 		StepStruct result = null;
 		try

@@ -6,6 +6,7 @@ import org.destecs.core.simulationengine.script.values.DoubleValue;
 import org.destecs.core.simulationengine.script.values.Value;
 import org.destecs.script.ast.analysis.AnswerAdaptor;
 import org.destecs.script.ast.expressions.ABinaryExp;
+import org.destecs.script.ast.expressions.ABoolSingleExp;
 import org.destecs.script.ast.expressions.AIdentifierSingleExp;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.expressions.ASystemTimeSingleExp;
@@ -291,4 +292,10 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 		return new BooleanValue(false);
 	}
 
+	
+	@Override
+	public Value caseABoolSingleExp(ABoolSingleExp node)
+	{
+		return new BooleanValue(node.getValue());
+	}
 }

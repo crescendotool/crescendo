@@ -30,7 +30,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		public Value value;
 		public Simulator simulator;
 
-		public VariableValue(String name, Value value,Simulator simulator)
+		public VariableValue(String name, Value value, Simulator simulator)
 		{
 			this.name = name;
 			this.value = value;
@@ -51,6 +51,12 @@ public class ScriptEvaluator extends AnalysisAdaptor
 				return name.equals(((VariableValue) obj).name);
 			}
 			return super.equals(obj);
+		}
+
+		@Override
+		public String toString()
+		{
+			return simulator + " " + name + " = " + value;
 		}
 	}
 
@@ -94,7 +100,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			simulator = Simulator.CT;
 		}
 
-		storeVariable(node.getAncestor(AWhenStm.class), new VariableValue(node.getName(), Value.valueOf(interpreter.getVariableValue(simulator, node.getName())),simulator));
+		storeVariable(node.getAncestor(AWhenStm.class), new VariableValue(node.getName(), Value.valueOf(interpreter.getVariableValue(simulator, node.getName())), simulator));
 
 		if (v instanceof BooleanValue)
 		{
@@ -139,17 +145,17 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	@Override
 	public void caseARevertStm(ARevertStm node)
 	{
-			VariableValue var = getVariableValue(node.getAncestor(AWhenStm.class), node.getName());
-			if( var != null)
+		VariableValue var = getVariableValue(node.getAncestor(AWhenStm.class), node.getName());
+		if (var != null)
+		{
+			if (var.value instanceof BooleanValue)
 			{
-				if (var.value instanceof BooleanValue)
-				{
-					interpreter.setVariable(var.simulator, var.name, ((BooleanValue) var.value).value);
-				} else if (var.value instanceof DoubleValue)
-				{
-					interpreter.setVariable(var.simulator, var.name, ((DoubleValue) var.value).value);
-				}
+				interpreter.setVariable(var.simulator, var.name, ((BooleanValue) var.value).value);
+			} else if (var.value instanceof DoubleValue)
+			{
+				interpreter.setVariable(var.simulator, var.name, ((DoubleValue) var.value).value);
 			}
+		}
 	}
 
 	@Override
