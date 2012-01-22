@@ -23,8 +23,8 @@ package org.destecs.script.ast.statement;
 
 
 import org.destecs.script.ast.statement.SMessageStm;
-import java.util.Map;
 import org.destecs.script.ast.statement.EMessageStm;
+import java.util.Map;
 import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.statement.EStm;
@@ -55,6 +55,7 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	}
 
 
+
 	/**
 	 * Creates a new {@link SMessageStmBase} node with no children.
 	 */
@@ -62,7 +63,6 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	{
 
 	}
-
 
 
 
@@ -76,25 +76,13 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link SMessageStmBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link SMessageStmBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link SMessageStmBase} node
-	 */
-	public void removeChild(INode child)
+
+	public String toString()
 	{
-		throw new RuntimeException("Not a child.");
+		return super.toString();
+
 	}
 
-
-	/**
-	 * Returns the {@link EMessageStm} corresponding to the
-	 * type of this {@link EMessageStm} node.
-	 * @return the {@link EMessageStm} for this node
-	 */
-	public abstract EMessageStm kindSMessageStm();
 
 	/**
 	 * Creates a deep clone of this {@link SMessageStmBase} node while putting all
@@ -104,6 +92,13 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	 */
 	@Override
 	public abstract SMessageStm clone(Map<INode,INode> oldToNewMap);
+
+	/**
+	 * Returns the {@link EMessageStm} corresponding to the
+	 * type of this {@link EMessageStm} node.
+	 * @return the {@link EMessageStm} for this node
+	 */
+	public abstract EMessageStm kindSMessageStm();
 
 	/**
 	 * Returns the {@link EStm} corresponding to the
@@ -117,20 +112,25 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	}
 
 
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
 	/**
 	 * Returns a deep clone of this {@link SMessageStmBase} node.
 	 * @return a deep clone of this {@link SMessageStmBase} node
 	 */
 	@Override
 	public abstract SMessageStm clone();
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link SMessageStmBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link SMessageStmBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link SMessageStmBase} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
 
 	/**
 	 * Sets the {@code _message} child of this {@link SMessageStmBase} node.

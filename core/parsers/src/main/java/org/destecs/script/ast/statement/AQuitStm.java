@@ -79,19 +79,6 @@ public class AQuitStm extends PStmBase
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AQuitStm} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AQuitStm} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AQuitStm} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
 	 * Returns a deep clone of this {@link AQuitStm} node.
 	 * @return a deep clone of this {@link AQuitStm} node
 	 */
@@ -99,13 +86,6 @@ public class AQuitStm extends PStmBase
 	{
 		return new AQuitStm(
 		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 
@@ -121,6 +101,26 @@ public class AQuitStm extends PStmBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AQuitStm} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AQuitStm} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AQuitStm} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 

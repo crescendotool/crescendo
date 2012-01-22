@@ -58,7 +58,6 @@ public class ARevertStm extends PStmBase
 	}
 
 
-
 	/**
 	 * Creates a new {@link ARevertStm} node with no children.
 	 */
@@ -66,6 +65,7 @@ public class ARevertStm extends PStmBase
 	{
 
 	}
+
 
 
 
@@ -79,10 +79,15 @@ public class ARevertStm extends PStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
+	/**
+	 * Returns a deep clone of this {@link ARevertStm} node.
+	 * @return a deep clone of this {@link ARevertStm} node
+	 */
+	public ARevertStm clone()
 	{
-		return (_name!=null?_name.toString():this.getClass().getSimpleName());
+		return new ARevertStm(
+			_name
+		);
 	}
 
 
@@ -102,27 +107,10 @@ public class ARevertStm extends PStmBase
 	}
 
 
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
-	{
-		return EStm.REVERT;
-	}
 
-
-	/**
-	 * Returns a deep clone of this {@link ARevertStm} node.
-	 * @return a deep clone of this {@link ARevertStm} node
-	 */
-	public ARevertStm clone()
+	public String toString()
 	{
-		return new ARevertStm(
-			_name
-		);
+		return (_name!=null?_name.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -136,6 +124,18 @@ public class ARevertStm extends PStmBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
+	{
+		return EStm.REVERT;
 	}
 
 

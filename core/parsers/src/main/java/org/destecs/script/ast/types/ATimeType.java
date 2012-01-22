@@ -67,19 +67,6 @@ public class ATimeType extends PTypeBase
 	return false; }
 	
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ATimeType} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ATimeType} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ATimeType} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
 	 * Creates a deep clone of this {@link ATimeType} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -95,13 +82,22 @@ public class ATimeType extends PTypeBase
 
 
 	/**
-	 * Returns a deep clone of this {@link ATimeType} node.
-	 * @return a deep clone of this {@link ATimeType} node
+	 * Removes the {@link INode} {@code child} as a child of this {@link ATimeType} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ATimeType} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ATimeType} node
 	 */
-	public ATimeType clone()
+	public void removeChild(INode child)
 	{
-		return new ATimeType(
-		);
+		throw new RuntimeException("Not a child.");
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 
@@ -117,10 +113,14 @@ public class ATimeType extends PTypeBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Returns a deep clone of this {@link ATimeType} node.
+	 * @return a deep clone of this {@link ATimeType} node
+	 */
+	public ATimeType clone()
 	{
-		return super.toString();
+		return new ATimeType(
+		);
 	}
 
 

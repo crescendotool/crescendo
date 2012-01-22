@@ -66,10 +66,16 @@ public class ACtDomain extends PDomainBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link ACtDomain} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ACtDomain} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ACtDomain} node
+	 */
+	public void removeChild(INode child)
 	{
-		return super.toString();
+		throw new RuntimeException("Not a child.");
 	}
 
 
@@ -89,15 +95,14 @@ public class ACtDomain extends PDomainBase
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ACtDomain} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ACtDomain} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ACtDomain} node
+	 * Returns the {@link EDomain} corresponding to the
+	 * type of this {@link EDomain} node.
+	 * @return the {@link EDomain} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public EDomain kindPDomain()
 	{
-		throw new RuntimeException("Not a child.");
+		return EDomain.CT;
 	}
 
 
@@ -112,15 +117,10 @@ public class ACtDomain extends PDomainBase
 	}
 
 
-	/**
-	 * Returns the {@link EDomain} corresponding to the
-	 * type of this {@link EDomain} node.
-	 * @return the {@link EDomain} for this node
-	 */
-	@Override
-	public EDomain kindPDomain()
+
+	public String toString()
 	{
-		return EDomain.CT;
+		return super.toString();
 	}
 
 

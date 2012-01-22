@@ -26,8 +26,8 @@ import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.PDomain;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.EDomain;
 
 
@@ -70,21 +70,6 @@ public abstract class PDomainBase extends Node implements PDomain
 	@Override
 	public abstract PDomain clone();
 
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
-	/**
-	 * Returns the {@link EDomain} corresponding to the
-	 * type of this {@link EDomain} node.
-	 * @return the {@link EDomain} for this node
-	 */
-	public abstract EDomain kindPDomain();
-
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
@@ -105,6 +90,21 @@ public abstract class PDomainBase extends Node implements PDomain
 	 */
 	@Override
 	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
+
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
+
+	/**
+	 * Returns the {@link EDomain} corresponding to the
+	 * type of this {@link EDomain} node.
+	 * @return the {@link EDomain} for this node
+	 */
+	public abstract EDomain kindPDomain();
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.

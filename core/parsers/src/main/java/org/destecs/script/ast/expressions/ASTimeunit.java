@@ -26,8 +26,8 @@ import org.destecs.script.ast.expressions.PTimeunitBase;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.expressions.ETimeunit;
 import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.expressions.ETimeunit;
 import java.lang.String;
 import org.destecs.script.ast.expressions.ASTimeunit;
 import org.destecs.script.ast.analysis.intf.IAnswer;
@@ -44,6 +44,8 @@ public class ASTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link ASTimeunit} node with no children.
 	 */
@@ -51,8 +53,6 @@ public class ASTimeunit extends PTimeunitBase
 	{
 
 	}
-
-
 
 
 
@@ -67,17 +67,14 @@ public class ASTimeunit extends PTimeunitBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link ASTimeunit} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ASTimeunit} node
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
 	 */
-	public ASTimeunit clone(Map<INode,INode> oldToNewMap)
+	@Override
+	public ETimeunit kindPTimeunit()
 	{
-		ASTimeunit node = new ASTimeunit(
-		);
-		oldToNewMap.put(this, node);
-		return node;
+		return ETimeunit.S;
 	}
 
 
@@ -94,15 +91,25 @@ public class ASTimeunit extends PTimeunitBase
 	}
 
 
-	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
-	 */
-	@Override
-	public ETimeunit kindPTimeunit()
+
+	public String toString()
 	{
-		return ETimeunit.S;
+		return super.toString();
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link ASTimeunit} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ASTimeunit} node
+	 */
+	public ASTimeunit clone(Map<INode,INode> oldToNewMap)
+	{
+		ASTimeunit node = new ASTimeunit(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -114,13 +121,6 @@ public class ASTimeunit extends PTimeunitBase
 	{
 		return new ASTimeunit(
 		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 

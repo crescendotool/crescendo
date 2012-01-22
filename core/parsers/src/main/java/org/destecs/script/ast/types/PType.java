@@ -25,8 +25,8 @@ package org.destecs.script.ast.types;
 import java.util.Map;
 import org.destecs.script.ast.types.EType;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.types.PType;
 
 
@@ -36,13 +36,12 @@ import org.destecs.script.ast.types.PType;
 *
 */
 public interface PType extends INode
-{
-	public String toString();
-	/**
-	 * Returns a deep clone of this {@link PTypeBase} node.
-	 * @return a deep clone of this {@link PTypeBase} node
+{	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
 	 */
-	public abstract PType clone();
+	public NodeEnum kindNode();
 	/**
 	 * Creates a deep clone of this {@link PTypeBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -50,12 +49,8 @@ public interface PType extends INode
 	 * @return a deep clone of this {@link PTypeBase} node
 	 */
 	public abstract PType clone(Map<INode,INode> oldToNewMap);
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	public NodeEnum kindNode();
+
+	public String toString();
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PTypeBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -70,5 +65,10 @@ public interface PType extends INode
 	 * @return the {@link EType} for this node
 	 */
 	public abstract EType kindPType();
+	/**
+	 * Returns a deep clone of this {@link PTypeBase} node.
+	 * @return a deep clone of this {@link PTypeBase} node
+	 */
+	public abstract PType clone();
 
 }

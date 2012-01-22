@@ -44,6 +44,7 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link ASystemTimeSingleExp} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 	{
 
 	}
-
 
 
 
@@ -74,6 +74,18 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 
 
 	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
+	{
+		return ESingleExp.SYSTEMTIME;
+	}
+
+
+	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ASystemTimeSingleExp} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -83,6 +95,17 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link ASystemTimeSingleExp} node.
+	 * @return a deep clone of this {@link ASystemTimeSingleExp} node
+	 */
+	public ASystemTimeSingleExp clone()
+	{
+		return new ASystemTimeSingleExp(
+		);
 	}
 
 
@@ -98,29 +121,6 @@ public class ASystemTimeSingleExp extends SSingleExpBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
-	{
-		return ESingleExp.SYSTEMTIME;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link ASystemTimeSingleExp} node.
-	 * @return a deep clone of this {@link ASystemTimeSingleExp} node
-	 */
-	public ASystemTimeSingleExp clone()
-	{
-		return new ASystemTimeSingleExp(
-		);
 	}
 
 

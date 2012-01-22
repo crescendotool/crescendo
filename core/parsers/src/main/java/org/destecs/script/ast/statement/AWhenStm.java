@@ -29,6 +29,7 @@ import java.util.List;
 import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.statement.EStm;
 import java.lang.String;
+import org.destecs.script.ast.expressions.ATimeSingleExp;
 import org.destecs.script.ast.node.NodeList;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.statement.PStm;
@@ -52,6 +53,7 @@ public class AWhenStm extends PStmBase
 	private PExp _test;
 	private NodeList<PStm> _then = new NodeList<PStm>(this);
 	private NodeList<ARevertStm> _after = new NodeList<ARevertStm>(this);
+	private ATimeSingleExp _for;
 
 	/**
 	 * Creates a new {@link AWhenStm} node with no children.
@@ -62,22 +64,24 @@ public class AWhenStm extends PStmBase
 	}
 
 
+
 	/**
 	* Creates a new {@code AWhenStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
 	* @param test_ the {@link PExp} node for the {@code test} child of this {@link AWhenStm} node
 	* @param then_ the {@link NodeList} node for the {@code then} child of this {@link AWhenStm} node
 	* @param after_ the {@link NodeList} node for the {@code after} child of this {@link AWhenStm} node
+	* @param for_ the {@link ATimeSingleExp} node for the {@code for} child of this {@link AWhenStm} node
 	*/
-	public AWhenStm(PExp test_, List<? extends PStm> then_, List<? extends ARevertStm> after_)
+	public AWhenStm(PExp test_, List<? extends PStm> then_, List<? extends ARevertStm> after_, ATimeSingleExp for_)
 	{
 		super();
 		this.setTest(test_);
 		this.setThen(then_);
 		this.setAfter(after_);
+		this.setFor(for_);
 
 	}
-
 
 
 
@@ -91,32 +95,6 @@ public class AWhenStm extends PStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
-	{
-		return EStm.WHEN;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AWhenStm} node.
-	 * @return a deep clone of this {@link AWhenStm} node
-	 */
-	public AWhenStm clone()
-	{
-		return new AWhenStm(
-			cloneNode(_test),
-			cloneList(_then),
-			cloneList(_after)
-		);
-	}
-
-
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AWhenStm} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -137,14 +115,24 @@ public class AWhenStm extends PStmBase
 		if (this._after.remove(child)) {
 				return;
 		}
+		if (this._for == child) {
+			this._for = null;
+			return;
+		}
+
 		throw new RuntimeException("Not a child.");
 	}
 
 
-
-	public String toString()
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
 	{
-		return (_test!=null?_test.toString():this.getClass().getSimpleName())+ (_then!=null?_then.toString():this.getClass().getSimpleName())+ (_after!=null?_after.toString():this.getClass().getSimpleName());
+		return EStm.WHEN;
 	}
 
 
@@ -159,10 +147,33 @@ public class AWhenStm extends PStmBase
 		AWhenStm node = new AWhenStm(
 			cloneNode(_test, oldToNewMap),
 			cloneList(_then, oldToNewMap),
-			cloneList(_after, oldToNewMap)
+			cloneList(_after, oldToNewMap),
+			cloneNode(_for, oldToNewMap)
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+
+	public String toString()
+	{
+		return (_test!=null?_test.toString():this.getClass().getSimpleName())+ (_then!=null?_then.toString():this.getClass().getSimpleName())+ (_after!=null?_after.toString():this.getClass().getSimpleName())+ (_for!=null?_for.toString():this.getClass().getSimpleName());
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AWhenStm} node.
+	 * @return a deep clone of this {@link AWhenStm} node
+	 */
+	public AWhenStm clone()
+	{
+		return new AWhenStm(
+			cloneNode(_test),
+			cloneList(_then),
+			cloneList(_after),
+			cloneNode(_for)
+		);
 	}
 
 
@@ -244,6 +255,35 @@ public class AWhenStm extends PStmBase
 	public LinkedList<ARevertStm> getAfter()
 	{
 		return this._after;
+	}
+
+
+	/**
+	 * Sets the {@code _for} child of this {@link AWhenStm} node.
+	 * @param value the new {@code _for} child of this {@link AWhenStm} node
+	*/
+	public void setFor(ATimeSingleExp value)
+	{
+		if (this._for != null) {
+			this._for.parent(null);
+		}
+		if (value != null) {
+			if (value.parent() != null) {
+				value.parent().removeChild(value);
+		}
+			value.parent(this);
+		}
+		this._for = value;
+
+	}
+
+
+	/**
+	 * @return the {@link ATimeSingleExp} node which is the {@code _for} child of this {@link AWhenStm} node
+	*/
+	public ATimeSingleExp getFor()
+	{
+		return this._for;
 	}
 
 

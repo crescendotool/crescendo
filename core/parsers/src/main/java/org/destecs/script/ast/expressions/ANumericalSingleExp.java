@@ -23,8 +23,8 @@ package org.destecs.script.ast.expressions;
 
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
-import java.lang.Double;
 import java.util.Map;
+import java.lang.Double;
 import org.destecs.script.ast.expressions.ESingleExp;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.SSingleExpBase;
@@ -46,7 +46,6 @@ public class ANumericalSingleExp extends SSingleExpBase
 
 	private Double _value;
 
-
 	/**
 	* Creates a new {@code ANumericalSingleExp} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -58,6 +57,7 @@ public class ANumericalSingleExp extends SSingleExpBase
 		this.setValue(value_);
 
 	}
+
 
 
 	/**
@@ -81,22 +81,6 @@ public class ANumericalSingleExp extends SSingleExpBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link ANumericalSingleExp} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ANumericalSingleExp} node
-	 */
-	public ANumericalSingleExp clone(Map<INode,INode> oldToNewMap)
-	{
-		ANumericalSingleExp node = new ANumericalSingleExp(
-			_value
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
 	 * @return the {@link ESingleExp} for this node
@@ -105,6 +89,13 @@ public class ANumericalSingleExp extends SSingleExpBase
 	public ESingleExp kindSSingleExp()
 	{
 		return ESingleExp.NUMERICAL;
+	}
+
+
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -120,10 +111,19 @@ public class ANumericalSingleExp extends SSingleExpBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Creates a deep clone of this {@link ANumericalSingleExp} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ANumericalSingleExp} node
+	 */
+	public ANumericalSingleExp clone(Map<INode,INode> oldToNewMap)
 	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName());
+		ANumericalSingleExp node = new ANumericalSingleExp(
+			_value
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

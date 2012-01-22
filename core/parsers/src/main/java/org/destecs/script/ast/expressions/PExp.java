@@ -39,12 +39,6 @@ public interface PExp extends INode
 {
 	public String toString();
 	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	public NodeEnum kindNode();
-	/**
 	 * Creates a deep clone of this {@link PExpBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -70,5 +64,11 @@ public interface PExp extends INode
 	 * @return the {@link EExp} for this node
 	 */
 	public abstract EExp kindPExp();
+	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
+	 */
+	public NodeEnum kindNode();
 
 }

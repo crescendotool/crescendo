@@ -34,7 +34,6 @@ import org.destecs.script.ast.expressions.ABoolSingleExp;
 import org.destecs.script.ast.expressions.PExp;
 import java.lang.Double;
 import org.destecs.script.ast.statement.AErrorMessageStm;
-import org.destecs.script.ast.expressions.binop.AMoreEqualBinop;
 import org.destecs.script.ast.statement.APrintMessageStm;
 import org.destecs.script.ast.expressions.binop.ADivideBinop;
 import org.destecs.script.ast.node.INode;
@@ -47,9 +46,9 @@ import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.expressions.AHTimeunit;
 import org.destecs.script.ast.types.ATimeType;
 import org.destecs.script.ast.expressions.binop.AEqualBinop;
+import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import java.lang.Integer;
 import org.destecs.script.ast.statement.PStm;
-import org.destecs.script.ast.expressions.binop.AForBinop;
 import org.destecs.script.ast.expressions.binop.AMultiplyBinop;
 import org.destecs.script.ast.statement.AWarnMessageStm;
 import org.destecs.script.ast.expressions.AIdentifierSingleExp;
@@ -67,6 +66,7 @@ import org.destecs.script.ast.expressions.binop.AOrBinop;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.expressions.unop.AMinusUnop;
+import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.expressions.binop.ADivBinop;
 import org.destecs.script.ast.statement.AWhenStm;
 import org.destecs.script.ast.expressions.unop.PUnop;
@@ -85,7 +85,6 @@ import org.destecs.script.ast.expressions.binop.ALessEqualBinop;
 import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.expressions.binop.ALessThanBinop;
 import org.destecs.script.ast.types.ABoolType;
-import org.destecs.script.ast.expressions.binop.AMoreThanBinop;
 import org.destecs.script.ast.expressions.binop.AImpliesBinop;
 import org.destecs.script.ast.expressions.unop.AAddUnop;
 import org.destecs.script.ast.node.IToken;
@@ -333,20 +332,20 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 
 
 	/**
-	* Called by the {@link AMoreThanBinop} node from {@link AMoreThanBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreThanBinop} node
+	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public A caseAMoreThanBinop(AMoreThanBinop node)
+	public A caseAGreaterThanBinop(AGreaterThanBinop node)
 	{
 		return defaultPBinop(node);
 	}
 
 
 	/**
-	* Called by the {@link AMoreEqualBinop} node from {@link AMoreEqualBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreEqualBinop} node
+	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public A caseAMoreEqualBinop(AMoreEqualBinop node)
+	public A caseAGreaterEqualBinop(AGreaterEqualBinop node)
 	{
 		return defaultPBinop(node);
 	}
@@ -407,16 +406,6 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* @param node the calling {@link AEquivBinop} node
 	*/
 	public A caseAEquivBinop(AEquivBinop node)
-	{
-		return defaultPBinop(node);
-	}
-
-
-	/**
-	* Called by the {@link AForBinop} node from {@link AForBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AForBinop} node
-	*/
-	public A caseAForBinop(AForBinop node)
 	{
 		return defaultPBinop(node);
 	}

@@ -41,7 +41,6 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link PTimeunitBase} node with no children.
 	 */
@@ -49,6 +48,7 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 	{
 
 	}
+
 
 
 
@@ -63,14 +63,6 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
 	/**
 	 * Returns the {@link ETimeunit} corresponding to the
 	 * type of this {@link ETimeunit} node.
@@ -78,12 +70,13 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 	 */
 	public abstract ETimeunit kindPTimeunit();
 
-	/**
-	 * Returns a deep clone of this {@link PTimeunitBase} node.
-	 * @return a deep clone of this {@link PTimeunitBase} node
-	 */
-	@Override
-	public abstract PTimeunit clone();
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PTimeunitBase} node.
@@ -118,6 +111,13 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 		return NodeEnum.TIMEUNIT;
 	}
 
+
+	/**
+	 * Returns a deep clone of this {@link PTimeunitBase} node.
+	 * @return a deep clone of this {@link PTimeunitBase} node
+	 */
+	@Override
+	public abstract PTimeunit clone();
 
 
 }

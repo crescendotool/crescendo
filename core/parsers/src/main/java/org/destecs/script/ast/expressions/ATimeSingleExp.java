@@ -23,14 +23,14 @@ package org.destecs.script.ast.expressions;
 
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
-import java.util.Map;
 import java.lang.Double;
+import java.util.Map;
 import org.destecs.script.ast.expressions.ESingleExp;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.SSingleExpBase;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.expressions.ATimeSingleExp;
 import java.lang.String;
+import org.destecs.script.ast.expressions.ATimeSingleExp;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.PTimeunit;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -85,25 +85,6 @@ public class ATimeSingleExp extends SSingleExpBase
 	return false; }
 	
 	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
-	{
-		return ESingleExp.TIME;
-	}
-
-
-
-	public String toString()
-	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName())+ (_unit!=null?_unit.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
 	 * Creates a deep clone of this {@link ATimeSingleExp} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -121,6 +102,18 @@ public class ATimeSingleExp extends SSingleExpBase
 
 
 	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
+	{
+		return ESingleExp.TIME;
+	}
+
+
+	/**
 	 * Returns a deep clone of this {@link ATimeSingleExp} node.
 	 * @return a deep clone of this {@link ATimeSingleExp} node
 	 */
@@ -130,6 +123,13 @@ public class ATimeSingleExp extends SSingleExpBase
 			_value,
 			cloneNode(_unit)
 		);
+	}
+
+
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName())+ (_unit!=null?_unit.toString():this.getClass().getSimpleName());
 	}
 
 

@@ -32,6 +32,9 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 		return new DoubleValue(interpreter.getSystemTime());
 	}
 
+	/**
+	 * The returned value is in seconds
+	 */
 	@Override
 	public Value caseATimeSingleExp(ATimeSingleExp node)
 	{
@@ -151,10 +154,6 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 			}
 			
 				
-			case FOR:
-				//TODO
-				interpreter.scriptError("No idea what a binop \'for\' is!");
-				break;
 			case IMPLIES:
 			{
 				if (left instanceof BooleanValue)
@@ -205,7 +204,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 				}
 			}
 				break;
-			case MOREEQUAL:
+			case GREATEREQUAL:
 			{
 				if (left instanceof DoubleValue)
 				{
@@ -213,7 +212,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 				}
 			}
 				break;
-			case MORETHAN:
+			case GREATERTHAN:
 			{
 				if (left instanceof DoubleValue)
 				{

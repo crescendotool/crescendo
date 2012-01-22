@@ -275,11 +275,11 @@ includeStatement returns [AScriptInclude value]
   ; 
 
 whenStatement returns [AWhenStm value]
-  :WHEN expression DO
+  :WHEN expression (FOR timeliteral)? DO
     '('  statementList ')'
    (AFTER '(' revertStatementList ')')?  
     {
-      $value = new AWhenStm($expression.value,$statementList.valueList,$revertStatementList.valueList);
+      $value = new AWhenStm($expression.value,$statementList.valueList,$revertStatementList.valueList, $timeliteral.value);
     }       
   ;
 statementList returns [List<PStm> valueList]
@@ -379,8 +379,8 @@ expression1 returns [PExp value]
 expression1Op returns [PBinop value]
   : LESSS         {$value = new ALessThanBinop();}
   | LESSEQUAL     {$value = new ALessEqualBinop();}
-  | GREATER       {$value = new AMoreThanBinop();}
-  | GREATEREQUAL  {$value = new AMoreEqualBinop();}
+  | GREATER       {$value = new AGreaterThanBinop();}
+  | GREATEREQUAL  {$value = new AGreaterEqualBinop();}
   | EQUAL         {$value = new AEqualBinop();}
   | DIFFERENT     {$value = new ADifferentBinop();}
   ;

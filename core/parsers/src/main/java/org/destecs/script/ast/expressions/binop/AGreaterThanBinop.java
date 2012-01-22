@@ -24,10 +24,10 @@ package org.destecs.script.ast.expressions.binop;
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
-import org.destecs.script.ast.expressions.binop.AMoreThanBinop;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
+import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -39,16 +39,16 @@ import org.destecs.script.ast.expressions.binop.PBinopBase;
 * @author Kenneth Lausdahl
 *
 */
-public class AMoreThanBinop extends PBinopBase
+public class AGreaterThanBinop extends PBinopBase
 {
 	private static final long serialVersionUID = 1L;
 
 
 
 	/**
-	 * Creates a new {@link AMoreThanBinop} node with no children.
+	 * Creates a new {@link AGreaterThanBinop} node with no children.
 	 */
-	public AMoreThanBinop()
+	public AGreaterThanBinop()
 	{
 
 	}
@@ -62,7 +62,7 @@ public class AMoreThanBinop extends PBinopBase
 	**/
 	@Override
 	public boolean equals(Object o) {
-	if (o != null && o instanceof AMoreThanBinop)
+	if (o != null && o instanceof AGreaterThanBinop)
 	 return toString().equals(o.toString());
 	return false; }
 	
@@ -74,19 +74,19 @@ public class AMoreThanBinop extends PBinopBase
 	@Override
 	public EBinop kindPBinop()
 	{
-		return EBinop.MORETHAN;
+		return EBinop.GREATERTHAN;
 	}
 
 
 	/**
-	 * Creates a deep clone of this {@link AMoreThanBinop} node while putting all
+	 * Creates a deep clone of this {@link AGreaterThanBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AMoreThanBinop} node
+	 * @return a deep clone of this {@link AGreaterThanBinop} node
 	 */
-	public AMoreThanBinop clone(Map<INode,INode> oldToNewMap)
+	public AGreaterThanBinop clone(Map<INode,INode> oldToNewMap)
 	{
-		AMoreThanBinop node = new AMoreThanBinop(
+		AGreaterThanBinop node = new AGreaterThanBinop(
 		);
 		oldToNewMap.put(this, node);
 		return node;
@@ -94,12 +94,12 @@ public class AMoreThanBinop extends PBinopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AMoreThanBinop} node.
-	 * @return a deep clone of this {@link AMoreThanBinop} node
+	 * Returns a deep clone of this {@link AGreaterThanBinop} node.
+	 * @return a deep clone of this {@link AGreaterThanBinop} node
 	 */
-	public AMoreThanBinop clone()
+	public AGreaterThanBinop clone()
 	{
-		return new AMoreThanBinop(
+		return new AGreaterThanBinop(
 		);
 	}
 
@@ -112,11 +112,11 @@ public class AMoreThanBinop extends PBinopBase
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AMoreThanBinop} node.
+	 * Removes the {@link INode} {@code child} as a child of this {@link AGreaterThanBinop} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AMoreThanBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AMoreThanBinop} node
+	 * @param child the child node to be removed from this {@link AGreaterThanBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AGreaterThanBinop} node
 	 */
 	public void removeChild(INode child)
 	{
@@ -125,48 +125,48 @@ public class AMoreThanBinop extends PBinopBase
 
 
 	/**
-	* Calls the {@link IAnalysis#caseAMoreThanBinop(AMoreThanBinop)} of the {@link IAnalysis} {@code analysis}.
-	* @param analysis the {@link IAnalysis} to which this {@link AMoreThanBinop} node is applied
+	* Calls the {@link IAnalysis#caseAGreaterThanBinop(AGreaterThanBinop)} of the {@link IAnalysis} {@code analysis}.
+	* @param analysis the {@link IAnalysis} to which this {@link AGreaterThanBinop} node is applied
 	*/
 	@Override
 	public void apply(IAnalysis analysis)
 	{
-		analysis.caseAMoreThanBinop(this);
+		analysis.caseAGreaterThanBinop(this);
 	}
 
 
 	/**
-	* Calls the {@link IAnswer#caseAMoreThanBinop(AMoreThanBinop)} of the {@link IAnswer} {@code caller}.
-	* @param caller the {@link IAnswer} to which this {@link AMoreThanBinop} node is applied
+	* Calls the {@link IAnswer#caseAGreaterThanBinop(AGreaterThanBinop)} of the {@link IAnswer} {@code caller}.
+	* @param caller the {@link IAnswer} to which this {@link AGreaterThanBinop} node is applied
 	*/
 	@Override
 	public <A> A apply(IAnswer<A> caller)
 	{
-		return caller.caseAMoreThanBinop(this);
+		return caller.caseAGreaterThanBinop(this);
 	}
 
 
 	/**
-	* Calls the {@link IQuestion#caseAMoreThanBinop(AMoreThanBinop, Object)} of the {@link IQuestion} {@code caller}.
-	* @param caller the {@link IQuestion} to which this {@link AMoreThanBinop} node is applied
+	* Calls the {@link IQuestion#caseAGreaterThanBinop(AGreaterThanBinop, Object)} of the {@link IQuestion} {@code caller}.
+	* @param caller the {@link IQuestion} to which this {@link AGreaterThanBinop} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
 	public <Q> void apply(IQuestion<Q> caller, Q question)
 	{
-		caller.caseAMoreThanBinop(this, question);
+		caller.caseAGreaterThanBinop(this, question);
 	}
 
 
 	/**
-	* Calls the {@link IQuestionAnswer#caseAMoreThanBinop(AMoreThanBinop, Object)} of the {@link IQuestionAnswer} {@code caller}.
-	* @param caller the {@link IQuestionAnswer} to which this {@link AMoreThanBinop} node is applied
+	* Calls the {@link IQuestionAnswer#caseAGreaterThanBinop(AGreaterThanBinop, Object)} of the {@link IQuestionAnswer} {@code caller}.
+	* @param caller the {@link IQuestionAnswer} to which this {@link AGreaterThanBinop} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
 	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
 	{
-		return caller.caseAMoreThanBinop(this, question);
+		return caller.caseAGreaterThanBinop(this, question);
 	}
 
 

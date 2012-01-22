@@ -79,6 +79,18 @@ public class AUsTimeunit extends PTimeunitBase
 	}
 
 
+	/**
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
+	 */
+	@Override
+	public ETimeunit kindPTimeunit()
+	{
+		return ETimeunit.US;
+	}
+
+
 
 	public String toString()
 	{
@@ -109,18 +121,6 @@ public class AUsTimeunit extends PTimeunitBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
-	 */
-	@Override
-	public ETimeunit kindPTimeunit()
-	{
-		return ETimeunit.US;
 	}
 
 

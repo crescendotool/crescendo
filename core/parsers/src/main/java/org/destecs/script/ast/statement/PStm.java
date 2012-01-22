@@ -24,8 +24,8 @@ package org.destecs.script.ast.statement;
 
 import java.util.Map;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.statement.EStm;
+import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
 import org.destecs.script.ast.statement.PStm;
 
@@ -39,22 +39,17 @@ public interface PStm extends INode
 {
 	public String toString();
 	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	public abstract EStm kindPStm();
-	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
 	/**
-	 * Returns a deep clone of this {@link PStmBase} node.
-	 * @return a deep clone of this {@link PStmBase} node
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
 	 */
-	public abstract PStm clone();
+	public abstract EStm kindPStm();
 	/**
 	 * Creates a deep clone of this {@link PStmBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -70,5 +65,10 @@ public interface PStm extends INode
 	 * @throws RuntimeException if {@code child} is not a child of this {@link PStmBase} node
 	 */
 	public void removeChild(INode child);
+	/**
+	 * Returns a deep clone of this {@link PStmBase} node.
+	 * @return a deep clone of this {@link PStmBase} node
+	 */
+	public abstract PStm clone();
 
 }

@@ -27,8 +27,8 @@ import org.destecs.script.ast.expressions.PTimeunitBase;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.expressions.ETimeunit;
+import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -44,8 +44,6 @@ public class AMsTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link AMsTimeunit} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class AMsTimeunit extends PTimeunitBase
 	{
 
 	}
+
+
 
 
 
@@ -66,18 +66,6 @@ public class AMsTimeunit extends PTimeunitBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
-	 */
-	@Override
-	public ETimeunit kindPTimeunit()
-	{
-		return ETimeunit.MS;
-	}
-
-
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AMsTimeunit} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -99,6 +87,17 @@ public class AMsTimeunit extends PTimeunitBase
 
 
 	/**
+	 * Returns a deep clone of this {@link AMsTimeunit} node.
+	 * @return a deep clone of this {@link AMsTimeunit} node
+	 */
+	public AMsTimeunit clone()
+	{
+		return new AMsTimeunit(
+		);
+	}
+
+
+	/**
 	 * Creates a deep clone of this {@link AMsTimeunit} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -114,13 +113,14 @@ public class AMsTimeunit extends PTimeunitBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AMsTimeunit} node.
-	 * @return a deep clone of this {@link AMsTimeunit} node
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
 	 */
-	public AMsTimeunit clone()
+	@Override
+	public ETimeunit kindPTimeunit()
 	{
-		return new AMsTimeunit(
-		);
+		return ETimeunit.MS;
 	}
 
 

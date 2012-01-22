@@ -29,8 +29,8 @@ import org.destecs.script.ast.PDomain;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.statement.EStm;
 import java.lang.String;
+import org.destecs.script.ast.statement.EStm;
 import org.destecs.script.ast.statement.AAssignStm;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -50,6 +50,15 @@ public class AAssignStm extends PStmBase
 	private PExp _value;
 
 	/**
+	 * Creates a new {@link AAssignStm} node with no children.
+	 */
+	public AAssignStm()
+	{
+
+	}
+
+
+	/**
 	* Creates a new {@code AAssignStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
 	* @param domain_ the {@link PDomain} node for the {@code domain} child of this {@link AAssignStm} node
@@ -62,15 +71,6 @@ public class AAssignStm extends PStmBase
 		this.setDomain(domain_);
 		this.setName(name_);
 		this.setValue(value_);
-
-	}
-
-
-	/**
-	 * Creates a new {@link AAssignStm} node with no children.
-	 */
-	public AAssignStm()
-	{
 
 	}
 
@@ -88,6 +88,18 @@ public class AAssignStm extends PStmBase
 	return false; }
 	
 	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
+	{
+		return EStm.ASSIGN;
+	}
+
+
+	/**
 	 * Returns a deep clone of this {@link AAssignStm} node.
 	 * @return a deep clone of this {@link AAssignStm} node
 	 */
@@ -98,31 +110,6 @@ public class AAssignStm extends PStmBase
 			_name,
 			cloneNode(_value)
 		);
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AAssignStm} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AAssignStm} node
-	 */
-	public AAssignStm clone(Map<INode,INode> oldToNewMap)
-	{
-		AAssignStm node = new AAssignStm(
-			cloneNode(_domain, oldToNewMap),
-			_name,
-			cloneNode(_value, oldToNewMap)
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName())+ (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -149,15 +136,28 @@ public class AAssignStm extends PStmBase
 	}
 
 
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
+
+	public String toString()
 	{
-		return EStm.ASSIGN;
+		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName())+ (_value!=null?_value.toString():this.getClass().getSimpleName());
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AAssignStm} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AAssignStm} node
+	 */
+	public AAssignStm clone(Map<INode,INode> oldToNewMap)
+	{
+		AAssignStm node = new AAssignStm(
+			cloneNode(_domain, oldToNewMap),
+			_name,
+			cloneNode(_value, oldToNewMap)
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

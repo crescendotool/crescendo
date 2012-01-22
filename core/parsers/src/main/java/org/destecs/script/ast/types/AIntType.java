@@ -44,8 +44,6 @@ public class AIntType extends PTypeBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link AIntType} node with no children.
 	 */
@@ -53,6 +51,8 @@ public class AIntType extends PTypeBase
 	{
 
 	}
+
+
 
 
 
@@ -67,15 +67,25 @@ public class AIntType extends PTypeBase
 	return false; }
 	
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AIntType} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AIntType} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AIntType} node
+	 * Returns the {@link EType} corresponding to the
+	 * type of this {@link EType} node.
+	 * @return the {@link EType} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public EType kindPType()
 	{
-		throw new RuntimeException("Not a child.");
+		return EType.INT;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AIntType} node.
+	 * @return a deep clone of this {@link AIntType} node
+	 */
+	public AIntType clone()
+	{
+		return new AIntType(
+		);
 	}
 
 
@@ -87,14 +97,15 @@ public class AIntType extends PTypeBase
 
 
 	/**
-	 * Returns the {@link EType} corresponding to the
-	 * type of this {@link EType} node.
-	 * @return the {@link EType} for this node
+	 * Removes the {@link INode} {@code child} as a child of this {@link AIntType} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AIntType} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AIntType} node
 	 */
-	@Override
-	public EType kindPType()
+	public void removeChild(INode child)
 	{
-		return EType.INT;
+		throw new RuntimeException("Not a child.");
 	}
 
 
@@ -110,17 +121,6 @@ public class AIntType extends PTypeBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AIntType} node.
-	 * @return a deep clone of this {@link AIntType} node
-	 */
-	public AIntType clone()
-	{
-		return new AIntType(
-		);
 	}
 
 

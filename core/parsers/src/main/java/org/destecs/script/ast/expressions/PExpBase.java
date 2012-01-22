@@ -41,7 +41,6 @@ public abstract class PExpBase extends Node implements PExp
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link PExpBase} node with no children.
 	 */
@@ -49,6 +48,7 @@ public abstract class PExpBase extends Node implements PExp
 	{
 
 	}
+
 
 
 
@@ -68,18 +68,6 @@ public abstract class PExpBase extends Node implements PExp
 	{
 		return super.toString();
 
-	}
-
-
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	@Override
-	public NodeEnum kindNode()
-	{
-		return NodeEnum.EXP;
 	}
 
 
@@ -118,6 +106,18 @@ public abstract class PExpBase extends Node implements PExp
 	 * @return the {@link EExp} for this node
 	 */
 	public abstract EExp kindPExp();
+
+	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
+	 */
+	@Override
+	public NodeEnum kindNode()
+	{
+		return NodeEnum.EXP;
+	}
+
 
 
 }

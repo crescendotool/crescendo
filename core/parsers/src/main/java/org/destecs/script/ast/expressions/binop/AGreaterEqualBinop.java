@@ -22,9 +22,9 @@
 package org.destecs.script.ast.expressions.binop;
 
 
+import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
-import org.destecs.script.ast.expressions.binop.AMoreEqualBinop;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -39,15 +39,15 @@ import org.destecs.script.ast.expressions.binop.PBinopBase;
 * @author Kenneth Lausdahl
 *
 */
-public class AMoreEqualBinop extends PBinopBase
+public class AGreaterEqualBinop extends PBinopBase
 {
 	private static final long serialVersionUID = 1L;
 
 
 	/**
-	 * Creates a new {@link AMoreEqualBinop} node with no children.
+	 * Creates a new {@link AGreaterEqualBinop} node with no children.
 	 */
-	public AMoreEqualBinop()
+	public AGreaterEqualBinop()
 	{
 
 	}
@@ -62,7 +62,7 @@ public class AMoreEqualBinop extends PBinopBase
 	**/
 	@Override
 	public boolean equals(Object o) {
-	if (o != null && o instanceof AMoreEqualBinop)
+	if (o != null && o instanceof AGreaterEqualBinop)
 	 return toString().equals(o.toString());
 	return false; }
 	
@@ -74,22 +74,22 @@ public class AMoreEqualBinop extends PBinopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AMoreEqualBinop} node.
-	 * @return a deep clone of this {@link AMoreEqualBinop} node
+	 * Returns a deep clone of this {@link AGreaterEqualBinop} node.
+	 * @return a deep clone of this {@link AGreaterEqualBinop} node
 	 */
-	public AMoreEqualBinop clone()
+	public AGreaterEqualBinop clone()
 	{
-		return new AMoreEqualBinop(
+		return new AGreaterEqualBinop(
 		);
 	}
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AMoreEqualBinop} node.
+	 * Removes the {@link INode} {@code child} as a child of this {@link AGreaterEqualBinop} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AMoreEqualBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AMoreEqualBinop} node
+	 * @param child the child node to be removed from this {@link AGreaterEqualBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AGreaterEqualBinop} node
 	 */
 	public void removeChild(INode child)
 	{
@@ -105,19 +105,19 @@ public class AMoreEqualBinop extends PBinopBase
 	@Override
 	public EBinop kindPBinop()
 	{
-		return EBinop.MOREEQUAL;
+		return EBinop.GREATEREQUAL;
 	}
 
 
 	/**
-	 * Creates a deep clone of this {@link AMoreEqualBinop} node while putting all
+	 * Creates a deep clone of this {@link AGreaterEqualBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AMoreEqualBinop} node
+	 * @return a deep clone of this {@link AGreaterEqualBinop} node
 	 */
-	public AMoreEqualBinop clone(Map<INode,INode> oldToNewMap)
+	public AGreaterEqualBinop clone(Map<INode,INode> oldToNewMap)
 	{
-		AMoreEqualBinop node = new AMoreEqualBinop(
+		AGreaterEqualBinop node = new AGreaterEqualBinop(
 		);
 		oldToNewMap.put(this, node);
 		return node;
@@ -125,48 +125,48 @@ public class AMoreEqualBinop extends PBinopBase
 
 
 	/**
-	* Calls the {@link IAnalysis#caseAMoreEqualBinop(AMoreEqualBinop)} of the {@link IAnalysis} {@code analysis}.
-	* @param analysis the {@link IAnalysis} to which this {@link AMoreEqualBinop} node is applied
+	* Calls the {@link IAnalysis#caseAGreaterEqualBinop(AGreaterEqualBinop)} of the {@link IAnalysis} {@code analysis}.
+	* @param analysis the {@link IAnalysis} to which this {@link AGreaterEqualBinop} node is applied
 	*/
 	@Override
 	public void apply(IAnalysis analysis)
 	{
-		analysis.caseAMoreEqualBinop(this);
+		analysis.caseAGreaterEqualBinop(this);
 	}
 
 
 	/**
-	* Calls the {@link IAnswer#caseAMoreEqualBinop(AMoreEqualBinop)} of the {@link IAnswer} {@code caller}.
-	* @param caller the {@link IAnswer} to which this {@link AMoreEqualBinop} node is applied
+	* Calls the {@link IAnswer#caseAGreaterEqualBinop(AGreaterEqualBinop)} of the {@link IAnswer} {@code caller}.
+	* @param caller the {@link IAnswer} to which this {@link AGreaterEqualBinop} node is applied
 	*/
 	@Override
 	public <A> A apply(IAnswer<A> caller)
 	{
-		return caller.caseAMoreEqualBinop(this);
+		return caller.caseAGreaterEqualBinop(this);
 	}
 
 
 	/**
-	* Calls the {@link IQuestion#caseAMoreEqualBinop(AMoreEqualBinop, Object)} of the {@link IQuestion} {@code caller}.
-	* @param caller the {@link IQuestion} to which this {@link AMoreEqualBinop} node is applied
+	* Calls the {@link IQuestion#caseAGreaterEqualBinop(AGreaterEqualBinop, Object)} of the {@link IQuestion} {@code caller}.
+	* @param caller the {@link IQuestion} to which this {@link AGreaterEqualBinop} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
 	public <Q> void apply(IQuestion<Q> caller, Q question)
 	{
-		caller.caseAMoreEqualBinop(this, question);
+		caller.caseAGreaterEqualBinop(this, question);
 	}
 
 
 	/**
-	* Calls the {@link IQuestionAnswer#caseAMoreEqualBinop(AMoreEqualBinop, Object)} of the {@link IQuestionAnswer} {@code caller}.
-	* @param caller the {@link IQuestionAnswer} to which this {@link AMoreEqualBinop} node is applied
+	* Calls the {@link IQuestionAnswer#caseAGreaterEqualBinop(AGreaterEqualBinop, Object)} of the {@link IQuestionAnswer} {@code caller}.
+	* @param caller the {@link IQuestionAnswer} to which this {@link AGreaterEqualBinop} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
 	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
 	{
-		return caller.caseAMoreEqualBinop(this, question);
+		return caller.caseAGreaterEqualBinop(this, question);
 	}
 
 

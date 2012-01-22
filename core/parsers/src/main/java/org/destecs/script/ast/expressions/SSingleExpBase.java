@@ -41,6 +41,7 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link SSingleExpBase} node with no children.
 	 */
@@ -48,7 +49,6 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	{
 
 	}
-
 
 
 
@@ -85,6 +85,13 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	@Override
 	public abstract SSingleExp clone(Map<INode,INode> oldToNewMap);
 
+	/**
+	 * Returns a deep clone of this {@link SSingleExpBase} node.
+	 * @return a deep clone of this {@link SSingleExpBase} node
+	 */
+	@Override
+	public abstract SSingleExp clone();
+
 
 	public String toString()
 	{
@@ -92,6 +99,13 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 
 	}
 
+
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	public abstract ESingleExp kindSSingleExp();
 
 	/**
 	 * Returns the {@link EExp} corresponding to the
@@ -104,20 +118,6 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 		return EExp.SINGLE;
 	}
 
-
-	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	public abstract ESingleExp kindSSingleExp();
-
-	/**
-	 * Returns a deep clone of this {@link SSingleExpBase} node.
-	 * @return a deep clone of this {@link SSingleExpBase} node
-	 */
-	@Override
-	public abstract SSingleExp clone();
 
 
 }

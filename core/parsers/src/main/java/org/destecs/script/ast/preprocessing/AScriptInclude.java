@@ -45,6 +45,16 @@ public class AScriptInclude extends PIncludeBase
 
 	private String _filename;
 
+
+	/**
+	 * Creates a new {@link AScriptInclude} node with no children.
+	 */
+	public AScriptInclude()
+	{
+
+	}
+
+
 	/**
 	* Creates a new {@code AScriptInclude} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -56,16 +66,6 @@ public class AScriptInclude extends PIncludeBase
 		this.setFilename(filename_);
 
 	}
-
-
-	/**
-	 * Creates a new {@link AScriptInclude} node with no children.
-	 */
-	public AScriptInclude()
-	{
-
-	}
-
 
 
 
@@ -80,18 +80,6 @@ public class AScriptInclude extends PIncludeBase
 	return false; }
 	
 	/**
-	 * Returns a deep clone of this {@link AScriptInclude} node.
-	 * @return a deep clone of this {@link AScriptInclude} node
-	 */
-	public AScriptInclude clone()
-	{
-		return new AScriptInclude(
-			_filename
-		);
-	}
-
-
-	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AScriptInclude} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -101,6 +89,30 @@ public class AScriptInclude extends PIncludeBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns the {@link EInclude} corresponding to the
+	 * type of this {@link EInclude} node.
+	 * @return the {@link EInclude} for this node
+	 */
+	@Override
+	public EInclude kindPInclude()
+	{
+		return EInclude.SCRIPT;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AScriptInclude} node.
+	 * @return a deep clone of this {@link AScriptInclude} node
+	 */
+	public AScriptInclude clone()
+	{
+		return new AScriptInclude(
+			_filename
+		);
 	}
 
 
@@ -117,18 +129,6 @@ public class AScriptInclude extends PIncludeBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns the {@link EInclude} corresponding to the
-	 * type of this {@link EInclude} node.
-	 * @return the {@link EInclude} for this node
-	 */
-	@Override
-	public EInclude kindPInclude()
-	{
-		return EInclude.SCRIPT;
 	}
 
 

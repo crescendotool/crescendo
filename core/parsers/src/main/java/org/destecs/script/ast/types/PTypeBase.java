@@ -26,8 +26,8 @@ import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.types.EType;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.types.PType;
 
 
@@ -63,20 +63,17 @@ public abstract class PTypeBase extends Node implements PType
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
 	/**
-	 * Returns a deep clone of this {@link PTypeBase} node.
-	 * @return a deep clone of this {@link PTypeBase} node
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
 	 */
 	@Override
-	public abstract PType clone();
+	public NodeEnum kindNode()
+	{
+		return NodeEnum.TYPE;
+	}
+
 
 	/**
 	 * Creates a deep clone of this {@link PTypeBase} node while putting all
@@ -87,15 +84,11 @@ public abstract class PTypeBase extends Node implements PType
 	@Override
 	public abstract PType clone(Map<INode,INode> oldToNewMap);
 
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	@Override
-	public NodeEnum kindNode()
+
+	public String toString()
 	{
-		return NodeEnum.TYPE;
+		return super.toString();
+
 	}
 
 
@@ -118,6 +111,13 @@ public abstract class PTypeBase extends Node implements PType
 	 * @return the {@link EType} for this node
 	 */
 	public abstract EType kindPType();
+
+	/**
+	 * Returns a deep clone of this {@link PTypeBase} node.
+	 * @return a deep clone of this {@link PTypeBase} node
+	 */
+	@Override
+	public abstract PType clone();
 
 
 }

@@ -34,7 +34,6 @@ import org.destecs.script.ast.expressions.ABoolSingleExp;
 import org.destecs.script.ast.expressions.PExp;
 import java.lang.Double;
 import org.destecs.script.ast.statement.AErrorMessageStm;
-import org.destecs.script.ast.expressions.binop.AMoreEqualBinop;
 import org.destecs.script.ast.statement.APrintMessageStm;
 import org.destecs.script.ast.expressions.binop.ADivideBinop;
 import org.destecs.script.ast.node.INode;
@@ -50,8 +49,8 @@ import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.List;
 import org.destecs.script.ast.expressions.binop.AEqualBinop;
 import java.lang.Integer;
+import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import org.destecs.script.ast.statement.PStm;
-import org.destecs.script.ast.expressions.binop.AForBinop;
 import org.destecs.script.ast.expressions.binop.AMultiplyBinop;
 import org.destecs.script.ast.statement.AWarnMessageStm;
 import org.destecs.script.ast.expressions.AIdentifierSingleExp;
@@ -70,6 +69,7 @@ import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.expressions.unop.AMinusUnop;
 import org.destecs.script.ast.expressions.binop.ADivBinop;
+import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.statement.AWhenStm;
 import org.destecs.script.ast.expressions.unop.PUnop;
 import org.destecs.script.ast.expressions.binop.AAndBinop;
@@ -87,7 +87,6 @@ import org.destecs.script.ast.expressions.binop.ALessEqualBinop;
 import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.expressions.binop.ALessThanBinop;
 import org.destecs.script.ast.types.ABoolType;
-import org.destecs.script.ast.expressions.binop.AMoreThanBinop;
 import org.destecs.script.ast.expressions.binop.AImpliesBinop;
 import org.destecs.script.ast.expressions.unop.AAddUnop;
 import org.destecs.script.ast.node.IToken;
@@ -989,80 +988,80 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 
 
 	/**
-	* Called by the {@link AMoreThanBinop} node from {@link AMoreThanBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreThanBinop} node
+	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void caseAMoreThanBinop(AMoreThanBinop node)
+	public void caseAGreaterThanBinop(AGreaterThanBinop node)
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
 			return;
 		}
 		_queue.add(node);
-		inAMoreThanBinop(node);
+		inAGreaterThanBinop(node);
 
 
-		outAMoreThanBinop(node);
+		outAGreaterThanBinop(node);
 		_queue.remove(node);
 
 	}
 
 
 	/**
-	* Called by the {@link AMoreThanBinop} node from {@link AMoreThanBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreThanBinop} node
+	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void inAMoreThanBinop(AMoreThanBinop node)
+	public void inAGreaterThanBinop(AGreaterThanBinop node)
 	{
 		defaultInPBinop(node);
 	}
 
 
 	/**
-	* Called by the {@link AMoreThanBinop} node from {@link AMoreThanBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreThanBinop} node
+	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void outAMoreThanBinop(AMoreThanBinop node)
+	public void outAGreaterThanBinop(AGreaterThanBinop node)
 	{
 		defaultOutPBinop(node);
 	}
 
 
 	/**
-	* Called by the {@link AMoreEqualBinop} node from {@link AMoreEqualBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreEqualBinop} node
+	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void caseAMoreEqualBinop(AMoreEqualBinop node)
+	public void caseAGreaterEqualBinop(AGreaterEqualBinop node)
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
 			return;
 		}
 		_queue.add(node);
-		inAMoreEqualBinop(node);
+		inAGreaterEqualBinop(node);
 
 
-		outAMoreEqualBinop(node);
+		outAGreaterEqualBinop(node);
 		_queue.remove(node);
 
 	}
 
 
 	/**
-	* Called by the {@link AMoreEqualBinop} node from {@link AMoreEqualBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreEqualBinop} node
+	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void inAMoreEqualBinop(AMoreEqualBinop node)
+	public void inAGreaterEqualBinop(AGreaterEqualBinop node)
 	{
 		defaultInPBinop(node);
 	}
 
 
 	/**
-	* Called by the {@link AMoreEqualBinop} node from {@link AMoreEqualBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreEqualBinop} node
+	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void outAMoreEqualBinop(AMoreEqualBinop node)
+	public void outAGreaterEqualBinop(AGreaterEqualBinop node)
 	{
 		defaultOutPBinop(node);
 	}
@@ -1303,46 +1302,6 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* @param node the calling {@link AEquivBinop} node
 	*/
 	public void outAEquivBinop(AEquivBinop node)
-	{
-		defaultOutPBinop(node);
-	}
-
-
-	/**
-	* Called by the {@link AForBinop} node from {@link AForBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AForBinop} node
-	*/
-	public void caseAForBinop(AForBinop node)
-	{
-		if(_queue.contains(node))
-		{ //already visiting this node from other path
-			return;
-		}
-		_queue.add(node);
-		inAForBinop(node);
-
-
-		outAForBinop(node);
-		_queue.remove(node);
-
-	}
-
-
-	/**
-	* Called by the {@link AForBinop} node from {@link AForBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AForBinop} node
-	*/
-	public void inAForBinop(AForBinop node)
-	{
-		defaultInPBinop(node);
-	}
-
-
-	/**
-	* Called by the {@link AForBinop} node from {@link AForBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AForBinop} node
-	*/
-	public void outAForBinop(AForBinop node)
 	{
 		defaultOutPBinop(node);
 	}
@@ -2159,6 +2118,9 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 			for( ARevertStm e : copy) {
 				e.apply(this);
 			}
+		}
+		if(node.getFor() != null) {
+			node.getFor().apply(this);
 		}
 
 		outAWhenStm(node);

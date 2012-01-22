@@ -51,15 +51,6 @@ public class AIdentifierSingleExp extends SSingleExpBase
 
 
 	/**
-	 * Creates a new {@link AIdentifierSingleExp} node with no children.
-	 */
-	public AIdentifierSingleExp()
-	{
-
-	}
-
-
-	/**
 	* Creates a new {@code AIdentifierSingleExp} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
 	* @param domain_ the {@link PDomain} node for the {@code domain} child of this {@link AIdentifierSingleExp} node
@@ -76,6 +67,15 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	}
 
 
+	/**
+	 * Creates a new {@link AIdentifierSingleExp} node with no children.
+	 */
+	public AIdentifierSingleExp()
+	{
+
+	}
+
+
 
 
 	/**
@@ -87,13 +87,6 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_type!=null?_type.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName());
-	}
-
-
 	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
@@ -103,6 +96,45 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	public ESingleExp kindSSingleExp()
 	{
 		return ESingleExp.IDENTIFIER;
+	}
+
+
+
+	public String toString()
+	{
+		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_type!=null?_type.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName());
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AIdentifierSingleExp} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AIdentifierSingleExp} node
+	 */
+	public AIdentifierSingleExp clone(Map<INode,INode> oldToNewMap)
+	{
+		AIdentifierSingleExp node = new AIdentifierSingleExp(
+			cloneNode(_domain, oldToNewMap),
+			cloneNode(_type, oldToNewMap),
+			_name
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AIdentifierSingleExp} node.
+	 * @return a deep clone of this {@link AIdentifierSingleExp} node
+	 */
+	public AIdentifierSingleExp clone()
+	{
+		return new AIdentifierSingleExp(
+			cloneNode(_domain),
+			cloneNode(_type),
+			_name
+		);
 	}
 
 
@@ -126,38 +158,6 @@ public class AIdentifierSingleExp extends SSingleExpBase
 		}
 
 		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AIdentifierSingleExp} node.
-	 * @return a deep clone of this {@link AIdentifierSingleExp} node
-	 */
-	public AIdentifierSingleExp clone()
-	{
-		return new AIdentifierSingleExp(
-			cloneNode(_domain),
-			cloneNode(_type),
-			_name
-		);
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AIdentifierSingleExp} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AIdentifierSingleExp} node
-	 */
-	public AIdentifierSingleExp clone(Map<INode,INode> oldToNewMap)
-	{
-		AIdentifierSingleExp node = new AIdentifierSingleExp(
-			cloneNode(_domain, oldToNewMap),
-			cloneNode(_type, oldToNewMap),
-			_name
-		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

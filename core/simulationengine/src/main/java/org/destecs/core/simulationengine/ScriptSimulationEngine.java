@@ -120,6 +120,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 		public void showMessage(String type, String message)
 		{
 			engineInfo(Simulator.ALL, type + " " + message);
+			messageInfo(Simulator.ALL, getSystemTime(), type + " " + message);
 		}
 
 		public void quite()

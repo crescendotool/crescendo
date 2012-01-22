@@ -76,7 +76,7 @@ public class ScriptEditor extends TextEditor
 		@Override
 		protected String[] getKeywords()
 		{
-			return new String[] { "DE","CT","de","ct","when","and","or","include","time","do","print","after","quit","revert","error","warn","boolean","real","int" };
+			return new String[] { "DE","CT","de","ct","when","for","and","or","include","time","do","print","after","quit","revert","error","warn","boolean","real","int" };
 		}
 
 		@Override

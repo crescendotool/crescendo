@@ -25,8 +25,8 @@ package org.destecs.script.ast;
 import java.util.Map;
 import org.destecs.script.ast.PDomain;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.EDomain;
 
 
@@ -41,14 +41,6 @@ public interface PDomain extends INode
 	 * @return a deep clone of this {@link PDomainBase} node
 	 */
 	public abstract PDomain clone();
-
-	public String toString();
-	/**
-	 * Returns the {@link EDomain} corresponding to the
-	 * type of this {@link EDomain} node.
-	 * @return the {@link EDomain} for this node
-	 */
-	public abstract EDomain kindPDomain();
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
@@ -62,6 +54,14 @@ public interface PDomain extends INode
 	 * @return a deep clone of this {@link PDomainBase} node
 	 */
 	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
+
+	public String toString();
+	/**
+	 * Returns the {@link EDomain} corresponding to the
+	 * type of this {@link EDomain} node.
+	 * @return the {@link EDomain} for this node
+	 */
+	public abstract EDomain kindPDomain();
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's

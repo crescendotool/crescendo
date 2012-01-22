@@ -52,14 +52,13 @@ public interface SSingleExp extends PExp
 	 * @return a deep clone of this {@link SSingleExpBase} node
 	 */
 	public abstract SSingleExp clone(Map<INode,INode> oldToNewMap);
+	/**
+	 * Returns a deep clone of this {@link SSingleExpBase} node.
+	 * @return a deep clone of this {@link SSingleExpBase} node
+	 */
+	public abstract SSingleExp clone();
 
 	public String toString();
-	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	public EExp kindPExp();
 	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
@@ -67,9 +66,10 @@ public interface SSingleExp extends PExp
 	 */
 	public abstract ESingleExp kindSSingleExp();
 	/**
-	 * Returns a deep clone of this {@link SSingleExpBase} node.
-	 * @return a deep clone of this {@link SSingleExpBase} node
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
 	 */
-	public abstract SSingleExp clone();
+	public EExp kindPExp();
 
 }

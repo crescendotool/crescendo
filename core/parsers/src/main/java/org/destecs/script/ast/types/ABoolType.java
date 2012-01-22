@@ -67,21 +67,6 @@ public class ABoolType extends PTypeBase
 	return false; }
 	
 	/**
-	 * Creates a deep clone of this {@link ABoolType} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ABoolType} node
-	 */
-	public ABoolType clone(Map<INode,INode> oldToNewMap)
-	{
-		ABoolType node = new ABoolType(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ABoolType} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -110,6 +95,21 @@ public class ABoolType extends PTypeBase
 	public EType kindPType()
 	{
 		return EType.BOOL;
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link ABoolType} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ABoolType} node
+	 */
+	public ABoolType clone(Map<INode,INode> oldToNewMap)
+	{
+		ABoolType node = new ABoolType(
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 

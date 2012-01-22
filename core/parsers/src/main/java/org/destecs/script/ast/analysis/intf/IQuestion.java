@@ -33,7 +33,6 @@ import org.destecs.script.ast.expressions.ASTimeunit;
 import org.destecs.script.ast.expressions.ABoolSingleExp;
 import java.lang.Double;
 import org.destecs.script.ast.statement.AErrorMessageStm;
-import org.destecs.script.ast.expressions.binop.AMoreEqualBinop;
 import org.destecs.script.ast.expressions.binop.ADivideBinop;
 import org.destecs.script.ast.statement.APrintMessageStm;
 import java.io.Serializable;
@@ -44,8 +43,8 @@ import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.expressions.AHTimeunit;
 import org.destecs.script.ast.types.ATimeType;
 import org.destecs.script.ast.expressions.binop.AEqualBinop;
+import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import java.lang.Integer;
-import org.destecs.script.ast.expressions.binop.AForBinop;
 import org.destecs.script.ast.expressions.binop.AMultiplyBinop;
 import org.destecs.script.ast.statement.AWarnMessageStm;
 import org.destecs.script.ast.expressions.AIdentifierSingleExp;
@@ -60,6 +59,7 @@ import org.destecs.script.ast.expressions.binop.AOrBinop;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.expressions.unop.AMinusUnop;
+import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.expressions.binop.ADivBinop;
 import org.destecs.script.ast.statement.AWhenStm;
 import org.destecs.script.ast.expressions.binop.AAndBinop;
@@ -74,7 +74,6 @@ import org.destecs.script.ast.expressions.binop.ALessEqualBinop;
 import org.destecs.script.ast.expressions.binop.ALessThanBinop;
 import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.types.ABoolType;
-import org.destecs.script.ast.expressions.binop.AMoreThanBinop;
 import org.destecs.script.ast.expressions.binop.AImpliesBinop;
 import org.destecs.script.ast.expressions.unop.AAddUnop;
 
@@ -181,15 +180,15 @@ public interface IQuestion<Q> extends Serializable
 	*/
 	public void caseALessEqualBinop(ALessEqualBinop node, Q question);
 	/**
-	* Called by the {@link AMoreThanBinop} node from {@link AMoreThanBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreThanBinop} node
+	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void caseAMoreThanBinop(AMoreThanBinop node, Q question);
+	public void caseAGreaterThanBinop(AGreaterThanBinop node, Q question);
 	/**
-	* Called by the {@link AMoreEqualBinop} node from {@link AMoreEqualBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AMoreEqualBinop} node
+	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
+	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void caseAMoreEqualBinop(AMoreEqualBinop node, Q question);
+	public void caseAGreaterEqualBinop(AGreaterEqualBinop node, Q question);
 	/**
 	* Called by the {@link AEqualBinop} node from {@link AEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEqualBinop} node
@@ -220,11 +219,6 @@ public interface IQuestion<Q> extends Serializable
 	* @param node the calling {@link AEquivBinop} node
 	*/
 	public void caseAEquivBinop(AEquivBinop node, Q question);
-	/**
-	* Called by the {@link AForBinop} node from {@link AForBinop#apply(IAnalysis)}.
-	* @param node the calling {@link AForBinop} node
-	*/
-	public void caseAForBinop(AForBinop node, Q question);
 	/**
 	* Called by the {@link ADeDomain} node from {@link ADeDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ADeDomain} node

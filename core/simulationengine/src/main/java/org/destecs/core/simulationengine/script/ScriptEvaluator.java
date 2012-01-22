@@ -12,6 +12,11 @@ import org.destecs.core.simulationengine.script.values.Value;
 import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.ADeDomain;
 import org.destecs.script.ast.analysis.AnalysisAdaptor;
+import org.destecs.script.ast.expressions.ABinaryExp;
+import org.destecs.script.ast.expressions.ANumericalSingleExp;
+import org.destecs.script.ast.expressions.ASystemTimeSingleExp;
+import org.destecs.script.ast.expressions.PExp;
+import org.destecs.script.ast.expressions.binop.ALessEqualBinop;
 import org.destecs.script.ast.statement.AAssignStm;
 import org.destecs.script.ast.statement.AErrorMessageStm;
 import org.destecs.script.ast.statement.APrintMessageStm;
@@ -67,6 +72,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	ISimulatorControl interpreter;
 	ExpressionEvaluator expEval;
 	Map<AWhenStm, Set<VariableValue>> variableCache = new Hashtable<AWhenStm, Set<VariableValue>>();
+	Map<AWhenStm, PExp> whenForExp = new Hashtable<AWhenStm, PExp>();
 
 	public ScriptEvaluator(ISimulatorControl simulator)
 	{
@@ -78,13 +84,39 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	public void caseAWhenStm(AWhenStm node)
 	{
 		Value v = node.getTest().apply(expEval);
-		if (v instanceof BooleanValue && ((BooleanValue) v).value)
+
+		if (v instanceof BooleanValue && ((BooleanValue) v).value
+				|| checkWhenFor(node))
 		{
+			if (node.getFor() != null && whenForExp.get(node)==null)
+			{
+				Double expireTime = ((DoubleValue) node.getFor().apply(expEval)).value
+						+ ((DoubleValue) new ASystemTimeSingleExp().apply(expEval)).value;
+				whenForExp.put(node, new ABinaryExp(new ASystemTimeSingleExp(), new ALessEqualBinop(), new ANumericalSingleExp(expireTime)));
+			}
 			for (PStm stm : node.getThen())
 			{
 				stm.apply(this);
 			}
+		} else
+		{
+			whenForExp.remove(node);
+			for (PStm stm : node.getAfter())
+			{
+				stm.apply(this);
+			}
 		}
+	}
+
+	private boolean checkWhenFor(AWhenStm node)
+	{
+		PExp forExp = whenForExp.get(node);
+		if (forExp != null)
+		{
+			Value v = forExp.apply(expEval);
+			return (v instanceof BooleanValue && ((BooleanValue) v).value);
+		}
+		return false;
 	}
 
 	@Override

@@ -48,6 +48,15 @@ public class AUnaryExp extends PExpBase
 	private PUnop _operator;
 	private PExp _exp;
 
+	/**
+	 * Creates a new {@link AUnaryExp} node with no children.
+	 */
+	public AUnaryExp()
+	{
+
+	}
+
+
 
 	/**
 	* Creates a new {@code AUnaryExp} node with the given nodes as children.
@@ -64,15 +73,6 @@ public class AUnaryExp extends PExpBase
 	}
 
 
-	/**
-	 * Creates a new {@link AUnaryExp} node with no children.
-	 */
-	public AUnaryExp()
-	{
-
-	}
-
-
 
 
 	/**
@@ -85,38 +85,15 @@ public class AUnaryExp extends PExpBase
 	return false; }
 	
 	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	@Override
-	public EExp kindPExp()
-	{
-		return EExp.UNARY;
-	}
-
-
-
-	public String toString()
-	{
-		return (_operator!=null?_operator.toString():this.getClass().getSimpleName())+ (_exp!=null?_exp.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AUnaryExp} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link AUnaryExp} node.
 	 * @return a deep clone of this {@link AUnaryExp} node
 	 */
-	public AUnaryExp clone(Map<INode,INode> oldToNewMap)
+	public AUnaryExp clone()
 	{
-		AUnaryExp node = new AUnaryExp(
-			cloneNode(_operator, oldToNewMap),
-			cloneNode(_exp, oldToNewMap)
+		return new AUnaryExp(
+			cloneNode(_operator),
+			cloneNode(_exp)
 		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 
@@ -144,15 +121,38 @@ public class AUnaryExp extends PExpBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AUnaryExp} node.
+	 * Creates a deep clone of this {@link AUnaryExp} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link AUnaryExp} node
 	 */
-	public AUnaryExp clone()
+	public AUnaryExp clone(Map<INode,INode> oldToNewMap)
 	{
-		return new AUnaryExp(
-			cloneNode(_operator),
-			cloneNode(_exp)
+		AUnaryExp node = new AUnaryExp(
+			cloneNode(_operator, oldToNewMap),
+			cloneNode(_exp, oldToNewMap)
 		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+	/**
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
+	 */
+	@Override
+	public EExp kindPExp()
+	{
+		return EExp.UNARY;
+	}
+
+
+
+	public String toString()
+	{
+		return (_operator!=null?_operator.toString():this.getClass().getSimpleName())+ (_exp!=null?_exp.toString():this.getClass().getSimpleName());
 	}
 
 

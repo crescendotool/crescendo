@@ -51,15 +51,6 @@ public class ABinaryExp extends PExpBase
 
 
 	/**
-	 * Creates a new {@link ABinaryExp} node with no children.
-	 */
-	public ABinaryExp()
-	{
-
-	}
-
-
-	/**
 	* Creates a new {@code ABinaryExp} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
 	* @param left_ the {@link PExp} node for the {@code left} child of this {@link ABinaryExp} node
@@ -76,6 +67,15 @@ public class ABinaryExp extends PExpBase
 	}
 
 
+	/**
+	 * Creates a new {@link ABinaryExp} node with no children.
+	 */
+	public ABinaryExp()
+	{
+
+	}
+
+
 
 
 	/**
@@ -87,13 +87,6 @@ public class ABinaryExp extends PExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
-	{
-		return (_left!=null?_left.toString():this.getClass().getSimpleName())+ (_operator!=null?_operator.toString():this.getClass().getSimpleName())+ (_right!=null?_right.toString():this.getClass().getSimpleName());
-	}
-
-
 	/**
 	 * Returns the {@link EExp} corresponding to the
 	 * type of this {@link EExp} node.
@@ -106,17 +99,28 @@ public class ABinaryExp extends PExpBase
 	}
 
 
+
+	public String toString()
+	{
+		return (_left!=null?_left.toString():this.getClass().getSimpleName())+ (_operator!=null?_operator.toString():this.getClass().getSimpleName())+ (_right!=null?_right.toString():this.getClass().getSimpleName());
+	}
+
+
 	/**
-	 * Returns a deep clone of this {@link ABinaryExp} node.
+	 * Creates a deep clone of this {@link ABinaryExp} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link ABinaryExp} node
 	 */
-	public ABinaryExp clone()
+	public ABinaryExp clone(Map<INode,INode> oldToNewMap)
 	{
-		return new ABinaryExp(
-			cloneNode(_left),
-			cloneNode(_operator),
-			cloneNode(_right)
+		ABinaryExp node = new ABinaryExp(
+			cloneNode(_left, oldToNewMap),
+			cloneNode(_operator, oldToNewMap),
+			cloneNode(_right, oldToNewMap)
 		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -149,20 +153,16 @@ public class ABinaryExp extends PExpBase
 
 
 	/**
-	 * Creates a deep clone of this {@link ABinaryExp} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link ABinaryExp} node.
 	 * @return a deep clone of this {@link ABinaryExp} node
 	 */
-	public ABinaryExp clone(Map<INode,INode> oldToNewMap)
+	public ABinaryExp clone()
 	{
-		ABinaryExp node = new ABinaryExp(
-			cloneNode(_left, oldToNewMap),
-			cloneNode(_operator, oldToNewMap),
-			cloneNode(_right, oldToNewMap)
+		return new ABinaryExp(
+			cloneNode(_left),
+			cloneNode(_operator),
+			cloneNode(_right)
 		);
-		oldToNewMap.put(this, node);
-		return node;
 	}
 
 

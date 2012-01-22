@@ -25,8 +25,8 @@ package org.destecs.script.ast.statement;
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.statement.EStm;
+import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
 import org.destecs.script.ast.statement.PStm;
 
@@ -72,13 +72,6 @@ public abstract class PStmBase extends Node implements PStm
 
 
 	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	public abstract EStm kindPStm();
-
-	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
@@ -91,11 +84,11 @@ public abstract class PStmBase extends Node implements PStm
 
 
 	/**
-	 * Returns a deep clone of this {@link PStmBase} node.
-	 * @return a deep clone of this {@link PStmBase} node
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
 	 */
-	@Override
-	public abstract PStm clone();
+	public abstract EStm kindPStm();
 
 	/**
 	 * Creates a deep clone of this {@link PStmBase} node while putting all
@@ -118,6 +111,13 @@ public abstract class PStmBase extends Node implements PStm
 		throw new RuntimeException("Not a child.");
 	}
 
+
+	/**
+	 * Returns a deep clone of this {@link PStmBase} node.
+	 * @return a deep clone of this {@link PStmBase} node
+	 */
+	@Override
+	public abstract PStm clone();
 
 
 }

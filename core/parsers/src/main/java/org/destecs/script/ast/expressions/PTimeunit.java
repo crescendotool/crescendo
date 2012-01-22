@@ -36,19 +36,14 @@ import org.destecs.script.ast.expressions.PTimeunit;
 *
 */
 public interface PTimeunit extends INode
-{
-	public String toString();
-	/**
+{	/**
 	 * Returns the {@link ETimeunit} corresponding to the
 	 * type of this {@link ETimeunit} node.
 	 * @return the {@link ETimeunit} for this node
 	 */
 	public abstract ETimeunit kindPTimeunit();
-	/**
-	 * Returns a deep clone of this {@link PTimeunitBase} node.
-	 * @return a deep clone of this {@link PTimeunitBase} node
-	 */
-	public abstract PTimeunit clone();
+
+	public String toString();
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PTimeunitBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -70,5 +65,10 @@ public interface PTimeunit extends INode
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
+	/**
+	 * Returns a deep clone of this {@link PTimeunitBase} node.
+	 * @return a deep clone of this {@link PTimeunitBase} node
+	 */
+	public abstract PTimeunit clone();
 
 }

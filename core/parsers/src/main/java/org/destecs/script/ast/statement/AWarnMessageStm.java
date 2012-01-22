@@ -23,8 +23,8 @@ package org.destecs.script.ast.statement;
 
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
-import java.util.Map;
 import org.destecs.script.ast.statement.EMessageStm;
+import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -53,6 +53,7 @@ public class AWarnMessageStm extends SMessageStmBase
 	}
 
 
+
 	/**
 	* Creates a new {@code AWarnMessageStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -62,7 +63,6 @@ public class AWarnMessageStm extends SMessageStmBase
 		super(message_);
 
 	}
-
 
 
 
@@ -77,14 +77,22 @@ public class AWarnMessageStm extends SMessageStmBase
 	return false; }
 	
 	/**
-	 * Returns the {@link EMessageStm} corresponding to the
-	 * type of this {@link EMessageStm} node.
-	 * @return the {@link EMessageStm} for this node
+	 * Removes the {@link INode} {@code child} as a child of this {@link AWarnMessageStm} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AWarnMessageStm} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AWarnMessageStm} node
 	 */
-	@Override
-	public EMessageStm kindSMessageStm()
+	public void removeChild(INode child)
 	{
-		return EMessageStm.WARN;
+		throw new RuntimeException("Not a child.");
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 
@@ -104,23 +112,15 @@ public class AWarnMessageStm extends SMessageStmBase
 	}
 
 
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AWarnMessageStm} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AWarnMessageStm} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AWarnMessageStm} node
+	 * Returns the {@link EMessageStm} corresponding to the
+	 * type of this {@link EMessageStm} node.
+	 * @return the {@link EMessageStm} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public EMessageStm kindSMessageStm()
 	{
-		throw new RuntimeException("Not a child.");
+		return EMessageStm.WARN;
 	}
 
 

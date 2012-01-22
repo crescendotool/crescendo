@@ -26,8 +26,8 @@ import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.preprocessing.PInclude;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.preprocessing.EInclude;
 
 
@@ -42,6 +42,7 @@ public abstract class PIncludeBase extends Node implements PInclude
 
 
 
+
 	/**
 	 * Creates a new {@link PIncludeBase} node with no children.
 	 */
@@ -49,7 +50,6 @@ public abstract class PIncludeBase extends Node implements PInclude
 	{
 
 	}
-
 
 
 
@@ -63,20 +63,18 @@ public abstract class PIncludeBase extends Node implements PInclude
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PIncludeBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PIncludeBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PIncludeBase} node
+	 */
+	public void removeChild(INode child)
 	{
-		return super.toString();
-
+		throw new RuntimeException("Not a child.");
 	}
 
-
-	/**
-	 * Returns the {@link EInclude} corresponding to the
-	 * type of this {@link EInclude} node.
-	 * @return the {@link EInclude} for this node
-	 */
-	public abstract EInclude kindPInclude();
 
 	/**
 	 * Creates a deep clone of this {@link PIncludeBase} node while putting all
@@ -86,6 +84,13 @@ public abstract class PIncludeBase extends Node implements PInclude
 	 */
 	@Override
 	public abstract PInclude clone(Map<INode,INode> oldToNewMap);
+
+	/**
+	 * Returns a deep clone of this {@link PIncludeBase} node.
+	 * @return a deep clone of this {@link PIncludeBase} node
+	 */
+	@Override
+	public abstract PInclude clone();
 
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
@@ -100,22 +105,17 @@ public abstract class PIncludeBase extends Node implements PInclude
 
 
 	/**
-	 * Returns a deep clone of this {@link PIncludeBase} node.
-	 * @return a deep clone of this {@link PIncludeBase} node
+	 * Returns the {@link EInclude} corresponding to the
+	 * type of this {@link EInclude} node.
+	 * @return the {@link EInclude} for this node
 	 */
-	@Override
-	public abstract PInclude clone();
+	public abstract EInclude kindPInclude();
 
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PIncludeBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PIncludeBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PIncludeBase} node
-	 */
-	public void removeChild(INode child)
+
+	public String toString()
 	{
-		throw new RuntimeException("Not a child.");
+		return super.toString();
+
 	}
 
 

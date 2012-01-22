@@ -23,8 +23,8 @@ package org.destecs.script.ast.statement;
 
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
-import org.destecs.script.ast.statement.EMessageStm;
 import java.util.Map;
+import org.destecs.script.ast.statement.EMessageStm;
 import org.destecs.script.ast.statement.AErrorMessageStm;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
@@ -44,6 +44,7 @@ public class AErrorMessageStm extends SMessageStmBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link AErrorMessageStm} node with no children.
 	 */
@@ -51,7 +52,6 @@ public class AErrorMessageStm extends SMessageStmBase
 	{
 
 	}
-
 
 
 	/**
@@ -89,6 +89,30 @@ public class AErrorMessageStm extends SMessageStmBase
 	}
 
 
+	/**
+	 * Returns a deep clone of this {@link AErrorMessageStm} node.
+	 * @return a deep clone of this {@link AErrorMessageStm} node
+	 */
+	public AErrorMessageStm clone()
+	{
+		return new AErrorMessageStm(
+			_message
+		);
+	}
+
+
+	/**
+	 * Returns the {@link EMessageStm} corresponding to the
+	 * type of this {@link EMessageStm} node.
+	 * @return the {@link EMessageStm} for this node
+	 */
+	@Override
+	public EMessageStm kindSMessageStm()
+	{
+		return EMessageStm.ERROR;
+	}
+
+
 
 	public String toString()
 	{
@@ -109,30 +133,6 @@ public class AErrorMessageStm extends SMessageStmBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns the {@link EMessageStm} corresponding to the
-	 * type of this {@link EMessageStm} node.
-	 * @return the {@link EMessageStm} for this node
-	 */
-	@Override
-	public EMessageStm kindSMessageStm()
-	{
-		return EMessageStm.ERROR;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AErrorMessageStm} node.
-	 * @return a deep clone of this {@link AErrorMessageStm} node
-	 */
-	public AErrorMessageStm clone()
-	{
-		return new AErrorMessageStm(
-			_message
-		);
 	}
 
 

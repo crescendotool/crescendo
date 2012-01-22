@@ -27,8 +27,8 @@ import org.destecs.script.ast.expressions.PTimeunitBase;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.expressions.ETimeunit;
+import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
@@ -44,6 +44,8 @@ public class AHTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link AHTimeunit} node with no children.
 	 */
@@ -51,8 +53,6 @@ public class AHTimeunit extends PTimeunitBase
 	{
 
 	}
-
-
 
 
 
@@ -66,10 +66,27 @@ public class AHTimeunit extends PTimeunitBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-
-	public String toString()
+	/**
+	 * Returns a deep clone of this {@link AHTimeunit} node.
+	 * @return a deep clone of this {@link AHTimeunit} node
+	 */
+	public AHTimeunit clone()
 	{
-		return super.toString();
+		return new AHTimeunit(
+		);
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AHTimeunit} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AHTimeunit} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AHTimeunit} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
 	}
 
 
@@ -100,27 +117,10 @@ public class AHTimeunit extends PTimeunitBase
 	}
 
 
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AHTimeunit} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AHTimeunit} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AHTimeunit} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
 
-
-	/**
-	 * Returns a deep clone of this {@link AHTimeunit} node.
-	 * @return a deep clone of this {@link AHTimeunit} node
-	 */
-	public AHTimeunit clone()
+	public String toString()
 	{
-		return new AHTimeunit(
-		);
+		return super.toString();
 	}
 
 

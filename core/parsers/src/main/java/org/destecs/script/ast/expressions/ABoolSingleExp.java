@@ -46,6 +46,16 @@ public class ABoolSingleExp extends SSingleExpBase
 
 	private Boolean _value;
 
+
+	/**
+	 * Creates a new {@link ABoolSingleExp} node with no children.
+	 */
+	public ABoolSingleExp()
+	{
+
+	}
+
+
 	/**
 	* Creates a new {@code ABoolSingleExp} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
@@ -55,16 +65,6 @@ public class ABoolSingleExp extends SSingleExpBase
 	{
 		super();
 		this.setValue(value_);
-
-	}
-
-
-
-	/**
-	 * Creates a new {@link ABoolSingleExp} node with no children.
-	 */
-	public ABoolSingleExp()
-	{
 
 	}
 
@@ -80,6 +80,13 @@ public class ABoolSingleExp extends SSingleExpBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName());
+	}
+
+
 	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
@@ -89,13 +96,6 @@ public class ABoolSingleExp extends SSingleExpBase
 	public ESingleExp kindSSingleExp()
 	{
 		return ESingleExp.BOOL;
-	}
-
-
-
-	public String toString()
-	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -112,6 +112,19 @@ public class ABoolSingleExp extends SSingleExpBase
 
 
 	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link ABoolSingleExp} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ABoolSingleExp} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ABoolSingleExp} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
 	 * Creates a deep clone of this {@link ABoolSingleExp} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -124,19 +137,6 @@ public class ABoolSingleExp extends SSingleExpBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ABoolSingleExp} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ABoolSingleExp} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ABoolSingleExp} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
 	}
 
 

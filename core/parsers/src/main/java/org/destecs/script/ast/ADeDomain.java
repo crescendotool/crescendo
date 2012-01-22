@@ -44,6 +44,8 @@ public class ADeDomain extends PDomainBase
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link ADeDomain} node with no children.
 	 */
@@ -51,8 +53,6 @@ public class ADeDomain extends PDomainBase
 	{
 
 	}
-
-
 
 
 
@@ -66,6 +66,13 @@ public class ADeDomain extends PDomainBase
 	 return toString().equals(o.toString());
 	return false; }
 	
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ADeDomain} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -76,6 +83,18 @@ public class ADeDomain extends PDomainBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns the {@link EDomain} corresponding to the
+	 * type of this {@link EDomain} node.
+	 * @return the {@link EDomain} for this node
+	 */
+	@Override
+	public EDomain kindPDomain()
+	{
+		return EDomain.DE;
 	}
 
 
@@ -95,18 +114,6 @@ public class ADeDomain extends PDomainBase
 
 
 	/**
-	 * Returns the {@link EDomain} corresponding to the
-	 * type of this {@link EDomain} node.
-	 * @return the {@link EDomain} for this node
-	 */
-	@Override
-	public EDomain kindPDomain()
-	{
-		return EDomain.DE;
-	}
-
-
-	/**
 	 * Returns a deep clone of this {@link ADeDomain} node.
 	 * @return a deep clone of this {@link ADeDomain} node
 	 */
@@ -114,13 +121,6 @@ public class ADeDomain extends PDomainBase
 	{
 		return new ADeDomain(
 		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 

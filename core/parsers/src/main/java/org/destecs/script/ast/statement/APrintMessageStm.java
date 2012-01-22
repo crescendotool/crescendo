@@ -44,7 +44,6 @@ public class APrintMessageStm extends SMessageStmBase
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link APrintMessageStm} node with no children.
 	 */
@@ -52,6 +51,7 @@ public class APrintMessageStm extends SMessageStmBase
 	{
 
 	}
+
 
 
 	/**
@@ -77,6 +77,18 @@ public class APrintMessageStm extends SMessageStmBase
 	return false; }
 	
 	/**
+	 * Returns the {@link EMessageStm} corresponding to the
+	 * type of this {@link EMessageStm} node.
+	 * @return the {@link EMessageStm} for this node
+	 */
+	@Override
+	public EMessageStm kindSMessageStm()
+	{
+		return EMessageStm.PRINT;
+	}
+
+
+	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link APrintMessageStm} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -98,18 +110,6 @@ public class APrintMessageStm extends SMessageStmBase
 		return new APrintMessageStm(
 			_message
 		);
-	}
-
-
-	/**
-	 * Returns the {@link EMessageStm} corresponding to the
-	 * type of this {@link EMessageStm} node.
-	 * @return the {@link EMessageStm} for this node
-	 */
-	@Override
-	public EMessageStm kindSMessageStm()
-	{
-		return EMessageStm.PRINT;
 	}
 
 
