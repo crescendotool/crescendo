@@ -446,6 +446,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
+			DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Failed to launch", ex));
 			for (InfoTableView view : views)
 			{
 				view.refreshPackTable();
@@ -463,6 +464,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			{
 				DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Error launching", e));
 			}
+			
 		}
 	}
 
@@ -621,7 +623,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		return null;
 	}
 
-	private SimulationEngine getEngine() throws IOException
+	private SimulationEngine getEngine() throws Exception
 	{
 
 		if (scenarioFile != null)
@@ -636,6 +638,10 @@ public class CoSimLaunchConfigurationDelegate extends
 			}
 
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
+			if(scenario==null)
+			{
+				throw new Exception("Scenario not parse correct: "+scenarioFile);
+			}
 			return new ScenarioSimulationEngine(contractFile, scenario);
 
 		} else
