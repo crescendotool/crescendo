@@ -12,7 +12,7 @@ public class PauseAction extends BaseSimulationControlAction
 	@Override
 	public String getText()
 	{
-		return "Pause";
+		return "Pause All";
 	}
 
 	public ImageDescriptor getImageDescriptor()

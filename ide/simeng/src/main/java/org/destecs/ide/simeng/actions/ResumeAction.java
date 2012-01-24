@@ -12,7 +12,7 @@ public class ResumeAction extends BaseSimulationControlAction
 	@Override
 	public String getText()
 	{
-		return "Terminate";
+		return "Resume All";
 	}
 
 	public ImageDescriptor getImageDescriptor()
