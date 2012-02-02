@@ -42,6 +42,7 @@ import org.destecs.core.simulationengine.exceptions.InvalidEndpointsExpection;
 import org.destecs.core.simulationengine.exceptions.InvalidSimulationLauncher;
 import org.destecs.core.simulationengine.exceptions.ModelPathNotValidException;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
+import org.destecs.core.simulationengine.exceptions.UserStoppedSimulation;
 import org.destecs.core.simulationengine.launcher.ISimulatorLauncher;
 import org.destecs.core.simulationengine.listener.IEngineListener;
 import org.destecs.core.simulationengine.listener.IMessageListener;
@@ -85,14 +86,14 @@ public class SimulationEngine
 			return name;
 		}
 	}
-	
+
 	public static class SimulationLock
 	{
 		private boolean lock = false;
-		
+
 		public synchronized void check()
 		{
-			if(lock)
+			if (lock)
 			{
 				try
 				{
@@ -102,12 +103,12 @@ public class SimulationEngine
 				}
 			}
 		}
-		
+
 		public synchronized void lock()
 		{
 			lock = true;
 		}
-		
+
 		public synchronized void unLock()
 		{
 			lock = false;
@@ -165,9 +166,9 @@ public class SimulationEngine
 	private String ctVersion = "";
 
 	private File outputDirectory = null;
-	
+
 	private SimulationLock lock = new SimulationLock();
-	
+
 	ProxyICoSimProtocol deProxy;
 	ProxyICoSimProtocol ctProxy;
 
@@ -352,8 +353,9 @@ public class SimulationEngine
 			// start simulation
 			startSimulator(Simulator.DE, deProxy);
 			startSimulator(Simulator.CT, ctProxy);
-			
-			//FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim at the moment
+
+			// FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim
+			// at the moment
 			setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			long before = System.currentTimeMillis();
@@ -400,7 +402,7 @@ public class SimulationEngine
 				return;
 			}
 
-			if (modelConfig.logFile== null)
+			if (modelConfig.logFile == null)
 			{
 				abort(simulator, "Preset logfile location is undefined.");
 			}
@@ -549,29 +551,32 @@ public class SimulationEngine
 				// simulation stop requested, stop simulation loop
 				break;
 			}
-			// System.out.print(res.toString());
-			// variableSyncInfo(res.getVariables());
-			// Step DT - time calculate
-			// deResult = step(Simulator.DE, dtProxy, ctProxy, res.time,
-			// res.deData, false, res.events);
-
-			// Step CT - step
-			ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
-			checkStepStructVariableSize(ctResult, Simulator.CT);
-			variableSyncInfo(merge(deResult, ctResult).getVariables());
-
-			//This is added to protect 20-sim from being flooded with steps to the same time, when it already reported that it could not do it.
-			if(ctResult.time < deResult.time && ctResult.events.isEmpty())
+			try
 			{
-				abort(Simulator.CT, "Simulator not able to progress to "+deResult.time+ " could only do "+ctResult.time+" with not events detected. Simulation is stuck!");
-			}
-			
-			// Step DT - step
-			deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
-			checkStepStructVariableSize(deResult, Simulator.DE);
-			// res = merge(deResult, ctResult);
+				// Step CT - step
+				ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
+				checkStepStructVariableSize(ctResult, Simulator.CT);
+				variableSyncInfo(merge(deResult, ctResult).getVariables());
 
-			time = deResult.time;// res.time;
+				// This is added to protect 20-sim from being flooded with steps to the same time, when it already
+				// reported that it could not do it.
+				if (ctResult.time < deResult.time && ctResult.events.isEmpty())
+				{
+					abort(Simulator.CT, "Simulator not able to progress to "
+							+ deResult.time + " could only do " + ctResult.time
+							+ " with not events detected. Simulation is stuck!");
+				}
+
+				// Step DT - step
+				deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
+				checkStepStructVariableSize(deResult, Simulator.DE);
+
+				time = deResult.time;// res.time;
+			} catch (UserStoppedSimulation e)
+			{
+				break;
+			}
+
 		}
 		return time;
 	}
@@ -700,8 +705,9 @@ public class SimulationEngine
 	}
 
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
-			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy, List<StepinputsStructParam> inputs, Boolean singleStep, List<String> events)
-			throws SimulationException
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy,
+			List<StepinputsStructParam> inputs, Boolean singleStep,
+			List<String> events) throws SimulationException
 	{
 
 	}
@@ -731,6 +737,10 @@ public class SimulationEngine
 					+ ")", e);
 		}
 		simulationInfo(simulator, result);
+		if (result != null && result.result == 3)
+		{
+			throw new UserStoppedSimulation(simulator);
+		}
 		return afterStep(simulator, result);
 	}
 
@@ -1279,10 +1289,10 @@ public class SimulationEngine
 						abort(simulator, "Simulator version not supported: "
 								+ version + " <> expected " + number);
 					}
-					
+
 					if (Integer.valueOf(elements[i]) > num)
 					{
-						return true;//newer major version
+						return true;// newer major version
 					}
 				} else
 				{
@@ -1324,18 +1334,19 @@ public class SimulationEngine
 
 		}
 	}
-	
+
 	public void pause()
 	{
 		lock.lock();
-		try{
-			deProxy.suspend();
-		}catch(Exception e)
+		try
 		{
-			
+			deProxy.suspend();
+		} catch (Exception e)
+		{
+
 		}
 	}
-	
+
 	public void resume()
 	{
 		lock.unLock();
