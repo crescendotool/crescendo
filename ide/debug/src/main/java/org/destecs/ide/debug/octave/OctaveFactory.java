@@ -165,12 +165,20 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 		sb.append("function plotrun (runx) \n");
 		sb.append("figure(1);\n");
+		sb.append("if (length(runx.de.data) != 0 && length(runx.ct.data)!=0)\n");
 		sb.append("subplot(2,1,1);\n");
+		sb.append("endif;");
+		sb.append("if (length(runx.ct.data) != 0) \n");
 		sb.append("plotdata(strcat(\"20-sim-\",runx.name), runx.ct.header, runx.ct.data);\n");
+		sb.append("endif;");
 		sb.append("\n");
 		// sb.append("figure(2);\n");
+		sb.append("if (length(runx.de.data) != 0 && length(runx.ct.data)!=0)\n");
 		sb.append("subplot(2,1,2);\n");
+		sb.append("endif;");
+		sb.append("if (length(runx.de.data) != 0) \n");
 		sb.append("plotdata(strcat(\"VDM-\",runx.name), runx.de.header, runx.de.data);\n");
+		sb.append("endif;");
 		sb.append("endfunction\n");
 		return sb.toString();
 	}
@@ -186,8 +194,11 @@ public class OctaveFactory
 		sb.append("#Get the first line in the file (the header)\n");
 		sb.append("vstr = fgetl (vfid);\n");
 		sb.append("\n");
+		sb.append("if(vstr == -1) header = cellstr([\"time\";]);\n");
+		sb.append("else\n");
 		sb.append("#split the string and remove all the spaces\n");
 		sb.append("header = strtrim( strsplit(vstr,\",\",true) );\n");
+		sb.append("endif;\n");
 		sb.append("fclose(vfid);\n");
 		sb.append("endfunction\n");
 		return sb.toString();
@@ -241,6 +252,8 @@ public class OctaveFactory
 		sb.append("	    #number of runs\n");
 		sb.append("	    runs = data.runs;\n");
 		sb.append("	    runCount = length(runs);\n");
+		sb.append("\tfigNum = 1;\n");
+		sb.append("\tplotPrFig = 3;\n");
 		sb.append("\n");
 		sb.append("	    #\n");
 		sb.append("	    #plot the ct data\n");
@@ -248,13 +261,14 @@ public class OctaveFactory
 		sb.append("	    ct_header = runs{1}.ct.header;\n");
 		sb.append("	    ct_curveCount = length(ct_header) - 1;\n");
 		sb.append("\n");
+		sb.append("\tif (ct_curveCount>0)\n");
 		sb.append("	    #create new figure\n");
-		sb.append("	    figure(1, \"name\", [\"ct-\" data.name] );\n");
+		sb.append("	    figure(figNum, \"name\", [\"ct-\" data.name] );\n");
 		sb.append("\n");
 		sb.append("	    plotindex = 1;\n");
 		sb.append("	    for i=1:ct_curveCount\n");
 		sb.append("\n");
-		sb.append("	        subplot( ct_curveCount , 1, plotindex);\n");
+		sb.append("	        subplot( plotPrFig , 1, plotindex);\n");
 		sb.append("	        hold on;\n");
 		sb.append("\n");
 		sb.append("	        for j=1:runCount\n");
@@ -268,22 +282,32 @@ public class OctaveFactory
 		sb.append("			legend ('right');legend('boxon');\n");
 		sb.append("	        legend( addnumtolegend(runCount), \"location\", 'rightoutside' );\n");
 		sb.append("	        plotindex = plotindex + 1;\n");
+		
+		sb.append("\tif(plotindex ==plotPrFig+1)\n");
+		sb.append("\tfigNum = figNum+1;\n");
+		sb.append("\tfigure(figNum, \"name\", [\"ct-\" data.name] );\n");
+		sb.append("\tplotindex=1;\n");
+		sb.append("\tendif;");
+		
 		sb.append("	    end\n");
 		sb.append("	    xlabel(\"time {s}\");\n");
+		sb.append("\tendif;\n");
 		sb.append("\n");
 		sb.append("	    #\n");
+		sb.append("\tfigNum = figNum+1;\n");
 		sb.append("	    #plot the de data\n");
 		sb.append("	    #\n");
 		sb.append("	    de_header = runs{1}.de.header;\n");
 		sb.append("	    de_curveCount = length(de_header) - 1;\n");
 		sb.append("\n");
+		sb.append("\tif (de_curveCount>0)\n");
 		sb.append("	    #create new figure\n");
-		sb.append("	    figure(2, \"name\", [\"de-\" data.name] );\n");
+		sb.append("	    figure(figNum, \"name\", [\"de-\" data.name] );\n");
 		sb.append("\n");
 		sb.append("	    plotindex = 1;\n");
-		sb.append("	    for i=1:ct_curveCount\n");
+		sb.append("	    for i=1:de_curveCount\n");
 		sb.append("\n");
-		sb.append("	        subplot( de_curveCount , 1, plotindex);\n");
+		sb.append("	        subplot( plotPrFig , 1, plotindex);\n");
 		sb.append("	        hold on;\n");
 		sb.append("\n");
 		sb.append("	        for j=1:runCount\n");
@@ -297,8 +321,16 @@ public class OctaveFactory
 		sb.append("			legend ('right');legend('boxon');\n");
 		sb.append("     	legend( addnumtolegend(runCount) , \"location\", 'rightoutside');\n");
 		sb.append("    		plotindex = plotindex + 1;\n");
+		
+		sb.append("\tif(plotindex ==plotPrFig+1)\n");
+		sb.append("\tfigNum = figNum+1;\n");
+		sb.append("\tfigure(figNum, \"name\", [\"de-\" data.name] );\n");
+		sb.append("\tplotindex=1;\n");
+		sb.append("\tendif;");
+		
 		sb.append("		end\n");
 		sb.append("		xlabel(\"time {s}\");\n");
+		sb.append("\tendif;\n");
 		sb.append("   \n");
 		sb.append("endfunction\n");
 		return sb.toString();
