@@ -196,6 +196,7 @@ public class OctaveFactory
 		sb.append("\n");
 		sb.append("if(vstr == -1) header = cellstr([\"time\";]);\n");
 		sb.append("else\n");
+		sb.append("vstr = strrep(vstr,\"\\\"\",\"\");\n");
 		sb.append("#split the string and remove all the spaces\n");
 		sb.append("header = strtrim( strsplit(vstr,\",\",true) );\n");
 		sb.append("endif;\n");
@@ -212,12 +213,21 @@ public class OctaveFactory
 		sb.append("curveCount = length(header);\n");
 		sb.append("\n");
 		sb.append("l = header;\n");
-		sb.append("l(1)=[];\n");
 		sb.append("\n");
 		sb.append("#plot the data\n");
-		sb.append("plot( data(:,1), data(:, 2:curveCount ) );\n");
+		
+		sb.append("	    timeCol = 1;\n");
+		sb.append("	    for i=1:curveCount\n");
+		sb.append("	    	    if(strcmpi(header{1,i},\"time\")==1)\n");
+		sb.append("	    	    	    timeCol = i;\n");
+		sb.append("	    	    endif;\n");
+		sb.append("	    end;\n");
+		sb.append("	    tmpData = data;\n");
+		sb.append("	    tmpData(:,timeCol)=[];#Remove TimeCol\n");
+		sb.append("	    l(timeCol)=[];#Remove TimeCol\n");
+		sb.append("plot( data(:,timeCol), tmpData(:, 1:curveCount-1 ) );\n");
 		sb.append("title(titleStr);\n");
-		sb.append("xlabel( header{1} );\n");
+		sb.append("xlabel( header{timeCol} );\n");
 		// sb.append("ylabel( (strvcat(header))(2:curveCount) );\n");
 		sb.append("legend(strvcat(l));\n");
 		sb.append("\n");
@@ -266,13 +276,24 @@ public class OctaveFactory
 		sb.append("	    figure(figNum, \"name\", [\"ct-\" data.name] );\n");
 		sb.append("\n");
 		sb.append("	    plotindex = 1;\n");
+		sb.append("	    timeCol = 1;\n");
+		sb.append("	    for i=1:ct_curveCount\n");
+		sb.append("	    	    if(strcmpi(ct_header{1+i},\"time\")==1)\n");
+		sb.append("	    	    	    timeCol = i;\n");
+		sb.append("	    	    endif;\n");
+		sb.append("	    end;\n");
 		sb.append("	    for i=1:ct_curveCount\n");
 		sb.append("\n");
+		
+		sb.append("	    if(strcmpi(ct_header{1+i},\"time\")==1)\n");
+		sb.append("	    	    continue;\n");
+		sb.append("	    endif;\n");
+		
 		sb.append("	        subplot( plotPrFig , 1, plotindex);\n");
 		sb.append("	        hold on;\n");
 		sb.append("\n");
 		sb.append("	        for j=1:runCount\n");
-		sb.append("	            ct_time = runs{j}.ct.data(:,1);\n");
+		sb.append("	            ct_time = runs{j}.ct.data(:,timeCol);\n");
 		sb.append("	            ct_data = runs{j}.ct.data(:,1+i);\n");
 		sb.append("\n");
 		sb.append("	            plot( ct_time, ct_data, int2str(j) );\n");
@@ -283,7 +304,8 @@ public class OctaveFactory
 		sb.append("	        legend( addnumtolegend(runCount), \"location\", 'rightoutside' );\n");
 		sb.append("	        plotindex = plotindex + 1;\n");
 		
-		sb.append("\tif(plotindex ==plotPrFig+1)\n");
+		sb.append("\tif(plotindex ==plotPrFig+1 && i<ct_curveCount)\n");
+		sb.append("		xlabel(\"time {s}\");\n");
 		sb.append("\tfigNum = figNum+1;\n");
 		sb.append("\tfigure(figNum, \"name\", [\"ct-\" data.name] );\n");
 		sb.append("\tplotindex=1;\n");
@@ -305,13 +327,22 @@ public class OctaveFactory
 		sb.append("	    figure(figNum, \"name\", [\"de-\" data.name] );\n");
 		sb.append("\n");
 		sb.append("	    plotindex = 1;\n");
+		sb.append("	    timeCol = 1;\n");
+		sb.append("	    for i=1:ct_curveCount\n");
+		sb.append("	    	    if(strcmpi(de_header{1+i},\"time\")==1)\n");
+		sb.append("	    	    	    timeCol = i\n");
+		sb.append("	    	    endif;\n");
+		sb.append("	    end;\n");
 		sb.append("	    for i=1:de_curveCount\n");
 		sb.append("\n");
+		sb.append("	    if(strcmpi(de_header{1+i},\"time\")==1)\n");
+		sb.append("	    	    continue;\n");
+		sb.append("	    endif;\n");
 		sb.append("	        subplot( plotPrFig , 1, plotindex);\n");
 		sb.append("	        hold on;\n");
 		sb.append("\n");
 		sb.append("	        for j=1:runCount\n");
-		sb.append("				de_time = runs{j}.de.data(:,1);\n");
+		sb.append("				de_time = runs{j}.de.data(:,timeCol);\n");
 		sb.append("         	de_data = runs{j}.de.data(:,1+i);\n");
 		sb.append("\n");
 		sb.append("        		stairs( de_time, de_data, int2str(j) );\n");
@@ -322,8 +353,9 @@ public class OctaveFactory
 		sb.append("     	legend( addnumtolegend(runCount) , \"location\", 'rightoutside');\n");
 		sb.append("    		plotindex = plotindex + 1;\n");
 		
-		sb.append("\tif(plotindex ==plotPrFig+1)\n");
+		sb.append("\tif(plotindex ==plotPrFig+1 && i<de_curveCount)\n");
 		sb.append("\tfigNum = figNum+1;\n");
+		sb.append("		xlabel(\"time {s}\");\n");
 		sb.append("\tfigure(figNum, \"name\", [\"de-\" data.name] );\n");
 		sb.append("\tplotindex=1;\n");
 		sb.append("\tendif;");
