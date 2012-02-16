@@ -67,19 +67,30 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
 
+		sb.append("if dir(\""+deFile+"\").bytes == 0\n");
+		sb.append("\tde_header"+ index +" = [];\n");
+		sb.append("\tde_data"+ index +" = [];\n");
+		sb.append("else\n");
 		sb.append("de_header" + index + " = "
 				+ (deFile == null ? "\"\"" : "parseheader(\"" + deFile + "\")")
 				+ ";\n");
 		sb.append("de_data" + index + " = "
 				+ (deFile == null ? "\"\"" : "csvread(\"" + deFile + "\")")
 				+ ";\n");
+		sb.append("endif;\n");
 
+		
+		sb.append("if dir(\""+ctFile+"\").bytes == 0\n");
+		sb.append("\tct_header"+ index +" = [];\n");
+		sb.append("\tct_data"+ index +" = [];\n");
+		sb.append("else\n");
 		sb.append("ct_header" + index + " = "
 				+ (ctFile == null ? "\"\"" : "parseheader(\"" + ctFile + "\")")
 				+ ";\n");
 		sb.append("ct_data" + index + " = "
 				+ (ctFile == null ? "\"\"" : "csvread(\"" + ctFile + "\")")
 				+ ";\n");
+		sb.append("endif;\n");
 
 		sb.append("\n");
 		sb.append(variableName + " = struct(\"name\", \""
@@ -296,12 +307,12 @@ public class OctaveFactory
 		sb.append("	            ct_time = runs{j}.ct.data(:,timeCol);\n");
 		sb.append("	            ct_data = runs{j}.ct.data(:,1+i);\n");
 		sb.append("\n");
-		sb.append("	            plot( ct_time, ct_data, int2str(j) );\n");
+		sb.append("	            plot( ct_time, ct_data );#, int2str(j)\n");
 		sb.append("	        end\n");
 		sb.append("\n");
 		sb.append("	        ylabel( ct_header{1+i} );\n");
 		sb.append("			legend ('right');legend('boxon');\n");
-		sb.append("	        legend( addnumtolegend(runCount), \"location\", 'rightoutside' );\n");
+		sb.append("	        legend( addnumtolegend(runCount), \"location\", 'eastoutside' );\n");
 		sb.append("	        plotindex = plotindex + 1;\n");
 		
 		sb.append("\tif(plotindex ==plotPrFig+1 && i<ct_curveCount)\n");
@@ -345,12 +356,12 @@ public class OctaveFactory
 		sb.append("				de_time = runs{j}.de.data(:,timeCol);\n");
 		sb.append("         	de_data = runs{j}.de.data(:,1+i);\n");
 		sb.append("\n");
-		sb.append("        		stairs( de_time, de_data, int2str(j) );\n");
+		sb.append("        		stairs( de_time, de_data );#, int2str(j)\n");
 		sb.append("     	end\n");
 		sb.append("\n");
 		sb.append("     	ylabel( de_header{1+i} );\n");
 		sb.append("			legend ('right');legend('boxon');\n");
-		sb.append("     	legend( addnumtolegend(runCount) , \"location\", 'rightoutside');\n");
+		sb.append("     	legend( addnumtolegend(runCount) , \"location\", 'eastoutside');\n");
 		sb.append("    		plotindex = plotindex + 1;\n");
 		
 		sb.append("\tif(plotindex ==plotPrFig+1 && i<de_curveCount)\n");
