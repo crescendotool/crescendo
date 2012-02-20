@@ -25,6 +25,7 @@ import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
 
 public class OctaveFactory
 {
+	static int destecsPlotResolution = 100;
 
 	public static String createResultScript(String name, File deCsvFile,
 			File ctCsvFile, boolean autoShow)
@@ -32,11 +33,15 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("## Author: Kenneth Lausdahl\n");
-		sb.append("1;\n");
+		sb.append("1;\n\n");
+
+		sb.append("global destecsPlotResolution = " + destecsPlotResolution
+				+ ";\n\n\n");
 
 		sb.append(getPlotDataFunction() + "\n\n\n");
 		sb.append(getCsvParseHeaderFunction() + "\n\n\n");
 		sb.append(getPlotLastFunction() + "\n\n\n");
+		sb.append(getReduceCsv() + "\n\n\n");
 
 		sb.append("\n\n");
 		sb.append("function result = readResult ()\n");
@@ -67,9 +72,9 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
 
-		sb.append("if dir(\""+deFile+"\").bytes == 0\n");
-		sb.append("\tde_header"+ index +" = [];\n");
-		sb.append("\tde_data"+ index +" = [];\n");
+		sb.append("if dir(\"" + deFile + "\").bytes == 0\n");
+		sb.append("\tde_header" + index + " = [];\n");
+		sb.append("\tde_data" + index + " = [];\n");
 		sb.append("else\n");
 		sb.append("de_header" + index + " = "
 				+ (deFile == null ? "\"\"" : "parseheader(\"" + deFile + "\")")
@@ -79,10 +84,9 @@ public class OctaveFactory
 				+ ";\n");
 		sb.append("endif;\n");
 
-		
-		sb.append("if dir(\""+ctFile+"\").bytes == 0\n");
-		sb.append("\tct_header"+ index +" = [];\n");
-		sb.append("\tct_data"+ index +" = [];\n");
+		sb.append("if dir(\"" + ctFile + "\").bytes == 0\n");
+		sb.append("\tct_header" + index + " = [];\n");
+		sb.append("\tct_data" + index + " = [];\n");
 		sb.append("else\n");
 		sb.append("ct_header" + index + " = "
 				+ (ctFile == null ? "\"\"" : "parseheader(\"" + ctFile + "\")")
@@ -96,11 +100,15 @@ public class OctaveFactory
 		sb.append(variableName + " = struct(\"name\", \""
 				+ name.replace("_", "-") + "\",\n");
 		sb.append("\"de\",struct(\"header\",{de_header" + index
-				+ "},\"data\",{de_data" + index + "}),\n");
+				+ "},\"data\",{reduceCsv(de_data" + index + ")}),\n");
 		sb.append("\"ct\",struct(\"header\",{ct_header" + index
-				+ "},\"data\",{ct_data" + index + "})\n");
+				+ "},\"data\",{reduceCsv(ct_data" + index + ")})\n");
 		sb.append(");\n");
 		sb.append("\n");
+		sb.append("\n");
+		sb.append("#Clean up\n");
+		sb.append("clear de_data" + index + ";\n");
+		sb.append("clear ct_data" + index + ";\n");
 		return sb.toString();
 	}
 
@@ -110,7 +118,10 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("## Author: Kenneth Lausdahl\n");
-		sb.append("1;\n");
+		sb.append("1;\n\n");
+
+		sb.append("global destecsPlotResolution = " + destecsPlotResolution
+				+ ";\n\n\n");
 
 		sb.append(getCsvParseHeaderFunction());
 		sb.append("\n");
@@ -121,6 +132,7 @@ public class OctaveFactory
 		sb.append(getPlotMultipleRuns());
 		sb.append("\n");
 		sb.append("\n");
+		sb.append(getReduceCsv() + "\n\n\n");
 		sb.append("function result = readAcaResult ()\n");
 
 		sb.append("\n");
@@ -165,9 +177,10 @@ public class OctaveFactory
 		{
 			sb.append("#Comment the lines below to disable auto plotting\n");
 			sb.append("plotmultipleruns(lastaca);\n");
+			sb.append("whos -all;\n");
 			sb.append("pause;\n");
 		}
-		
+
 		return sb.toString();
 	}
 
@@ -226,7 +239,7 @@ public class OctaveFactory
 		sb.append("l = header;\n");
 		sb.append("\n");
 		sb.append("#plot the data\n");
-		
+
 		sb.append("	    timeCol = 1;\n");
 		sb.append("	    for i=1:curveCount\n");
 		sb.append("	    	    if(strcmpi(header{1,i},\"time\")==1)\n");
@@ -295,16 +308,16 @@ public class OctaveFactory
 		sb.append("	    end;\n");
 		sb.append("	    for i=1:ct_curveCount\n");
 		sb.append("\n");
-		
+
 		sb.append("	    if(strcmpi(ct_header{1+i},\"time\")==1)\n");
 		sb.append("	    	    continue;\n");
 		sb.append("	    endif;\n");
-		
+
 		sb.append("	        subplot( plotPrFig , 1, plotindex);\n");
 		sb.append("	        hold on;\n");
 		sb.append("\n");
 		sb.append("	        for j=1:runCount\n");
-		sb.append("	            ct_time = runs{j}.ct.data(:,timeCol);\n");
+		sb.append("	            ct_time = runs{j}.ct.data(:,timeCol+1);\n");
 		sb.append("	            ct_data = runs{j}.ct.data(:,1+i);\n");
 		sb.append("\n");
 		sb.append("	            plot( ct_time, ct_data );#, int2str(j)\n");
@@ -314,14 +327,14 @@ public class OctaveFactory
 		sb.append("			legend ('right');legend('boxon');\n");
 		sb.append("	        legend( addnumtolegend(runCount), \"location\", 'eastoutside' );\n");
 		sb.append("	        plotindex = plotindex + 1;\n");
-		
+
 		sb.append("\tif(plotindex ==plotPrFig+1 && i<ct_curveCount)\n");
 		sb.append("		xlabel(\"time {s}\");\n");
 		sb.append("\tfigNum = figNum+1;\n");
 		sb.append("\tfigure(figNum, \"name\", [\"ct-\" data.name] );\n");
 		sb.append("\tplotindex=1;\n");
 		sb.append("\tendif;");
-		
+
 		sb.append("	    end\n");
 		sb.append("	    xlabel(\"time {s}\");\n");
 		sb.append("\tendif;\n");
@@ -353,7 +366,7 @@ public class OctaveFactory
 		sb.append("	        hold on;\n");
 		sb.append("\n");
 		sb.append("	        for j=1:runCount\n");
-		sb.append("				de_time = runs{j}.de.data(:,timeCol);\n");
+		sb.append("				de_time = runs{j}.de.data(:,timeCol+1);\n");
 		sb.append("         	de_data = runs{j}.de.data(:,1+i);\n");
 		sb.append("\n");
 		sb.append("        		stairs( de_time, de_data );#, int2str(j)\n");
@@ -363,18 +376,28 @@ public class OctaveFactory
 		sb.append("			legend ('right');legend('boxon');\n");
 		sb.append("     	legend( addnumtolegend(runCount) , \"location\", 'eastoutside');\n");
 		sb.append("    		plotindex = plotindex + 1;\n");
-		
+
 		sb.append("\tif(plotindex ==plotPrFig+1 && i<de_curveCount)\n");
 		sb.append("\tfigNum = figNum+1;\n");
 		sb.append("		xlabel(\"time {s}\");\n");
 		sb.append("\tfigure(figNum, \"name\", [\"de-\" data.name] );\n");
 		sb.append("\tplotindex=1;\n");
 		sb.append("\tendif;");
-		
+
 		sb.append("		end\n");
 		sb.append("		xlabel(\"time {s}\");\n");
 		sb.append("\tendif;\n");
 		sb.append("   \n");
+		sb.append("endfunction\n");
+		return sb.toString();
+	}
+
+	private static String getReduceCsv()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("function res = reduceCsv (data)\n");
+		sb.append("\tglobal destecsPlotResolution;\n");
+		sb.append("\tres= data(1:ceil (rows(data)/10):end,:) ;\n");
 		sb.append("endfunction\n");
 		return sb.toString();
 	}
