@@ -2,15 +2,15 @@
   <parent>
     <groupId>org.destecs</groupId>
     <artifactId>ide</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.destecs.ide</groupId>
   <artifactId>org.destecs.ide.libraries</artifactId>
   <name>org.destecs.ide.libraries</name>
-  <version>1.0.0</version>
+  <version>1.2.0</version>
  
-  <packaging>source-plugin</packaging>
+
 
 
 </project>

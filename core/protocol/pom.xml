@@ -2,12 +2,12 @@
   <parent>
    	<groupId>org.destecs</groupId>
   		<artifactId>core</artifactId>
-    	<version>1.0.0</version>
+    	<version>1.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.destecs.core</groupId>
   <artifactId>protocol</artifactId>
-  <version>1.0.0</version>
+  <version>1.2.0</version>
   <name>The Co-Simulation protocol</name>
   <build>
   	<plugins>

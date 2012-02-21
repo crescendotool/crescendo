@@ -2,12 +2,12 @@
   <parent>
 		<groupId>org.destecs.tools</groupId>
   		<artifactId>tool</artifactId>
-    	<version>1.0.0</version>
+    	<version>1.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.destecs.tools</groupId>
   <artifactId>jprotocolgenerator</artifactId>
-  <version>1.0.2</version>
+  <version>1.2.0</version>
   <packaging>maven-plugin</packaging>
   <name>Java Co-Simulation protocol generator</name>
 

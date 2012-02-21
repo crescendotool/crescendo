@@ -46,21 +46,22 @@ public abstract class BaseSimulationControlAction extends Action
 	/**
 	 * Returns the image descriptor with the given relative path.
 	 */
-	@SuppressWarnings("deprecation")
+//	@SuppressWarnings("deprecation")
 	protected ImageDescriptor getImageDescriptor(String relativePath)
-	{
-		String iconPath = "icons/";
-		try
-		{
-			Activator plugin = Activator.getDefault();
-			URL installURL = plugin.getDescriptor().getInstallURL();
-			URL url = new URL(installURL, iconPath + relativePath);
-			return ImageDescriptor.createFromURL(url);
-		} catch (MalformedURLException e)
-		{
-			// should not happen
-			return ImageDescriptor.getMissingImageDescriptor();
-		}
+	{//FIXME image is missing and this gives a null pointer
+//		String iconPath = "icons/";
+//		try
+//		{
+//			Activator plugin = Activator.getDefault();
+//			URL installURL = plugin.getDescriptor().getInstallURL();
+//			URL url = new URL(installURL, iconPath + relativePath);
+//			return ImageDescriptor.createFromURL(url);
+//		} catch (MalformedURLException e)
+//		{
+//			// should not happen
+//			return ImageDescriptor.getMissingImageDescriptor();
+//		}
+		return null;
 	}
 
 	protected final List<ISimulationControlProxy> proxy = new Vector<ISimulationControlProxy>();

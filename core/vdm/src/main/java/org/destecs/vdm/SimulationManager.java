@@ -71,6 +71,7 @@ import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.types.Type;
+import org.overturetool.vdmj.types.UnresolvedType;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
@@ -333,7 +334,7 @@ public class SimulationManager extends BasicSimulationManager
 					for (Definition d : def.definitions)
 					{
 						Type t = d.getType();
-
+						
 						if (t instanceof ClassType)
 						{
 							ClassType ct = (ClassType) t;
