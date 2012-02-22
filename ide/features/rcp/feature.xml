@@ -61,15 +61,12 @@
          version="0.0.0"
          unpack="false"/>
 
-  
    <plugin
          id="org.destecs.ide.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   
 
    <plugin
          id="org.destecs.ide.ui"
@@ -82,8 +79,7 @@
          id="org.destecs.ide.debug"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.destecs.ide.libraries"
