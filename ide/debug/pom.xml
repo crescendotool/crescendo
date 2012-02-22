@@ -34,8 +34,8 @@
   		<version>1.2.0</version>
   	</dependency>
   	<dependency>
-        <groupId>org.destecs.ide</groupId>
-        <artifactId>org.destecs.ide.protocol</artifactId>
+        <groupId>org.destecs.core</groupId>
+        <artifactId>org.destecs.core.protocol</artifactId>
         <version>1.2.0</version>
     </dependency>
   	<dependency>
