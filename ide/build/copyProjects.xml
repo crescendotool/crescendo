@@ -53,7 +53,7 @@
 </copy>
 
 	<!-- generated -->
-<copy todir="${buildDirectory}/plugins/destecs.generated.simulationengine">
+<!--copy todir="${buildDirectory}/plugins/destecs.generated.simulationengine">
 	<fileset dir="../generated/simulationengine">
 		<exclude name="**/target/" />
 	</fileset>
@@ -63,7 +63,7 @@
 	<fileset dir="../generated/vdm">
 		<exclude name="**/target/" />
 	</fileset>
-</copy>
+</copy-->
 	<!-- IDE -->
 
 

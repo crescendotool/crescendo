@@ -225,7 +225,7 @@ Plugins
 	</fileset>
 </copy>
 
-<copy todir="${buildDirectory}/plugins/overture.generated.showtrace">
+<!--copy todir="${buildDirectory}/plugins/overture.generated.showtrace">
 	<fileset dir="${OvertureSourceIdeBase}/generated/showtrace">
 		<exclude name="**/target/" />
 	</fileset>
@@ -247,7 +247,7 @@ Plugins
 	<fileset dir="${OvertureSourceIdeBase}/generated/vdmj">
 		<exclude name="**/target/" />
 	</fileset>
-</copy>
+</copy-->
 
 	<!--
 		copy todir="${buildDirectory}"> <fileset
