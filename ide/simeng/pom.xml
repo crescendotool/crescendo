@@ -23,7 +23,18 @@
   		<artifactId>org.destecs.ide.core</artifactId>
   		<version>1.2.0</version>
   	</dependency>
+  	<dependency>
+        <groupId>org.destecs.core.xmlrpcextensions</groupId>
+        <artifactId>xmlrpcbaseextension</artifactId>
+        <version>1.2.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.destecs.core.xmlrpcextensions</groupId>
+        <artifactId>xmlrpcserverextension</artifactId>
+        <version>1.2.0</version>
+    </dependency>
   </dependencies>
+  
 
 
 
