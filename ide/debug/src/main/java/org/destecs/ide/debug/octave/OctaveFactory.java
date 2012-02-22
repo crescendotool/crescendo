@@ -72,7 +72,7 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
 
-		sb.append("if dir(\"" + deFile + "\").bytes == 0\n");
+		sb.append("if exist(\"" + deFile + "\",\"file\") == 0\n");
 		sb.append("\tde_header" + index + " = [];\n");
 		sb.append("\tde_data" + index + " = [];\n");
 		sb.append("else\n");
@@ -84,7 +84,7 @@ public class OctaveFactory
 				+ ";\n");
 		sb.append("endif;\n");
 
-		sb.append("if dir(\"" + ctFile + "\").bytes == 0\n");
+		sb.append("if exist(\"" + ctFile + "\",\"file\") == 0\n");
 		sb.append("\tct_header" + index + " = [];\n");
 		sb.append("\tct_data" + index + " = [];\n");
 		sb.append("else\n");
@@ -320,7 +320,7 @@ public class OctaveFactory
 		sb.append("	            ct_time = runs{j}.ct.data(:,timeCol+1);\n");
 		sb.append("	            ct_data = runs{j}.ct.data(:,1+i);\n");
 		sb.append("\n");
-		sb.append("	            plot( ct_time, ct_data );#, int2str(j)\n");
+		sb.append("	            plot( ct_time, ct_data, int2str(j));\n");
 		sb.append("	        end\n");
 		sb.append("\n");
 		sb.append("	        ylabel( ct_header{1+i} );\n");
@@ -369,7 +369,7 @@ public class OctaveFactory
 		sb.append("				de_time = runs{j}.de.data(:,timeCol+1);\n");
 		sb.append("         	de_data = runs{j}.de.data(:,1+i);\n");
 		sb.append("\n");
-		sb.append("        		stairs( de_time, de_data );#, int2str(j)\n");
+		sb.append("        		stairs( de_time, de_data, int2str(j));\n");
 		sb.append("     	end\n");
 		sb.append("\n");
 		sb.append("     	ylabel( de_header{1+i} );\n");
