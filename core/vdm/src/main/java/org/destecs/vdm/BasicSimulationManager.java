@@ -31,6 +31,7 @@ import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.lex.LexLocation;
+import org.overturetool.vdmj.runtime.ClassInterpreter;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ThreadState;
 import org.overturetool.vdmj.runtime.ValueException;
@@ -105,6 +106,8 @@ public abstract class BasicSimulationManager
 
 	ArrayBlockingQueue<ValueUpdateRequest> updateValueQueueRequest = new ArrayBlockingQueue<ValueUpdateRequest>(1);
 
+	protected ClassInterpreter interpreter;
+	
 	public static class ValueUpdateRequest
 	{
 		public final Value value;
