@@ -21,7 +21,7 @@ SetCompress off
 !define TARBALL "combined.tar"
 
 !define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.1.3.8"
+!define SIM20_VERSION "4.2.4"
 !define SIM20_EXE "${SIM20_NAME}${SIM20_VERSION}.exe"
 
 !define DESTECSIDE "DestecsIde-"
@@ -235,9 +235,9 @@ Function 20simVersionTest
 
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Controllab Products B.V.\20-sim 4.1\" "Version"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Controllab Products B.V.\20-sim 4.2\" "Version"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Controllab Products B.V.\20-sim 4.1\" "Version"
+    ReadRegStr $0 HKLM "Software\Controllab Products B.V.\20-sim 4.2\" "Version"
 ${EndIf}
 
 
@@ -268,9 +268,10 @@ FunctionEnd
 ; Install 20-sim function
 Function 20simInstall
   ; Print to detail log
-  DetailPrint "Installing 20-sim"  
+  DetailPrint "Installing 20-sim (Silent mode)"  
   ;Executing the installer
-  ExecWait  '"$INSTDIR\${SIM20_EXE}"'
+  ExecWait  '"$INSTDIR\${SIM20_EXE} /S"'
+  DetailPrint "Done installing 20-sim (Silent mode)"  
   
   ; Update the Windows Registry
   ;Call updateRegistry
@@ -283,6 +284,6 @@ FunctionEnd
 
 
 Function writeRegistryKey
-WriteRegDWORD HKCU "Software\20-sim\version 4.1\tools\general" "xmlrpc" 1
+WriteRegDWORD HKCU "Software\20-sim\version 4.2\tools\general" "xmlrpc" 1
 FunctionEnd
 
