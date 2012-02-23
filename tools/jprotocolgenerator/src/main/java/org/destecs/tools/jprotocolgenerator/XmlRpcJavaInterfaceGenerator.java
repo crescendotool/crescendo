@@ -22,8 +22,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -131,9 +133,12 @@ public class XmlRpcJavaInterfaceGenerator
 			sb.append("\nimport " + Map.class.getName() + ";");
 			sb.append("\nimport " + List.class.getName() + ";");
 			sb.append("\n");
-			if (interfaceName == null)
+			if (interfaceName == null && outputFileName!=null)
 			{
 				interfaceName = "I" + outputFileName;
+			}else
+			{
+				interfaceName = "ICoSimProtocol";
 			}
 
 			interfaceNode.setName(interfaceName);
@@ -184,13 +189,14 @@ public class XmlRpcJavaInterfaceGenerator
 
 	private static List<IInterface> unpackGroups(IInterface interfaceNode)
 	{
-		List<String> groups = new Vector<String>();
+		Set<String> groups = new HashSet<String>();
 		for (Method m : interfaceNode.definitions)
 		{
 			if (m.group != null && !groups.contains(m.group)
 					&& m.group.trim().length() > 0)
 			{
 				groups.add(m.group);
+				break;
 			}
 		}
 
