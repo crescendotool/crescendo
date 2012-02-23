@@ -21,8 +21,9 @@ SetCompress off
 !define TARBALL "combined.tar"
 
 !define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.2.4"
-!define SIM20_EXE "${SIM20_NAME}${SIM20_VERSION}.exe"
+!define SIM20_VERSION "4.2.1004.2391"
+!define SIM20_PLATFORM "win32"
+!define SIM20_EXE "${SIM20_NAME}-${SIM20_VERSION}-${SIM23_PLATFORM}.exe"
 
 !define DESTECSIDE "DestecsIde-"
 !define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}"
