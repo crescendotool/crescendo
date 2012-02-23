@@ -21,6 +21,7 @@ package org.destecs.ide.debug.launching.ui;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 						ctUrl));
 
 				protocol.load(ctFile.getAbsolutePath());
-				List<Map<String, Object>> getst = protocol.queryToolSettings();
+				List<Map<String, Object>> getst = protocol.querySettings(new Vector<String>(Arrays.asList(new String[]{})));
 				settingItems.clear();
 				for (Map<String, Object> elem : getst)
 				{

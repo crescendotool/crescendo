@@ -29,6 +29,7 @@ import org.destecs.core.scenario.Action;
 import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.protocol.ProxyICoSimProtocol;
+import org.destecs.protocol.structs.SetParametersparametersStructParam;
 import org.destecs.protocol.structs.StepinputsStructParam;
 
 public class ScenarioSimulationEngine extends SimulationEngine
@@ -65,7 +66,12 @@ public class ScenarioSimulationEngine extends SimulationEngine
 						engineInfo(Simulator.CT, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.CT, nextTime, "setParameter");
-						ctProxy.setParameter(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+//						ctProxy.setParameter(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+					
+						SetParametersparametersStructParam parm = new SetParametersparametersStructParam(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+						List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
+						list.add(parm);
+						ctProxy.setParameters(list);
 					} catch (Exception e)
 					{
 						abort(Simulator.CT, "setParameter("
@@ -79,7 +85,12 @@ public class ScenarioSimulationEngine extends SimulationEngine
 						engineInfo(Simulator.DE, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.DE, nextTime, "setParameter");
-						dtProxy.setParameter(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+//						dtProxy.setParameter(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+						
+						SetParametersparametersStructParam parm = new SetParametersparametersStructParam(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+						List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
+						list.add(parm);
+						dtProxy.setParameters(list);
 					} catch (Exception e)
 					{
 						abort(Simulator.DE, "setParameter("

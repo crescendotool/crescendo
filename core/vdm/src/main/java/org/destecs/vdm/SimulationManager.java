@@ -35,7 +35,7 @@ import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
-import org.destecs.protocol.structs.GetDesignParameterStruct;
+import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
@@ -327,7 +327,8 @@ public class SimulationManager extends BasicSimulationManager
 
 			boolean hasScriptCall = false;
 			int cpus = 0;
-			for (ClassDefinition def : controller.getInterpreter().getClasses())
+			this.interpreter = controller.getInterpreter();
+			for (ClassDefinition def : interpreter.getClasses())
 			{
 				if (def instanceof SystemDefinition)
 				{
@@ -405,16 +406,16 @@ public class SimulationManager extends BasicSimulationManager
 		final List<File> files = getFiles();
 
 		// init
-		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
-		{
-			this.status = CoSimStatusEnum.INITIALIZED;
-		} else
-		{
-			this.status = CoSimStatusEnum.NOT_INITIALIZED;
-		}
+//		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
+//		{
+//			this.status = CoSimStatusEnum.INITIALIZED;
+//		} else
+//		{
+//			this.status = CoSimStatusEnum.NOT_INITIALIZED;
+//		}
 
-		if (this.status == CoSimStatusEnum.INITIALIZED)
-		{
+//		if (this.status == CoSimStatusEnum.INITIALIZED)
+//		{
 			// start
 			if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
 			{
@@ -423,16 +424,21 @@ public class SimulationManager extends BasicSimulationManager
 			} else
 			{
 				this.status = CoSimStatusEnum.NOT_INITIALIZED;
-				return false;
+//				return false;
+				throw new RemoteSimulationException(// "Model must be "
+						// + CoSimStatusEnum.INITIALIZED
+						// + " before it can be started. " +
+						"Status = " + this.status + ". Internal error: "
+								+ controller.exception.getMessage());
 			}
-		} else
-		{
-			throw new RemoteSimulationException(// "Model must be "
-			// + CoSimStatusEnum.INITIALIZED
-			// + " before it can be started. " +
-			"Status = " + this.status + ". Internal error: "
-					+ controller.exception.getMessage());
-		}
+//		} else
+//		{
+//			throw new RemoteSimulationException(// "Model must be "
+//			// + CoSimStatusEnum.INITIALIZED
+//			// + " before it can be started. " +
+//			"Status = " + this.status + ". Internal error: "
+//					+ controller.exception.getMessage());
+//		}
 
 	}
 
@@ -603,6 +609,7 @@ public class SimulationManager extends BasicSimulationManager
 									valDefField.set(vDef, newReal);
 									found = true;
 								}
+								break;
 							}
 						}
 					}
@@ -631,7 +638,7 @@ public class SimulationManager extends BasicSimulationManager
 		return true;
 	}
 
-	public GetDesignParameterStruct getDesignParameter(String parameterName)
+	public GetDesignParametersStructdesignParametersStruct getDesignParameter(String parameterName)
 			throws RemoteSimulationException
 	{
 		try
@@ -671,7 +678,7 @@ public class SimulationManager extends BasicSimulationManager
 								value.add(token.value);
 								List<Integer> size = new Vector<Integer>();
 								size.add(1);
-								return new GetDesignParameterStruct(value, size);
+								return new GetDesignParametersStructdesignParametersStruct(parameterName,value, size);
 							}
 							else if(vDef.exp instanceof SeqExpression)
 							{

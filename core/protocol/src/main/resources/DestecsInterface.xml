@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="protocol.xsl"?>
-<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<schemeVersion>
 		<major>1</major>
 		<minor>0</minor>
@@ -10,13 +9,13 @@
 	</schemeVersion>
 	<name>Destecs</name>
 	<interfaceVersion>
-		<major>2</major>
-		<minor>2</minor>
-		<revision>0</revision>
+		<major>3</major>
+		<minor>0</minor>
+		<revision>1</revision>
 	</interfaceVersion>
 	<implementationVersion>
-		<major>2</major>
-		<minor>2</minor>
+		<major>3</major>
+		<minor>0</minor>
 		<revision>0</revision>
 		<patch>0</patch>
 	</implementationVersion>
@@ -43,20 +42,18 @@ Text:
 Commands:
 <ol>
 
-<li>GetVersion
-<li>Initialize
-<li>Load
-<li>QueryInterface
-<li>*GetDesignParameters - included in query interface
-<li>SetDesignParameters
-<li>GetParameters
-<li>SetParameters
-
-<li>Start
-<li>Step
-<li>Stop
-
-<li>Terminate
+<li>getVersion
+<li>initialize
+<li>load
+<li>queryInterface
+<li>getDesignParameters
+<li>setDesignParameters
+<li>getParameters
+<li>setParameters
+<li>start
+<li>step
+<li>stop
+<li>terminate
 
 </ol>
 
@@ -68,11 +65,11 @@ Commands that can be fired at any point:
 </ul>
 ]]></description>
 	<methods>
-		<!--GetVersion -->
+		<!--getVersion-->
 		<method>
 			<description>Gets the name and version of the simulator in the form: name / majorVersion.MinorVersion.revision.patch</description>
 			<methodCall>
-				<methodName>Destecs.GetVersion</methodName>
+				<methodName>destecs.getVersion</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -91,7 +88,14 @@ Commands that can be fired at any point:
 									<value>
 										<string>4.1.2.3</string>
 									</value>
-									<description>majorVersion.MinorVersion.revision.patch</description>
+									<description>The version of the tool/simulator : major.minor.build.patch</description>
+								</member>
+								<member>
+									<name>interfaceVersion</name>
+									<value>
+										<string>3.0.0.0</string>
+									</value>
+									<description>The interface version : major.minor.build.patch</description>
 								</member>
 							</struct>
 						</value>
@@ -99,107 +103,43 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--Initialize -->
+		<!--initialize-->
 		<method>
 			<description>Initialize the simulator for co-simulation, after calling this function all the other functions should be available, load, step ...</description>
 			<methodCall>
-				<methodName>Destecs.Initialize</methodName>
+				<methodName>destecs.initialize</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-		<!--Terminate -->
+		<!--terminate-->
 		<method>
 			<description>Terminates the simulator tool. After a reply no futher communication be be posible. The simulator tool will release all resources and terminate.</description>
 			<methodCall>
-				<methodName>Destecs.Terminate</methodName>
+				<methodName>destecs.terminate</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-		<!--Suspend -->
-        <method>
-            <description>Suspends the simulator tool. Must be resumed to continoue</description>
-            <methodCall>
-                <methodName>Destecs.Suspend</methodName>
-            </methodCall>
-            <methodResponse>
-                <params>
-                    <param>
-                        <value>
-                            <struct>
-                                <member>
-                                    <name>success</name>
-                                    <value>
-                                        <boolean>true</boolean>
-                                    </value>
-                                    <description>if failed then the function will return a fault response</description>
-                                </member>
-                            </struct>
-                        </value>
-                    </param>
-                </params>
-            </methodResponse>
-        </method>
-        <!--Resume -->
-        <method>
-            <description>Resume the simulator tool.</description>
-            <methodCall>
-                <methodName>Destecs.Resume</methodName>
-            </methodCall>
-            <methodResponse>
-                <params>
-                    <param>
-                        <value>
-                            <struct>
-                                <member>
-                                    <name>success</name>
-                                    <value>
-                                        <boolean>true</boolean>
-                                    </value>
-                                    <description>if failed then the function will return a fault response</description>
-                                </member>
-                            </struct>
-                        </value>
-                    </param>
-                </params>
-            </methodResponse>
-        </method>
-		<!--Load -->
+		<!--load-->
 		<method>
 			<description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
 			<methodCall>
-				<methodName>Destecs.Load</methodName>
+				<methodName>destecs.load</methodName>
 				<params>
 					<param>
 						<value>
@@ -220,29 +160,20 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-
-		<!--QueryInterface -->
+		<!--queryInterface-->
 		<method>
 			<description>
         Queries the interface used in Co-Simulation Grouped in a Map with keys SharedDesignParameters,DesignParameters,Inputs,Outputs.
         The structure of each of them is a Map from name to value
 			</description>
 			<methodCall>
-				<methodName>Destecs.QueryInterface</methodName>
+				<methodName>destecs.queryInterface</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -374,13 +305,13 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--QueryVariables -->
+		<!--queryVariables-->
 		<method>
 			<description>
 			Perform a query and return a list of all variables that can be accessed and logged.
 			</description>
 			<methodCall>
-				<methodName>Destecs.QueryVariables</methodName>
+				<methodName>destecs.queryVariables</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -417,13 +348,13 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--QueryParameters -->
+		<!--queryParameters-->
 		<method>
 			<description>
 			Perform a query and return a list of all parameters that can be accessed and logged.
 			</description>
 			<methodCall>
-				<methodName>Destecs.QueryParameters</methodName>
+				<methodName>destecs.queryParameters</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -460,73 +391,11 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--SetParameter -->
-		<method>
-			<description>Sets any parameter that is *not* used in the co-simulation.</description>
-			<methodCall>
-				<methodName>Destecs.SetParameter</methodName>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>name</name>
-									<value>
-										<string>parName</string>
-									</value>
-								</member>
-								<member>
-									<name>size</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<int>2</int>
-												</value>
-											</data>
-										</array>
-									</value>
-								</member>
-								<member>
-									<name>value</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<double>3.14159265</double>
-												</value>
-											</data>
-										</array>
-									</value>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
-		<!--SetParameters -->
+		<!--SetParameters-->
 		<method>
 			<description>Sets parameters that are *not* used in the co-simulation.</description>
 			<methodCall>
-				<methodName>Destecs.SetParameters</methodName>
+				<methodName>destecs.setParameters</methodName>
 				<params>
 					<param>
 						<value>
@@ -583,87 +452,17 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-		<!--SetDesignParameter -->
-		<method>
-			<description>Sets any parameter that is *used* in the co-simulation.</description>
-			<methodCall>
-				<methodName>Destecs.SetDesignParameter</methodName>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>name</name>
-									<value>
-										<string>parName</string>
-									</value>
-								</member>
-								<member>
-									<name>size</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<int>2</int>
-												</value>
-											</data>
-										</array>
-									</value>
-								</member>
-								<member>
-									<name>value</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<double>3.14159265</double>
-												</value>
-											</data>
-										</array>
-									</value>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
-		<!--SetDesignParameters -->
+		<!--SetDesignParameters-->
 		<method>
 			<description>Sets design parameters that are used in the co-simulation.</description>
 			<methodCall>
-				<methodName>Destecs.SetDesignParameters</methodName>
+				<methodName>destecs.setDesignParameters</methodName>
 				<params>
 					<param>
 						<value>
@@ -720,81 +519,26 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-		<!--GetParameter -->
-		<method>
-			<description>Gets any parameter that is *not* used in the co-simulation.</description>
-			<methodCall>
-				<methodName>Destecs.GetParameter</methodName>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>name</name>
-									<value>
-										<string>parName</string>
-									</value>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>size</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<int>2</int>
-												</value>
-											</data>
-										</array>
-									</value>
-								</member>
-								<member>
-									<name>value</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<double>3.14159265</double>
-												</value>
-											</data>
-										</array>
-									</value>
-									<description>returns value of parameter</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
-		<!--GetParameters -->
+		<!--GetParameters-->
 		<method>
 			<description>Gets values from all parameters that are *not* used in the co-simulation.</description>
 			<methodCall>
-				<methodName>Destecs.GetParameters</methodName>
+				<methodName>destecs.getParameters</methodName>
+				<params>
+					<param>
+						<value>
+							<array><data>
+								<value><string>submodelA.parameterB</string></value>
+							</data></array>
+						</value>
+					</param>
+				</params>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -851,67 +595,20 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--GetDesignParameter -->
-		<method>
-			<description>Gets any design parameter that is used in the co-simulation.</description>
-			<methodCall>
-				<methodName>Destecs.GetDesignParameter</methodName>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>name</name>
-									<value>
-										<string>parName</string>
-									</value>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>size</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<int>2</int>
-												</value>
-											</data>
-										</array>
-									</value>
-								</member>
-								<member>
-									<name>value</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<double>3.14159265</double>
-												</value>
-											</data>
-										</array>
-									</value>
-									<description>returns value of parameter</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
-		<!--GetDesignParameters -->
+		<!--getDesignParameters-->
 		<method>
 			<description>Gets values from all parameters that are used in the co-simulation.</description>
 			<methodCall>
-				<methodName>Destecs.GetDesignParameters</methodName>
+				<methodName>destecs.getDesignParameters</methodName>
+				<params>
+					<param>
+						<value>
+							<array><data>
+								<value><string>submodelA.designParameterB</string></value>
+							</data></array>
+						</value>
+					</param>
+				</params>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -968,11 +665,11 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--Step -->
+		<!--step-->
 		<method>
 			<description>Step is used to progress in simulation, it pushes time forward. A step inputs variables and the step time and returns variables changed during the step and the time at which the next change in the server can take place.</description>
 			<methodCall>
-				<methodName>Destecs.Step</methodName>
+				<methodName>destecs.step</methodName>
 				<params>
 					<param>
 						<value>
@@ -1133,11 +830,11 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--GetStatus -->
+		<!--getStatus-->
 		<method>
 			<description>Gets the status: 0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished, 4= Loaded</description>
 			<methodCall>
-				<methodName>Destecs.GetStatus</methodName>
+				<methodName>destecs.getStatus</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -1157,77 +854,127 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--Start -->
+		<!--start-->
 		<method>
 			<description>Starts the simulator or interpreter. After this function is called a Step can be taken</description>
 			<methodCall>
-				<methodName>Destecs.Start</methodName>
+				<methodName>destecs.start</methodName>
+				<params>
+                    <param>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>startTime</name>
+                                    <value>
+                                        <double>0.0</double>
+                                    </value>
+                                    <description>start time of the simulation</description>
+                                </member>
+                                <member>
+                                    <name>finishTime</name>
+                                    <value>
+                                        <double>10.0</double>
+                                    </value>
+                                    <description>finish time of the simulation</description>
+                                </member>
+                            </struct>
+                        </value>
+                    </param>
+                </params>
 			</methodCall>
 			<methodResponse>
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-		<!--Stop -->
+		<!--stop-->
 		<method>
 			<description>Stops the simulator or interpreter. After this function is no Steps can be taken and the model cannot be Satrted again</description>
 			<methodCall>
-				<methodName>Destecs.Stop</methodName>
+				<methodName>destecs.stop</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-		<!--SetToolSetting -->
+		<!--suspend-->
+        <method>
+            <description>Suspends the simulator or interpreter. After this function is no Steps can be taken. Simulation may be stopped</description>
+            <methodCall>
+                <methodName>destecs.suspend</methodName>
+            </methodCall>
+            <methodResponse>
+                <params>
+                    <param>
+                        <value>
+                            <boolean>true</boolean>
+                        </value>
+                    </param>
+                </params>
+            </methodResponse>
+        </method>
+        <!--resume-->
+        <method>
+            <description>Resumes the simulator or interpreter from suspended state. (Does nothing if state was not suspended)</description>
+            <methodCall>
+                <methodName>destecs.resume</methodName>
+            </methodCall>
+            <methodResponse>
+                <params>
+                    <param>
+                        <value>
+                            <boolean>true</boolean>
+                        </value>
+                    </param>
+                </params>
+            </methodResponse>
+        </method>   
+		
+		<!--SetSetting-->
 		<method>
-			<description>Set a tool setting.</description>
+			<description>Set a setting.</description>
 			<methodCall>
-				<methodName>Destecs.SetToolSetting</methodName>
+				<methodName>destecs.setSettings</methodName>
 				<params>
 					<param>
-						<value>
-							<struct>
-								<member>
-									<name>key</name>
-									<value>
-										<string>simulator.integrationmethod</string>
-									</value>
-								</member>
-								<member>
-									<name>value</name>
-									<value>
-										<string>Euler</string>
-									</value>
-								</member>
-							</struct>
-						</value>
+						<value><array><data>
+							<value>
+								<struct>
+									<member>
+										<name>key</name>
+										<value>
+											<string>model.integrationmethod</string>
+										</value>
+										<description>The key (name) of the setting is an hierarchical path. In the key, for example, the first level may denote a model or tool setting.</description>
+									</member>
+									<member>
+										<name>value</name>
+										<value>
+											<string>Euler</string>
+										</value>
+										<description>The value belonging to the spefied key, in string format</description>
+									</member>
+									<member>
+										<name>type</name>
+										<value>
+											<string>type</string>
+										</value>
+										<description>The type of the value : int, string, double, boolean (any xmlrpc scalar type)</description>
+									</member>
+								</struct>
+							</value>
+						</data></array></value>
 					</param>
 				</params>
 			</methodCall>
@@ -1235,62 +982,25 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
-		<!--GetToolSetting -->
+		<!--QuerySettings-->
 		<method>
-			<description>Get a tool setting.</description>
 			<methodCall>
-				<methodName>Destecs.GetToolSetting</methodName>
+				<methodName>destecs.querySettings</methodName>
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>key</name>
-									<value>
-										<string>simulator.integrationmethod</string>
-									</value>
-								</member>
-							</struct>
+							<array><data>
+								<value><string>model.settingX</string></value>
+							</data></array>
 						</value>
 					</param>
 				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>value</name>
-									<value>
-										<string>Euler</string>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
-		<!--QueryToolSettings -->
-		<method>
-			<methodCall>
-				<methodName>Destecs.QueryToolSettings</methodName>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -1303,17 +1013,26 @@ Commands that can be fired at any point:
 											<member>
 												<name>key</name>
 												<value>
-													<string>simulator.integrationmethod</string>
+													<string>model.integrationmethod</string>
 												</value>
+												<description>The key (name) of the setting is an hierarchical path. In the key, for example, the first level may denote a model or tool setting.</description>
 											</member>
 											<member>
 												<name>value</name>
 												<value>
 													<string>Euler</string>
 												</value>
+												<description>The value belonging to the spefied key, in string format</description>
 											</member>
 											<member>
-												<name>options</name>
+												<name>type</name>
+												<value>
+													<string>type</string>
+												</value>
+												<description>The type of the value : int, string, double, boolean (any xmlrpc scalar type)</description>
+											</member>
+											<member>
+												<name>enumerations</name>
 												<value>
 													<array>
 														<data>
@@ -1323,6 +1042,33 @@ Commands that can be fired at any point:
 														</data>
 													</array>
 												</value>
+												<description>If the key contains a set of values (an enumeration) list all values in an array. Leave array empty in case that key is not enumerated.</description>
+											</member>
+											<member>
+												<name>properties</name>
+												<value>
+													<array>
+														<data>
+															<value>
+																<struct>
+																	<member>
+																		<name>key</name>
+																		<value>
+																			<string>lowerbound</string>
+																		</value>
+																	</member>
+																	<member>
+																		<name>value</name>
+																		<value>
+																			<string>thevalue</string>
+																		</value>
+																	</member>
+																</struct>
+															</value>
+														</data>
+													</array>
+												</value>
+												<description>Array with additional properties of the key. Each property is a key/value pair. Leave array empty if key has no additional properties. Defined properties are "lowerbound" and "upperbound" in order to define a range.</description>
 											</member>
 										</struct>
 									</value>
@@ -1333,76 +1079,11 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-
-		<!-- Load2 -->
+		<!--setLogVariables-->
 		<method>
-			<description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
+			<description>Specify a list of variables that needs to be stored. After a simulation the variables are stored to the given file.</description>
 			<methodCall>
-				<methodName>Destecs.Load2</methodName>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>arguments</name>
-									<value>
-										<array>
-											<data>
-												<value>
-													<struct>
-														<member>
-															<name>argumentName</name>
-															<value>
-																<string>modelName</string>
-															</value>
-															<description>argument name</description>
-														</member>
-														<member>
-															<name>argumentValue</name>
-															<value>
-																<string>mymodel.vdm</string>
-															</value>
-															<description>argument value</description>
-														</member>
-													</struct>
-												</value>
-											</data>
-										</array>
-									</value>
-									<description>argument list for the tool to load and prepare 
-								a simulation</description>
-								</member>
-								<!-- member> <name>outputDir</name> <value> <string>c:\temp</string> 
-									</value> <description>output directory (relative or absolute) for the simulator 
-									to store e.g. logfiles</description> </member -->
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodCall>
-			<methodResponse>
-				<params>
-					<param>
-						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
-						</value>
-					</param>
-				</params>
-			</methodResponse>
-		</method>
-		<!--SetLogVariables -->
-		<method>
-			<description>Specify a list of variables that needs to be stored. After a simulation the variables are stored to the given file. It can also be retrieved later by the call WriteCSVFile.</description>
-			<methodCall>
-				<methodName>Destecs.SetLogVariables</methodName>
+				<methodName>destecs.setLogVariables</methodName>
 				<params>
 					<param>
 						<value>
@@ -1441,20 +1122,102 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<struct>
-								<member>
-									<name>success</name>
-									<value>
-										<boolean>true</boolean>
-									</value>
-									<description>if failed then the function will return a fault response</description>
-								</member>
-							</struct>
+							<boolean>true</boolean>
 						</value>
 					</param>
 				</params>
 			</methodResponse>
 		</method>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<!-- Load2 -->
+        <method>
+            <description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
+            <methodCall>
+                <methodName>Destecs.Load2</methodName>
+                <params>
+                    <param>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>properties</name>
+                                    <value>
+                                        <array>
+                                            <data>
+                                                <value>
+                                                    <struct>
+                                                        <member>
+                                                            <name>key</name>
+                                                            <value>
+                                                                <string>modelName</string>
+                                                            </value>
+                                                            <description>name</description>
+                                                        </member>
+                                                        <member>
+                                                            <name>value</name>
+                                                            <value>
+                                                                <string>mymodel.vdm</string>
+                                                            </value>
+                                                            <description>value</description>
+                                                        </member>
+                                                    </struct>
+                                                </value>
+                                            </data>
+                                        </array>
+                                    </value>
+                                    <description>argument list for the tool to load and prepare 
+                                a simulation</description>
+                                </member>
+                                <!-- member> <name>outputDir</name> <value> <string>c:\temp</string> 
+                                    </value> <description>output directory (relative or absolute) for the simulator 
+                                    to store e.g. logfiles</description> </member -->
+                            </struct>
+                        </value>
+                    </param>
+                </params>
+            </methodCall>
+            <methodResponse>
+                <params>
+                    <param>
+                        <value>
+                            <struct>
+                                <member>
+                                    <name>success</name>
+                                    <value>
+                                        <boolean>true</boolean>
+                                    </value>
+                                    <description>if failed then the function will return a fault response</description>
+                                </member>
+                            </struct>
+                        </value>
+                    </param>
+                </params>
+            </methodResponse>
+        </method>
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 	</methods>
 	<methodFaultResponses>
 		<methodResponse>
@@ -1570,7 +1333,7 @@ Commands that can be fired at any point:
 						<member>
 							<name>faultString</name>
 							<value>
-								<string>SetParameter did not succeed.</string>
+								<string>SetParameters did not succeed.</string>
 							</value>
 						</member>
 					</struct>

@@ -67,55 +67,55 @@ public class VDMCO extends VDMRT
 		return interpreter;
 	}
 
-	@Override
-	public ExitStatus interpret(List<File> filenames, String defaultName)
-	{
-		// return super.interpret(filenames, defaultName);
-		if (logfile != null)
-		{
-			try
-			{
-				PrintWriter p = new PrintWriter(new FileOutputStream(logfile, false));
-				RTLogger.setLogfile(p);
-				println("RT events now logged to " + logfile);
-			} catch (FileNotFoundException e)
-			{
-				println("Cannot create RT event log: " + e.getMessage());
-				return ExitStatus.EXIT_ERRORS;
-			}
-		}
-
-		try
-		{
-			long before = System.currentTimeMillis();
-			interpreter = getInterpreter();
-			interpreter.init(null);
-
-			if (defaultName != null)
-			{
-				interpreter.setDefaultName(defaultName);
-			}
-
-			long after = System.currentTimeMillis();
-
-			infoln("Initialized " + plural(classes.size(), "class", "es")
-					+ " in " + (double) (after - before) / 1000 + " secs. ");
-
-			return ExitStatus.EXIT_OK;
-		} catch (ContextException e)
-		{
-			println("Initialization: " + e);
-			e.ctxt.printStackTrace(Console.out, true);
-			exception = e;
-			return ExitStatus.EXIT_ERRORS;
-		} catch (Exception e)
-		{
-			println("Initialization: " + e.getMessage());
-			// TODO: need to output this error somewhere
-			exception = e;
-			return ExitStatus.EXIT_ERRORS;
-		}
-	}
+//	@Override
+//	public ExitStatus interpret(List<File> filenames, String defaultName)
+//	{
+//		// return super.interpret(filenames, defaultName);
+//		if (logfile != null)
+//		{
+//			try
+//			{
+//				PrintWriter p = new PrintWriter(new FileOutputStream(logfile, false));
+//				RTLogger.setLogfile(p);
+//				println("RT events now logged to " + logfile);
+//			} catch (FileNotFoundException e)
+//			{
+//				println("Cannot create RT event log: " + e.getMessage());
+//				return ExitStatus.EXIT_ERRORS;
+//			}
+//		}
+//
+//		try
+//		{
+//			long before = System.currentTimeMillis();
+//			interpreter = getInterpreter();
+//			interpreter.init(null);
+//
+//			if (defaultName != null)
+//			{
+//				interpreter.setDefaultName(defaultName);
+//			}
+//
+//			long after = System.currentTimeMillis();
+//
+//			infoln("Initialized " + plural(classes.size(), "class", "es")
+//					+ " in " + (double) (after - before) / 1000 + " secs. ");
+//
+//			return ExitStatus.EXIT_OK;
+//		} catch (ContextException e)
+//		{
+//			println("Initialization: " + e);
+//			e.ctxt.printStackTrace(Console.out, true);
+//			exception = e;
+//			return ExitStatus.EXIT_ERRORS;
+//		} catch (Exception e)
+//		{
+//			println("Initialization: " + e.getMessage());
+//			// TODO: need to output this error somewhere
+//			exception = e;
+//			return ExitStatus.EXIT_ERRORS;
+//		}
+//	}
 
 	public Exception getException()
 	{
@@ -151,8 +151,8 @@ public class VDMCO extends VDMRT
 						String host = "localhost";
 						// int port=10000;
 						String ideKey = "1";
-						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, interpreter, script, null);
-						// interpreter.init(dbgpreader);
+						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, getInterpreter(), script, null);
+						 
 						int retried = 0;
 						while (dbgpreader.getStatus() == null)
 						{
@@ -172,6 +172,14 @@ public class VDMCO extends VDMRT
 							System.out.println("DBGPReader status is now STARTING and a new try to start dbgpreader will be made in 1 sec.");
 							Thread.sleep(1000);
 							dbgpreader.startup(null);
+
+						}
+						try{
+						dbgpreader.startCoSimulation();
+						}catch(Exception e)
+						{
+							//Failed to start simulation
+							e.printStackTrace();
 						}
 						System.out.println("DBGPreader status is now: " +dbgpreader.getStatus());
 						// println(interpreter.execute(script, null).toString());

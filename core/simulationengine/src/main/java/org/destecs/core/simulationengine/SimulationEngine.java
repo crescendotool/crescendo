@@ -23,8 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.ConsoleAppender;
@@ -57,7 +59,7 @@ import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetVersionStruct;
-import org.destecs.protocol.structs.Load2argumentsStructParam;
+import org.destecs.protocol.structs.Load2propertiesStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructinputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructoutputsStruct;
@@ -280,6 +282,7 @@ public class SimulationEngine
 			double totalSimulationTime) throws SimulationException,
 			FileNotFoundException
 	{
+		Set<Simulator> runningSimulators = new HashSet<Simulator>();
 		try
 		{
 			// reset force simulation stop
@@ -316,11 +319,12 @@ public class SimulationEngine
 
 			// connect to the simulators
 			deProxy = connect(Simulator.DE, deEndpoint);
+			runningSimulators.add(Simulator.DE);
 
 			initialize(Simulator.DE, deProxy);
 
 			ctProxy = connect(Simulator.CT, ctEndpoint);
-
+			runningSimulators.add(Simulator.CT);
 			initialize(Simulator.CT, ctProxy);
 
 			// Turn off timeout, simulators may be slow at loading the model
@@ -336,8 +340,9 @@ public class SimulationEngine
 
 			// load the models
 			loadModel(Simulator.DE, deProxy, deModelBase);
-
 			loadModel(Simulator.CT, ctProxy, ctModel);
+
+			// TODO set model settings (Settings)
 
 			// validate interfaces
 			validateInterfaces(contract, deProxy, ctProxy);
@@ -351,8 +356,8 @@ public class SimulationEngine
 			setSharedDesignParameters(Simulator.CT, ctProxy, sharedDesignParameters);
 
 			// start simulation
-			startSimulator(Simulator.DE, deProxy);
-			startSimulator(Simulator.CT, ctProxy);
+			startSimulator(Simulator.DE, deProxy, totalSimulationTime);
+			startSimulator(Simulator.CT, ctProxy, totalSimulationTime);
 
 			// FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim
 			// at the moment
@@ -371,8 +376,10 @@ public class SimulationEngine
 
 			// stop the simulators
 			stop(Simulator.DE, finishTime, deProxy);
+			runningSimulators.remove(Simulator.DE);
 			stop(Simulator.CT, finishTime, ctProxy);
-
+			runningSimulators.remove(Simulator.CT);
+			
 			terminate(Simulator.DE, finishTime, deProxy, deLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
 		}
@@ -385,6 +392,24 @@ public class SimulationEngine
 		{
 			if (deLauncher.isRunning() || ctLauncher.isRunning())
 			{
+				for (Simulator simulator : runningSimulators)
+				{
+					try{
+						switch(simulator)
+						{
+							case CT:
+								stop(Simulator.CT, 0.0, ctProxy);
+								break;
+							case DE:
+								stop(Simulator.DE, 0.0, deProxy);
+								break;
+							
+						}
+					}catch(Exception e)
+					{
+						
+					}
+				}
 				sleep();
 				shutdownSimulators();
 			}
@@ -516,7 +541,7 @@ public class SimulationEngine
 		try
 		{
 			messageInfo(simulator, finishTime, "stop");
-			return proxy.stop().success;
+			return proxy.stop();
 		} catch (Exception e)
 		{
 			abort(simulator, "stop failed", e);
@@ -766,13 +791,14 @@ public class SimulationEngine
 	}
 
 	private boolean startSimulator(Simulator simulator,
-			ProxyICoSimProtocol proxy) throws SimulationException
+			ProxyICoSimProtocol proxy, double totalSimulationTime)
+			throws SimulationException
 	{
 		try
 		{
 			simulationStarting(simulator);
 			messageInfo(simulator, new Double(0), "start");
-			boolean result = proxy.start().success;
+			boolean result = proxy.start(0.0, totalSimulationTime);
 
 			if (result)
 			{
@@ -805,7 +831,7 @@ public class SimulationEngine
 			sb.append(getSdpString(sharedDesignParameters));
 
 			engineInfo(simulator, sb.toString());
-			return proxy.setDesignParameters(sharedDesignParameters).success;
+			return proxy.setDesignParameters(sharedDesignParameters);
 		} catch (Exception e)
 		{
 			abort(simulator, "setDesignParameters failed: "
@@ -1003,6 +1029,38 @@ public class SimulationEngine
 	private boolean initialize(Simulator simulator, ProxyICoSimProtocol proxy)
 			throws SimulationException
 	{
+		// Try to detect if the tool is running before we report the version back in the engine view
+		for (int i = 0; i < 15; i++)
+		{
+			try
+			{
+				GetVersionStruct version = proxy.getVersion();
+
+				switch (simulator)
+				{
+					case ALL:
+						break;
+					case CT:
+						ctVersion = version.version.trim();
+						break;
+					case DE:
+						deVersion = version.version.trim();
+						break;
+
+				}
+				break;
+			} catch (Exception e)
+			{
+				try
+				{
+					Thread.sleep(1000);
+				} catch (InterruptedException e1)
+				{
+					//Ignore
+				}
+			}
+		}
+
 		try
 		{
 			messageInfo(simulator, new Double(0), "getVersion");
@@ -1047,7 +1105,7 @@ public class SimulationEngine
 		try
 		{
 			messageInfo(simulator, new Double(0), "initialize");
-			boolean initializedOk = proxy.initialize().success;
+			boolean initializedOk = proxy.initialize();
 			engineInfo(simulator, "Initilized ok: " + initializedOk);
 			return initializedOk;
 		} catch (Exception e)
@@ -1070,13 +1128,13 @@ public class SimulationEngine
 			if (simulator == Simulator.CT)
 			{// FIXME: this call to load should be removed, it is only keept in the protocol because 20sim isnt updated
 				// yet.
-				success = proxy.load(absolutePath).success;
+				success = proxy.load(absolutePath);
 			} else
 			{
-				List<Load2argumentsStructParam> arguments = new Vector<Load2argumentsStructParam>();
+				List<Load2propertiesStructParam> arguments = new Vector<Load2propertiesStructParam>();
 				for (Entry<String, String> entry : model.arguments.entrySet())
 				{
-					arguments.add(new Load2argumentsStructParam(entry.getValue(), entry.getKey()));
+					arguments.add(new Load2propertiesStructParam(entry.getValue(), entry.getKey()));
 				}
 
 				success = proxy.load2(arguments).success;
@@ -1341,14 +1399,23 @@ public class SimulationEngine
 		try
 		{
 			deProxy.suspend();
+			ctProxy.suspend();
 		} catch (Exception e)
 		{
-
+			e.printStackTrace();
 		}
 	}
 
 	public void resume()
 	{
+		try
+		{
+			deProxy.resume();
+			ctProxy.resume();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		lock.unLock();
 	}
 }

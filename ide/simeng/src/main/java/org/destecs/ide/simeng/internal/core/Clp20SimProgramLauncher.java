@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.destecs.core.simulationengine.launcher.ISimulatorLauncher;
+import org.destecs.ide.simeng.ISimengConstants;
 import org.destecs.ide.simeng.internal.util.WindowsUtils;
 
 public class Clp20SimProgramLauncher implements ISimulatorLauncher
@@ -61,12 +62,12 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 				String path = null;
 				try
 				{
-					path = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Controllab Products B.V.\\20-sim 4.1","PATH" );
+					path = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,ISimengConstants.CLP_20_SIM_REGKEY,ISimengConstants.CLP_20_SIM_PATH_REGKEY );
 					if(path == null)
 					{
 						return null;
 					}
-					path += "\\bin\\20sim.exe";
+//					path += "\\bin\\20sim.exe";
 				} catch (IllegalArgumentException e)
 				{
 					return null;

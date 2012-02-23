@@ -30,29 +30,18 @@ import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetDesignParametersStruct;
 import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStruct;
-import org.destecs.protocol.structs.GetParameterStruct;
 import org.destecs.protocol.structs.GetParametersStruct;
 import org.destecs.protocol.structs.GetParametersStructparametersStruct;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
-import org.destecs.protocol.structs.InitializeStruct;
 import org.destecs.protocol.structs.Load2Struct;
-import org.destecs.protocol.structs.Load2argumentsStructParam;
+import org.destecs.protocol.structs.Load2propertiesStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructinputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructoutputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructsharedDesignParametersStruct;
-import org.destecs.protocol.structs.ResumeStruct;
-import org.destecs.protocol.structs.SetDesignParameterStruct;
-import org.destecs.protocol.structs.SetDesignParametersStruct;
-import org.destecs.protocol.structs.SetLogVariablesStruct;
-import org.destecs.protocol.structs.SetParametersStruct;
-import org.destecs.protocol.structs.StartStruct;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
-import org.destecs.protocol.structs.StopStruct;
-import org.destecs.protocol.structs.SuspendStruct;
-import org.destecs.protocol.structs.TerminateStruct;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdmj.VDMCO;
 import org.overturetool.vdmj.Settings;
@@ -86,6 +75,7 @@ public class CoSimImpl implements IDestecs
 
 	private static final String version = "0.0.1.0";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
+	private String interfaceVersion = "3.0.0.0";
 
 	public Map<String, Integer> getStatus()
 	{
@@ -94,14 +84,15 @@ public class CoSimImpl implements IDestecs
 
 	public Map<String, Object> getVersion()
 	{
-		return new GetVersionStruct("VDMJ", version).toMap();
+
+		return new GetVersionStruct(interfaceVersion, "VDMJ", version).toMap();
 	}
 
-	public Map<String, Boolean> initialize() throws RemoteSimulationException
+	public Boolean initialize() throws RemoteSimulationException
 	{
 		try
 		{
-			return new InitializeStruct(SimulationManager.getInstance().initialize()).toMap();
+			return SimulationManager.getInstance().initialize();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -114,7 +105,7 @@ public class CoSimImpl implements IDestecs
 			throws RemoteSimulationException
 	{
 		VDMCO.replaceNewIdentifier.clear();
-		Object o = data.get("arguments");
+		Object o = data.get("properties");
 		Object[] oo = (Object[]) o;
 
 		Settings.prechecks = true;
@@ -133,24 +124,24 @@ public class CoSimImpl implements IDestecs
 		{
 			if (in instanceof Map)
 			{
-				Load2argumentsStructParam arg = new Load2argumentsStructParam((Map<String, Object>) in);
+				Load2propertiesStructParam arg = new Load2propertiesStructParam((Map<String, Object>) in);
 
-				if (arg.argumentName.startsWith(LOAD_FILE))
+				if (arg.key.startsWith(LOAD_FILE))
 				{
-					specfiles.add(new File(arg.argumentValue));
+					specfiles.add(new File(arg.value));
 				}
 
-				if (arg.argumentName.startsWith(LOAD_LINK))
+				if (arg.key.startsWith(LOAD_LINK))
 				{
-					linkFile = new File(arg.argumentValue);
+					linkFile = new File(arg.value);
 				}
-				if (arg.argumentName.startsWith(LOAD_BASE_DIR))
+				if (arg.key.startsWith(LOAD_BASE_DIR))
 				{
-					baseDirFile = new File(arg.argumentValue);
+					baseDirFile = new File(arg.value);
 				}
-				if (arg.argumentName.startsWith(LOAD_REPLACE))
+				if (arg.key.startsWith(LOAD_REPLACE))
 				{
-					List<String> replacePatterns = Arrays.asList(arg.argumentValue.split(","));
+					List<String> replacePatterns = Arrays.asList(arg.value.split(","));
 					for (String pattern : replacePatterns)
 					{
 						if (pattern != null && pattern.contains("/"))
@@ -164,54 +155,54 @@ public class CoSimImpl implements IDestecs
 						}
 					}
 				}
-				if (arg.argumentName.startsWith(LOAD_ARCHITECTURE))
+				if (arg.key.startsWith(LOAD_ARCHITECTURE))
 				{
-					VDMCO.architecture = arg.argumentValue;
+					VDMCO.architecture = arg.value;
 				}
-				if (arg.argumentName.startsWith(LOAD_DEPLOY))
+				if (arg.key.startsWith(LOAD_DEPLOY))
 				{
-					VDMCO.deploy = arg.argumentValue;
+					VDMCO.deploy = arg.value;
 				}
-				if (arg.argumentName.startsWith(LOAD_DEBUG_PORT))
+				if (arg.key.startsWith(LOAD_DEBUG_PORT))
 				{
-					VDMCO.debugPort = Integer.valueOf(arg.argumentValue);
+					VDMCO.debugPort = Integer.valueOf(arg.value);
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_PRE))
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_PRE))
 				{
 					Settings.prechecks = false;
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_POST))
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_POST))
 				{
 					Settings.postchecks = false;
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_INV))
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_INV))
 				{
 					Settings.invchecks = false;
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_DYNAMIC_TC))
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_DYNAMIC_TC))
 				{
 					Settings.dynamictypechecks = false;
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_MEASURE))
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_MEASURE))
 				{
 					Settings.measureChecks = false;
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_RT_LOG))
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_RT_LOG))
 				{
 					disableRtLog = true;
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
 				{
 					// TODO: disable runtime validation.
 				}
-				if (arg.argumentName.startsWith(LOAD_SETTING_LOG_VARIABLES))
+				if (arg.key.startsWith(LOAD_SETTING_LOG_VARIABLES))
 				{
-					String[] variables = arg.argumentValue.split(",");
+					String[] variables = arg.value.split(",");
 					variablesToLog.addAll(Arrays.asList(variables));
 				}
-				if (arg.argumentName.startsWith(LOAD_OUTPUT_DIR))
+				if (arg.key.startsWith(LOAD_OUTPUT_DIR))
 				{
-					outputDir = arg.argumentValue;
+					outputDir = arg.value;
 				}
 			}
 		}
@@ -357,7 +348,7 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> terminate()
+	public Boolean terminate()
 	{
 		System.out.println("DESTECS VDM is terminating now...");
 
@@ -377,14 +368,14 @@ public class CoSimImpl implements IDestecs
 			}
 		});
 		shutdown.start();
-		return new TerminateStruct(true).toMap();
+		return true;
 	}
 
-	public Map<String, Boolean> stop() throws RemoteSimulationException
+	public Boolean stop() throws RemoteSimulationException
 	{
 		try
 		{
-			return new StopStruct(SimulationManager.getInstance().stopSimulation()).toMap();
+			return SimulationManager.getInstance().stopSimulation();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -392,46 +383,45 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Object> getDesignParameter(Map<String, String> data)
-			throws RemoteSimulationException
-	{
-		String parameterName = data.get("name");
-		return SimulationManager.getInstance().getDesignParameter(parameterName).toMap();
-	}
+	// public Map<String, Object> getDesignParameter(Map<String, String> data)
+	// throws RemoteSimulationException
+	// {
+	// String parameterName = data.get("name");
+	// return SimulationManager.getInstance().getDesignParameter(parameterName).toMap();
+	// }
 
-	public Map<String, List<Map<String, Object>>> getDesignParameters()
-			throws RemoteSimulationException
+	public Map<String, List<Map<String, Object>>> getDesignParameters(
+			List<String> data) throws RemoteSimulationException
 	{
 		List<GetDesignParametersStructdesignParametersStruct> list = new Vector<GetDesignParametersStructdesignParametersStruct>();
-		// for (String name : SimulationManager.getInstance().getSharedDesignParameters())
-		// {
-		// list.add(new GetDesignParametersStructdesignParametersStruct(name,
-		// SimulationManager.getInstance().getDesignParameter(name)));
-		// }
+		for (Entry<String, LinkInfo> entry : SimulationManager.getInstance().getSharedDesignParameters().entrySet())
+		{
+			list.add(SimulationManager.getInstance().getDesignParameter(entry.getKey()));
+		}
 		return new GetDesignParametersStruct(list).toMap();
 	}
 
-	public Map<String, Object> getParameter(Map<String, String> data)
-			throws RemoteSimulationException
-	{
-		String name = (String) data.get("name");
+	// public Map<String, Object> getParameter(Map<String, String> data)
+	// throws RemoteSimulationException
+	// {
+	// String name = (String) data.get("name");
+	//
+	// List<Double> value;
+	// List<Integer> size;
+	// try
+	// {
+	// value = SimulationManager.getInstance().getParameter(name);
+	// size = SimulationManager.getInstance().getParameterSize(name);
+	// return new GetParameterStruct(value, size).toMap();
+	// } catch (RemoteSimulationException e)
+	// {
+	// ErrorLog.log(e);
+	// throw e;
+	// }
+	// }
 
-		List<Double> value;
-		List<Integer> size;
-		try
-		{
-			value = SimulationManager.getInstance().getParameter(name);
-			size = SimulationManager.getInstance().getParameterSize(name);
-			return new GetParameterStruct(value, size).toMap();
-		} catch (RemoteSimulationException e)
-		{
-			ErrorLog.log(e);
-			throw e;
-		}
-	}
-
-	public Map<String, List<Map<String, Object>>> getParameters()
-			throws RemoteSimulationException
+	public Map<String, List<Map<String, Object>>> getParameters(
+			List<String> data) throws RemoteSimulationException
 	{
 		List<GetParametersStructparametersStruct> list = new Vector<GetParametersStructparametersStruct>();
 		try
@@ -448,24 +438,24 @@ public class CoSimImpl implements IDestecs
 		return new GetParametersStruct(list).toMap();
 	}
 
-	public Map<String, Boolean> setDesignParameter(Map<String, Object> data)
-			throws RemoteSimulationException
-	{
+	// public Map<String, Boolean> setDesignParameter(Map<String, Object> data)
+	// throws RemoteSimulationException
+	// {
+	//
+	// try
+	// {
+	// List<Map<String, Object>> argument = new Vector<Map<String, Object>>();
+	// argument.add(data);
+	// boolean success = SimulationManager.getInstance().setDesignParameters(argument);
+	// return new SetDesignParameterStruct(success).toMap();
+	// } catch (RemoteSimulationException e)
+	// {
+	// ErrorLog.log(e);
+	// throw e;
+	// }
+	// }
 
-		try
-		{
-			List<Map<String, Object>> argument = new Vector<Map<String, Object>>();
-			argument.add(data);
-			boolean success = SimulationManager.getInstance().setDesignParameters(argument);
-			return new SetDesignParameterStruct(success).toMap();
-		} catch (RemoteSimulationException e)
-		{
-			ErrorLog.log(e);
-			throw e;
-		}
-	}
-
-	public Map<String, Boolean> setDesignParameters(
+	public Boolean setDesignParameters(
 			Map<String, List<Map<String, Object>>> data)
 			throws RemoteSimulationException
 	{
@@ -481,7 +471,7 @@ public class CoSimImpl implements IDestecs
 				success = SimulationManager.getInstance().setDesignParameters(tmp);
 
 			}
-			return new SetDesignParametersStruct(success).toMap();
+			return success;
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -489,7 +479,14 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> setParameter(Map<String, Object> data)
+	/**
+	 * Local method
+	 * 
+	 * @param data
+	 * @return
+	 * @throws RemoteSimulationException
+	 */
+	private Boolean setParameter(Map<String, Object> data)
 			throws RemoteSimulationException
 	{
 		String name = (String) data.get("name");
@@ -526,7 +523,7 @@ public class CoSimImpl implements IDestecs
 		{
 			success = SimulationManager.getInstance().setParameter(name, new ValueContents(value, size));
 
-			return new SetParametersStruct(success).toMap();
+			return success;
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -534,21 +531,27 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> setParameters(
-			Map<String, List<Map<String, Object>>> data)
+	public Boolean setParameters(Map<String, List<Map<String, Object>>> data)
 			throws RemoteSimulationException
 	{
 		try
 		{
 			boolean success = false;
+
 			if (data.values().size() > 0)
 			{
-				Map<String, Object> s = (Map<String, Object>) data.values().iterator().next();
 
-				success = setParameter(s).get("success");
-				return new SetParametersStruct(success).toMap();
+				for (Object parms : data.values())
+				{
+					for (Object tmp2 : (Object[]) parms)
+					{
+						Map<String, Object> s = (Map<String, Object>) tmp2;
+						success = setParameter(s);
+					}
+				}
+				return success;
 			}
-			return new SetDesignParametersStruct(success).toMap();
+			return success;
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -556,11 +559,12 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> start() throws RemoteSimulationException
+	public Boolean start(Map<String, Object> data)
+			throws RemoteSimulationException
 	{
 		try
 		{
-			return new StartStruct(SimulationManager.getInstance().start()).toMap();
+			return SimulationManager.getInstance().start();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -568,28 +572,7 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> setToolSetting(Map<String, Object> data)
-			throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Map<String, String> getToolSetting(Map<String, String> data)
-			throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public List<Map<String, Object>> queryToolSettings() throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Map<String, Boolean> setLogVariables(Map<String, Object> data)
-			throws Exception
+	public Boolean setLogVariables(Map<String, Object> data) throws Exception
 	{
 		try
 		{
@@ -602,7 +585,7 @@ public class CoSimImpl implements IDestecs
 
 			SimulationManager.getInstance().setLogVariables(new File(data.get("filePath").toString()), logVariables);
 
-			return new SetLogVariablesStruct(true).toMap();
+			return true;
 		} catch (Exception e)
 		{
 			ErrorLog.log(e);
@@ -612,28 +595,28 @@ public class CoSimImpl implements IDestecs
 
 	public List<Map<String, Object>> queryVariables() throws Exception
 	{
-		// TODO Auto-generated method stub
+		// TODO return all instance variables accessible from the system class
 		return null;
 	}
 
 	public List<Map<String, Object>> queryParameters() throws Exception
 	{
-		// TODO Auto-generated method stub
+		// TODO return all values
 		return null;
 	}
 
 	@Deprecated
-	public Map<String, Boolean> load(Map<String, String> data) throws Exception
+	public Boolean load(Map<String, String> data) throws Exception
 	{
 		throw new RemoteSimulationException("Deprecated: Load not supported, use Load2");
 	}
 
-	public Map<String, Boolean> suspend() throws Exception
+	public Boolean suspend() throws Exception
 	{
 		try
 		{
 			BasicSchedulableThread.signalAll(Signal.SUSPEND);
-			return new SuspendStruct(true).toMap();
+			return true;
 		} catch (Exception e)
 		{
 			throw new RemoteSimulationException("Failed to suspend the VDM debugger");
@@ -645,9 +628,22 @@ public class CoSimImpl implements IDestecs
 	 * This method is just a skip, we need to resume from the IDE. This is needed because the IDE hold a state
 	 * representing the state of the threads
 	 */
-	public Map<String, Boolean> resume() throws Exception
+	public Boolean resume() throws Exception
 	{
-		return new ResumeStruct(true).toMap();
+		return true;
+	}
+
+	public Boolean setSettings(List<Map<String, Object>> data) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Map<String, Object>> querySettings(List<String> data)
+			throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -40,18 +40,22 @@ public class DBGPReaderCoSim extends DBGPReaderV2
 		super(host, port, ideKey, interpreter, expression, cpu);
 	}
 
-	/**
-	 * Only connect, skip interpreter.init and remote set
-	 */
+
 	@Override
 	public void startup(RemoteControl remote) throws IOException
 	{
-		interpreter.init(this);
-		connect();
+//		interpreter.init(this);
+//		connect();
+		super.startup(remote);
 	}
 
 	public DBGPStatus getStatus()
 	{
 		return this.status;
+	}
+	
+	public void startCoSimulation() throws Exception
+	{
+//		 interpreter.execute(expression, this);
 	}
 }

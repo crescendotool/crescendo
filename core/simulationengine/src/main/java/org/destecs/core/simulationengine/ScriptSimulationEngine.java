@@ -27,6 +27,8 @@ import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.core.simulationengine.script.ISimulatorControl;
 import org.destecs.core.simulationengine.script.ScriptEvaluator;
 import org.destecs.protocol.ProxyICoSimProtocol;
+import org.destecs.protocol.structs.GetParametersStruct;
+import org.destecs.protocol.structs.SetParametersparametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
@@ -34,8 +36,8 @@ import org.destecs.script.ast.node.INode;
 
 /**
  * Custom simulation engine that evaluates a script as past of the stepping
+ * 
  * @author kela
- *
  */
 public class ScriptSimulationEngine extends SimulationEngine
 {
@@ -44,7 +46,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 		public void setVariable(Simulator simulator, String name, boolean value)
 		{
-			setVariable(simulator, name, value == true ? 1.0: 0.0 );
+			setVariable(simulator, name, value == true ? 1.0 : 0.0);
 		}
 
 		public void setVariable(Simulator simulator, String name, double value)
@@ -65,7 +67,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 					}
 				}
 			}
-			
+
 			if (!inAfter && inputsBefore != null)
 			{
 				for (StepinputsStructParam out : inputsBefore)
@@ -92,11 +94,23 @@ public class ScriptSimulationEngine extends SimulationEngine
 					switch (simulator)
 					{
 						case CT:
+						{
+							// TODO check this
 							// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
 							// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
+							list.add(parm);
+							ctProxy.setParameters(list);
+						}
 							break;
 						case DE:
-							deProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+						{
+							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
+							list.add(parm);
+							deProxy.setParameters(list);
+						}
 							break;
 
 					}
@@ -141,8 +155,8 @@ public class ScriptSimulationEngine extends SimulationEngine
 					}
 				}
 			}
-			
-			if (!inAfter && inputsBefore!= null)
+
+			if (!inAfter && inputsBefore != null)
 			{
 				for (StepinputsStructParam out : inputsBefore)
 				{
@@ -158,12 +172,27 @@ public class ScriptSimulationEngine extends SimulationEngine
 				switch (simulator)
 				{
 					case CT:
+					{
+						// TODO check this
+						GetParametersStruct data = ctProxy.getParameters(Arrays.asList(new String[] { name }));
+
+						if (!data.parameters.isEmpty())
+						{
+							return data.parameters.get(0).value.get(0);// TODO check this
+						}
+					}
 						// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
 						// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
 						break;
 					case DE:
+					{
+						GetParametersStruct data = deProxy.getParameters(Arrays.asList(new String[] { name }));
 
-						return deProxy.getParameter(name);
+						if (!data.parameters.isEmpty())
+						{
+							return data.parameters.get(0).value.get(0);// TODO check this
+						}
+					}
 
 				}
 			} catch (Exception e)
@@ -175,7 +204,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 		public void scriptError(String string)
 		{
-			engineInfo(Simulator.ALL, "Error in script: "+string);
+			engineInfo(Simulator.ALL, "Error in script: " + string);
 			quite();
 		}
 
@@ -213,8 +242,9 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 	@Override
 	protected void beforeStep(Simulator nextStepEngine, Double nextTime,
-			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy, List<StepinputsStructParam> inputs, Boolean singleStep, List<String> events)
-			throws SimulationException
+			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy,
+			List<StepinputsStructParam> inputs, Boolean singleStep,
+			List<String> events) throws SimulationException
 	{
 		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy, inputs, singleStep, events);
 		this.inAfter = false;
