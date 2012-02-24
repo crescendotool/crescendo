@@ -31,6 +31,7 @@ import org.destecs.core.simulationengine.script.ISimulatorControl;
 import org.destecs.core.simulationengine.script.ScriptEvaluator;
 import org.destecs.protocol.ProxyICoSimProtocol;
 import org.destecs.protocol.structs.GetParametersStruct;
+import org.destecs.protocol.structs.GetParametersStructparametersStruct;
 import org.destecs.protocol.structs.SetParametersparametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
@@ -194,8 +195,15 @@ public class ScriptSimulationEngine extends SimulationEngine
 
 						if (!data.parameters.isEmpty())
 						{
-							return data.parameters.get(0).value.get(0);// TODO check this
+							for (GetParametersStructparametersStruct p : data.parameters)
+							{
+								if(p.name.equals(name))
+								{
+									return p.value.get(0);
+								}
+							}
 						}
+						scriptError("No apropiate parameter is returned from the simulator");
 					}
 
 				}

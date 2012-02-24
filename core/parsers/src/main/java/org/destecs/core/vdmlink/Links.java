@@ -29,10 +29,11 @@ public class Links
 	private final List<String> inputs;
 	private final List<String> events;
 	private final List<String> designParameters;
+	private final List<String> model;
 
 	public Links(Map<String, LinkInfo> link, List<String> outputs,
 			List<String> inputs, List<String> events,
-			List<String> designParameters)
+			List<String> designParameters, List<String> model)
 	{
 
 		this.link = link;
@@ -40,6 +41,7 @@ public class Links
 		this.inputs = inputs;
 		this.events = events;
 		this.designParameters = designParameters;
+		this.model = model;
 
 	}
 
@@ -78,6 +80,18 @@ public class Links
 		for (String input : inputs)
 		{
 			result.put(input, link.get(input));
+		}
+		return result;
+	}
+	
+	public Map<String, LinkInfo> getModel()
+	{
+
+		Map<String, LinkInfo> result = new HashMap<String, LinkInfo>();
+
+		for (String m : model)
+		{
+			result.put(m, link.get(m));
 		}
 		return result;
 	}

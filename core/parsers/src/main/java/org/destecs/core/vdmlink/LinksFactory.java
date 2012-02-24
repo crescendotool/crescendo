@@ -30,7 +30,8 @@ public class LinksFactory {
 	private List<String> outputs = new ArrayList<String>();
 	private List<String> inputs = new ArrayList<String>();
 	private List<String> events = new ArrayList<String>();
-	private List<String> sdp = new ArrayList<String>();	
+	private List<String> sdp = new ArrayList<String>();
+	private List<String> model = new ArrayList<String>();	
 	
 	
 	public void addEvent(String name){
@@ -65,6 +66,10 @@ public class LinksFactory {
 		sdp.addAll(names);
 	}
 	
+	public void addModel(String name){
+		model.add(name);
+	}
+	
 	public void addLink(String name, LinkInfo lInfo){
 //		if(link.containsKey(name)){
 //			valid = false;
@@ -73,7 +78,7 @@ public class LinksFactory {
 	}
 	
 	public Links getLinks(){
-		Links links = new Links(link,outputs,inputs,events,sdp);
+		Links links = new Links(link,outputs,inputs,events,sdp,model);
 		return links;
 	}
 	

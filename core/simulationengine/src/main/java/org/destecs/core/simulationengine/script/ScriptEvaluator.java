@@ -88,7 +88,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		if (v instanceof BooleanValue && ((BooleanValue) v).value
 				|| checkWhenFor(node))
 		{
-			if (node.getFor() != null && whenForExp.get(node)==null)
+			if (node.getFor() != null && whenForExp.get(node) == null)
 			{
 				Double expireTime = ((DoubleValue) node.getFor().apply(expEval)).value
 						+ ((DoubleValue) new ASystemTimeSingleExp().apply(expEval)).value;
@@ -101,9 +101,12 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		} else
 		{
 			whenForExp.remove(node);
-			for (PStm stm : node.getAfter())
+			if (variableCache.containsKey(node))
 			{
-				stm.apply(this);
+				for (PStm stm : node.getAfter())
+				{
+					stm.apply(this);
+				}
 			}
 		}
 	}
@@ -123,13 +126,15 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	public void caseAAssignStm(AAssignStm node)
 	{
 		Value v = null;
-		try{
-			v= node.getValue().apply(expEval);
-		}catch(Exception e)
+		try
 		{
-			interpreter.scriptError("Failed to evaluate expression in assigment: "+node.getValue());
+			v = node.getValue().apply(expEval);
+		} catch (Exception e)
+		{
+			interpreter.scriptError("Failed to evaluate expression in assigment: "
+					+ node.getValue());
 		}
-		
+
 		Simulator simulator = null;
 		if (node.getDomain() instanceof ADeDomain)
 		{
@@ -147,9 +152,10 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		} else if (v instanceof DoubleValue)
 		{
 			interpreter.setVariable(simulator, node.getName(), ((DoubleValue) v).value);
-		}else
+		} else
 		{
-			interpreter.scriptError("Unsupported value returned from expression in assignment statement("+node+") - "+v);
+			interpreter.scriptError("Unsupported value returned from expression in assignment statement("
+					+ node + ") - " + v);
 		}
 	}
 
@@ -187,7 +193,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	@Override
 	public void caseARevertStm(ARevertStm node)
 	{
-		VariableValue var = getVariableValue(node.getAncestor(AWhenStm.class), node.getName());
+		VariableValue var = getVariableValue(node.getAncestor(AWhenStm.class), node.getIdentifier().getName());
 		if (var != null)
 		{
 			if (var.value instanceof BooleanValue)
@@ -196,13 +202,15 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			} else if (var.value instanceof DoubleValue)
 			{
 				interpreter.setVariable(var.simulator, var.name, ((DoubleValue) var.value).value);
-			}else
+			} else
 			{
-				interpreter.scriptError("Unsupported value returned from expression in assignment statement("+node+") - "+var);
+				interpreter.scriptError("Unsupported value returned from expression in assignment statement("
+						+ node + ") - " + var);
 			}
-		}else
+		} else
 		{
-			interpreter.scriptError("Failed evaluating revert. No value cached for: "+ node.getName());
+			interpreter.scriptError("Failed evaluating revert. No value cached for: "
+					+ node.getIdentifier());
 		}
 	}
 

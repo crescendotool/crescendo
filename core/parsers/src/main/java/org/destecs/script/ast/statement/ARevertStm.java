@@ -30,6 +30,7 @@ import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.statement.EStm;
 import java.lang.String;
+import org.destecs.script.ast.expressions.AIdentifierSingleExp;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
@@ -43,17 +44,18 @@ public class ARevertStm extends PStmBase
 {
 	private static final long serialVersionUID = 1L;
 
-	private String _name;
+	private AIdentifierSingleExp _identifier;
+
 
 	/**
 	* Creates a new {@code ARevertStm} node with the given nodes as children.
 	* The basic child nodes are removed from their previous parents.
-	* @param name_ the {@link String} node for the {@code name} child of this {@link ARevertStm} node
+	* @param identifier_ the {@link AIdentifierSingleExp} node for the {@code identifier} child of this {@link ARevertStm} node
 	*/
-	public ARevertStm(String name_)
+	public ARevertStm(AIdentifierSingleExp identifier_)
 	{
 		super();
-		this.setName(name_);
+		this.setIdentifier(identifier_);
 
 	}
 
@@ -69,7 +71,6 @@ public class ARevertStm extends PStmBase
 
 
 
-
 	/**
 	 * Essentially this.toString().equals(o.toString()).
 	**/
@@ -79,51 +80,10 @@ public class ARevertStm extends PStmBase
 	 return toString().equals(o.toString());
 	return false; }
 	
-	/**
-	 * Returns a deep clone of this {@link ARevertStm} node.
-	 * @return a deep clone of this {@link ARevertStm} node
-	 */
-	public ARevertStm clone()
-	{
-		return new ARevertStm(
-			_name
-		);
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link ARevertStm} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ARevertStm} node
-	 */
-	public ARevertStm clone(Map<INode,INode> oldToNewMap)
-	{
-		ARevertStm node = new ARevertStm(
-			_name
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
 
 	public String toString()
 	{
-		return (_name!=null?_name.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ARevertStm} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ARevertStm} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ARevertStm} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
+		return (_identifier!=null?_identifier.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -140,21 +100,77 @@ public class ARevertStm extends PStmBase
 
 
 	/**
-	 * Sets the {@code _name} child of this {@link ARevertStm} node.
-	 * @param value the new {@code _name} child of this {@link ARevertStm} node
-	*/
-	public void setName(String value)
+	 * Returns a deep clone of this {@link ARevertStm} node.
+	 * @return a deep clone of this {@link ARevertStm} node
+	 */
+	public ARevertStm clone()
 	{
-		this._name = value;
+		return new ARevertStm(
+			cloneNode(_identifier)
+		);
 	}
 
 
 	/**
-	 * @return the {@link String} node which is the {@code _name} child of this {@link ARevertStm} node
-	*/
-	public String getName()
+	 * Removes the {@link INode} {@code child} as a child of this {@link ARevertStm} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ARevertStm} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ARevertStm} node
+	 */
+	public void removeChild(INode child)
 	{
-		return this._name;
+		if (this._identifier == child) {
+			this._identifier = null;
+			return;
+		}
+
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link ARevertStm} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ARevertStm} node
+	 */
+	public ARevertStm clone(Map<INode,INode> oldToNewMap)
+	{
+		ARevertStm node = new ARevertStm(
+			cloneNode(_identifier, oldToNewMap)
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+	/**
+	 * Sets the {@code _identifier} child of this {@link ARevertStm} node.
+	 * @param value the new {@code _identifier} child of this {@link ARevertStm} node
+	*/
+	public void setIdentifier(AIdentifierSingleExp value)
+	{
+		if (this._identifier != null) {
+			this._identifier.parent(null);
+		}
+		if (value != null) {
+			if (value.parent() != null) {
+				value.parent().removeChild(value);
+		}
+			value.parent(this);
+		}
+		this._identifier = value;
+
+	}
+
+
+	/**
+	 * @return the {@link AIdentifierSingleExp} node which is the {@code _identifier} child of this {@link ARevertStm} node
+	*/
+	public AIdentifierSingleExp getIdentifier()
+	{
+		return this._identifier;
 	}
 
 

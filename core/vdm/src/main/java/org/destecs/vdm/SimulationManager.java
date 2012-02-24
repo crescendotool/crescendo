@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.destecs.core.parsers.VdmLinkParserWrapper;
@@ -71,7 +72,6 @@ import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.types.Type;
-import org.overturetool.vdmj.types.UnresolvedType;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
@@ -682,6 +682,7 @@ public class SimulationManager extends BasicSimulationManager
 							}
 							else if(vDef.exp instanceof SeqExpression)
 							{
+								//FIXME: Whats this.
 								System.out.println("getDesignParameter:Sequence");
 							}
 								
@@ -712,7 +713,11 @@ public class SimulationManager extends BasicSimulationManager
 
 		throw new RemoteSimulationException("Internal error in get design parameter");
 	}
-
+/**
+ * This function returns VDM values which is constants
+ * @return
+ * @throws RemoteSimulationException
+ */
 	public Map<String, ValueContents> getParameters() throws RemoteSimulationException
 	{
 		try
@@ -736,6 +741,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw new RemoteSimulationException("Internal error in get parameters", e);
 		}
 	}
+	
 
 	private Map<String,ValueContents> getParameters(String name,
 			NameValuePairList members, int depth) throws ValueException
@@ -767,6 +773,45 @@ public class SimulationManager extends BasicSimulationManager
 		return parameters;
 	}
 
+	/**
+	 * This function returns a collection of VDM instance variables
+	 * @param filter a filter used to restrict the returned collection, if empty the full set is returned
+	 * @return
+	 * @throws RemoteSimulationException
+	 */
+	public Map<String, ValueContents> getParameters(List<String> filter) throws RemoteSimulationException
+	{
+		try
+		{
+			Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
+
+//			NameValuePairList list = SystemDefinition.getSystemMembers();
+//			if (list != null && list.size() > 0)
+//			{
+//				parameters.putAll(getParameters(list.get(0).name.module, list, 0));
+//			}
+			for (Entry<String, LinkInfo> entrySet : this.links.getModel().entrySet())
+			{
+				if(!filter.isEmpty() && !filter.contains(entrySet.getKey()))
+				{
+					continue;
+				}
+				ValueContents val = getOutput(entrySet.getKey());
+				parameters.put(entrySet.getKey(), val);
+			}
+
+			return parameters;
+		} catch (Exception e)
+		{
+			debugErr(e);
+			if (e instanceof RemoteSimulationException)
+			{
+				throw (RemoteSimulationException) e;
+			}
+			throw new RemoteSimulationException("Internal error in get parameters", e);
+		}
+	}
+	
 	public Boolean setParameter(String name, ValueContents valueContents)
 			throws RemoteSimulationException
 	{

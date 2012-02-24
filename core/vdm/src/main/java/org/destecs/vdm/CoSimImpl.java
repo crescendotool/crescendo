@@ -426,7 +426,7 @@ public class CoSimImpl implements IDestecs
 		List<GetParametersStructparametersStruct> list = new Vector<GetParametersStructparametersStruct>();
 		try
 		{
-			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getParameters().entrySet())
+			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getParameters(data).entrySet())
 			{
 				list.add(new GetParametersStructparametersStruct(p.getKey(), p.getValue().value, p.getValue().size));
 			}

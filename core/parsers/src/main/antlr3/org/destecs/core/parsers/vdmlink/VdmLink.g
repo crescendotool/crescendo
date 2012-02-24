@@ -236,22 +236,27 @@ link
       if(s.equalsIgnoreCase("output"))
       {
         links.addOutput($a.text);
-      }
+      }else
       
       if(s.equalsIgnoreCase("input"))
       {
         links.addInput($a.text);
-      }
+      }else
       
       if(s.equalsIgnoreCase("sdp"))
       {
         links.addSDP($a.text);
-      }
+      }else
       
       if(s.equalsIgnoreCase("event"))
       {
         links.addEvent($a.text);
-      }    
+      }else
+      
+      if(s.equalsIgnoreCase("model"))
+      {
+        links.addModel($a.text);
+      } 
     }
     ;
 

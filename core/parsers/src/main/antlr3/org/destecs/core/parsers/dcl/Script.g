@@ -321,7 +321,7 @@ assignStatement returns [AAssignStm value]
 revertStatement returns [ARevertStm value]
   : REVERT identifier
   {
-    $value = new ARevertStm($identifier.text);
+    $value = new ARevertStm($identifier.value);
   }
   ; 
 
