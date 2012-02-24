@@ -126,11 +126,15 @@ public class SimulationEngine
 	/**
 	 * Minimum required version for the CT simulator
 	 */
-	private static final Integer[] MIN_VERSION_CT = new Integer[] { 4, 1, 3, 8 };
+	private static final Integer[] MIN_VERSION_CT = new Integer[] { 4, 2, 0, 0 };
 	/**
 	 * Minimum required version for the DE simulator
 	 */
 	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 1, 0 };
+	/**
+	 * Minimum required version protocol version
+	 */
+	private static final Integer[] MIN_VERSION_PROTOCOL = new Integer[] { 3, 0, 2, 0 };
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
@@ -1061,6 +1065,8 @@ public class SimulationEngine
 			}
 		}
 
+		String ctProtocol = null;
+		String deProtocol = null;
 		try
 		{
 			messageInfo(simulator, new Double(0), "getVersion");
@@ -1073,9 +1079,11 @@ public class SimulationEngine
 					break;
 				case CT:
 					ctVersion = version.version.trim();
+					ctProtocol = version.interfaceVersion.trim();
 					break;
 				case DE:
 					deVersion = version.version.trim();
+					deProtocol = version.interfaceVersion.trim();
 					break;
 
 			}
@@ -1087,19 +1095,14 @@ public class SimulationEngine
 		switch (simulator)
 		{
 			case CT:
-				versionCheck(simulator, ctVersion, MIN_VERSION_CT);
+				versionCheck(simulator,false, ctVersion, MIN_VERSION_CT);
+				versionCheck(simulator,true, ctProtocol, MIN_VERSION_PROTOCOL);
 				break;
 			case DE:
-				versionCheck(simulator, deVersion, MIN_VERSION_DE);
+				versionCheck(simulator,false, deVersion, MIN_VERSION_DE);
+				versionCheck(simulator,true, deProtocol, MIN_VERSION_PROTOCOL);
 				break;
 
-		}
-
-		if (simulator == Simulator.CT
-				&& !versionCheck(simulator, ctVersion, MIN_VERSION_CT))
-		{
-			abort(simulator, "Simulator version not supported: " + ctVersion
-					+ " <> expected " + MIN_VERSION_CT);
 		}
 
 		try
@@ -1330,7 +1333,7 @@ public class SimulationEngine
 		return sb.toString().trim();
 	}
 
-	public boolean versionCheck(Simulator simulator, String version,
+	public boolean versionCheck(Simulator simulator,boolean protocolCheck ,String version,
 			Integer... number) throws SimulationException
 	{
 		try
@@ -1344,8 +1347,8 @@ public class SimulationEngine
 				{
 					if (!(Integer.valueOf(elements[i]) >= num))
 					{
-						abort(simulator, "Simulator version not supported: "
-								+ version + " <> expected " + number);
+						abort(simulator, "Simulator"+(protocolCheck?" protocol ":"")+" version not supported: "
+								+ version + " <> expected " + arrayToString(number));
 					}
 
 					if (Integer.valueOf(elements[i]) > num)
@@ -1354,17 +1357,31 @@ public class SimulationEngine
 					}
 				} else
 				{
-					abort(simulator, "Simulator version not supported: "
-							+ version + " <> expected " + number);
+					abort(simulator, "Simulator"+(protocolCheck?" protocol ":"")+" version not supported: "
+							+ version + " <> expected " +arrayToString( number));
 				}
 			}
 			return true;
 		} catch (NumberFormatException e)
 		{
-			abort(simulator, "Failed to parse version number: " + version
-					+ " tried to check for version: " + number);
+			abort(simulator, "Failed to parse"+(protocolCheck?" protocol ":"")+" version number: " + version
+					+ " tried to check for version: " + arrayToString(number));
 		}
 		return true;
+	}
+	
+	private static String arrayToString(Integer... nums)
+	{
+		String tmp = "";
+		for (Integer integer : nums)
+		{
+			tmp+=integer+".";
+		}
+		if(tmp.length()>0)
+		{
+			tmp = tmp.substring(0,tmp.length()-1);
+		}
+		return tmp;
 	}
 
 	public void debug(boolean enable)

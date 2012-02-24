@@ -75,7 +75,7 @@ public class CoSimImpl implements IDestecs
 
 	private static final String version = "0.0.1.0";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
-	private String interfaceVersion = "3.0.0.0";
+	private String interfaceVersion = "3.0.2.0";
 
 	public Map<String, Integer> getStatus()
 	{
