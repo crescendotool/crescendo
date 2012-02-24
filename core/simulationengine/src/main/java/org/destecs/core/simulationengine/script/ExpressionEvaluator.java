@@ -60,7 +60,8 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 				return Value.valueOf(node.getValue()*(10E-6));
 
 		}
-		return Value.valueOf(0);
+		interpreter.scriptError("Failed evaluating time expression: "+node );
+		return null;
 	}
 
 	@Override
@@ -249,6 +250,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 				break;
 
 		}
+		interpreter.scriptError("Failed to evaluate binary expression: " + node);
 		return new BooleanValue(false);
 	}
 
@@ -265,8 +267,10 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 				}
 				break;
 			case ADD:
-				// TODO
-				interpreter.scriptError("No idea what a unop \'add' is!");
+				if (val instanceof DoubleValue)
+				{
+					return val;//Assume this just means +5.0 as in 5.0
+				}
 				break;
 			case CEIL:
 				if (val instanceof DoubleValue)
@@ -288,6 +292,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 				break;
 
 		}
+		interpreter.scriptError("Failed to evaluate binary expression: " + node);
 		return new BooleanValue(false);
 	}
 

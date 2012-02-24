@@ -122,7 +122,14 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	@Override
 	public void caseAAssignStm(AAssignStm node)
 	{
-		Value v = node.getValue().apply(expEval);
+		Value v = null;
+		try{
+			v= node.getValue().apply(expEval);
+		}catch(Exception e)
+		{
+			interpreter.scriptError("Failed to evaluate expression in assigment: "+node.getValue());
+		}
+		
 		Simulator simulator = null;
 		if (node.getDomain() instanceof ADeDomain)
 		{
@@ -140,6 +147,9 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		} else if (v instanceof DoubleValue)
 		{
 			interpreter.setVariable(simulator, node.getName(), ((DoubleValue) v).value);
+		}else
+		{
+			interpreter.scriptError("Unsupported value returned from expression in assignment statement("+node+") - "+v);
 		}
 	}
 
@@ -186,7 +196,13 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			} else if (var.value instanceof DoubleValue)
 			{
 				interpreter.setVariable(var.simulator, var.name, ((DoubleValue) var.value).value);
+			}else
+			{
+				interpreter.scriptError("Unsupported value returned from expression in assignment statement("+node+") - "+var);
 			}
+		}else
+		{
+			interpreter.scriptError("Failed evaluating revert. No value cached for: "+ node.getName());
 		}
 	}
 

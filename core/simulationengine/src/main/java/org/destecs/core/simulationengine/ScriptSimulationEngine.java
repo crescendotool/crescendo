@@ -19,6 +19,9 @@
 package org.destecs.core.simulationengine;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -96,12 +99,11 @@ public class ScriptSimulationEngine extends SimulationEngine
 						case CT:
 						{
 							// TODO check this
-							// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
-							// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
 							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
 							List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
 							list.add(parm);
 							ctProxy.setParameters(list);
+							found = true;
 						}
 							break;
 						case DE:
@@ -110,14 +112,18 @@ public class ScriptSimulationEngine extends SimulationEngine
 							List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
 							list.add(parm);
 							deProxy.setParameters(list);
+							found = true;
 						}
 							break;
-
 					}
 				} catch (Exception e)
 				{
-					e.printStackTrace();
+					scriptError("Faild to set variable: "+name+" = "+value);
 				}
+			}
+			if(!found)
+			{
+				scriptError("Failure in setVariable. Not able to find \""+name+"\" as a shared variable or in the models");
 			}
 
 		}
@@ -181,8 +187,6 @@ public class ScriptSimulationEngine extends SimulationEngine
 							return data.parameters.get(0).value.get(0);// TODO check this
 						}
 					}
-						// ctProxy.setParameter(name, new Vector<Double>(Arrays.asList(new Double[] { value ==true ?
-						// 1.0:0.0 })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
 						break;
 					case DE:
 					{
@@ -197,8 +201,9 @@ public class ScriptSimulationEngine extends SimulationEngine
 				}
 			} catch (Exception e)
 			{
-				e.printStackTrace();
+				scriptError("Failure in getVariableValue with "+name, e);
 			}
+			scriptError("Failure in getVariableValue, could not get value for: "+name);
 			return null;
 		}
 
@@ -207,6 +212,19 @@ public class ScriptSimulationEngine extends SimulationEngine
 			engineInfo(Simulator.ALL, "Error in script: " + string);
 			quite();
 		}
+		
+		public void scriptError(String string, Exception e)
+		{
+			engineInfo(Simulator.ALL, "Error in script: " + string+" Exception: "+getStackTrace(e));
+			quite();
+		}
+		
+		private String getStackTrace(Throwable aThrowable) {
+		    final Writer result = new StringWriter();
+		    final PrintWriter printWriter = new PrintWriter(result);
+		    aThrowable.printStackTrace(printWriter);
+		    return result.toString();
+		  }
 
 	}
 
