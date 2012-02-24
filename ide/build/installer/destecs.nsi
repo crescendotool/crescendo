@@ -271,7 +271,7 @@ Function 20simInstall
   ; Print to detail log
   DetailPrint "Installing 20-sim (Silent mode)"  
   ;Executing the installer
-  ExecWait  '"$INSTDIR\${SIM20_EXE} /S"'
+  ExecWait  '"$INSTDIR\${SIM20_EXE}'
   DetailPrint "Done installing 20-sim (Silent mode)"  
   
   ; Update the Windows Registry
