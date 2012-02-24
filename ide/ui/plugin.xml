@@ -385,6 +385,30 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.destecs.ide.ui.commands.ToggleComment"
+            commandId="org.overture.ide.ui.commands.toggleComment">
+         <activeWhen>
+            <reference
+                  definitionId="org.destecs.ide.ui.insideDestecsEditor">
+            </reference>
+         </activeWhen>
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="org.destecs.ide.ui.insideDestecsEditor">
+         <with
+               variable="activeEditor">
+            <instanceof
+                  value="org.destecs.ide.ui.editor.impl.AbstractDestecsEditor">
+            </instanceof>
+         </with>
+      </definition>
+   </extension>
    
 <!-- 
 	New contract  command

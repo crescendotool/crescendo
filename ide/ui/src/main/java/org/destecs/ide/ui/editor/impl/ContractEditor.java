@@ -27,14 +27,14 @@ import org.destecs.ide.ui.editor.core.DestecsDocumentProvider;
 import org.destecs.ide.ui.editor.syntax.DestecsColorProvider;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.rules.ITokenScanner;
-import org.eclipse.ui.editors.text.TextEditor;
 
-public class ContractEditor extends TextEditor
+public class ContractEditor extends AbstractDestecsEditor
 {
 	public static class DestecsContractSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
 	{
 
+		
 		@Override
 		protected ITokenScanner getCodeScaner(DestecsColorProvider colorProvider)
 		{

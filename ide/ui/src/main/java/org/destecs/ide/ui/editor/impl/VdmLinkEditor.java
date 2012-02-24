@@ -31,9 +31,8 @@ import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.ui.editors.text.TextEditor;
 
-public class VdmLinkEditor extends TextEditor
+public class VdmLinkEditor extends AbstractDestecsEditor
 {
 	public static class VdmLinkSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
@@ -116,7 +115,8 @@ public class VdmLinkEditor extends TextEditor
 	protected void initializeEditor()
 	{
 		super.initializeEditor();
-		setSourceViewerConfiguration(getVdmLinkSourceViewerConfiguration());
+		configuration = getVdmLinkSourceViewerConfiguration();
+		setSourceViewerConfiguration(configuration);
 	}
 
 	public VdmLinkSourceViewerConfiguration getVdmLinkSourceViewerConfiguration()

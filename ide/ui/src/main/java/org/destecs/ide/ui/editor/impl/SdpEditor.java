@@ -27,9 +27,8 @@ import org.destecs.ide.ui.editor.core.DestecsDocumentProvider;
 import org.destecs.ide.ui.editor.syntax.DestecsColorProvider;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.rules.ITokenScanner;
-import org.eclipse.ui.editors.text.TextEditor;
 
-public class SdpEditor extends TextEditor
+public class SdpEditor extends AbstractDestecsEditor
 {
 	public static class SdpSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
@@ -97,7 +96,8 @@ public class SdpEditor extends TextEditor
 	protected void initializeEditor()
 	{
 		super.initializeEditor();
-		setSourceViewerConfiguration(getSdpSourceViewerConfiguration());
+		configuration = getSdpSourceViewerConfiguration();
+		setSourceViewerConfiguration(configuration);
 	}
 
 	public SdpSourceViewerConfiguration getSdpSourceViewerConfiguration()

@@ -27,9 +27,8 @@ import org.destecs.ide.ui.editor.core.DestecsDocumentProvider;
 import org.destecs.ide.ui.editor.syntax.DestecsColorProvider;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.rules.ITokenScanner;
-import org.eclipse.ui.editors.text.TextEditor;
 
-public class ScriptEditor extends TextEditor
+public class ScriptEditor extends AbstractDestecsEditor
 {
 	public static class ScenarioSourceViewerConfiguration extends
 			DestecsBaseSourceViewerConfiguration
@@ -97,7 +96,8 @@ public class ScriptEditor extends TextEditor
 	protected void initializeEditor()
 	{
 		super.initializeEditor();
-		setSourceViewerConfiguration(getScenarioSourceViewerConfiguration());
+		configuration = getScenarioSourceViewerConfiguration();
+		setSourceViewerConfiguration(configuration);
 	}
 
 	public ScenarioSourceViewerConfiguration getScenarioSourceViewerConfiguration()
