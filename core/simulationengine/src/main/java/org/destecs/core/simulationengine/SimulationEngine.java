@@ -363,9 +363,9 @@ public class SimulationEngine
 			startSimulator(Simulator.DE, deProxy, totalSimulationTime);
 			startSimulator(Simulator.CT, ctProxy, totalSimulationTime);
 
-			// FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim
-			// at the moment
-			setLogVariables(Simulator.CT, ctProxy, ctModel);
+//			// FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim
+//			// at the moment
+//			setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			long before = System.currentTimeMillis();
 			Double finishTime = simulate(totalSimulationTime, deProxy, ctProxy);
