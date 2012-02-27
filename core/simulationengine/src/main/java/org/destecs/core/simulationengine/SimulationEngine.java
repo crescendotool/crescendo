@@ -353,7 +353,7 @@ public class SimulationEngine
 
 			// set variables to log
 			setLogVariables(Simulator.DE, deProxy, deModelBase);
-			setLogVariables(Simulator.CT, ctProxy, ctModel);
+//			setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			// set SDPs
 			setSharedDesignParameters(Simulator.DE, deProxy, sharedDesignParameters);
@@ -365,7 +365,7 @@ public class SimulationEngine
 
 //			// FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim
 //			// at the moment
-//			setLogVariables(Simulator.CT, ctProxy, ctModel);
+			setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			long before = System.currentTimeMillis();
 			Double finishTime = simulate(totalSimulationTime, deProxy, ctProxy);
