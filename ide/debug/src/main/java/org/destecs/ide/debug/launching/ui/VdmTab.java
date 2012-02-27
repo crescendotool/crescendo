@@ -543,7 +543,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 
 	public String getName()
 	{
-		return "VDM Options";
+		return "VDM";
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration)

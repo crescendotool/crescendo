@@ -592,7 +592,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	public String getName()
 	{
 
-		return "20-sim options";
+		return "20-sim";
 	}
 
 	public IProject getProject()

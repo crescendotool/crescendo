@@ -41,6 +41,7 @@ public class CoSimLaunchConfigurationTabGroup extends
 				//new DseTab(), 
 				new VdmTab(), 
 				new Clp20simTab(),
+				new PostProcessTab(),
 				new DevelopLaunchConfigurationTab(),
 				new CommonTab() };
 		setTabs(tabs);

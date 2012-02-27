@@ -69,7 +69,7 @@ public class DevelopLaunchConfigurationTab extends
 	private Button checkBoxDebug = null;
 	private Button checkBoxEnableLogging = null;
 	private Button checkBoxShowDebugIngo = null;
-	private Button checkBoxShowOctavePlot = null;
+//	private Button checkBoxShowOctavePlot = null;
 	private Text ctUrl = null;
 	private Text deUrl = null;
 	// private Combo syncSchemeDropDown;
@@ -121,10 +121,10 @@ public class DevelopLaunchConfigurationTab extends
 		checkBoxDebug.setSelection(false);
 		checkBoxDebug.addSelectionListener(fListener);
 		
-		checkBoxShowOctavePlot = new Button(group, SWT.CHECK);
-		checkBoxShowOctavePlot.setText("Show Octave Plots From Script");
-		checkBoxShowOctavePlot.setSelection(false);
-		checkBoxShowOctavePlot.addSelectionListener(fListener);
+//		checkBoxShowOctavePlot = new Button(group, SWT.CHECK);
+//		checkBoxShowOctavePlot.setText("Show Octave Plots From Script");
+//		checkBoxShowOctavePlot.setSelection(false);
+//		checkBoxShowOctavePlot.addSelectionListener(fListener);
 		
 	}
 
@@ -178,7 +178,7 @@ public class DevelopLaunchConfigurationTab extends
 			checkBoxDebug.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, false));
 			checkBoxEnableLogging.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false));
 			checkBoxShowDebugIngo.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false));
-			checkBoxShowOctavePlot.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
+//			checkBoxShowOctavePlot.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
 		} catch (CoreException e)
 		{
 			if (DestecsDebugPlugin.DEBUG)
@@ -216,7 +216,7 @@ public class DevelopLaunchConfigurationTab extends
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, ctUrl.getText());
 		// syncscheme
 		// configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, syncSchemeDropDown.getText());
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, checkBoxShowOctavePlot.getSelection());
+//		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, checkBoxShowOctavePlot.getSelection());
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
@@ -230,7 +230,7 @@ public class DevelopLaunchConfigurationTab extends
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DEFAULT_CT_ENDPOINT);
 		
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false);
+//		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false);
 	}
 
 	@Override
