@@ -397,7 +397,7 @@ public class OctaveFactory
 		StringBuilder sb = new StringBuilder();
 		sb.append("function res = reduceCsv (data)\n");
 		sb.append("\tglobal destecsPlotResolution;\n");
-		sb.append("\tres= data(1:ceil (rows(data)/10):end,:) ;\n");
+		sb.append("\tres= data(1:ceil (rows(data)/destecsPlotResolution):end,:) ;\n");
 		sb.append("endfunction\n");
 		return sb.toString();
 	}
