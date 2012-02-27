@@ -438,7 +438,7 @@ public class SimulationEngine
 
 			engineInfo(simulator, "Enable logging for:"
 					+ modelConfig.logVariables);
-			proxy.setLogVariables(modelConfig.logFile.getAbsolutePath(), false, new Vector<String>(modelConfig.logVariables));
+			proxy.setLogVariables(modelConfig.logFile.getAbsolutePath(), true, new Vector<String>(modelConfig.logVariables));
 
 		} catch (Exception e)
 		{
