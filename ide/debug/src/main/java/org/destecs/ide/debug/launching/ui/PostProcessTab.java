@@ -22,7 +22,6 @@ public class PostProcessTab extends AbstractLaunchConfigurationTab {
 	private WidgetListener fListener = new WidgetListener();
 	
 	
-	@Override
 	public void createControl(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
@@ -48,13 +47,11 @@ public class PostProcessTab extends AbstractLaunchConfigurationTab {
 		
 	}
 
-	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false);
 		
 	}
 
-	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
 			checkBoxOctavePlot.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
@@ -65,13 +62,11 @@ public class PostProcessTab extends AbstractLaunchConfigurationTab {
 		
 	}
 
-	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, checkBoxOctavePlot.getSelection());
 		
 	}
 
-	@Override
 	public String getName() {		
 		return "Post-Processing";
 	}
