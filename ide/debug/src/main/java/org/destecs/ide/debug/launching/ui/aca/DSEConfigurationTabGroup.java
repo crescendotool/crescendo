@@ -33,7 +33,8 @@ public class DSEConfigurationTabGroup extends
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				new DseMainTab(),
-				new DseArchitectureTab(),
+				//new DseArchitectureTab(),
+				new ArchitectureSelectionTab(),
 				new SharedDesignParameterAcaTab(),
 				new CommonTab() };
 		setTabs(tabs);

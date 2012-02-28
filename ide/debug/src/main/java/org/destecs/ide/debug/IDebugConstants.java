@@ -83,4 +83,6 @@ public interface IDebugConstants {
 	public static final String DESTECS_ACA_VALUESET_SDPS = "DESTECS_ACA_VALUESET_SDPS".toLowerCase();
 	
 	public static final String DESTECS_LAUNCH_CONFIG_DEBUG = "DESTECS_LAUNCH_CONFIG_DEBUG".toLowerCase();
+
+	public static final String DESTECS_ACA_ARCHITECTURES = "DESTECS_ACA_ARCHITECTURES".toLowerCase();
 }
