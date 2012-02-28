@@ -236,9 +236,9 @@ Function 20simVersionTest
 
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Controllab Products B.V.\20-sim 4.2\" "Version"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayVersion"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Controllab Products B.V.\20-sim 4.2\" "Version"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayVersion"
 ${EndIf}
 
 
