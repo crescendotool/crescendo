@@ -274,15 +274,15 @@ contract
 	;
 	
 body 
-	: parameters 
-	| variables
+	//:  parameters 
+	: variables
 	| events
 	;
 
-parameters 
-	: sharedDesignParamater t=type ID ';' 
-	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null,$ID.getLine())); }
-	;
+//parameters 
+//	: sharedDesignParamater t=type ID ';' 
+//	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null,$ID.getLine())); }
+//	;
 
 
 sharedDesignParamater
@@ -293,9 +293,11 @@ sharedDesignParamater
 variables 
 	: k=kind t=type ID ASSIGN v=value ';' 
 	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v,$ID.getLine()));}
-	| k=kind MATRIX ID sizes=arrayspec ';'
+	| sdp_kind t=type ID ';' 
+	 
+	| k=twokinds MATRIX ID sizes=arrayspec ';'
 	 {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
-	| k=kind ARRAY ID sizes=oneDimArrayspec ';'
+	| k=twokinds ARRAY ID sizes=oneDimArrayspec ';'
    {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
 	;
 
@@ -330,7 +332,17 @@ value returns [Object value]
 	| BOOL_VAL {$value = Boolean.parseBoolean($BOOL_VAL.getText());}
 	;
 
+twokinds returns [VariableType kind]
+  : k=kind {$kind = k;}
+  | k=sdp_kind {$kind = k;}
+  ;
+
 kind returns [VariableType kind]
 	: MONITORED {$kind = VariableType.Monitored;}
 	| CONTROLLED {$kind = VariableType.Controlled;}
 	;
+	
+sdp_kind returns [VariableType kind]
+  :'design_parameter' {$kind = VariableType.SharedDesignParameter;}
+  | 'sdp' {$kind = VariableType.SharedDesignParameter;}	
+  ;
