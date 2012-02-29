@@ -446,7 +446,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
-			DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Failed to launch", ex));
+			DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Failed to launch: " + ex.getMessage(), ex));
 			for (InfoTableView view : views)
 			{
 				view.refreshPackTable();
@@ -632,7 +632,12 @@ public class CoSimLaunchConfigurationDelegate extends
 			{
 				ScriptParserWrapper parser = new ScriptParserWrapper();
 				List<INode> script = parser.parse(scenarioFile);
-
+				
+				if(script.contains(null))
+				{
+					throw new Exception("Failed to parse script file");
+				}
+				
 				script = expandScript(script, scenarioFile);
 				return new ScriptSimulationEngine(contractFile, script);
 			}
