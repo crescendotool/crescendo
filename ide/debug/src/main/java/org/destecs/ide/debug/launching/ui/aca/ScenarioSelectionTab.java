@@ -30,13 +30,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
+public class ScenarioSelectionTab extends AbstractLaunchConfigurationTab
 		implements ILaunchConfigurationTab {
 
-	
-	
 
-	private Table architecturesTable;
+	private Table scenariosTable;
 	private Label warningLabel;
 	private Button createFolderButton;
 
@@ -54,31 +52,31 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 
 	private void createArchitectureSelectionGroup(Composite comp) {
 		Group group = new Group(comp, comp.getStyle());
-		group.setText("Architectures selection");
+		group.setText("Scenario selection");
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		group.setLayoutData(gd);
 		
 		group.setLayout(new GridLayout(1, true));
 		
-		architecturesTable = new Table(group, SWT.CHECK);
-	    architecturesTable.setSize(100, 100);
-	    architecturesTable.addListener(SWT.Selection, new Listener() {
+		scenariosTable = new Table(group, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL
+		        | SWT.H_SCROLL);
+	    scenariosTable.setSize(100, 100);
+	    scenariosTable.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event event) {
 	         updateLaunchConfigurationDialog();
 	        }
 	      });
-		
 	}
 
 	private void createArchitectureFolderGroup(Composite comp) {
 		Group group = new Group(comp, comp.getStyle());
-		group.setText("Architectures folder (\"model_de/architectures\")");
+		group.setText("Scenarios folder (\"scenarios\")");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		group.setLayoutData(gd);
 		group.setLayout(new GridLayout(2, false));
 		
 		
-		createFolderButton = createPushButton(group, "Create Architectures Folder", null);
+		createFolderButton = createPushButton(group, "Create Scenarios Folder", null);
 		createFolderButton.setEnabled(false);
 		createFolderButton.addSelectionListener(new SelectionListener() {
 			
@@ -92,7 +90,7 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 				else
 				{
 					boolean folderCreated = false;
-					IPath architecturesPath = project.getLocation().append("model_de/architectures");
+					IPath architecturesPath = project.getLocation().append("scenarios");
 					File architecturesFile = architecturesPath.toFile();
 					if(true)
 					{
@@ -134,7 +132,7 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		String architectureString = "";
 		try {
-			 architectureString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_ARCHITECTURES,"");
+			 architectureString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_SCENARIOS,"");
 		} catch (CoreException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -149,16 +147,16 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 		if(project == null)
 		{
 			//setErrorMessage("No project is selected");
-			System.out.println("[Architectures] No base config is selected");
+			System.out.println("[Scenarios] No base config is selected");
 		}
 		else
 		{
-			architecturesTable.removeAll(); 
+			scenariosTable.removeAll(); 
 			
 			//setErrorMessage(null);
-			System.out.println("[Architectures] Base config is selected");
-			IResource architecturesDirectory = project.findMember("model_de/architectures");
-			if(architecturesDirectory == null)
+			System.out.println("[Scenarios] Base config is selected");
+			IResource scenariosResource = project.findMember("scenarios");
+			if(scenariosResource == null)
 			{
 				warningLabel.setText("Folder not found");
 				createFolderButton.setEnabled(true);
@@ -166,17 +164,17 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 			else
 			{
 				warningLabel.setText("Folder present");
-				if(architecturesDirectory instanceof IFolder)
+				if(scenariosResource instanceof IFolder)
 				{
-					IFolder architectureFolder = (IFolder) architecturesDirectory;
+					IFolder scenariosFolder = (IFolder) scenariosResource;
 					try {
-						for (IResource element : architectureFolder.members()) {
+						for (IResource element : scenariosFolder.members()) {
 							if(element instanceof IFile)
 							{
 								IFile iFile = (IFile) element;
-								if(iFile.getFileExtension().equals("arch"))
+								if(iFile.getFileExtension().equals("script") || iFile.getFileExtension().equals("script2"))
 								{
-									TableItem item = new TableItem(architecturesTable, SWT.NONE);
+									TableItem item = new TableItem(scenariosTable, SWT.NONE);
 								     item.setText(iFile.getName());
 								     item.setData(iFile);
 								     if(architecturesList.contains(iFile.getName()))
@@ -202,7 +200,7 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		StringBuffer sb = new StringBuffer();
 		
-		for (TableItem tItem : architecturesTable.getItems()) {
+		for (TableItem tItem : scenariosTable.getItems()) {
 			if(tItem.getChecked())
 			{
 				sb.append(tItem.getText() + ";");
@@ -211,17 +209,17 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 		
 		if(sb.length() > 0)
 		{
-			configuration.setAttribute(IDebugConstants.DESTECS_ACA_ARCHITECTURES, sb.substring(0, sb.length()-1));
+			configuration.setAttribute(IDebugConstants.DESTECS_ACA_SCENARIOS, sb.substring(0, sb.length()-1));
 		}
 		else
 		{
-			configuration.setAttribute(IDebugConstants.DESTECS_ACA_ARCHITECTURES, "");
+			configuration.setAttribute(IDebugConstants.DESTECS_ACA_SCENARIOS, "");
 		}
 
 	}
 
 	public String getName() {
-		return "Architectures";
+		return "Scenarios";
 	}
 
 	public IProject getActiveProject()
@@ -237,5 +235,4 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 		}
 		return project;
 	}
-	
 }

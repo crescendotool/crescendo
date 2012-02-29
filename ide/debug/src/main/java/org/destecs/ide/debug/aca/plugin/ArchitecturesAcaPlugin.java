@@ -50,17 +50,20 @@ public class ArchitecturesAcaPlugin implements IAcaGeneratorPlugin
 		{
 			unparsedString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_ARCHITECTURES, "");
 			
-			String[] architectures = unparsedString.split(";");
-			List<String> architecturesList = Arrays.asList(architectures);
-			if(architectures.length == 0)
+			if(unparsedString.trim().length() == 0)
 			{
 				return new HashSet<ILaunchConfiguration>(configurations);
 			}
 			
+			String[] architectures = unparsedString.split(";");
+			
+			List<String> architecturesList = Arrays.asList(architectures);
+			
+			
 			IResource folder = project.findMember(new Path("model_de/architectures"));
 			
 
-			if (folder.exists() && folder instanceof IFolder)
+			if (folder != null && folder.exists() && folder instanceof IFolder)
 			{
 				if(!hasArchFiles((IFolder) folder))
 				{

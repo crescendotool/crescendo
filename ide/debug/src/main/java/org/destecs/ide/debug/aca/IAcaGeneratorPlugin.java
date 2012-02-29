@@ -16,7 +16,7 @@
  * 	
  * The DESTECS web-site: http://destecs.org/
  *******************************************************************************/
-package org.destecs.ide.debug.aca;
+package org.destecs.ide.debug.aca;		
 
 import java.util.Collection;
 import java.util.Set;
@@ -28,6 +28,6 @@ public interface IAcaGeneratorPlugin
 {
 
 	Collection<? extends ILaunchConfiguration> generate(
-			ILaunchConfiguration configuration, ILaunchConfiguration baseConfig, Set<ILaunchConfiguration> congifurations, IProject project, String outputPreFix);
+			ILaunchConfiguration configuration, ILaunchConfiguration baseConfig, Set<ILaunchConfiguration> configurations, IProject project, String outputPreFix);
 
 }

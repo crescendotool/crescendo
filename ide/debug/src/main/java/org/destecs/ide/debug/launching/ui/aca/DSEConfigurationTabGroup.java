@@ -36,6 +36,7 @@ public class DSEConfigurationTabGroup extends
 				//new DseArchitectureTab(),
 				new ArchitectureSelectionTab(),
 				new SharedDesignParameterAcaTab(),
+				new ScenarioSelectionTab(),
 				new CommonTab() };
 		setTabs(tabs);
 
