@@ -403,9 +403,14 @@
             id="org.destecs.ide.ui.insideDestecsEditor">
          <with
                variable="activeEditor">
-            <instanceof
-                  value="org.destecs.ide.ui.editor.impl.AbstractDestecsEditor">
-            </instanceof>
+            <or>
+               <instanceof
+                     value="org.destecs.ide.ui.editor.impl.AbstractDestecsEditor">
+               </instanceof>
+               <instanceof
+                     value="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditor">
+               </instanceof>
+            </or>
          </with>
       </definition>
    </extension>
@@ -442,5 +447,6 @@
          </command>
       </menuContribution>
    </extension-->
+   
 
 </plugin>

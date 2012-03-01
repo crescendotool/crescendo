@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.destecs.ide.ui.editor.impl.AbstractDestecsEditor;
+import org.destecs.ide.ui.editor.impl.CoSimMultiPageEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -38,16 +39,31 @@ public class ToggleComment extends AbstractHandler{
 	
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		
-		
+		editor = null;
 		IEditorPart editorPart = HandlerUtil.getActiveEditor(event);
 		
 		if(editorPart == null)
 			return null;
 		
-		if(!(editorPart instanceof AbstractDestecsEditor))
+		if(editorPart instanceof CoSimMultiPageEditor)
+		{
+			CoSimMultiPageEditor multiEditor = (CoSimMultiPageEditor) editorPart;
+			Object o = multiEditor.getSelectedPage();
+			if(o instanceof AbstractDestecsEditor)
+			{
+				editor = (AbstractDestecsEditor) o;
+			}			
+		}
+		
+		if(editor == null && !(editorPart instanceof AbstractDestecsEditor))
 			return null;
 		
-		editor = (AbstractDestecsEditor) editorPart;
+		if(editor == null)
+		{
+			editor = (AbstractDestecsEditor) editorPart;	
+		}
+		
+		
 			
 		fOperationTarget = (ITextOperationTarget) editorPart.getAdapter(ITextOperationTarget.class);
 		

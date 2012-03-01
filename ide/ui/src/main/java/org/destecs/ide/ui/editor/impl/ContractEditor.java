@@ -99,7 +99,8 @@ public class ContractEditor extends AbstractDestecsEditor
 	protected void initializeEditor()
 	{
 		super.initializeEditor();
-		setSourceViewerConfiguration(getContractSourceViewerConfiguration());
+		configuration = getContractSourceViewerConfiguration();
+		setSourceViewerConfiguration(configuration);
 	}
 
 	public DestecsContractSourceViewerConfiguration getContractSourceViewerConfiguration()
