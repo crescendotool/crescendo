@@ -28,13 +28,15 @@ public class ArrayVariable extends Variable{
 	public ArrayVariable(String name, VariableType vType,
 			Object value, List<Integer> sizes,int line) {
 		super(name, vType, DataType.array, value,line);
+		this.dimensions.clear();
+		this.dimensions.add(1);
 		this.dimensions.addAll(sizes);
 	
 	}
 
 	@Override
 	public SharedVariableType getSharedVariableType() {
-		return SharedVariableType.Matrix;
+		return SharedVariableType.Array;
 	}
 
 	@Override

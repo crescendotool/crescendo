@@ -25,7 +25,7 @@ import org.destecs.core.contract.Variable.VariableType;
 
 public interface IVariable {
 
-	enum SharedVariableType {Scalar, Matrix};
+	enum SharedVariableType {Scalar, Array, Matrix};
 	
 	public abstract String getName();
 

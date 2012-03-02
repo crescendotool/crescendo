@@ -54,7 +54,7 @@ public class Variable implements IVariable
 
 	public enum DataType
 	{
-		real, bool, array
+		real, bool, array, matrix
 	}
 
 	

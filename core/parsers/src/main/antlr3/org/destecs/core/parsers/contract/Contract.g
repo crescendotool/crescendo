@@ -28,6 +28,7 @@ import org.destecs.core.contract.Variable.VariableType;
 import org.destecs.core.contract.Variable.DataType;
 import org.destecs.core.contract.ContractFactory;
 import org.destecs.core.contract.ArrayVariable;
+import org.destecs.core.contract.MatrixVariable;
 import java.util.Vector;
 
 }
@@ -294,9 +295,9 @@ variables
 	: k=kind t=type ID ASSIGN v=value ';' 
 	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v,$ID.getLine()));}
 	| sdp_kind t=type ID ';' 
-	 
+	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null,$ID.getLine())); }
 	| k=twokinds MATRIX ID sizes=arrayspec ';'
-	 {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
+	 {contract.addVariable(new MatrixVariable($ID.text,k,null,sizes,$ID.getLine()));}
 	| k=twokinds ARRAY ID sizes=oneDimArrayspec ';'
    {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
 	;
@@ -311,7 +312,7 @@ oneDimArrayspec returns [List<Integer> sizes]
 arrayspec returns [List<Integer> sizes]
 @init{
   sizes = new Vector<Integer>();
-  }
+  } 
   : '[' a=INT {$sizes.add(new Integer($a.text));}  (',' b=INT {$sizes.add(new Integer($b.text));})* ']'
   ;
 
@@ -343,6 +344,6 @@ kind returns [VariableType kind]
 	;
 	
 sdp_kind returns [VariableType kind]
-  :'design_parameter' {$kind = VariableType.SharedDesignParameter;}
+  : 'design_parameter' {$kind = VariableType.SharedDesignParameter;}
   | 'sdp' {$kind = VariableType.SharedDesignParameter;}	
   ;
