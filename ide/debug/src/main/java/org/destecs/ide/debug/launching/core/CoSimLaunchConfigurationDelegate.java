@@ -105,6 +105,10 @@ public class CoSimLaunchConfigurationDelegate extends
 	private static final String VDM_LAUNCH_CONFIG_TYPE = "org.overture.ide.vdmrt.debug.launchConfigurationType";
 	private File deFile = null;
 	private File ctFile = null;
+	private String ctFilePathRelative = null;
+	private String remoteRelativeProjectPath = null;
+	private boolean useRemoteCtSimulator = false;
+	private String resultFolderRelativePath = null;
 	private File contractFile = null;
 	private File scenarioFile = null;
 	private String sharedDesignParam = null;
@@ -196,7 +200,10 @@ public class CoSimLaunchConfigurationDelegate extends
 			contractFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
 			ourputFolderPrefix = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
 			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
-			ctFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, ""));
+			ctFilePathRelative = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "");
+			ctFile = getFileFromPath(project, ctFilePathRelative);
+			useRemoteCtSimulator = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR, false);
+			remoteRelativeProjectPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE, "");
 			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
 			deArchitectureFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
 			deReplacePattern = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
@@ -265,8 +272,9 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			tmp += File.separatorChar;
 		}
-		outputFolder = new File(base, tmp + dateFormat.format(new Date()) + "_"
-				+ configuration.getName());
+		resultFolderRelativePath = tmp + dateFormat.format(new Date()) + "_"
+				+ configuration.getName();
+		outputFolder = new File(base,resultFolderRelativePath );
 
 		if (!outputFolder.mkdirs())
 		{
@@ -403,9 +411,17 @@ public class CoSimLaunchConfigurationDelegate extends
 				}
 			});
 
-			target.setDeCsvFile(deModel.logFile);
-			target.setCtCsvFile(ctModel.logFile);
-
+			if(deModel.logFile!=null)
+			{
+				target.setDeCsvFile(new File(deModel.logFile));
+			}
+			if(!useRemoteCtSimulator)
+			{
+				if(ctModel.logFile!=null)
+				{
+					target.setCtCsvFile(new File(ctModel.logFile));
+				}
+			}
 			final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = loadSharedDesignParameters(sharedDesignParam);
 
 			final Job vdm = new Job("launch vdm")
@@ -470,14 +486,26 @@ public class CoSimLaunchConfigurationDelegate extends
 
 	private ModelConfig getCtModelConfig(File ctFile)
 	{
-		CtModelConfig model = new CtModelConfig(ctFile);
-		model.logVariables.addAll(logVariables20Sim);
-		if (!model.logVariables.isEmpty())
+		if(!useRemoteCtSimulator)
 		{
-			model.logFile = new File(outputFolder, "20simVariables.csv");
+			CtModelConfig model = new CtModelConfig(ctFile.getAbsolutePath());
+			model.logVariables.addAll(logVariables20Sim);
+			if (!model.logVariables.isEmpty())
+			{
+				model.logFile = new File(outputFolder, "20simVariables.csv").getAbsolutePath();
+			}
+			return model;
+		}else{
+			CtModelConfig model = new CtModelConfig((remoteRelativeProjectPath+"\\"+ctFilePathRelative).replace("/","\\"));
+			model.logVariables.addAll(logVariables20Sim);
+			if (!model.logVariables.isEmpty())
+			{
+				model.logFile = (remoteRelativeProjectPath+"\\output\\"+resultFolderRelativePath+"\\"+"20simVariables.csv").replace("/","\\");
+			}
+			return model;
 		}
 
-		return model;
+		
 	}
 
 	private ModelConfig getDeModelConfig(IProject project2, int port)
@@ -487,7 +515,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		model.logVariables.addAll(logVariablesVdm);
 		if (!model.logVariables.isEmpty())
 		{
-			model.logFile = new File(outputFolder, "VdmVariables.csv");
+			model.logFile = new File(outputFolder, "VdmVariables.csv").getAbsolutePath();
 		}
 		model.arguments.put(DeModelConfig.LOAD_OUTPUT_DIR, outputFolder.getAbsolutePath());
 		model.arguments.put(DeModelConfig.LOAD_REPLACE, deReplacePattern);

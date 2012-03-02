@@ -438,7 +438,7 @@ public class SimulationEngine
 
 			engineInfo(simulator, "Enable logging for:"
 					+ modelConfig.logVariables);
-			proxy.setLogVariables(modelConfig.logFile.getAbsolutePath(), true, new Vector<String>(modelConfig.logVariables));
+			proxy.setLogVariables(modelConfig.logFile, true, new Vector<String>(modelConfig.logVariables));
 
 		} catch (Exception e)
 		{
@@ -1122,7 +1122,7 @@ public class SimulationEngine
 	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
 			ModelConfig model) throws SimulationException
 	{
-		String absolutePath = new File(model.arguments.values().iterator().next()).getAbsolutePath();
+		String absolutePath = model.arguments.values().iterator().next();
 		try
 		{
 			engineInfo(simulator, "Loading model: " + model);

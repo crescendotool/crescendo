@@ -23,27 +23,44 @@ import java.util.Map.Entry;
 
 public class CtModelConfig extends ModelConfig
 {
+	boolean remote = false;
 	
 //	public static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 	
+	/**
+	 * Constructor for local simulation
+	 */
 	public CtModelConfig(File file)
 	{
 		this.arguments.put("file", file.getAbsolutePath());
+	}
+	
+	/**
+	 * Custom constructor for remote ct simulation
+	 */
+	public CtModelConfig(String remoteBase)
+	{
+		this.remote = true;
+		this.arguments.put("file", remoteBase);
 	}
 	
 	
 	@Override
 	public boolean isValid()
 	{
-		for (Entry<String, String> entry : arguments.entrySet())
-		{
-			if (entry.getKey().startsWith("file")) 
+		if(!remote)
+		{	
+			for (Entry<String, String> entry : arguments.entrySet())
 			{
-				if((!(new File(entry.getValue()).exists()) && !(new File(entry.getValue()).isDirectory()))){
-					return false;
+				if (entry.getKey().startsWith("file")) 
+				{
+					if((!(new File(entry.getValue()).exists()) && !(new File(entry.getValue()).isDirectory()))){
+						return false;
+					}
 				}
 			}
 		}
+		
 		return true;
 	}
 	

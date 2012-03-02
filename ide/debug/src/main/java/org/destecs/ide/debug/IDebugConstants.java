@@ -87,4 +87,8 @@ public interface IDebugConstants {
 	public static final String DESTECS_ACA_ARCHITECTURES = "DESTECS_ACA_ARCHITECTURES".toLowerCase();
 
 	public static final String DESTECS_ACA_SCENARIOS = "DESTECS_ACA_SCENARIOS".toLowerCase();
+
+	public static final String DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR = "DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR".toLowerCase();
+
+	public static final String DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE = "DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE1".toLowerCase();
 }

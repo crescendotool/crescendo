@@ -72,6 +72,8 @@ public class DevelopLaunchConfigurationTab extends
 //	private Button checkBoxShowOctavePlot = null;
 	private Text ctUrl = null;
 	private Text deUrl = null;
+	private Button checkBoxRemoteCtSimulator = null;
+	private Text ctRemoteProjectBase = null;
 	// private Combo syncSchemeDropDown;
 	private WidgetListener fListener = new WidgetListener();
 
@@ -161,6 +163,24 @@ public class DevelopLaunchConfigurationTab extends
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		ctUrl.setLayoutData(gd);
 		ctUrl.addModifyListener(fListener);
+		
+		
+		label = new Label(group, SWT.MIN);
+		label.setText("Remote Project Base:");
+		gd = new GridData(GridData.BEGINNING);
+		label.setLayoutData(gd);
+		
+		ctRemoteProjectBase = new Text(group, SWT.SINGLE | SWT.BORDER);
+
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		ctRemoteProjectBase.setLayoutData(gd);
+		ctRemoteProjectBase.addModifyListener(fListener);
+		
+		checkBoxRemoteCtSimulator= new Button(group, SWT.CHECK);
+		checkBoxRemoteCtSimulator.setText("Run CT Simlator Remotely");
+		checkBoxRemoteCtSimulator.setSelection(false);
+		checkBoxRemoteCtSimulator.addSelectionListener(fListener);
+		checkBoxRemoteCtSimulator.setLayoutData(gd);
 	}
 
 	public String getName()
@@ -178,6 +198,8 @@ public class DevelopLaunchConfigurationTab extends
 			checkBoxDebug.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DEBUG, false));
 			checkBoxEnableLogging.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false));
 			checkBoxShowDebugIngo.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false));
+			
+			checkBoxRemoteCtSimulator.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR, false));
 //			checkBoxShowOctavePlot.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
 		} catch (CoreException e)
 		{
@@ -197,6 +219,10 @@ public class DevelopLaunchConfigurationTab extends
 				url = IDebugConstants.DEFAULT_CT_ENDPOINT;
 			}
 			ctUrl.setText(url);
+			
+			
+			String base = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE, "");
+			ctRemoteProjectBase.setText(base);
 		} catch (CoreException e)
 		{
 			DestecsDebugPlugin.logError("Error fetching connections from launch configuration", e);
@@ -214,6 +240,8 @@ public class DevelopLaunchConfigurationTab extends
 		// connection
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, deUrl.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, ctUrl.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE, ctRemoteProjectBase.getText());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR, checkBoxRemoteCtSimulator.getSelection());
 		// syncscheme
 		// configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SYNC_SCHEME, syncSchemeDropDown.getText());
 //		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, checkBoxShowOctavePlot.getSelection());
@@ -229,6 +257,8 @@ public class DevelopLaunchConfigurationTab extends
 		// connection
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ENDPOINT, "");
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, IDebugConstants.DEFAULT_CT_ENDPOINT);
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE, "");
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR, false);
 		
 //		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false);
 	}
