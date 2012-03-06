@@ -20,13 +20,18 @@ package org.destecs.ide.debug.launching.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.destecs.core.contract.ArrayVariable;
 import org.destecs.core.contract.Contract;
 import org.destecs.core.contract.IVariable;
 import org.destecs.core.contract.MatrixVariable;
+import org.destecs.core.contract.Variable.DataType;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.ide.core.resources.IDestecsProject;
@@ -72,6 +77,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 
 	private WidgetListener fListener = new WidgetListener();
 	private HashMap<String, Object> sdps;
+	private HashMap<String, List<Integer>> dimensions = new HashMap<String, List<Integer>>();
 
 	public void createControl(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
@@ -195,10 +201,13 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 			if (data != null) {
 				sdps = parser.parse(new File("memory"), data);
 
-				if (table != null) {
-					populate();
+				if (sdps == null) {
+					sdps = new HashMap<String, Object>();
 				}
+
 			}
+
+			synchronizeDefaults();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -213,20 +222,61 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
+
+		HashMap<String, Object> values = preProcessResult();
+
 		configuration.setAttribute(
 				IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM,
-				getSdpsSyntax());
+				getSdpsSyntax(values));
 	}
 
-	private String getSdpsSyntax() {
+	private String getSdpsSyntax(HashMap<String, Object> values) {
 		StringBuilder sb = new StringBuilder();
-		for (TableItem item : table.getItems()) {
-			if (item.getText(0).trim().length() > 0
-					&& item.getText(1).trim().length() > 0) {
-				sb.append(item.getText(0) + ":=" + item.getText(1) + ";");
+
+		for (Entry<String, Object> entry : values.entrySet()) {
+			sb.append(entry.getKey().replace(" ", ""));
+			sb.append(":=");
+			sb.append(entry.getValue());
+			sb.append(";");
+		}
+
+		return sb.toString();
+	}
+
+	private HashMap<String, Object> preProcessResult() {
+
+		// List<String> keys = new ArrayList<String>();
+
+		HashMap<String, Object> out = new HashMap<String, Object>();
+
+		for (TableItem tItem : table.getItems()) {
+			String name = tItem.getText(0);
+			if (name.contains("[")) {
+
+				String strippedName = name.substring(0, name.indexOf("["));
+
+				if (dimensions.containsKey(strippedName)) {
+					strippedName = strippedName
+							+ dimensions.get(strippedName).toString();
+				}
+
+				if (out.containsKey(strippedName)) {
+					List<String> variable = (List<String>) out
+							.get(strippedName);
+					variable.add(tItem.getText(1));
+
+				} else {
+					List<Object> variable = new ArrayList<Object>();
+					variable.add(tItem.getText(1));
+					out.put(strippedName, variable);
+				}
+
+			} else {
+				out.put(name, tItem.getText(1));
 			}
 		}
-		return sb.toString();
+
+		return out;
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
@@ -255,6 +305,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 						for (IVariable var : contract
 								.getSharedDesignParameters()) {
 							sdps.put(var.getName(), "0.0");
+
 						}
 						if (table != null) {
 							populate();
@@ -290,28 +341,12 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 						}
 						contract = parser.parse(file);
 
-						sdps = new HashMap<String, Object>();
+						// sdps = new HashMap<String, Object>();
 						if (contract == null) {
 							return;
 						}
 
 						fillSdpTable(contract.getSharedDesignParameters());
-						// for (IVariable var :
-						// contract.getSharedDesignParameters())
-						// {
-						// String[] existing = getItemIfPresent(var.getName());
-						// if (existing == null)
-						// {
-						// sdps.put(var.getName(), "0.0");
-						// } else if (existing.length >= 2)
-						// {
-						// sdps.put(existing[0], existing[1]);
-						// }
-						// }
-						// if (table != null)
-						// {
-						// populate();
-						// }
 						return;
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -324,25 +359,15 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 
 	private void fillSdpTable(List<IVariable> sharedDesignParameters) {
 
-		for (IVariable variable : sharedDesignParameters) {
-			sdps.put(variable.getName(), variable);
-		}
-
-		populateNew();
-
-	}
-
-	private void populateNew() {
+		dimensions.clear();
 		table.removeAll();
 
-		if (sdps == null) {
-			return;
-		}
-
-		for (String sdpName : sdps.keySet()) {
-			IVariable v = (IVariable) sdps.get(sdpName);
-			putOnUITable(v);
-			System.out.println(v);
+		for (IVariable iVariable : sharedDesignParameters) {
+			putOnUITable(iVariable);
+			if (iVariable.getDataType() == DataType.array
+					|| iVariable.getDataType() == DataType.matrix) {
+				dimensions.put(iVariable.getName(), iVariable.getDimensions());
+			}
 		}
 
 	}
@@ -355,36 +380,164 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 			if (dimensions.size() > 0) {
 				if (dimensions.get(0) == 1) {
 					if (dimensions.size() > 1) {
-
 						for (int j = 1; j < dimensions.size(); j++) {
 							for (int k = 0; k < dimensions.get(j); k++) {
 								TableItem item = new TableItem(table, SWT.NONE);
-								item.setText(arrayVariable.getName() + "["
-										+ (k + 1) + "]");
+								String itemName = arrayVariable.getName() + "["
+										+ (k + 1) + "]";
+								item.setText(0, itemName);
+								String existing = getValueIfPresent(itemName);
+
+								if (existing == null) {
+									item.setText(1, "0.0");
+								} else {
+									item.setText(1, existing);
+								}
+								item.setData(arrayVariable);
 							}
 						}
 					}
 				}
 			}
 		} else if (v instanceof MatrixVariable) {
+			MatrixVariable matrixVariable = (MatrixVariable) v;
+
+			List<Integer> dimensions = matrixVariable.getDimensions();
+
+			List<String> results = buildMatrixIndexes(dimensions);
+			for (String res : results) {
+				TableItem item = new TableItem(table, SWT.NONE);
+				String itemName = matrixVariable.getName() + "[" + res + "]";
+				item.setText(0, itemName);
+				String existing = getValueIfPresent(itemName);
+
+				if (existing == null) {
+					item.setText(1, "0.0");
+				} else {
+					item.setText(1, existing);
+				}
+				item.setData(matrixVariable);
+
+			}
 
 		} else {
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setData(v);
 			item.setText(0, v.getName());
-			item.setText(1, "none");
+			String existing = getValueIfPresent(v.getName());
+
+			if (existing == null) {
+				item.setText(1, "0.0");
+			} else {
+				item.setText(1, existing);
+			}
 		}
 
 	}
 
-	private String[] getItemIfPresent(String name) {
-		for (TableItem item : table.getItems()) {
-			if (item.getText(0).trim().equalsIgnoreCase(name.trim())) {
-				return new String[] { item.getText(0), item.getText(1) };
+	private List<String> buildMatrixIndexes(List<Integer> dimensions) {
+		List<String> result = new ArrayList<String>();
+
+		for (int i = 0; i < dimensions.get(0); i++) {
+			result.add(Integer.toString(i + 1));
+		}
+
+		for (int i = 1; i < dimensions.size(); i++) {
+			List<String> tempResult = new ArrayList<String>();
+			for (int j = 0; j < dimensions.get(i); j++) {
+				for (String string : result) {
+					tempResult.add(string + "," + (j + 1));
+				}
 			}
+			result = tempResult;
+		}
+
+		Collections.sort(result);
+		return result;
+	}
+
+	private String getValueIfPresent(String name) {
+		if (name.contains("[")) {
+			String strippedName = name.substring(0, name.indexOf("["));
+
+			if (containsLooseKey(sdps, strippedName)) {
+				
+				String looseKey = getLooseKey(sdps, strippedName);
+				
+				
+				String dimentions = name.substring(name.indexOf("[") + 1,
+						name.indexOf("]"));
+				String[] splitDimentions = dimentions.split(",");				
+
+				if (splitDimentions.length == 1) {
+					List<Object> o = (List<Object>) sdps.get(looseKey);
+					return  o.get(Integer.parseInt(splitDimentions[0])-1).toString();
+
+				} else if (splitDimentions.length == 2) {
+					
+					String looseDimentions = looseKey.substring(looseKey.indexOf("[") + 1,looseKey.indexOf("]"));
+					String[] splitLooseDimentions = looseDimentions.split(",");
+					
+					List<Object> o = (List<Object>) sdps.get(looseKey);
+					int k = (Integer.parseInt(splitDimentions[0])-1)*(Integer.parseInt(splitLooseDimentions[1])) + Integer.parseInt(splitDimentions[1]);
+					
+					return o.get(k-1).toString();
+					
+				} else {
+					return null;
+				}
+
+			} else {
+				return null;
+			}
+
+		}
+
+		if (sdps.containsKey(name)) {
+			return sdps.get(name).toString();
 		}
 
 		return null;
 	}
+
+	
+
+	private boolean containsLooseKey(HashMap<String, Object> sdpsMap,
+			String strippedName) {
+
+		for (String key : sdpsMap.keySet()) {
+			if (key.contains("[")) {
+				if (key.substring(0, key.indexOf("[")).equals(strippedName)) {
+					return true;
+				}
+
+			}
+		}
+		return false;
+	}
+	
+	private String getLooseKey(HashMap<String, Object> sdpsMap,
+			String strippedName) {
+
+		for (String key : sdpsMap.keySet()) {
+			if (key.contains("[")) {
+				if (key.substring(0, key.indexOf("[")).equals(strippedName)) {
+					return key;
+				}
+
+			}
+		}
+		return null;
+	}
+
+	// private String[] getItemIfPresent(String name) {
+	// for (TableItem item : table.getItems()) {
+	// if (item.getText(0).trim().equalsIgnoreCase(name.trim())) {
+	// return new String[] { item.getText(0), item.getText(1) };
+	// }
+	// }
+	//
+	// return null;
+	// }
 
 }

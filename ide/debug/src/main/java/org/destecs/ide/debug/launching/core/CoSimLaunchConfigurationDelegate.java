@@ -28,9 +28,13 @@ import java.net.ServerSocket;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.core.parsers.ScenarioParserWrapper;
@@ -716,42 +720,104 @@ public class CoSimLaunchConfigurationDelegate extends
 		for (Object key : result.keySet())
 		{
 			String name = key.toString();
-			if (result.get(name) instanceof Double)
+			List<Integer> size = new Vector<Integer>();
+			List<Double> value = new Vector<Double>();
+			
+			if(!(result.get(name) instanceof List))
 			{
-				List<Double> value = new Vector<Double>();
-				value.add((Double) result.get(name));
-				List<Integer> size = new Vector<Integer>();
-				size.add(1);
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
-			} else if (result.get(name) instanceof Integer)
+				size.add(1);		
+				value.add(convertToDouble(result.get(name)));
+			}
+			else if(result.get(name) instanceof List)
 			{
-				List<Double> value = new Vector<Double>();
-				value.add(((Integer) result.get(name)).doubleValue());
-				List<Integer> size = new Vector<Integer>();
-				size.add(1);
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
-			} else if (result.get(name) instanceof Boolean)
-			{
-				boolean r = ((Boolean) result.get(name)).booleanValue();
-				Double val = Double.valueOf(0);
-				if (r)
-				{
-					val = Double.valueOf(1);
+				List list = (List) result.get(name);
+				for (Object object : list) {
+					value.add(convertToDouble(object));
 				}
-				List<Double> value = new Vector<Double>();
-				value.add(val);
-				List<Integer> size = new Vector<Integer>();
-				size.add(1);
-				shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
-			} else
+				
+				String dimentions = name.substring(name.indexOf("[") + 1,
+						name.indexOf("]"));
+				String[] splitDimentions = dimentions.split(",");	
+				
+				for (String string : splitDimentions) {
+					size.add(Integer.parseInt(string));
+				}
+				
+				name = name.substring(0, name.indexOf("["));
+			} 
+			else
 			{
 				throw new Exception("Design parameter type not supported by protocol: "
 						+ name);
 			}
+			
+			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
 
 		}
 
 		return shareadDesignParameters;
+	}
+
+	private static Double convertToDouble(Object object) {
+		if (object instanceof Double)
+		{
+			return ((Double) object);
+		}
+		else if (object instanceof Integer)
+		{
+			return(((Integer)object).doubleValue());
+		} 
+		else if (object instanceof Boolean)
+		{
+			boolean r = ((Boolean) object).booleanValue();
+			Double val = Double.valueOf(0);
+			if (r)
+			{
+				val = Double.valueOf(1);
+			}				
+			return val;
+		}
+		return null;
+	}
+
+	
+
+	private static HashMap<String, Object> preProcessResult(
+			HashMap<String, Object> in) {
+		
+		Set<String> c = in.keySet();
+		
+		List<String> keys = new ArrayList<String>(c);
+		
+		Collections.sort(keys);
+		
+		HashMap<String, Object> out = new HashMap<String, Object>();
+		
+		for (String name : keys) {
+			if(name.contains("["))
+			{
+				String strippedName = name.substring(0, name.indexOf("["));
+				
+				if(out.containsKey(strippedName))
+				{
+					List<Object> variable = (List<Object>) out.get(strippedName);
+					variable.add(in.get(name));
+				}
+				else
+				{
+					List<Object> variable = new ArrayList<Object>();
+					variable.add(in.get(name));
+					out.put(strippedName, variable);
+				}
+				
+			}
+			else
+			{
+				out.put(name, in.get(name));
+			}
+		}
+		
+		return out;
 	}
 
 	public static InfoTableView getInfoTableView(String id)
