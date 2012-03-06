@@ -313,7 +313,7 @@ arrayspec returns [List<Integer> sizes]
 @init{
   sizes = new Vector<Integer>();
   } 
-  : '[' a=INT {$sizes.add(new Integer($a.text));}  (',' b=INT {$sizes.add(new Integer($b.text));})* ']'
+  : '[' a=INT {$sizes.add(new Integer($a.text));}  (',' b=INT {$sizes.add(new Integer($b.text));})+ ']'
   ;
 
 events 

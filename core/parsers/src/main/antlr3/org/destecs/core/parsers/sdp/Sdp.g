@@ -10,6 +10,7 @@ package org.destecs.core.parsers.sdp;
 import java.util.HashMap;
 import org.destecs.core.sdp.SdpFactory;
 import java.lang.Integer;
+import java.util.Vector;
 }
 
 @lexer::header{  
@@ -207,7 +208,7 @@ COMMENT
     | 'events' {$channel=HIDDEN;}
     ;
   
-ID  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+ID  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('[' ('0'..'9') (',' '0'..'9')* ']' )?
     ;
 
 INT : ('-')? '0'..'9'+
@@ -230,6 +231,7 @@ def   : ID ':=' v=value ';'
       } 
       ;
 
+
 value returns [Object value]
       : BOOL_VAL
       { $value = Boolean.valueOf($BOOL_VAL.text);
@@ -240,5 +242,19 @@ value returns [Object value]
       | FLOAT
       { $value = Double.parseDouble($FLOAT.text);
       }
+      | l=list
+      {
+        $value = l;
+      }
       ;
+
+list returns [List<Object> values]
+@init
+{
+  values = new Vector<Object>();
+}
+  : '[' h=value {$values.add(h);} (',' t=value {$values.add(t);})* ']' 
+  { 
+  }
+  ;
       
