@@ -481,7 +481,14 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 					List<Object> o = (List<Object>) sdps.get(looseKey);
 					int k = (Integer.parseInt(splitDimentions[0])-1)*(Integer.parseInt(splitLooseDimentions[1])) + Integer.parseInt(splitDimentions[1]);
 					
-					return o.get(k-1).toString();
+					if(k<o.size())
+					{
+						return o.get(k-1).toString();
+					}
+					else 
+					{
+						return null;
+					}
 					
 				} else {
 					return null;
