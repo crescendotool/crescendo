@@ -52,11 +52,8 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -64,14 +61,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.progress.UIJob;
 
 public class Clp20simTab extends AbstractLaunchConfigurationTab
@@ -140,6 +135,8 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					settingItems.add(item);
 				}
 
+				settingsRootNode = SettingTreeNode.createSettingsTree(settingItems);
+				
 				logItems.clear();
 				List<Map<String, Object>> getLog = protocol.queryVariables();
 				for (Map<String, Object> elem : getLog)
@@ -155,6 +152,13 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					{
 						// b.setEnabled(true);
 
+						if(settingsTreeViewer != null)
+						{
+							settingsTreeViewer.setInput(settingsRootNode);
+							settingsTreeViewer.refresh();
+							settingsTreeViewer.expandAll();
+						}
+						
 						if (settingsViewer != null)
 						{
 							settingsViewer.refresh();
@@ -310,6 +314,8 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 	private final Set<LogItem> logItems = new HashSet<LogItem>();
 	private TableViewer logViewer;
+	private TreeViewer settingsTreeViewer = null;
+	private SettingTreeNode settingsRootNode;;
 
 	public void createControl(Composite parent)
 	{
@@ -380,61 +386,21 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 		Group group = new Group(comp, SWT.NONE);
 		group.setText("Settings");
-		group.setLayout(new GridLayout());
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		group.setLayout(new GridLayout(2,true));
+		group.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		settingsViewer = new TableViewer(group, SWT.FULL_SELECTION | SWT.FILL);
-
-		final Table table = settingsViewer.getTable();
-
-		table.setHeaderVisible(true);
-		TableColumn column = new TableColumn(table, SWT.NONE);
-		column.setText("Settings");
-		column.setWidth(400);
-
-		column = new TableColumn(table, SWT.NONE);
-		column.setText("Value");
-		column.setWidth(100);
-
-		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-		data.heightHint = 10;
-		table.setLayoutData(data);
-
-		final TableEditor editor = new TableEditor(table);
-		table.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e)
-			{
-				// Clean up any previous editor control
-				Control oldEditor = editor.getEditor();
-				if (oldEditor != null)
-					oldEditor.dispose();
-
-				// Identify the selected row
-				TableItem item = (TableItem) e.item;
-				if (item == null)
-					return;
-
-				// The control that will be the editor must be a child of the
-				// Table
-				Text newEditor = new Text(table, SWT.NONE);
-				newEditor.setText(item.getText(1));
-				newEditor.addModifyListener(new ModifyListener() {
-					public void modifyText(ModifyEvent me)
-					{
-						Text text = (Text) editor.getEditor();
-						editor.getItem().setText(1, text.getText());
-					}
-				});
-				newEditor.selectAll();
-				newEditor.setFocus();
-				editor.setEditor(newEditor, item, 1);
-			}
-		});
-
-		settingsViewer.setContentProvider(new ArrayContentProvider());
-		settingsViewer.setLabelProvider(new ClpSettingsLabelProvider());
-
-		settingsViewer.setInput(settingItems);
+		
+		
+		settingsTreeViewer  = new TreeViewer(group,SWT.BORDER);
+		settingsTreeViewer.setContentProvider(new SettingsTreeContentProvider());
+		settingsTreeViewer.setLabelProvider(new SettingsTreeLabelProvider());
+		settingsTreeViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
+		
+		group = new Group(group, SWT.NONE);
+		group.setText("Options");
+		group.setLayout(new GridLayout(1,true));
+		group.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
 	}
 
 	private File getFileFromPath(IProject project, String path)
