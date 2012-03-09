@@ -20,8 +20,6 @@ package org.destecs.vdmj;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -55,6 +53,11 @@ public class VDMCO extends VDMRT
 {
 	private static final CharSequence ARCHITECTURE_COMMENT = "-- ## Architecture ## --";
 	private static final CharSequence DEPLOYMENT_COMMENT = "-- ## Deployment ## --";
+
+	public static Map<String, String> replaceNewIdentifier = new Hashtable<String, String>();
+	public static String architecture = "";
+	public static String deploy = "";
+
 	public static File outputDir;
 	ClassInterpreter interpreter = null;
 	public static int debugPort = 10000;
@@ -66,56 +69,6 @@ public class VDMCO extends VDMRT
 		CoSimClassInterpreter interpreter = new CoSimClassInterpreter(classes);
 		return interpreter;
 	}
-
-//	@Override
-//	public ExitStatus interpret(List<File> filenames, String defaultName)
-//	{
-//		// return super.interpret(filenames, defaultName);
-//		if (logfile != null)
-//		{
-//			try
-//			{
-//				PrintWriter p = new PrintWriter(new FileOutputStream(logfile, false));
-//				RTLogger.setLogfile(p);
-//				println("RT events now logged to " + logfile);
-//			} catch (FileNotFoundException e)
-//			{
-//				println("Cannot create RT event log: " + e.getMessage());
-//				return ExitStatus.EXIT_ERRORS;
-//			}
-//		}
-//
-//		try
-//		{
-//			long before = System.currentTimeMillis();
-//			interpreter = getInterpreter();
-//			interpreter.init(null);
-//
-//			if (defaultName != null)
-//			{
-//				interpreter.setDefaultName(defaultName);
-//			}
-//
-//			long after = System.currentTimeMillis();
-//
-//			infoln("Initialized " + plural(classes.size(), "class", "es")
-//					+ " in " + (double) (after - before) / 1000 + " secs. ");
-//
-//			return ExitStatus.EXIT_OK;
-//		} catch (ContextException e)
-//		{
-//			println("Initialization: " + e);
-//			e.ctxt.printStackTrace(Console.out, true);
-//			exception = e;
-//			return ExitStatus.EXIT_ERRORS;
-//		} catch (Exception e)
-//		{
-//			println("Initialization: " + e.getMessage());
-//			// TODO: need to output this error somewhere
-//			exception = e;
-//			return ExitStatus.EXIT_ERRORS;
-//		}
-//	}
 
 	public Exception getException()
 	{
@@ -142,17 +95,17 @@ public class VDMCO extends VDMRT
 				{
 					InitThread iniThread = new InitThread(this);
 					BasicSchedulableThread.setInitialThread(iniThread);
-					// ExitStatus status;
 
 					if (script != null)
 					{
 						status = ExitStatus.EXIT_OK;
 						finished = true;
 						String host = "localhost";
-						// int port=10000;
+
 						String ideKey = "1";
 						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, getInterpreter(), script, null);
-						 
+
+						int retryCountDown = 5;
 						int retried = 0;
 						while (dbgpreader.getStatus() == null)
 						{
@@ -163,26 +116,44 @@ public class VDMCO extends VDMRT
 							retried++;
 							System.out.println("Trying to connect to IDE...("
 									+ retried + ")");
-							System.out.println("Status of DBGPReader is: "+dbgpreader.getStatus()+ " with retried: "+retried);
+							System.out.println("Status of DBGPReader is: "
+									+ dbgpreader.getStatus()
+									+ " with retried: " + retried);
 							dbgpreader.startup(null);
-
+							
+							if(retryCountDown==0)
+							{
+								status = ExitStatus.EXIT_ERRORS;
+								return;
+							}
+							retryCountDown--;
 						}
+
+						retryCountDown = 5;
 						while (dbgpreader.getStatus() == DBGPStatus.STARTING)
 						{
 							System.out.println("DBGPReader status is now STARTING and a new try to start dbgpreader will be made in 1 sec.");
 							Thread.sleep(1000);
 							dbgpreader.startup(null);
-
+							if(retryCountDown==0)
+							{
+								finished = true;
+								status = ExitStatus.EXIT_ERRORS;
+								return;
+							}
+							retryCountDown--;
 						}
-						try{
-						dbgpreader.startCoSimulation();
-						}catch(Exception e)
+						try
 						{
-							//Failed to start simulation
+							dbgpreader.startCoSimulation();
+						} catch (Exception e)
+						{
+							// Failed to start simulation
 							e.printStackTrace();
+							exception = e;
+							finished = true;
+							status = ExitStatus.EXIT_ERRORS;
 						}
-						System.out.println("DBGPreader status is now: " +dbgpreader.getStatus());
-						// println(interpreter.execute(script, null).toString());
 
 					} else
 					{
@@ -202,6 +173,7 @@ public class VDMCO extends VDMRT
 					e.ctxt.printStackTrace(Console.out, true);
 				} catch (Exception e)
 				{
+					exception = e;
 					println("Execution: " + e);
 				}
 
@@ -297,15 +269,15 @@ public class VDMCO extends VDMRT
 							/ 1000 + " secs");
 				} else
 				{
-					if (replaceNewIdentifier.isEmpty() && architecture.isEmpty() && deploy.isEmpty())
+					if (replaceNewIdentifier.isEmpty()
+							&& architecture.isEmpty() && deploy.isEmpty())
 					{
 						long before = System.currentTimeMillis();
-	    				LexTokenReader ltr =
-	    					new LexTokenReader(file, Settings.dialect, filecharset);
-	        			reader = new ClassReader(ltr);
-	        			classes.addAll(reader.readClasses());
-	        	   		long after = System.currentTimeMillis();
-	        	   		duration += (after - before);
+						LexTokenReader ltr = new LexTokenReader(file, Settings.dialect, filecharset);
+						reader = new ClassReader(ltr);
+						classes.addAll(reader.readClasses());
+						long after = System.currentTimeMillis();
+						duration += (after - before);
 					} else
 					{
 						long before = System.currentTimeMillis();
@@ -387,16 +359,6 @@ public class VDMCO extends VDMRT
 			}
 		}
 	}
-
-	public static Map<String, String> replaceNewIdentifier = new Hashtable<String, String>();
-	public static String architecture = "";
-	public static String deploy = "";
-
-	// static
-	// {
-	// replaceNewIdentifier.put("A", "B");
-	//
-	// }
 
 	public static String patch(String tmp)
 	{

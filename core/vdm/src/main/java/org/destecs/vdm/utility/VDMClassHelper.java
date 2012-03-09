@@ -50,8 +50,7 @@ public class VDMClassHelper {
 		
 	}
 	
-	public static Value digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
-
+	public static ValueInfo digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
 		Value value = null;						
 		if(list.size() >= 1)
 		{
@@ -64,25 +63,46 @@ public class VDMClassHelper {
 					
 					if(canResultBeExpanded(value))
 					{						
-						NameValuePairList newArgs = getNamePairListFromResult(value);
+						List<ValueInfo> newArgs = getNamePairListFromResult(value);
 						
-						Value result = digForVariable(getNewName(varName), newArgs);
+						ValueInfo result = digForVariable(getNewName(varName), newArgs);
+						return result;
+					}
+				}
+			}
+		}			
+		
+		throw new RemoteSimulationException("Value: " + varName + " not found");
+	}
+	public static ValueInfo digForVariable(List<String> varName, List<ValueInfo> list) throws RemoteSimulationException, ValueException {
+
+		Value value = null;						
+		if(list.size() >= 1)
+		{
+			String namePart = varName.get(0);
+			for (ValueInfo p : list)
+			{
+				if (namePart.equals(p.name.getName()))
+				{
+					value = p.value.deref();
+					
+					if(canResultBeExpanded(value))
+					{						
+						List<ValueInfo> newArgs = getNamePairListFromResult(value);
+						
+						ValueInfo result = digForVariable(getNewName(varName), newArgs);
 						return result;
 					}
 					else
 					{
-						return value;
+						return p;
 						
 					}
 				}
 			}
 		}			
 		
-		if(value == null)
-		{
-			throw new RemoteSimulationException("Value: " + varName + " not found");
-		}
-		return value;
+		throw new RemoteSimulationException("Value: " + varName + " not found");
 	}
 		
 	
@@ -95,10 +115,16 @@ public class VDMClassHelper {
 			return false;
 	}
 	
-	private static NameValuePairList getNamePairListFromResult(Value value) {
+	private static List<ValueInfo> getNamePairListFromResult(Value value) {
 		if(value instanceof ObjectValue)
 		{
-			return ((ObjectValue) value).members.asList();
+			ObjectValue objVal = ((ObjectValue) value);
+			List<ValueInfo> values = new Vector<ValueInfo>();
+			for (NameValuePair child : objVal.members.asList())
+			{
+				values.add(new ValueInfo(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
+			}
+			return values;
 		}
 		else 
 			return null;

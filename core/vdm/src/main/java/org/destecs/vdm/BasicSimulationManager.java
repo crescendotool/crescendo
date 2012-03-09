@@ -19,32 +19,36 @@
 package org.destecs.vdm;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.destecs.core.vdmlink.Links;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
+import org.destecs.vdm.utility.SeqValueInfo;
+import org.destecs.vdm.utility.VDMClassHelper;
+import org.destecs.vdm.utility.ValueInfo;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
 import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.lex.LexLocation;
+import org.overturetool.vdmj.messages.Console;
+import org.overturetool.vdmj.runtime.ClassContext;
 import org.overturetool.vdmj.runtime.ClassInterpreter;
 import org.overturetool.vdmj.runtime.Context;
-import org.overturetool.vdmj.runtime.ThreadState;
+import org.overturetool.vdmj.runtime.ContextException;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.ISchedulableThread;
+import org.overturetool.vdmj.scheduler.Signal;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.values.BooleanValue;
-import org.overturetool.vdmj.values.CPUValue;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.NumericValue;
 import org.overturetool.vdmj.values.ObjectValue;
-import org.overturetool.vdmj.values.ReferenceValue;
 import org.overturetool.vdmj.values.SeqValue;
 import org.overturetool.vdmj.values.TransactionValue;
 import org.overturetool.vdmj.values.Value;
@@ -64,7 +68,11 @@ public abstract class BasicSimulationManager
 		/**
 		 * 2=the step action succeeded, but an event occurred. if failed then the function will return a fault response
 		 */
-		EVENT_OCCURED(2);
+		EVENT_OCCURED(2),
+		/**
+		 * 3=the step was stopped by the user
+		 */
+		SUCCESS_STOPPED_BY_USER(3);
 
 		public int value;
 
@@ -102,18 +110,19 @@ public abstract class BasicSimulationManager
 	protected Long nextSchedulableActionTime = Long.valueOf(0);
 
 	protected final LexLocation coSimLocation = new LexLocation(new File("SimulationInterface"), "SimulationInterface", 0, 0, 0, 0);
-	protected final Context coSimCtxt = new Context(coSimLocation, "SimulationInterface", null);
 
 	ArrayBlockingQueue<ValueUpdateRequest> updateValueQueueRequest = new ArrayBlockingQueue<ValueUpdateRequest>(1);
 
 	protected ClassInterpreter interpreter;
 	
+	protected RemoteSimulationException runtimeException = null;
+
 	public static class ValueUpdateRequest
 	{
-		public final Value value;
+		public final ValueInfo value;
 		public final Value newValue;
 
-		public ValueUpdateRequest(Value value, Value newValue)
+		public ValueUpdateRequest(ValueInfo value, Value newValue)
 		{
 			this.value = value;
 			this.newValue = newValue;
@@ -127,27 +136,44 @@ public abstract class BasicSimulationManager
 
 			public void run()
 			{
-				
+
 				while (true)
 				{
 					try
 					{
 						ValueUpdateRequest request = updateValueQueueRequest.take();
-						coSimCtxt.threadState = new ThreadState(null, CPUValue.vCPU);
-						request.value.set(coSimLocation, request.newValue, coSimCtxt);
-						if (request.value instanceof TransactionValue)
+						try
 						{
-							TransactionValue.commitOne(BasicSchedulableThread.getThread(Thread.currentThread()).getId());
+							Context coSimCtxt = new ClassContext(coSimLocation, "SimulationInterface", interpreter.initialContext, request.value.classDef);
+							coSimCtxt.setThreadState(null, request.value.cpu);
+
+							request.value.value.set(coSimLocation, request.newValue, coSimCtxt);
+							if (request.value.value instanceof TransactionValue)
+							{
+								TransactionValue.commitOne(BasicSchedulableThread.getThread(Thread.currentThread()).getId());
+							}
+						} catch (ValueException e)
+						{
+							debugErr(e);
+						} catch (ContextException e)
+						{
+							String message = "Error in simulation: Cannot set shared instance variable \""
+								+ request.value.name.module
+								+ "."
+								+ request.value.name.name
+								+ "\""
+								+ "\n\tReasong is: " + e.getMessage();
+							Console.err.println(message);
+							
+							runtimeException = new RemoteSimulationException(message);
+						} catch (Exception e)
+						{
+							debugErr(e);
+							e.printStackTrace();
 						}
 					} catch (InterruptedException e)
 					{
 						// ignore
-					} catch (ValueException e)
-					{
-						debugErr(e);
-					}catch(Exception e)
-					{
-						e.printStackTrace();
 					}
 				}
 			}
@@ -163,8 +189,8 @@ public abstract class BasicSimulationManager
 		this.scheduler = scheduler;
 	}
 
-	protected boolean setScalarValue(Value val, CoSimType inputType, String p,
-			String name) throws RemoteSimulationException
+	protected boolean setScalarValue(ValueInfo val, CoSimType inputType,
+			String p, String name) throws RemoteSimulationException
 	{
 		if (val != null)
 		{
@@ -173,7 +199,7 @@ public abstract class BasicSimulationManager
 			if (inputType == CoSimType.Auto)
 			{
 				inputType = CoSimType.NumericValue;
-				if (val.deref() instanceof BooleanValue)
+				if (val.value.deref() instanceof BooleanValue)
 				{
 					inputType = CoSimType.Boolean;
 				}
@@ -205,7 +231,7 @@ public abstract class BasicSimulationManager
 					}
 						break;
 					case NumericValue:
-						newval = NumericValue.valueOf(Double.parseDouble(p), coSimCtxt);
+						newval = NumericValue.valueOf(Double.parseDouble(p), null);
 						break;
 					case String:
 					case Unknown:
@@ -247,8 +273,7 @@ public abstract class BasicSimulationManager
 			ValueContents valueContents) throws RemoteSimulationException
 	{
 
-		Value val = null;
-		val = getValue(name);
+		ValueInfo val = getValue(name);
 
 		if (valueContents.size.size() == 0
 				|| (valueContents.size.size() == 1 && valueContents.size.get(0) == 1))
@@ -256,9 +281,10 @@ public abstract class BasicSimulationManager
 			return setScalarValue(val, inputType, valueContents.value.get(0).toString(), name);
 		} else
 		{
-			if (val.deref() instanceof SeqValue)
+			if (val instanceof SeqValueInfo)// (val.value.deref() instanceof SeqValue)
 			{
-				return setNonScalar((SeqValue) val.deref(), valueContents, name);
+				return setNonScalar((SeqValueInfo) val, valueContents, name);// ((SeqValue) val.value.deref(),
+																				// valueContents, name);
 			} else
 			{
 				return false;
@@ -268,7 +294,7 @@ public abstract class BasicSimulationManager
 		// return true;
 	}
 
-	private boolean setNonScalar(SeqValue val, ValueContents valueContents,
+	private boolean setNonScalar(SeqValueInfo val, ValueContents valueContents,
 			String name) throws RemoteSimulationException
 	{
 
@@ -285,7 +311,7 @@ public abstract class BasicSimulationManager
 		{
 			for (List<Integer> index : indexes)
 			{
-				SeqValue seqVal = findNestedSeq(val, index);
+				SeqValueInfo seqVal = findNestedSeq(val, index);
 				int sizeOfSeq = size.get(size.size() - 1);
 				setSeqValue(seqVal, values, sizeOfSeq, name);
 				values = values.subList(sizeOfSeq, values.size());
@@ -356,7 +382,7 @@ public abstract class BasicSimulationManager
 		return l1;
 	}
 
-	private SeqValue findNestedSeq(SeqValue val, List<Integer> indexes)
+	private SeqValueInfo findNestedSeq(SeqValueInfo val, List<Integer> indexes)
 			throws RemoteSimulationException
 	{
 
@@ -367,40 +393,42 @@ public abstract class BasicSimulationManager
 
 		int index = indexes.get(0);
 
-		if (index + 1 > val.values.size())
+		if (index + 1 > val.value.values.size())
 		{
 			return null;
 		} else
 		{
-			Value valToInspect = val.values.get(index).deref();
+			Value valToInspect = val.value.values.get(index).deref();
+
 			if (valToInspect instanceof SeqValue)
 			{
-				return findNestedSeq((SeqValue) valToInspect, indexes.subList(1, indexes.size()));
+				SeqValueInfo valToInspectSeq = new SeqValueInfo(val.name, val.classDef, (SeqValue) valToInspect, val.cpu);
+				return findNestedSeq(valToInspectSeq, indexes.subList(1, indexes.size()));
 			}
 		}
 		return null;
 
 	}
 
-	private void setSeqValue(SeqValue val, List<Double> values, int sizeOfSeq,
-			String name) throws RemoteSimulationException
+	private void setSeqValue(SeqValueInfo val, List<Double> values,
+			int sizeOfSeq, String name) throws RemoteSimulationException
 	{
 
-		if (val.values.size() > values.size())
+		if (val.value.values.size() > values.size())
 		{
 			throw new RemoteSimulationException("Values received are not enough to fill matrix "
 					+ name);
 		}
 
-		for (int i = 0; i < val.values.size(); i++)
+		for (int i = 0; i < val.value.values.size(); i++)
 		{
-
-			setScalarValue(val.values.get(i), CoSimType.Auto, values.get(i).toString(), name);
+			ValueInfo elementValue = new ValueInfo(val.name, val.classDef, val.value.values.get(i), val.cpu);
+			setScalarValue(elementValue, CoSimType.Auto, values.get(i).toString(), name);
 		}
 
 	}
 
-	protected Value getValue(String name) throws RemoteSimulationException
+	protected ValueInfo getValue(String name) throws RemoteSimulationException
 	{
 		try
 		{
@@ -409,7 +437,7 @@ public abstract class BasicSimulationManager
 			{
 				List<String> varName = links.getQualifiedName(name);
 
-				Value output = digForVariable(varName.subList(1, varName.size()), list);
+				ValueInfo output = VDMClassHelper.digForVariable(varName.subList(1, varName.size()), list);
 				return output;
 			}
 		} catch (ValueException e)
@@ -417,83 +445,6 @@ public abstract class BasicSimulationManager
 			throw new RemoteSimulationException("Value: " + name + " not found");
 		}
 		return null;
-	}
-
-	private Value digForVariable(List<String> varName, NameValuePairList list)
-			throws RemoteSimulationException, ValueException
-	{
-
-		Value value = null;
-
-		if (list.size() >= 1)
-		{
-			String namePart = varName.get(0);
-			for (NameValuePair p : list)
-			{
-				if (namePart.equals(p.name.getName()))
-				{
-					value = p.value.deref();
-
-					if (canResultBeExpanded(value))
-					{
-						NameValuePairList newArgs = getNamePairListFromResult(value);
-
-						Value result = digForVariable(getNewName(varName), newArgs);
-						value = result;
-						break;
-					} else
-					{
-						value = p.value;
-						break;
-					}
-				}
-			}
-		}
-
-		if (value == null)
-		{
-			throw new RemoteSimulationException("Value: " + varName
-					+ " not found");
-		}
-
-		return value;
-
-	}
-
-	private List<String> getNewName(List<String> varName)
-	{
-		List<String> result = new ArrayList<String>();
-
-		if (varName.size() > 1)
-		{
-			for (int i = 1; i < varName.size(); i++)
-			{
-				result.add(varName.get(i));
-			}
-			return result;
-		} else
-		{
-			return null;
-		}
-
-	}
-
-	private boolean canResultBeExpanded(Value result)
-	{
-		if (result instanceof ObjectValue || result instanceof ReferenceValue)
-		{
-			return true;
-		} else
-			return false;
-	}
-
-	private NameValuePairList getNamePairListFromResult(Value value)
-	{
-		if (value instanceof ObjectValue)
-		{
-			return ((ObjectValue) value).members.asList();
-		} else
-			return null;
 	}
 
 	protected Value getRawValue(List<String> name, Value v)

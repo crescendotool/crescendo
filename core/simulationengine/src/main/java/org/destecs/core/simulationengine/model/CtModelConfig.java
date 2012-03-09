@@ -66,7 +66,6 @@ public class CtModelConfig extends ModelConfig
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return this.arguments.get("file");
 	}
 }

@@ -29,7 +29,6 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +44,7 @@ import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.ScriptSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
+import org.destecs.core.simulationengine.launcher.DummyLauncher;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.simulationengine.listener.IProcessCreationListener;
 import org.destecs.core.simulationengine.listener.ISimulationStartListener;
@@ -399,7 +399,13 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.setDeModel(deModel);
 			engine.setDeEndpoint(deUrl);
 
-			engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
+			if(!useRemoteCtSimulator)
+			{
+				engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
+			}else	
+			{
+				engine.setCtSimulationLauncher(new DummyLauncher("20-sim"));
+			}
 			ModelConfig ctModel = getCtModelConfig(ctFile);
 			engine.setCtModel(ctModel);
 			engine.setCtEndpoint(ctUrl);

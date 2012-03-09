@@ -94,7 +94,7 @@ public class CoSimulationThread extends Thread
 		}
 		refreshProject();
 
-		engine.shutdownSimulators();
+//		engine.shutdownSimulators();
 	}
 
 	private void refreshProject()

@@ -41,6 +41,7 @@ import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.vdm.utility.VDMClassHelper;
+import org.destecs.vdm.utility.ValueInfo;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.log.SimulationLogger;
 import org.destecs.vdmj.log.SimulationMessage;
@@ -62,16 +63,21 @@ import org.overturetool.vdmj.expressions.RealLiteralExpression;
 import org.overturetool.vdmj.expressions.SeqExpression;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
+import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.lex.LexRealToken;
 import org.overturetool.vdmj.messages.rtlog.RTLogger;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
+import org.overturetool.vdmj.scheduler.SharedStateListner;
 import org.overturetool.vdmj.scheduler.SystemClock;
+import org.overturetool.vdmj.statements.IdentifierDesignator;
+import org.overturetool.vdmj.statements.StateDesignator;
 import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.RealType;
 import org.overturetool.vdmj.types.Type;
+import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
@@ -97,6 +103,8 @@ public class SimulationManager extends BasicSimulationManager
 	private CoSimStatusEnum status = CoSimStatusEnum.NOT_INITIALIZED;
 	final private List<String> variablesToLog = new Vector<String>();
 	private File simulationLogFile;
+	private boolean isSchedulingHookConfigured = false;
+	
 	/**
 	 * A handle to the unique Singleton instance.
 	 */
@@ -137,6 +145,10 @@ public class SimulationManager extends BasicSimulationManager
 			List<StepinputsStructParam> inputs, List<String> events)
 			throws RemoteSimulationException
 	{
+		if(runtimeException!=null)
+		{
+			throw runtimeException;
+		}
 		// first check if main thread is active
 		if (mainContext != null)
 		{
@@ -147,6 +159,11 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				throw new RemoteSimulationException("VDM Main Thread no longer active. Forced to stop before end time.", null);
 			}
+		}
+		
+		if(!isSchedulingHookConfigured)
+		{
+			configureSchedulingHooks();
 		}
 
 		for (StepinputsStructParam p : inputs)
@@ -168,6 +185,7 @@ public class SimulationManager extends BasicSimulationManager
 		try
 		{
 			interpreterRunning = true;
+			SharedStateListner.resetAutoIncrementTime();
 			notify();// Wake up Scheduler
 
 			while (interpreterRunning)
@@ -215,7 +233,7 @@ public class SimulationManager extends BasicSimulationManager
 		boolean evaluated = false;
 		if (links.getEvents().keySet().contains(event))
 		{
-			Value val = getValue(event); 
+			Value val = getValue(event).value; 
 			if (val.deref() instanceof OperationValue)
 			{
 				OperationValue eventOp = (OperationValue) val;
@@ -251,7 +269,7 @@ public class SimulationManager extends BasicSimulationManager
 		if (list != null && links.getLinks().containsKey(name)){
 			List<String> varName = links.getQualifiedName(name);
 			
-			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list);
+			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list).value;
 					
 			return new ValueContents(VDMClassHelper.getDoubleListFromValue(value), VDMClassHelper.getValueDimensions(value));
 			
@@ -284,7 +302,7 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				throw new RemoteSimulationException("Faild to parse vdm links");
 			}
-
+			
 			if (disableRtLog)
 			{
 				RTLogger.enable(false);
@@ -323,6 +341,9 @@ public class SimulationManager extends BasicSimulationManager
 					throw new RemoteSimulationException("Type check error: "
 							+ result.toString());
 				}
+			}else
+			{
+					throw new RemoteSimulationException("Cannot not parse specification", null);
 			}
 
 			boolean hasScriptCall = false;
@@ -386,8 +407,77 @@ public class SimulationManager extends BasicSimulationManager
 
 	}
 
+	private void configureSchedulingHooks()
+	{
+		final List<LexNameToken> readCheck = new Vector<LexNameToken>();
+		final List<LexNameToken> writeCheck = new Vector<LexNameToken>();
+		try{
+		
+		for (Entry<String, LinkInfo> entry : links.getInputs().entrySet())
+		{
+			
+				NameValuePairList list = SystemDefinition.getSystemMembers();
+				if (list != null )
+				{
+					List<String> varName = entry.getValue().getQualifiedName();
+					ValueInfo value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list);
+					readCheck.add(value.name);
+				}
+			
+		}
+		for (Entry<String, LinkInfo> entry : links.getOutputs().entrySet())
+		{
+				NameValuePairList list = SystemDefinition.getSystemMembers();
+				if (list != null )
+				{
+					List<String> varName = entry.getValue().getQualifiedName();
+					ValueInfo value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list);
+					writeCheck.add(value.name);
+				}
+		}}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		SharedStateListner.setIdentityChecker(new SharedStateListner.IdentityChecker()
+		{
+			
+			public boolean reuiresCheck(StateDesignator target)
+			{
+				if (target instanceof IdentifierDesignator)
+				{
+					LexNameToken name = ((IdentifierDesignator) target).name;
+					for (LexNameToken n : writeCheck)
+					{
+						if (name.module.equals(n.module)
+								&& name.name.equals(n.name))
+						{
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+			
+			public boolean reuiresCheck(LexNameToken name)
+			{
+				for (LexNameToken n : readCheck)
+				{
+					if (name.module.equals(n.module)
+							&& name.name.equals(n.name))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+	}
+
 	public Boolean initialize() throws RemoteSimulationException
 	{
+		runtimeException = null;
 		Properties.init();
 		Properties.parser_tabstop = 1;
 		Properties.rt_duration_transactions = true;
@@ -397,26 +487,15 @@ public class SimulationManager extends BasicSimulationManager
 		Settings.usingDBGP = true;
 		Settings.release = Release.VDM_10;
 		controller = new VDMCO();
+		SharedStateListner.setIdentityChecker(null);
+		isSchedulingHookConfigured = false;
 		return true;
-
 	}
 
 	public Boolean start() throws RemoteSimulationException
 	{
 		final List<File> files = getFiles();
 
-		// init
-//		if (controller.interpret(files, null) == ExitStatus.EXIT_OK)
-//		{
-//			this.status = CoSimStatusEnum.INITIALIZED;
-//		} else
-//		{
-//			this.status = CoSimStatusEnum.NOT_INITIALIZED;
-//		}
-
-//		if (this.status == CoSimStatusEnum.INITIALIZED)
-//		{
-			// start
 			if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
 			{
 				this.status = CoSimStatusEnum.INITIALIZED;
@@ -424,22 +503,9 @@ public class SimulationManager extends BasicSimulationManager
 			} else
 			{
 				this.status = CoSimStatusEnum.NOT_INITIALIZED;
-//				return false;
-				throw new RemoteSimulationException(// "Model must be "
-						// + CoSimStatusEnum.INITIALIZED
-						// + " before it can be started. " +
-						"Status = " + this.status + ". Internal error: "
-								+ controller.exception.getMessage());
+				throw new RemoteSimulationException("Status = " + this.status + ". Internal error: "
+								+ controller.exception!=null?controller.exception.getMessage():"unknown");
 			}
-//		} else
-//		{
-//			throw new RemoteSimulationException(// "Model must be "
-//			// + CoSimStatusEnum.INITIALIZED
-//			// + " before it can be started. " +
-//			"Status = " + this.status + ". Internal error: "
-//					+ controller.exception.getMessage());
-//		}
-
 	}
 
 	private List<File> getFiles() throws RemoteSimulationException
@@ -757,14 +823,21 @@ public class SimulationManager extends BasicSimulationManager
 					ObjectValue po = (ObjectValue) p.value.deref();
 					parameters.putAll(getParameters(prefix + p.name.name, po.members.asList(), depth++));
 
-				} else if (p.value.deref() instanceof RealValue)// TODO bool should properly be added here
+				} else if (p.value.deref() instanceof RealValue)
 				{
 					List<Double> realValue = new Vector<Double>();
 					realValue.add(p.value.realValue(null));
 					List<Integer> valueSize = new Vector<Integer>();
 					valueSize.add(1);
 					parameters.put(prefix + p.name.name, new ValueContents(realValue,valueSize));
-				} else if(p.value.deref() instanceof SeqValue)
+				}else if (p.value.deref() instanceof BooleanValue)
+				{
+					List<Double> realValue = new Vector<Double>();
+					realValue.add(p.value.boolValue(null)?1.0:0.0);
+					List<Integer> valueSize = new Vector<Integer>();
+					valueSize.add(1);
+					parameters.put(prefix + p.name.name, new ValueContents(realValue,valueSize));
+				}  else if(p.value.deref() instanceof SeqValue)
 				{
 					System.out.println("getParameters:sequence");
 				}
@@ -858,7 +931,7 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		try
 		{
-			Value value = getValue(name);
+			Value value = getValue(name).value;
 
 			List<Double> result = VDMClassHelper.getDoubleListFromValue(value);
 			if (result != null)
@@ -878,10 +951,13 @@ public class SimulationManager extends BasicSimulationManager
 
 	public List<Integer> getParameterSize(String name) throws RemoteSimulationException
 	{	
-			Value value = getValue(name);
+			Value value = getValue(name).value;
 			return VDMClassHelper.getValueDimensions(value);
 				
 	}
 
-	
+	public boolean hasEvents()
+	{
+		return !links.getEvents().isEmpty();
+	}
 }

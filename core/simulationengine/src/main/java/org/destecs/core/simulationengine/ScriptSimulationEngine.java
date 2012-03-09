@@ -99,7 +99,6 @@ public class ScriptSimulationEngine extends SimulationEngine
 					{
 						case CT:
 						{
-							// TODO check this
 							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
 							List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
 							list.add(parm);
@@ -180,7 +179,6 @@ public class ScriptSimulationEngine extends SimulationEngine
 				{
 					case CT:
 					{
-						// TODO check this
 						GetParametersStruct data = ctProxy.getParameters(Arrays.asList(new String[] { name }));
 
 						if (!data.parameters.isEmpty())

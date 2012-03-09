@@ -54,7 +54,7 @@ import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
 @SuppressWarnings("unchecked")
 public class CoSimImpl implements IDestecs
 {
-
+	static int stepCount = 0;
 	private static final String LOAD_DEPLOY = "deploy";
 	private static final String LOAD_ARCHITECTURE = "architecture";
 	private static final String LOAD_REPLACE = "replace";
@@ -76,6 +76,7 @@ public class CoSimImpl implements IDestecs
 	private static final String version = "0.0.1.0";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 	private String interfaceVersion = "3.0.2.0";
+	private static Double finishTime = 0.0;
 
 	public Map<String, Integer> getStatus()
 	{
@@ -90,6 +91,7 @@ public class CoSimImpl implements IDestecs
 
 	public Boolean initialize() throws RemoteSimulationException
 	{
+		stepCount = 0;
 		try
 		{
 			return SimulationManager.getInstance().initialize();
@@ -305,6 +307,7 @@ public class CoSimImpl implements IDestecs
 	{
 		try
 		{
+			stepCount++;
 			Double outputTime = (Double) data.get("outputTime");
 
 			List<Object> tmp = Arrays.asList((Object[]) data.get("inputs"));
@@ -333,12 +336,17 @@ public class CoSimImpl implements IDestecs
 
 			// Ignore single step
 			StepStruct result;
-			// try
-			// {
+			
 			outputTime = new Double(SystemClock.timeToInternal(TimeUnit.seconds, outputTime));
 			result = SimulationManager.getInstance().step(outputTime, inputs, events);
 
 			result.time = SystemClock.internalToTime(TimeUnit.seconds, result.time.longValue());
+			if (result.time > finishTime)
+			{
+				// The next point where VDM needs CT communication is result.time but if the simulation stops before we
+				// are not by protocol allowed to ask for this.
+				result.time = finishTime;
+			}
 
 			return result.toMap();
 		} catch (RemoteSimulationException e)
@@ -375,6 +383,7 @@ public class CoSimImpl implements IDestecs
 	{
 		try
 		{
+			System.out.println("Total steps taken: " + stepCount);
 			return SimulationManager.getInstance().stopSimulation();
 		} catch (RemoteSimulationException e)
 		{
@@ -382,13 +391,6 @@ public class CoSimImpl implements IDestecs
 			throw e;
 		}
 	}
-
-	// public Map<String, Object> getDesignParameter(Map<String, String> data)
-	// throws RemoteSimulationException
-	// {
-	// String parameterName = data.get("name");
-	// return SimulationManager.getInstance().getDesignParameter(parameterName).toMap();
-	// }
 
 	public Map<String, List<Map<String, Object>>> getDesignParameters(
 			List<String> data) throws RemoteSimulationException
@@ -400,25 +402,6 @@ public class CoSimImpl implements IDestecs
 		}
 		return new GetDesignParametersStruct(list).toMap();
 	}
-
-	// public Map<String, Object> getParameter(Map<String, String> data)
-	// throws RemoteSimulationException
-	// {
-	// String name = (String) data.get("name");
-	//
-	// List<Double> value;
-	// List<Integer> size;
-	// try
-	// {
-	// value = SimulationManager.getInstance().getParameter(name);
-	// size = SimulationManager.getInstance().getParameterSize(name);
-	// return new GetParameterStruct(value, size).toMap();
-	// } catch (RemoteSimulationException e)
-	// {
-	// ErrorLog.log(e);
-	// throw e;
-	// }
-	// }
 
 	public Map<String, List<Map<String, Object>>> getParameters(
 			List<String> data) throws RemoteSimulationException
@@ -437,23 +420,6 @@ public class CoSimImpl implements IDestecs
 		}
 		return new GetParametersStruct(list).toMap();
 	}
-
-	// public Map<String, Boolean> setDesignParameter(Map<String, Object> data)
-	// throws RemoteSimulationException
-	// {
-	//
-	// try
-	// {
-	// List<Map<String, Object>> argument = new Vector<Map<String, Object>>();
-	// argument.add(data);
-	// boolean success = SimulationManager.getInstance().setDesignParameters(argument);
-	// return new SetDesignParameterStruct(success).toMap();
-	// } catch (RemoteSimulationException e)
-	// {
-	// ErrorLog.log(e);
-	// throw e;
-	// }
-	// }
 
 	public Boolean setDesignParameters(
 			Map<String, List<Map<String, Object>>> data)
@@ -564,6 +530,7 @@ public class CoSimImpl implements IDestecs
 	{
 		try
 		{
+			finishTime = (Double) data.get("finishTime");
 			return SimulationManager.getInstance().start();
 		} catch (RemoteSimulationException e)
 		{
@@ -635,15 +602,13 @@ public class CoSimImpl implements IDestecs
 
 	public Boolean setSettings(List<Map<String, Object>> data) throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new RemoteSimulationException("Not implemented");
 	}
 
 	public List<Map<String, Object>> querySettings(List<String> data)
 			throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new RemoteSimulationException("Not implemented");
 	}
 
 }

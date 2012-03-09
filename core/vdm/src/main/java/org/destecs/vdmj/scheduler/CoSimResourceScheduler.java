@@ -24,6 +24,7 @@ import org.overturetool.vdmj.scheduler.MainThread;
 import org.overturetool.vdmj.scheduler.Resource;
 import org.overturetool.vdmj.scheduler.ResourceScheduler;
 import org.overturetool.vdmj.scheduler.RunState;
+import org.overturetool.vdmj.scheduler.SharedStateListner;
 import org.overturetool.vdmj.scheduler.Signal;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.values.BUSValue;
@@ -131,7 +132,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 	private synchronized boolean canAdvanceSimulationTime(long minstep)
 	{
-		if (SystemClock.getWallTime() + minstep <= nextSimulationStop)
+		if (SystemClock.getWallTime() + minstep <= nextSimulationStop || (SharedStateListner.isAutoIncrementTime()&&!SimulationManager.getInstance().hasEvents()))
 		{
 			return true; // OK, just proceed there is still simulation time left
 		} else

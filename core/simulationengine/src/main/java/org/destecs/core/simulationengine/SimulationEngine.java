@@ -134,7 +134,8 @@ public class SimulationEngine
 	/**
 	 * Minimum required version protocol version
 	 */
-	private static final Integer[] MIN_VERSION_PROTOCOL = new Integer[] { 3, 0, 2, 0 };
+	private static final Integer[] MIN_VERSION_PROTOCOL = new Integer[] { 3, 0,
+			2, 0 };
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
@@ -287,6 +288,7 @@ public class SimulationEngine
 			FileNotFoundException
 	{
 		Set<Simulator> runningSimulators = new HashSet<Simulator>();
+		boolean successfullShutdown = false;
 		try
 		{
 			// reset force simulation stop
@@ -353,7 +355,7 @@ public class SimulationEngine
 
 			// set variables to log
 			setLogVariables(Simulator.DE, deProxy, deModelBase);
-//			setLogVariables(Simulator.CT, ctProxy, ctModel);
+			// setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			// set SDPs
 			setSharedDesignParameters(Simulator.DE, deProxy, sharedDesignParameters);
@@ -363,8 +365,9 @@ public class SimulationEngine
 			startSimulator(Simulator.DE, deProxy, totalSimulationTime);
 			startSimulator(Simulator.CT, ctProxy, totalSimulationTime);
 
-//			// FIXME: Calling set log variables after start is not consistent with the protocol but is needed for 20sim
-//			// at the moment
+			// // FIXME: Calling set log variables after start is not consistent with the protocol but is needed for
+			// 20sim
+			// // at the moment
 			setLogVariables(Simulator.CT, ctProxy, ctModel);
 
 			long before = System.currentTimeMillis();
@@ -376,46 +379,53 @@ public class SimulationEngine
 							+ ((int) totalSec % 60) + " mins." : totalSec
 							+ " secs."));
 
-			// writeLogFiles(Simulator.CT, ctProxy);
-
 			// stop the simulators
 			stop(Simulator.DE, finishTime, deProxy);
 			runningSimulators.remove(Simulator.DE);
 			stop(Simulator.CT, finishTime, ctProxy);
 			runningSimulators.remove(Simulator.CT);
-			
+
 			terminate(Simulator.DE, finishTime, deProxy, deLauncher);
 			terminate(Simulator.CT, finishTime, ctProxy, ctLauncher);
-		}
-		// catch(Exception e)
-		// {
-		// System.out.println("Exception");
-		// System.out.println(e.getMessage());
-		// }
-		finally
+			successfullShutdown = true;
+		} finally
 		{
-			if (deLauncher.isRunning() || ctLauncher.isRunning())
+			if (successfullShutdown)
 			{
-				for (Simulator simulator : runningSimulators)
+				return;
+			}
+
+			for (Simulator simulator : runningSimulators)
+			{
+				try
 				{
-					try{
-						switch(simulator)
-						{
-							case CT:
-								stop(Simulator.CT, 0.0, ctProxy);
-								break;
-							case DE:
-								stop(Simulator.DE, 0.0, deProxy);
-								break;
-							
-						}
-					}catch(Exception e)
+					switch (simulator)
 					{
-						
+						case CT:
+							stop(Simulator.CT, 0.0, ctProxy);
+							break;
+						case DE:
+							stop(Simulator.DE, 0.0, deProxy);
+							break;
+
 					}
+				} catch (Exception e)
+				{
+
 				}
-				sleep();
-				shutdownSimulators();
+			}
+			sleep();
+			try
+			{
+				terminate(Simulator.DE, totalSimulationTime, deProxy, deLauncher);
+			} catch (Exception e)
+			{
+			}
+			try
+			{
+				terminate(Simulator.CT, totalSimulationTime, ctProxy, ctLauncher);
+			} catch (Exception e)
+			{
 			}
 		}
 	}
@@ -454,18 +464,6 @@ public class SimulationEngine
 		} catch (InterruptedException e)
 		{
 			// ignore it
-		}
-	}
-
-	public void shutdownSimulators()
-	{
-		if (deLauncher.isRunning())
-		{
-			deLauncher.kill();
-		}
-		if (ctLauncher.isRunning())
-		{
-			ctLauncher.kill();
 		}
 	}
 
@@ -557,7 +555,14 @@ public class SimulationEngine
 			ProxyICoSimProtocol dtProxy, ProxyICoSimProtocol ctProxy)
 			throws SimulationException
 	{
-		Double initTime = 0.0;// 100.0;
+		long before = System.currentTimeMillis();
+		long beforeStep = 0;
+		long afterStep = 0;
+		long ctTotalTime = 0;
+		long deTotalTime = 0;
+		int percentCompleted = 0;
+
+		Double initTime = 0.0;
 		Double time = 0.0;
 
 		engineInfo(Simulator.ALL, "Starting simulation: Time=" + initTime
@@ -569,11 +574,15 @@ public class SimulationEngine
 		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, outputToInput(deResult.outputs), false, events);
 
-		// StepResult res = merge(deResult, ctResult);
-		// System.out.print(res.toHeaderString());
 		variableSyncInfo(merge(deResult, ctResult).getHeaders());
 		while (time <= totalSimulationTime)
 		{
+			int pctNow = (int) ((time / totalSimulationTime) * 100);
+			if (pctNow != percentCompleted)
+			{
+				percentCompleted = pctNow;
+				engineInfo(Simulator.ALL, String.format("Simulation:  %2d %%", percentCompleted));
+			}
 			lock.check();
 			if (forceStopSimulation)
 			{
@@ -583,7 +592,10 @@ public class SimulationEngine
 			try
 			{
 				// Step CT - step
+				beforeStep = System.currentTimeMillis();
 				ctResult = step(Simulator.CT, dtProxy, ctProxy, deResult.time, outputToInput(deResult.outputs), false, deResult.events);
+				afterStep = System.currentTimeMillis();
+				ctTotalTime += afterStep - beforeStep;
 				checkStepStructVariableSize(ctResult, Simulator.CT);
 				variableSyncInfo(merge(deResult, ctResult).getVariables());
 
@@ -597,8 +609,18 @@ public class SimulationEngine
 				}
 
 				// Step DT - step
+				beforeStep = System.currentTimeMillis();
 				deResult = step(Simulator.DE, dtProxy, ctProxy, ctResult.time, outputToInput(ctResult.outputs), false, ctResult.events);
+				afterStep = System.currentTimeMillis();
+				deTotalTime += afterStep - beforeStep;
 				checkStepStructVariableSize(deResult, Simulator.DE);
+
+				if (time >= totalSimulationTime)
+				{
+					// Simulation is done when DE got back the time it asked for in last step, after this point DE will
+					//  request the same time again or a point in the future
+					break;
+				}
 
 				time = deResult.time;// res.time;
 			} catch (UserStoppedSimulation e)
@@ -607,6 +629,15 @@ public class SimulationEngine
 			}
 
 		}
+		engineInfo(Simulator.ALL, "Simulation: 100 %");
+		long after = System.currentTimeMillis();
+		engineInfo(Simulator.ALL, "Finishing simulation: Total time=" + time
+				+ " completed in " + (double) (after - before) / 1000
+				+ " secs. ");
+		engineInfo(Simulator.ALL, "Finishing simulation: Total time spend in DE = "
+				+ (double) (deTotalTime) / 1000 + " secs. ");
+		engineInfo(Simulator.ALL, "Finishing simulation: Total time spend in CT = "
+				+ (double) (ctTotalTime) / 1000 + " secs. ");
 		return time;
 	}
 
@@ -1060,7 +1091,7 @@ public class SimulationEngine
 					Thread.sleep(1000);
 				} catch (InterruptedException e1)
 				{
-					//Ignore
+					// Ignore
 				}
 			}
 		}
@@ -1095,12 +1126,12 @@ public class SimulationEngine
 		switch (simulator)
 		{
 			case CT:
-				versionCheck(simulator,false, ctVersion, MIN_VERSION_CT);
-				versionCheck(simulator,true, ctProtocol, MIN_VERSION_PROTOCOL);
+				versionCheck(simulator, false, ctVersion, MIN_VERSION_CT);
+				versionCheck(simulator, true, ctProtocol, MIN_VERSION_PROTOCOL);
 				break;
 			case DE:
-				versionCheck(simulator,false, deVersion, MIN_VERSION_DE);
-				versionCheck(simulator,true, deProtocol, MIN_VERSION_PROTOCOL);
+				versionCheck(simulator, false, deVersion, MIN_VERSION_DE);
+				versionCheck(simulator, true, deProtocol, MIN_VERSION_PROTOCOL);
 				break;
 
 		}
@@ -1333,8 +1364,8 @@ public class SimulationEngine
 		return sb.toString().trim();
 	}
 
-	public boolean versionCheck(Simulator simulator,boolean protocolCheck ,String version,
-			Integer... number) throws SimulationException
+	public boolean versionCheck(Simulator simulator, boolean protocolCheck,
+			String version, Integer... number) throws SimulationException
 	{
 		try
 		{
@@ -1347,8 +1378,10 @@ public class SimulationEngine
 				{
 					if (!(Integer.valueOf(elements[i]) >= num))
 					{
-						abort(simulator, "Simulator"+(protocolCheck?" protocol ":"")+" version not supported: "
-								+ version + " <> expected " + arrayToString(number));
+						abort(simulator, "Simulator"
+								+ (protocolCheck ? " protocol " : "")
+								+ " version not supported: " + version
+								+ " <> expected " + arrayToString(number));
 					}
 
 					if (Integer.valueOf(elements[i]) > num)
@@ -1357,29 +1390,33 @@ public class SimulationEngine
 					}
 				} else
 				{
-					abort(simulator, "Simulator"+(protocolCheck?" protocol ":"")+" version not supported: "
-							+ version + " <> expected " +arrayToString( number));
+					abort(simulator, "Simulator"
+							+ (protocolCheck ? " protocol " : "")
+							+ " version not supported: " + version
+							+ " <> expected " + arrayToString(number));
 				}
 			}
 			return true;
 		} catch (NumberFormatException e)
 		{
-			abort(simulator, "Failed to parse"+(protocolCheck?" protocol ":"")+" version number: " + version
-					+ " tried to check for version: " + arrayToString(number));
+			abort(simulator, "Failed to parse"
+					+ (protocolCheck ? " protocol " : "") + " version number: "
+					+ version + " tried to check for version: "
+					+ arrayToString(number));
 		}
 		return true;
 	}
-	
+
 	private static String arrayToString(Integer... nums)
 	{
 		String tmp = "";
 		for (Integer integer : nums)
 		{
-			tmp+=integer+".";
+			tmp += integer + ".";
 		}
-		if(tmp.length()>0)
+		if (tmp.length() > 0)
 		{
-			tmp = tmp.substring(0,tmp.length()-1);
+			tmp = tmp.substring(0, tmp.length() - 1);
 		}
 		return tmp;
 	}
