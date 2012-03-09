@@ -19,7 +19,6 @@
 package org.destecs.vdm;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -42,7 +41,6 @@ import org.overturetool.vdmj.runtime.ContextException;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.ISchedulableThread;
-import org.overturetool.vdmj.scheduler.Signal;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.NameValuePair;
@@ -402,7 +400,7 @@ public abstract class BasicSimulationManager
 
 			if (valToInspect instanceof SeqValue)
 			{
-				SeqValueInfo valToInspectSeq = new SeqValueInfo(val.name, val.classDef, (SeqValue) valToInspect, val.cpu);
+				SeqValueInfo valToInspectSeq = (SeqValueInfo) VDMClassHelper.createValue(val.name, val.classDef, (SeqValue) valToInspect, val.cpu);
 				return findNestedSeq(valToInspectSeq, indexes.subList(1, indexes.size()));
 			}
 		}
@@ -422,7 +420,7 @@ public abstract class BasicSimulationManager
 
 		for (int i = 0; i < val.value.values.size(); i++)
 		{
-			ValueInfo elementValue = new ValueInfo(val.name, val.classDef, val.value.values.get(i), val.cpu);
+			ValueInfo elementValue =  VDMClassHelper.createValue(val.name, val.classDef, val.value.values.get(i), val.cpu);
 			setScalarValue(elementValue, CoSimType.Auto, values.get(i).toString(), name);
 		}
 

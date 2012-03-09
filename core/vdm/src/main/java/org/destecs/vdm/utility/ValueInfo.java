@@ -13,7 +13,7 @@ public class ValueInfo
 	public final ClassDefinition classDef;
 	public final LexNameToken name;
 
-	public ValueInfo(LexNameToken name, ClassDefinition classDef, Value value,
+	protected ValueInfo(LexNameToken name, ClassDefinition classDef, Value value,
 			CPUValue cpu)
 	{
 		this.value = value;

@@ -30,6 +30,7 @@ import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.typechecker.NameScope;
 import org.overturetool.vdmj.values.BooleanValue;
+import org.overturetool.vdmj.values.CPUValue;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
 import org.overturetool.vdmj.values.ObjectValue;
@@ -122,12 +123,23 @@ public class VDMClassHelper {
 			List<ValueInfo> values = new Vector<ValueInfo>();
 			for (NameValuePair child : objVal.members.asList())
 			{
-				values.add(new ValueInfo(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
+				values.add(createValue(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
 			}
 			return values;
 		}
 		else 
 			return null;
+	}
+	
+	public static ValueInfo createValue(LexNameToken name, ClassDefinition classDef, Value value,
+			CPUValue cpu)
+	{
+		Value val = value.deref();
+		if(val instanceof SeqValue)
+		{
+			return new SeqValueInfo(name, classDef, (SeqValue) val, cpu);
+		}
+		return 	new ValueInfo(name, classDef, value, cpu);
 	}
 	
 	private static List<String> getNewName(List<String> varName) {
