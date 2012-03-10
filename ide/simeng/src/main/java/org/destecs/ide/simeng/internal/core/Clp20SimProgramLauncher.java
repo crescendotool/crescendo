@@ -65,7 +65,11 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 					path = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,ISimengConstants.CLP_20_SIM_REGKEY,ISimengConstants.CLP_20_SIM_PATH_REGKEY );
 					if(path == null)
 					{
-						return null;
+						path = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,ISimengConstants.CLP_20_SIM_REGKEY_x64,ISimengConstants.CLP_20_SIM_PATH_REGKEY );
+						if(path == null)
+						{
+							return null;
+						}
 					}
 //					path += "\\bin\\20sim.exe";
 				} catch (IllegalArgumentException e)
