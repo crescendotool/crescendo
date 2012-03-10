@@ -56,6 +56,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 		{
 			if (WindowsUtils.isProcessRunning(processName))
 			{
+				System.out.println("20sim already running");
 				return null; // 20-sim is already running
 			} else
 			{
@@ -63,9 +64,11 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 				try
 				{
 					path = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,ISimengConstants.CLP_20_SIM_REGKEY,ISimengConstants.CLP_20_SIM_PATH_REGKEY );
+					System.out.println(path);
 					if(path == null)
 					{
 						path = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,ISimengConstants.CLP_20_SIM_REGKEY_x64,ISimengConstants.CLP_20_SIM_PATH_REGKEY );
+						System.out.println(path);
 						if(path == null)
 						{
 							return null;
@@ -73,13 +76,13 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 					}
 //					path += "\\bin\\20sim.exe";
 				} catch (IllegalArgumentException e)
-				{
+				{e.printStackTrace();
 					return null;
 				} catch (IllegalAccessException e)
-				{
+				{e.printStackTrace();
 					return null;
 				} catch (InvocationTargetException e)
-				{
+				{e.printStackTrace();
 					return null;
 				}
 				
