@@ -264,7 +264,30 @@ isError:
 done:
   Delete "${SIM20_EXE}"
 
+call Add20simFirewallException
+
 FunctionEnd
+
+
+; adding 20sim firewall exception
+Function Add20simFirewallException
+ClearErrors
+${If} ${RunningX64}
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayIcon"       
+${Else}
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayIcon"
+${EndIf}
+ 
+IfErrors isError 
+    DetailPrint "Adding 20sim firewall exception"  
+    SimpleFC::AddApplication "20sim" "$0" 0 2 "" 1
+    goto done
+isError:
+    DetailPrint "Could not add 20sim firewall exception"
+done:
+
+FunctionEnd
+
 
 ; Install 20-sim function
 Function 20simInstall
@@ -285,6 +308,10 @@ FunctionEnd
 
 
 Function writeRegistryKey
-WriteRegDWORD HKCU "Software\20-sim\version 4.2\tools\general" "xmlrpc" 1
+${If} ${RunningX64}
+    WriteRegDWORD HKCU "Software\Wow6432Node\20-sim\version 4.2\tools\general" "xmlrpc" 1
+${Else}
+    WriteRegDWORD HKCU "Software\20-sim\version 4.2\tools\general" "xmlrpc" 1
+${EndIf}
 FunctionEnd
 
