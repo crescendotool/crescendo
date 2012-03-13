@@ -11,6 +11,9 @@ import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem.ValueType;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -31,10 +34,21 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	private List<String> possibleValues = null;
 	private String value = null;
 	
-	public SettingTreeNode(String name, String key) {
+	private boolean recovered = false;
+	
+	public SettingTreeNode(String name, String key,boolean recovered) {
 		this.name = name;
 		this.key = key;
 		this.isVirtual = true;
+		this.recovered = recovered;
+	}
+	
+	public SettingTreeNode(String name, String key, boolean recovered, String value)
+	{
+		this.name = name;
+		this.key = key;
+		this.recovered = recovered;
+		this.value = value;
 	}
 	
 	public SettingTreeNode(String name, String key, ValueType type, List<String> possibleValues, String value) {
@@ -75,7 +89,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	public static SettingTreeNode createSettingsTree(Set<SettingItem> settingItems) 
 	{
 		List<SettingTreeNode> in = new Vector<SettingTreeNode>();
-		SettingTreeNode root = new SettingTreeNode("root", "root");
+		SettingTreeNode root = new SettingTreeNode("root", "root", false);
 		
 		
 		for (SettingItem settingItem : settingItems) {
@@ -84,6 +98,25 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 			{
 				in.add(convertToSettingTreeNode(settingItem));
 			}
+		}
+		
+		Collections.sort(in);
+		
+		for (SettingTreeNode settingTreeNode : in) {
+			root.insertNodeInTree(settingTreeNode);
+		}
+		
+		return root;
+	}
+	
+	public static SettingTreeNode createSettingsTreeFromConfiguration(Set<String[]> settingItems) 
+	{
+		List<SettingTreeNode> in = new Vector<SettingTreeNode>();
+		SettingTreeNode root = new SettingTreeNode("root", "root",true);
+		
+		
+		for (String[] settingItem : settingItems) {
+			in.add(new SettingTreeNode(settingItem[0], settingItem[0], true, settingItem[1]));
 		}
 		
 		Collections.sort(in);
@@ -125,7 +158,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 			SettingTreeNode child = searched.getChildByName(key);
 			if(child == null)
 			{
-				child = new SettingTreeNode(key, key);
+				child = new SettingTreeNode(key, key,false);
 				searched.addChild(child);
 				
 			}
@@ -179,6 +212,17 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		{
 			Label label = new Label(optionsGroup,SWT.NONE);
 			label.setText("No Options");
+		}
+		else
+		if(recovered)
+		{
+			Label label = new Label(optionsGroup,SWT.NONE);
+			label.setText("Value: " + value);
+			label = new Label(optionsGroup, SWT.WRAP);
+			Color red = new Color(optionsGroup.getDisplay(), 255, 0, 0);
+		    label.setForeground(red);
+		    label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+			label.setText("To edit, press the populate button." );
 		}
 		else
 		{
@@ -272,6 +316,15 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		}
 		
 		return sb.toString();
+	}
+
+	public String getValueForKey(String key)
+	{
+		String result = null;
+		
+		//TODO:NOT Finished
+		
+		return result;
 	}
 	
 }

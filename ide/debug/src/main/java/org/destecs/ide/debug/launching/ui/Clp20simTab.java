@@ -538,10 +538,15 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration)
 	{
+		
+		/* 
+		 * Initializing the variables to log table
+		 */
 		try
 		{
 			String logVariables = configuration.getAttribute(
@@ -565,9 +570,37 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			
 		} catch (CoreException e)
 		{
-			DestecsDebugPlugin.logWarning("Faild to initialize Clp20SimTab with log variables", e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
+		/*
+		 * Initializing the settings
+		 */
+		try {
+			String settings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
+			String[] splitSettings = settings.split(";");
+			
+			Set<String[]> settingsSet = new HashSet<String[]>();
+			
+			for (String setting : splitSettings) {
+				String[] splitSetting = setting.split("=");
+				if(splitSetting.length == 2)
+				{
+					settingsSet.add(splitSetting);
+				}
+			}
+			
+			settingsRootNode  = SettingTreeNode.createSettingsTreeFromConfiguration(settingsSet);
+			settingsTreeViewer.setInput(settingsRootNode);
+			settingsTreeViewer.refresh();
+			settingsTreeViewer.expandAll();
+			
+		} catch (CoreException e) {
+			DestecsDebugPlugin.logWarning("Faild to initialize Clp20SimTab with log variables", e);
+		}
+		
+		
 	}
 
 	private void reSelectVariables()
