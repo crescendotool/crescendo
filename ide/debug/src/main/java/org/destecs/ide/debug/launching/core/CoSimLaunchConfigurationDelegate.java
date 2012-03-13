@@ -55,6 +55,7 @@ import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.core.model.internal.CoSimulationThread;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
+import org.destecs.ide.debug.launching.internal.LaunchStore;
 import org.destecs.ide.simeng.actions.ISimulationControlProxy;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
@@ -286,6 +287,15 @@ public class CoSimLaunchConfigurationDelegate extends
 		if (!outputFolder.mkdirs())
 		{
 			outputFolder = null;
+		}
+		
+		try
+		{
+			LaunchStore.store(configuration, outputFolder);
+		} catch (CoreException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}

@@ -124,6 +124,71 @@
        </actionSet>
     </perspectiveExtension>
  </extension>
-	
-
+ <extension
+       point="org.eclipse.ui.commands">
+    <command
+          id="org.destecs.ide.debug.relaunchCommand"
+          name="Relaunch">
+    </command>
+ </extension>
+ <extension
+       point="org.eclipse.ui.handlers">
+    <handler
+          class="org.destecs.ide.debug.launching.internal.RelaunchHandler"
+          commandId="org.destecs.ide.debug.relaunchCommand">
+    </handler>
+ </extension>
+	 <!--extension
+         point="org.eclipse.ui.menus">
+         <menuContribution
+           locationURI="popup:org.destecs.ide.ui.destecsExplorer">
+        <menu
+              label="Debug">
+           <command
+                 commandId="org.destecs.ide.debug.relaunchCommand"
+                 label="Relaunch"
+                 style="push">
+              <visibleWhen
+                    checkEnabled="false">
+                 <iterate>
+                 <or>
+                    <instanceof
+                          value="org.eclipse.core.resources.IFile">
+                    </instanceof>
+                    <instanceof
+                          value="org.eclipse.core.resources.IFolder">
+                    </instanceof>
+                 </or>
+                 </iterate>
+              </visibleWhen>
+           </command>
+        </menu>
+     </menuContribution>
+   </extension-->
+ <extension
+         point="org.eclipse.ui.menus">
+         <menuContribution
+           locationURI="popup:org.destecs.ide.ui.destecsExplorer?after=additions">
+       
+           <command
+                 commandId="org.destecs.ide.debug.relaunchCommand"
+                 label="Relaunch"
+                 style="push">
+              <visibleWhen
+                    checkEnabled="false">
+                 <iterate>
+                 <or>
+                    <instanceof
+                          value="org.eclipse.core.resources.IFile">
+                    </instanceof>
+                    <instanceof
+                          value="org.eclipse.core.resources.IFolder">
+                    </instanceof>
+                 </or>
+                 </iterate>
+              </visibleWhen>
+           </command>
+       
+     </menuContribution>
+   </extension>
 </plugin>
