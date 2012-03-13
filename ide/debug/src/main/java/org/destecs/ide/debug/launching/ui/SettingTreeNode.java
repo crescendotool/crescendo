@@ -8,10 +8,18 @@ import java.util.Vector;
 
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem;
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem.ValueType;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 
 
 public class SettingTreeNode implements Comparable<SettingTreeNode> {
 
+	public static String[] unwantedKeys = {"model.simulator.finishtime", "model.simulator.starttime", "model.simulator.modelname", "model.simulator.outputaftereach",
+		 "model.simulator.modelexperimentname", "model.simulator.modelfilename"};
+	
 	private String name;
 	private String key;
 	private boolean isVirtual;
@@ -31,6 +39,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		this.name = name;
 		this.key = key;
 		this.isVirtual = false;
+		this.type = type;
 		this.possibleValues = possibleValues;
 		this.value = value;
 	}
@@ -68,7 +77,11 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		
 		
 		for (SettingItem settingItem : settingItems) {
-			in.add(convertToSettingTreeNode(settingItem));
+			
+			if(checkIfWanted(settingItem))
+			{
+				in.add(convertToSettingTreeNode(settingItem));
+			}
 		}
 		
 		Collections.sort(in);
@@ -81,6 +94,14 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	}
 	
 	
+	private static boolean checkIfWanted(SettingItem settingItem) {
+		for (String key : unwantedKeys) {
+			if(settingItem.key.equals(key))
+				return false;
+		}
+		return true;
+	}
+
 	private void insertNodeInTree(SettingTreeNode node)
 	{
 		
@@ -139,9 +160,76 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("key: "); sb.append(this.key);
+		sb.append(" Type: "); sb.append(this.type != null ? this.type.toString() : "no type");
 		sb.append(" Value: "); sb.append(this.value != null ? this.value : "no value"); 
 		sb.append("\n");
 		return sb.toString();
+	}
+
+	public void drawIn(Group optionsGroup) {
+		Control[] children = optionsGroup.getChildren();
+		
+		for (Control control : children) {
+			control.dispose();
+		}
+		
+		if(isVirtual)
+		{
+			Label label = new Label(optionsGroup,SWT.NONE);
+			label.setText("No Options");
+		}
+		else
+		{
+			createOptionGUI(optionsGroup);
+		}
+		
+		optionsGroup.layout();
+	}
+
+	private void createOptionGUI(Group optionsGroup) {
+
+		switch (type) {
+		case Bool:
+			System.out.println("Creating Bool GUI");
+			createBoolOptionGUI(optionsGroup);			
+			break;
+		case Enum:
+		case Real:
+		case RealPositive:
+		case Double:
+			System.out.println("Creating Double GUI");
+			break;
+		case String:
+			System.out.println("Creating String GUI");
+			createStringGUI(optionsGroup);
+			break;
+		case Unknown:
+		default:
+			break;
+		}
+		
+	}
+
+	private void createStringGUI(Group optionsGroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void createBoolOptionGUI(Group optionsGroup) {
+		
+		String[] items = {"Yes","No"};
+		Combo combo = new Combo(optionsGroup, SWT.DROP_DOWN);
+		combo.setItems(items);
+		boolean b = Boolean.parseBoolean(value);
+		if(b)
+		{
+			combo.select(0);
+		}
+		else
+		{
+			combo.select(1);
+		}
+		
 	}
 	
 }

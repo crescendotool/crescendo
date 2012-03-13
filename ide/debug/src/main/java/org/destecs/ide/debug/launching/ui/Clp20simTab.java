@@ -49,8 +49,12 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -61,8 +65,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -131,7 +137,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				{
 					SettingItem item = new SettingItem(elem.get("key")
 							.toString(), elem.get("value").toString(),
-							new Vector<String>());
+							new Vector<String>(), elem.get("type").toString());
 					settingItems.add(item);
 				}
 
@@ -152,6 +158,14 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					{
 						// b.setEnabled(true);
 
+						if(optionsGroup != null)
+						{
+							for (Control map : optionsGroup.getChildren()) {
+								map.dispose();
+							}
+							optionsGroup.layout();
+						}
+						
 						if(settingsTreeViewer != null)
 						{
 							settingsTreeViewer.setInput(settingsRootNode);
@@ -266,7 +280,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	{
 		enum ValueType
 		{
-			Bool, Real, RealPositive, Enum
+			Bool, Real, RealPositive, Enum, String,Unknown, Double
 		}
 
 		public final String key;
@@ -274,15 +288,33 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		public final List<String> values = new Vector<String>();
 		public final ValueType type;
 
-		public SettingItem(String key, String value, List<String> values)
+		public SettingItem(String key, String value, List<String> values, String type)
 		{
 			this.key = key;
 			this.value = value;
 			this.values.addAll(values);
-			// calculateType();
-			this.type = ValueType.Bool;
+			this.type = convertType(type);
+			
 		}
 
+		private ValueType convertType(String type)
+		{
+			if(type.equals("string"))
+			{
+				return ValueType.String;
+			}
+			if(type.equals("boolean"))
+			{
+				return ValueType.Bool;
+			}
+			if(type.equals("double"))
+			{
+				return ValueType.Double;
+			}
+			
+			return ValueType.Unknown;
+		}
+		
 		@Override
 		public String toString()
 		{
@@ -315,15 +347,19 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	private final Set<LogItem> logItems = new HashSet<LogItem>();
 	private TableViewer logViewer;
 	private TreeViewer settingsTreeViewer = null;
-	private SettingTreeNode settingsRootNode;;
+	private SettingTreeNode settingsRootNode;
+	private Group optionsGroup;
 
 	public void createControl(Composite parent)
 	{
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
-		comp.setLayout(new GridLayout(1, true));
+		GridLayout gl = new GridLayout(1, true);
+		
+		comp.setLayout(gl);
 		comp.setFont(parent.getFont());
 
+		comp.setLayoutData(new GridData(GridData.FILL_BOTH));
 		createLogTable(comp);
 		createSettingsTable(comp);
 		createPopulateButton(comp);
@@ -335,10 +371,19 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		Group group = new Group(comp, SWT.NONE);
 		group.setText("Log");
 		group.setLayout(new GridLayout());
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
+		GridData  gd = new GridData(GridData.FILL_BOTH);
+		gd.heightHint = 100;
+		gd.minimumHeight = 100;
+		group.setLayoutData(gd);
+		
+		
 		logViewer = new TableViewer(group, SWT.FULL_SELECTION | SWT.FILL
 				| SWT.CHECK);
+		
+//		GridData  gd = new GridData(GridData.FILL_BOTH);
+//		gd.heightHint = 100;
+//		gd.minimumHeight = 100;
+		logViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		final Table table = logViewer.getTable();
 
@@ -349,8 +394,8 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		column.setText("Variable Name");
 		column.setWidth(500);
 
-		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-		data.heightHint = 10;
+		GridData data = new GridData(GridData.FILL_BOTH);
+		//data.heightHint = 10;
 		table.setLayoutData(data);
 		logViewer.setContentProvider(new ArrayContentProvider());
 		logViewer.setLabelProvider(new LabelProvider());
@@ -387,19 +432,41 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		Group group = new Group(comp, SWT.NONE);
 		group.setText("Settings");
 		group.setLayout(new GridLayout(2,true));
-		group.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		
+		GridData gd = new GridData(GridData.FILL_BOTH);
+		gd.heightHint = 100;
+		group.setLayoutData(gd);
 		
 		settingsTreeViewer  = new TreeViewer(group,SWT.BORDER);
 		settingsTreeViewer.setContentProvider(new SettingsTreeContentProvider());
 		settingsTreeViewer.setLabelProvider(new SettingsTreeLabelProvider());
 		settingsTreeViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		group = new Group(group, SWT.NONE);
-		group.setText("Options");
-		group.setLayout(new GridLayout(1,true));
-		group.setLayoutData(new GridData(GridData.FILL_BOTH));
+		optionsGroup = new Group(group, SWT.NONE);
+		optionsGroup.setText("Options");
+		optionsGroup.setLayout(new GridLayout(1,true));
+		optionsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+				
+		settingsTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			public void selectionChanged(SelectionChangedEvent event) {
+				
+				if(event.getSelection().isEmpty()) 
+				{			           
+			           return;
+			    }
+				
+				 if(event.getSelection() instanceof IStructuredSelection) 
+				 {
+			           IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+			           Object selected = selection.getFirstElement();
+			           if(selected instanceof SettingTreeNode)
+			           {
+			        	   SettingTreeNode node = (SettingTreeNode) selected;
+			        	   node.drawIn(optionsGroup);
+			           }
+				 }
+			}
+		});
 		
 	}
 
