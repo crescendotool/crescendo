@@ -910,7 +910,10 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		try
 		{
-			scheduler.stop();
+			if(scheduler!=null)
+			{
+				scheduler.stop();
+			}
 			RTLogger.dump(true);
 			SimulationLogger.dump(true);
 			notify();
