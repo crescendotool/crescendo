@@ -105,7 +105,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	private Button selectCtPathButton;
 	private Button removeScenarioButton;
 
-	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
+//	final List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters = new Vector<SetDesignParametersdesignParametersStructParam>();
 
 	public void createControl(Composite parent)
 	{
@@ -437,6 +437,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		if (fProjectText != null && fProjectText.getText().length() > 0)
 		{
 			IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText());
+			System.out.println("Project name: " + p.getName());
 			if (p.isAccessible())
 			{
 				return p;

@@ -9,6 +9,8 @@ import java.util.Vector;
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem;
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem.ValueType;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -218,7 +220,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	private void createBoolOptionGUI(Group optionsGroup) {
 		
 		String[] items = {"Yes","No"};
-		Combo combo = new Combo(optionsGroup, SWT.DROP_DOWN);
+		final Combo combo = new Combo(optionsGroup, SWT.DROP_DOWN);
 		combo.setItems(items);
 		boolean b = Boolean.parseBoolean(value);
 		if(b)
@@ -229,7 +231,47 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		{
 			combo.select(1);
 		}
+		combo.addSelectionListener(new SelectionListener() {
+			
+			public void widgetSelected(SelectionEvent e) {
+				if(combo.getSelectionIndex() == 0)
+				{
+					value = "true";
+				}
+				else
+				{
+					value = "false";
+				}
+				
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
+		
+	}
+	
+	public String toSettingsString()
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		if(!this.isVirtual)
+		{
+			sb.append(key);
+			sb.append("=");
+			sb.append(value);
+			sb.append(";");
+		}
+		
+		
+		for (SettingTreeNode child : children) {
+			sb.append(child.toSettingsString());
+		}
+		
+		return sb.toString();
 	}
 	
 }

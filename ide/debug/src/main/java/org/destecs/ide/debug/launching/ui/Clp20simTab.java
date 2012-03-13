@@ -235,18 +235,25 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
 		}
 
-		public void parseConfigValue(String attribute)
+//		public void parseConfigValue(String attribute)
+//		{
+//			String[] variables = attribute.split(",");
+//
+//			for (String name : variables)
+//			{
+//				if (!name.equals(""))
+//				{
+//					selectedVariables.add(name);
+//				}
+//
+//			}
+//
+//		}
+		
+		
+		public void addSelectedVariable(String name)
 		{
-			selectedVariables.clear();
-			String[] variables = attribute.split(",");
-
-			for (String name : variables)
-			{
-				if (!name.equals(""))
-				{
-					selectedVariables.add(name);
-				}
-			}
+			selectedVariables.add(name);
 		}
 	}
 
@@ -545,7 +552,28 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	{
 		try
 		{
-			logManager.parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, ""));
+			String logVariables = configuration.getAttribute(
+					IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES,
+					"");
+			String[] variables = logVariables.split(",");
+
+			logItems.clear();
+			
+			for (String name : variables)
+			{
+				if (!name.equals(""))
+				{
+					logItems.add(new LogItem(name));
+					logManager.addSelectedVariable(name);
+				}
+
+			}
+			logViewer.refresh();
+			reSelectVariables();
+			
+			
+			
+			
 		} catch (CoreException e)
 		{
 			// TODO Auto-generated catch block
@@ -613,6 +641,22 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, logManager.getConfigValue());
 
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, getSettingsString());
+		
+	}
+
+	private String getSettingsString() {
+		
+		Object rootSettingsNode = settingsTreeViewer.getInput();
+		
+		if(rootSettingsNode instanceof SettingTreeNode)
+		{
+			String result = ((SettingTreeNode) rootSettingsNode).toSettingsString();
+			return result;
+		}
+		
+		return "";
+		
 	}
 
 	public String getName()
