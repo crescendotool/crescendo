@@ -522,6 +522,10 @@ public class SimulationEngine
 			ProxyICoSimProtocol proxy, ISimulatorLauncher launcher)
 			throws SimulationException
 	{
+		if(proxy==null)
+		{
+			return;
+		}
 		try
 		{
 			messageInfo(simulator, time, "terminate");
