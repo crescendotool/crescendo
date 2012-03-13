@@ -385,6 +385,53 @@
          </view>
       </perspectiveExtension>
    </extension>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.destecs.ide.ui.projectUpgradeCommand"
+            name="Upgrade DESTECS project">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.destecs.ide.ui.handlers.UpgradeProjectHandler"
+            commandId="org.destecs.ide.ui.projectUpgradeCommand">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+         <menuContribution
+           locationURI="popup:org.destecs.ide.ui.destecsExplorer">
+        <menu
+              label="Maintenance">
+           <command
+                 commandId="org.destecs.ide.ui.projectUpgradeCommand"
+                 label="Upgrade Project"
+                 style="push">
+              <visibleWhen
+                    checkEnabled="false">
+                 <iterate>
+                     <and>
+                        <or>
+                            <adapt type="org.overture.ide.core.resources.IVdmProject">
+                            </adapt>
+                            <adapt type="org.eclipse.core.resources.IFolder">
+                            </adapt>
+                        </or>
+                        <test
+                            property="org.overture.ide.core.resources.IsInBuildPath"
+                            value="false">
+                        </test>
+                      </and>
+                 </iterate>
+              </visibleWhen>
+           </command>
+        </menu>
+     </menuContribution>
+   </extension>
+
    <extension
          point="org.eclipse.ui.handlers">
       <handler
@@ -414,6 +461,7 @@
          </with>
       </definition>
    </extension>
+
    
 <!-- 
 	New contract  command

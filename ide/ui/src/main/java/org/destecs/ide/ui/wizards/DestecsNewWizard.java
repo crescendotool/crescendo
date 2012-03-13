@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.ui.DestecsUIPlugin;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -32,7 +33,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
+import org.osgi.framework.Bundle;
 import org.overture.ide.core.resources.IVdmProject;
 import org.overture.ide.core.resources.ModelBuildPath;
 import org.overture.ide.vdmrt.core.IVdmRtCoreConstants;
@@ -71,7 +74,7 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard
 		return ok;
 	}
 
-	private void setDestecsSettings(IProject prj)
+	public static void setDestecsSettings(IProject prj)
 	{
 		try
 		{
@@ -84,6 +87,7 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard
 
 			addBuilder(prj, "org.destecs.ide.vdmmetadatabuilder.builder", null, null);
 			addBuilder(prj, IDestecsCoreConstants.BUILDER_ID, null, null);
+			addBuilder(prj, IDestecsCoreConstants.SCRIPT_BUILDER_ID, null, null);
 
 			IDestecsProject dp = (IDestecsProject) prj.getAdapter(IDestecsProject.class);
 			ModelBuildPath modelPath = p.getModelBuildPath();
@@ -94,14 +98,28 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard
 			modelPath.save();
 			p.getModel().clean();
 			prj.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			// add builder if needed
+
+
+			IProjectDescription d = prj.getDescription();
+			d.setComment("DESTECS-"+getPlatformBundleVersion());
+			prj.setDescription(d, new NullProgressMonitor());
 
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsUIPlugin.log("Failed to create project",e);
 		}
 
+	}
+	
+	public static String getPlatformBundleVersion()
+	{
+		Bundle bundle = Platform.getBundle("org.destecs.ide.platform");
+		if(bundle!=null)
+		{
+			String version = ""+bundle.getHeaders().get("Bundle-Version");
+			return version;
+		}
+		return "";
 	}
 
 	private static void addNature(IProject project, String nature)
