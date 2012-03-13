@@ -23,6 +23,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
@@ -33,6 +36,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -132,7 +136,8 @@ public class CoSimLaunchConfigurationDelegate extends
 	private List<String> logVariablesVdm = new Vector<String>();;
 	private List<String> logVariables20Sim = new Vector<String>();;
 	private String ourputFolderPrefix = "";
-	private boolean debug = false;;
+	private boolean debug = false;
+	private String clp20simToolSettings = null;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -216,6 +221,9 @@ public class CoSimLaunchConfigurationDelegate extends
 			enableLogging = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_ENABLE_LOGGING, false);
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
 			logVariablesVdm.clear();
+			clp20simToolSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
+			
+			
 			String tmpVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
 			for (String var : tmpVdm.split(","))
 			{
@@ -412,6 +420,8 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.setCtModel(ctModel);
 			
 
+			setCtSettings(engine, clp20simToolSettings);
+			
 			engine.setOutputFolder(outputFolder);
 			engine.debug(debug);
 
@@ -494,6 +504,30 @@ public class CoSimLaunchConfigurationDelegate extends
 			}
 			
 		}
+	}
+
+	private void setCtSettings(SimulationEngine engine, String clp20simToolSettings) {
+		Properties properties = new Properties();
+		
+		String[] settings = clp20simToolSettings.split(";");
+		
+		for (String setting : settings) {
+			
+			String[] splitSetting = setting.split("=");
+			if(splitSetting.length == 2)
+			{
+				properties.put(splitSetting[0], splitSetting[1]);
+			}
+		}
+		
+		StringWriter sw = new StringWriter();
+		try {
+			properties.store(sw, "");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		engine.setCtSettings(sw.toString());
 	}
 
 	private ModelConfig getCtModelConfig(File ctFile)
