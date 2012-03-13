@@ -15,6 +15,9 @@
       <requires-nature
             id="org.overture.ide.vdmrt.core.nature">
       </requires-nature>
+      <builder
+            id="org.destecs.ide.core.scriptbuilder">
+      </builder>
    </extension>
    <extension
          point="org.eclipse.core.runtime.adapters">
@@ -35,7 +38,7 @@
    </extension>
    <extension
          id="org.destecs.ide.core.builder"
-         name="DESTECS Project builder"
+         name="DESTECS Project Builder"
          point="org.eclipse.core.resources.builders">
       <builder
             callOnEmptyDelta="true"
@@ -43,6 +46,19 @@
             isConfigurable="false">
          <run
                class="org.destecs.ide.core.internal.builder.DestecsProjectBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="org.destecs.ide.core.scriptbuilder"
+          name="DESTECS Script Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            callOnEmptyDelta="false"
+            hasNature="true"
+            isConfigurable="false">
+         <run
+               class="org.destecs.ide.core.internal.builder.DestecsScriptBuilder">
          </run>
       </builder>
    </extension>

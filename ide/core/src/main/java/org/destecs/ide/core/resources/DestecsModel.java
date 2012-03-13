@@ -27,6 +27,7 @@ public class DestecsModel
 	private Contract contract = null;
 	private boolean checked = false;
 	private boolean ok = false;
+	private boolean scriptOk = false;
 	
 	public synchronized void setLinks(Links links)
 	{
@@ -63,8 +64,13 @@ public class DestecsModel
 		this.ok = b;
 	}
 	
+	public synchronized void setScriptOk(boolean b)
+	{
+		this.scriptOk= b;
+	}
+	
 	public boolean isOk()
 	{
-		return ok;
+		return ok&&scriptOk;
 	}
 }

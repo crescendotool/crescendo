@@ -43,6 +43,7 @@ public class SafeBuilder extends Thread
 				{
 					clearProblemMarkers((IProject) currentProject.getAdapter(IProject.class));
 					DestecsBuilder.build(currentProject);
+					ScriptBuilder.build(currentProject);
 				}
 			};
 			SafeRunner.run(runnable);

@@ -1,14 +1,19 @@
 package org.destecs.ide.core.utility;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.destecs.core.contract.Contract;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.IError;
 import org.destecs.core.parsers.ParserWrapper;
+import org.destecs.core.parsers.ScenarioParserWrapper;
+import org.destecs.core.parsers.ScriptParserWrapper;
 import org.destecs.core.parsers.VdmLinkParserWrapper;
+import org.destecs.core.scenario.Scenario;
 import org.destecs.core.vdmlink.Links;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.script.ast.node.INode;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 
@@ -52,6 +57,42 @@ public class ParserUtil
 		Links vdmlinks = (Links) parse(vdmLinkParser, project.getVdmLinkFile(),
 				errorHandler);
 		return vdmlinks;
+	}
+	
+	
+	/**
+	 * 
+	 * @param project
+	 * @param errorHandler
+	 *            may be null
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<INode> getScript(IDestecsProject project, IFile file,
+			IAddErrorHandler errorHandler) throws Exception
+	{
+		ScriptParserWrapper parser = new ScriptParserWrapper();
+		List<INode> result = (List<INode>) parse(parser, file,
+				errorHandler);
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param project
+	 * @param errorHandler
+	 *            may be null
+	 * @return
+	 * @throws Exception
+	 */
+	public static Scenario getScenario(IDestecsProject project, IFile file,
+			IAddErrorHandler errorHandler) throws Exception
+	{
+		ScenarioParserWrapper parser = new ScenarioParserWrapper();
+		Scenario result = (Scenario) parse(parser, file,
+				errorHandler);
+		return result;
 	}
 
 	protected static Object parse(
