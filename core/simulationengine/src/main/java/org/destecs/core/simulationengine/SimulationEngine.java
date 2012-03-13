@@ -22,10 +22,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -160,7 +164,9 @@ public class SimulationEngine
 	public final List<ISimulationListener> simulationListeners = new Vector<ISimulationListener>();
 	public final List<IVariableSyncListener> variablesSyncListeners = new Vector<IVariableSyncListener>();
 	public final List<ISimulationStartListener> simulationStartListeners = new Vector<ISimulationStartListener>();
-
+	
+	
+	
 	private final List<XmlRpcClient> clients = new Vector<XmlRpcClient>();
 
 	private final List<IProcessCreationListener> processCreationListeners = new Vector<IProcessCreationListener>();
@@ -171,6 +177,9 @@ public class SimulationEngine
 
 	private String deVersion = "";
 	private String ctVersion = "";
+	
+	
+	public final Properties ctSimSettings = new Properties();
 
 	private File outputDirectory = null;
 
@@ -329,10 +338,15 @@ public class SimulationEngine
 
 			initialize(Simulator.DE, deProxy);
 
+			
+			
+			
 			ctProxy = connect(Simulator.CT, ctEndpoint);
 			runningSimulators.add(Simulator.CT);
 			initialize(Simulator.CT, ctProxy);
-
+			setSimSettings(Simulator.CT,ctProxy);
+			
+			
 			// Turn off timeout, simulators may be slow at loading the model
 			// which should not cause a timeout. Instead
 			// they should try to load and report an error if they fail.
@@ -428,6 +442,40 @@ public class SimulationEngine
 			{
 			}
 		}
+	}
+
+	private void setSimSettings(Simulator simulator, ProxyICoSimProtocol proxy) {
+		
+		List<Map<String, Object>> data = new Vector<Map<String,Object>>();
+		
+		switch (simulator) {
+		case ALL:
+			break;
+		case CT:
+			for (Object o : ctSimSettings.keySet()) {
+				if(o instanceof String)
+				{
+					HashMap<String, Object> setting = new HashMap<String, Object>();
+					String key = (String) o;
+					String value = (String)  ctSimSettings.get(key);
+					setting.put("key", key);
+					setting.put("value", value);
+					
+					data.add(setting);
+				}
+			}			
+			break;
+		case DE:
+			break;
+		
+		}
+		
+		try {
+			proxy.setSettings(data);
+		} catch (Exception e) {
+			engineInfo(simulator, "Failed to set Settings - " + e.getMessage());
+		}
+		
 	}
 
 	private void setLogVariables(Simulator simulator,
@@ -1475,5 +1523,20 @@ public class SimulationEngine
 			e.printStackTrace();
 		}
 		lock.unLock();
+	}
+	
+	
+	public void setCtSettings(String settings)
+	{
+		
+		StringReader sr = new StringReader(settings);
+		//Settings can be read by java.util.properties
+		try {
+			ctSimSettings.load(sr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(ctSimSettings);
 	}
 }
