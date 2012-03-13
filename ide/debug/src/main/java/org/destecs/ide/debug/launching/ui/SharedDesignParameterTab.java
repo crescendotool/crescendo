@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.destecs.core.contract.ArrayVariable;
 import org.destecs.core.contract.Contract;
@@ -35,6 +34,7 @@ import org.destecs.core.contract.Variable.DataType;
 import org.destecs.core.parsers.ContractParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -58,17 +58,22 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
-	class WidgetListener implements ModifyListener, SelectionListener {
+public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
+{
+	class WidgetListener implements ModifyListener, SelectionListener
+	{
 
-		public void modifyText(ModifyEvent e) {
+		public void modifyText(ModifyEvent e)
+		{
 			updateLaunchConfigurationDialog();
 		}
 
-		public void widgetDefaultSelected(SelectionEvent e) {
+		public void widgetDefaultSelected(SelectionEvent e)
+		{
 		}
 
-		public void widgetSelected(SelectionEvent e) {
+		public void widgetSelected(SelectionEvent e)
+		{
 			updateLaunchConfigurationDialog();
 		}
 	}
@@ -79,19 +84,22 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 	private HashMap<String, Object> sdps;
 	private HashMap<String, List<Integer>> dimensions = new HashMap<String, List<Integer>>();
 
-	public void createControl(Composite parent) {
+	public void createControl(Composite parent)
+	{
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
 
-		Button defaultsButton = createPushButton(comp,
-				"Synchronize with contract", null);
-		defaultsButton.addSelectionListener(new SelectionListener() {
+		Button defaultsButton = createPushButton(comp, "Synchronize with contract", null);
+		defaultsButton.addSelectionListener(new SelectionListener()
+		{
 
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e)
+			{
 				synchronizeDefaults();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e) {
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
 
 			}
 		});
@@ -111,7 +119,8 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 		table.setLayoutData(data);
 
 		String[] titles = { "Name", "Value" };
-		for (int i = 0; i < titles.length; i++) {
+		for (int i = 0; i < titles.length; i++)
+		{
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setText(titles[i]);
 			column.setWidth(100);
@@ -126,8 +135,10 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 		// editing the second column
 		final int EDITABLECOLUMN = 1;
 
-		table.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		table.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
 				// Clean up any previous editor control
 				Control oldEditor = editor.getEditor();
 				if (oldEditor != null)
@@ -142,12 +153,15 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 				// Table
 				Text newEditor = new Text(table, SWT.NONE);
 				newEditor.setText(item.getText(EDITABLECOLUMN));
-				newEditor.addModifyListener(new ModifyListener() {
-					public void modifyText(ModifyEvent me) {
+				newEditor.addModifyListener(new ModifyListener()
+				{
+					public void modifyText(ModifyEvent me)
+					{
 						Text text = (Text) editor.getEditor();
 						String s = text.getText();
 						editor.getItem().setText(EDITABLECOLUMN, s);
-						if (!isParseCorrect(s)) {
+						if (!isParseCorrect(s))
+						{
 
 						}
 
@@ -164,76 +178,79 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 
 			}
 		});
-
-		populate();
 	}
 
-	private boolean isParseCorrect(String s) {
+	private boolean isParseCorrect(String s)
+	{
 		return true;
 	}
 
-	private void populate() {
-		table.removeAll();
-		if (sdps != null) {
-			for (String p : sdps.keySet()) {
-				TableItem item = new TableItem(table, SWT.NONE);
-				item.setText(0, p);
-				item.setText(1, sdps.get(p).toString());
-			}
-		}
-		// table.redraw();
-
-	}
-
-	public String getName() {
+	public String getName()
+	{
 		return "Shared Design Parameters";
 	}
 
-	public void initializeFrom(ILaunchConfiguration configuration) {
+	public void initializeFrom(ILaunchConfiguration configuration)
+	{
+		dimensions.clear();
+		if (sdps != null)
+		{
+			sdps.clear();
+		}
 		SdpParserWrapper parser = new SdpParserWrapper();
 
 		String data;
-		try {
-			data = configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM,
-					"");
+		try
+		{
+			data = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 
-			if (data != null) {
+			if (data != null)
+			{
 				sdps = parser.parse(new File("memory"), data);
 
-				if (sdps == null) {
+				if (sdps == null)
+				{
 					sdps = new HashMap<String, Object>();
 				}
-
 			}
 
+			try
+			{
+				table.removeAll();
+				table.redraw();
+			} catch (Exception e)
+			{
+
+			}
 			synchronizeDefaults();
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e)
+		{
+			DestecsDebugPlugin.logError("Faild to initialize debug configuration with SDP", e);
 		}
 
 	}
 
 	@Override
-	public String getId() {
+	public String getId()
+	{
 		return "org.destecs.ide.debug.launching.ui.SharedDesignParameterTab";
 	}
 
-	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
+	public void performApply(ILaunchConfigurationWorkingCopy configuration)
+	{
 
 		HashMap<String, Object> values = preProcessResult();
 
-		configuration.setAttribute(
-				IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM,
-				getSdpsSyntax(values));
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, getSdpsSyntax(values));
 	}
 
-	private String getSdpsSyntax(HashMap<String, Object> values) {
+	private String getSdpsSyntax(HashMap<String, Object> values)
+	{
 		StringBuilder sb = new StringBuilder();
 
-		for (Entry<String, Object> entry : values.entrySet()) {
+		for (Entry<String, Object> entry : values.entrySet())
+		{
 			sb.append(entry.getKey().replace(" ", ""));
 			sb.append(":=");
 			sb.append(entry.getValue());
@@ -243,35 +260,38 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 		return sb.toString();
 	}
 
-	private HashMap<String, Object> preProcessResult() {
-
-		// List<String> keys = new ArrayList<String>();
-
+	private HashMap<String, Object> preProcessResult()
+	{
 		HashMap<String, Object> out = new HashMap<String, Object>();
 
-		for (TableItem tItem : table.getItems()) {
+		for (TableItem tItem : table.getItems())
+		{
 			String name = tItem.getText(0);
-			if (name.contains("[")) {
-
+			if (name.contains("["))
+			{
 				String strippedName = name.substring(0, name.indexOf("["));
 
-				if (dimensions.containsKey(strippedName)) {
+				if (dimensions.containsKey(strippedName))
+				{
 					strippedName = strippedName
 							+ dimensions.get(strippedName).toString();
 				}
 
-				if (out.containsKey(strippedName)) {
-					List<String> variable = (List<String>) out
-							.get(strippedName);
+				if (out.containsKey(strippedName))
+				{
+					@SuppressWarnings({ "unchecked", "rawtypes" })
+					List<String> variable = (List) out.get(strippedName);
 					variable.add(tItem.getText(1));
 
-				} else {
+				} else
+				{
 					List<Object> variable = new ArrayList<Object>();
 					variable.add(tItem.getText(1));
 					out.put(strippedName, variable);
 				}
 
-			} else {
+			} else
+			{
 				out.put(name, tItem.getText(1));
 			}
 		}
@@ -279,118 +299,97 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 		return out;
 	}
 
-	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
+	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
+	{
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 	}
 
-	public void setDefaults() {
-		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog()
-				.getTabs()) {
-			if (tab instanceof CoSimLaunchConfigurationTab) {
+	private void synchronizeDefaults()
+	{
+		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
+		{
+			if (tab instanceof CoSimLaunchConfigurationTab)
+			{
 				CoSimLaunchConfigurationTab cosimLaunchTab = (CoSimLaunchConfigurationTab) tab;
 				IProject project = cosimLaunchTab.getProject();
-				if (project != null) {
+				if (project != null)
+				{
 					ContractParserWrapper parser = new ContractParserWrapper();
-					IDestecsProject dproject = (IDestecsProject) project
-							.getAdapter(IDestecsProject.class);
+					IDestecsProject dproject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 
 					Contract contract;
-					try {
-						File file = dproject.getContractFile().getLocation()
-								.toFile();
-						if (!file.exists()) {
+					try
+					{
+						if (dproject == null)
+						{
 							return;
 						}
-						contract = parser.parse(file);
-						sdps = new HashMap<String, Object>();
-						for (IVariable var : contract
-								.getSharedDesignParameters()) {
-							sdps.put(var.getName(), "0.0");
-
-						}
-						if (table != null) {
-							populate();
-						}
-						return;
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-
-	}
-
-	private void synchronizeDefaults() {
-		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog()
-				.getTabs()) {
-			if (tab instanceof CoSimLaunchConfigurationTab) {
-				CoSimLaunchConfigurationTab cosimLaunchTab = (CoSimLaunchConfigurationTab) tab;
-				IProject project = cosimLaunchTab.getProject();
-				if (project != null) {
-					ContractParserWrapper parser = new ContractParserWrapper();
-					IDestecsProject dproject = (IDestecsProject) project
-							.getAdapter(IDestecsProject.class);
-
-					Contract contract;
-					try {
-						File file = dproject.getContractFile().getLocation()
-								.toFile();
-						if (!file.exists()) {
+						File file = dproject.getContractFile().getLocation().toFile();
+						if (!file.exists())
+						{
 							return;
 						}
 						contract = parser.parse(file);
 
-						// sdps = new HashMap<String, Object>();
-						if (contract == null) {
+						if (contract == null)
+						{
 							return;
 						}
 
 						fillSdpTable(contract.getSharedDesignParameters());
 						return;
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} catch (IOException e)
+					{
+						DestecsDebugPlugin.logError("Faild to synchronize SDPs with contract", e);
 					}
 				}
 			}
 		}
 	}
 
-	private void fillSdpTable(List<IVariable> sharedDesignParameters) {
-
+	private void fillSdpTable(List<IVariable> sharedDesignParameters)
+	{
 		dimensions.clear();
 		table.removeAll();
 
-		for (IVariable iVariable : sharedDesignParameters) {
+		for (IVariable iVariable : sharedDesignParameters)
+		{
 			putOnUITable(iVariable);
 			if (iVariable.getDataType() == DataType.array
-					|| iVariable.getDataType() == DataType.matrix) {
+					|| iVariable.getDataType() == DataType.matrix)
+			{
 				dimensions.put(iVariable.getName(), iVariable.getDimensions());
 			}
 		}
-
 	}
 
-	private void putOnUITable(IVariable v) {
-
-		if (v instanceof ArrayVariable) {
+	private void putOnUITable(IVariable v)
+	{
+		if (v instanceof ArrayVariable)
+		{
 			ArrayVariable arrayVariable = (ArrayVariable) v;
 			List<Integer> dimensions = arrayVariable.getDimensions();
-			if (dimensions.size() > 0) {
-				if (dimensions.get(0) == 1) {
-					if (dimensions.size() > 1) {
-						for (int j = 1; j < dimensions.size(); j++) {
-							for (int k = 0; k < dimensions.get(j); k++) {
+			if (dimensions.size() > 0)
+			{
+				if (dimensions.get(0) == 1)
+				{
+					if (dimensions.size() > 1)
+					{
+						for (int j = 1; j < dimensions.size(); j++)
+						{
+							for (int k = 0; k < dimensions.get(j); k++)
+							{
 								TableItem item = new TableItem(table, SWT.NONE);
 								String itemName = arrayVariable.getName() + "["
 										+ (k + 1) + "]";
 								item.setText(0, itemName);
 								String existing = getValueIfPresent(itemName);
 
-								if (existing == null) {
+								if (existing == null)
+								{
 									item.setText(1, "0.0");
-								} else {
+								} else
+								{
 									item.setText(1, existing);
 								}
 								item.setData(arrayVariable);
@@ -399,53 +398,65 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 					}
 				}
 			}
-		} else if (v instanceof MatrixVariable) {
+		} else if (v instanceof MatrixVariable)
+		{
 			MatrixVariable matrixVariable = (MatrixVariable) v;
 
 			List<Integer> dimensions = matrixVariable.getDimensions();
 
 			List<String> results = buildMatrixIndexes(dimensions);
-			for (String res : results) {
+			for (String res : results)
+			{
 				TableItem item = new TableItem(table, SWT.NONE);
 				String itemName = matrixVariable.getName() + "[" + res + "]";
 				item.setText(0, itemName);
 				String existing = getValueIfPresent(itemName);
 
-				if (existing == null) {
+				if (existing == null)
+				{
 					item.setText(1, "0.0");
-				} else {
+				} else
+				{
 					item.setText(1, existing);
 				}
 				item.setData(matrixVariable);
 
 			}
 
-		} else {
+		} else
+		{
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setData(v);
 			item.setText(0, v.getName());
 			String existing = getValueIfPresent(v.getName());
 
-			if (existing == null) {
+			if (existing == null)
+			{
 				item.setText(1, "0.0");
-			} else {
+			} else
+			{
 				item.setText(1, existing);
 			}
 		}
 
 	}
 
-	private List<String> buildMatrixIndexes(List<Integer> dimensions) {
+	private List<String> buildMatrixIndexes(List<Integer> dimensions)
+	{
 		List<String> result = new ArrayList<String>();
 
-		for (int i = 0; i < dimensions.get(0); i++) {
+		for (int i = 0; i < dimensions.get(0); i++)
+		{
 			result.add(Integer.toString(i + 1));
 		}
 
-		for (int i = 1; i < dimensions.size(); i++) {
+		for (int i = 1; i < dimensions.size(); i++)
+		{
 			List<String> tempResult = new ArrayList<String>();
-			for (int j = 0; j < dimensions.get(i); j++) {
-				for (String string : result) {
+			for (int j = 0; j < dimensions.get(i); j++)
+			{
+				for (String string : result)
+				{
 					tempResult.add(string + "," + (j + 1));
 				}
 			}
@@ -456,65 +467,74 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 		return result;
 	}
 
-	private String getValueIfPresent(String name) {
-		if (name.contains("[")) {
+	@SuppressWarnings("rawtypes")
+	private String getValueIfPresent(String name)
+	{
+		if (name.contains("["))
+		{
 			String strippedName = name.substring(0, name.indexOf("["));
 
-			if (containsLooseKey(sdps, strippedName)) {
-				
+			if (containsLooseKey(sdps, strippedName))
+			{
+
 				String looseKey = getLooseKey(sdps, strippedName);
-				
-				
-				String dimentions = name.substring(name.indexOf("[") + 1,
-						name.indexOf("]"));
-				String[] splitDimentions = dimentions.split(",");				
 
-				if (splitDimentions.length == 1) {
-					List<Object> o = (List<Object>) sdps.get(looseKey);
-					return  o.get(Integer.parseInt(splitDimentions[0])-1).toString();
+				String dimentions = name.substring(name.indexOf("[") + 1, name.indexOf("]"));
+				String[] splitDimentions = dimentions.split(",");
 
-				} else if (splitDimentions.length == 2) {
-					
-					String looseDimentions = looseKey.substring(looseKey.indexOf("[") + 1,looseKey.indexOf("]"));
+				if (splitDimentions.length == 1)
+				{
+					List o = (List) sdps.get(looseKey);
+					return o.get(Integer.parseInt(splitDimentions[0]) - 1).toString();
+
+				} else if (splitDimentions.length == 2)
+				{
+
+					String looseDimentions = looseKey.substring(looseKey.indexOf("[") + 1, looseKey.indexOf("]"));
 					String[] splitLooseDimentions = looseDimentions.split(",");
-					
-					List<Object> o = (List<Object>) sdps.get(looseKey);
-					int k = (Integer.parseInt(splitDimentions[0])-1)*(Integer.parseInt(splitLooseDimentions[1])) + Integer.parseInt(splitDimentions[1]);
-					
-					if(k<o.size())
+
+					List o = (List) sdps.get(looseKey);
+					int k = (Integer.parseInt(splitDimentions[0]) - 1)
+							* (Integer.parseInt(splitLooseDimentions[1]))
+							+ Integer.parseInt(splitDimentions[1]);
+
+					if (k < o.size())
 					{
-						return o.get(k-1).toString();
-					}
-					else 
+						return o.get(k - 1).toString();
+					} else
 					{
 						return null;
 					}
-					
-				} else {
+
+				} else
+				{
 					return null;
 				}
 
-			} else {
+			} else
+			{
 				return null;
 			}
 
 		}
 
-		if (sdps.containsKey(name)) {
+		if (sdps.containsKey(name))
+		{
 			return sdps.get(name).toString();
 		}
 
 		return null;
 	}
 
-	
-
 	private boolean containsLooseKey(HashMap<String, Object> sdpsMap,
-			String strippedName) {
-
-		for (String key : sdpsMap.keySet()) {
-			if (key.contains("[")) {
-				if (key.substring(0, key.indexOf("[")).equals(strippedName)) {
+			String strippedName)
+	{
+		for (String key : sdpsMap.keySet())
+		{
+			if (key.contains("["))
+			{
+				if (key.substring(0, key.indexOf("[")).equals(strippedName))
+				{
 					return true;
 				}
 
@@ -522,13 +542,17 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 		}
 		return false;
 	}
-	
-	private String getLooseKey(HashMap<String, Object> sdpsMap,
-			String strippedName) {
 
-		for (String key : sdpsMap.keySet()) {
-			if (key.contains("[")) {
-				if (key.substring(0, key.indexOf("[")).equals(strippedName)) {
+	private String getLooseKey(HashMap<String, Object> sdpsMap,
+			String strippedName)
+	{
+
+		for (String key : sdpsMap.keySet())
+		{
+			if (key.contains("["))
+			{
+				if (key.substring(0, key.indexOf("[")).equals(strippedName))
+				{
 					return key;
 				}
 
@@ -536,15 +560,5 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab {
 		}
 		return null;
 	}
-
-	// private String[] getItemIfPresent(String name) {
-	// for (TableItem item : table.getItems()) {
-	// if (item.getText(0).trim().equalsIgnoreCase(name.trim())) {
-	// return new String[] { item.getText(0), item.getText(1) };
-	// }
-	// }
-	//
-	// return null;
-	// }
 
 }

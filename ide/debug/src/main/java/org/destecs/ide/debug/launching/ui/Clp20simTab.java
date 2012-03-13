@@ -49,7 +49,6 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -68,7 +67,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -123,26 +121,22 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 			try
 			{
-				Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(
-						ctFile); 
+				Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(ctFile);
 				clp20sim.launch();
 
-				ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(
-						ctUrl));
+				ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(ctUrl));
 
 				protocol.load(ctFile.getAbsolutePath());
-				List<Map<String, Object>> getst = protocol.querySettings(new Vector<String>(Arrays.asList(new String[]{})));
+				List<Map<String, Object>> getst = protocol.querySettings(new Vector<String>(Arrays.asList(new String[] {})));
 				settingItems.clear();
 				for (Map<String, Object> elem : getst)
 				{
-					SettingItem item = new SettingItem(elem.get("key")
-							.toString(), elem.get("value").toString(),
-							new Vector<String>(), elem.get("type").toString());
+					SettingItem item = new SettingItem(elem.get("key").toString(), elem.get("value").toString(), new Vector<String>(), elem.get("type").toString());
 					settingItems.add(item);
 				}
 
 				settingsRootNode = SettingTreeNode.createSettingsTree(settingItems);
-				
+
 				logItems.clear();
 				List<Map<String, Object>> getLog = protocol.queryVariables();
 				for (Map<String, Object> elem : getLog)
@@ -151,28 +145,30 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					logItems.add(item);
 				}
 
-				final UIJob refreshTables = new UIJob("Refresh Tables Job") {
+				final UIJob refreshTables = new UIJob("Refresh Tables Job")
+				{
 
 					@Override
 					public IStatus runInUIThread(IProgressMonitor monitor)
 					{
 						// b.setEnabled(true);
 
-						if(optionsGroup != null)
+						if (optionsGroup != null)
 						{
-							for (Control map : optionsGroup.getChildren()) {
+							for (Control map : optionsGroup.getChildren())
+							{
 								map.dispose();
 							}
 							optionsGroup.layout();
 						}
-						
-						if(settingsTreeViewer != null)
+
+						if (settingsTreeViewer != null)
 						{
 							settingsTreeViewer.setInput(settingsRootNode);
 							settingsTreeViewer.refresh();
 							settingsTreeViewer.expandAll();
 						}
-						
+
 						if (settingsViewer != null)
 						{
 							settingsViewer.refresh();
@@ -186,9 +182,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 						reSelectVariables();
 						// logViewer.getTable().redraw();
 
-						return new Status(IStatus.OK,
-								DestecsDebugPlugin.PLUGIN_ID,
-								"Refreshed Tables Job");
+						return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID, "Refreshed Tables Job");
 					}
 				};
 				refreshTables.schedule();
@@ -207,8 +201,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				e.printStackTrace();
 			}
 
-			return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID,
-					"Populated ok");
+			return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID, "Populated ok");
 		}
 
 	}
@@ -244,6 +237,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 		public void parseConfigValue(String attribute)
 		{
+			selectedVariables.clear();
 			String[] variables = attribute.split(",");
 
 			for (String name : variables)
@@ -252,9 +246,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				{
 					selectedVariables.add(name);
 				}
-
 			}
-
 		}
 	}
 
@@ -280,7 +272,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	{
 		enum ValueType
 		{
-			Bool, Real, RealPositive, Enum, String,Unknown, Double
+			Bool, Real, RealPositive, Enum, String, Unknown, Double
 		}
 
 		public final String key;
@@ -288,33 +280,34 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		public final List<String> values = new Vector<String>();
 		public final ValueType type;
 
-		public SettingItem(String key, String value, List<String> values, String type)
+		public SettingItem(String key, String value, List<String> values,
+				String type)
 		{
 			this.key = key;
 			this.value = value;
 			this.values.addAll(values);
 			this.type = convertType(type);
-			
+
 		}
 
 		private ValueType convertType(String type)
 		{
-			if(type.equals("string"))
+			if (type.equals("string"))
 			{
 				return ValueType.String;
 			}
-			if(type.equals("boolean"))
+			if (type.equals("boolean"))
 			{
 				return ValueType.Bool;
 			}
-			if(type.equals("double"))
+			if (type.equals("double"))
 			{
 				return ValueType.Double;
 			}
-			
+
 			return ValueType.Unknown;
 		}
-		
+
 		@Override
 		public String toString()
 		{
@@ -355,7 +348,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
 		GridLayout gl = new GridLayout(1, true);
-		
+
 		comp.setLayout(gl);
 		comp.setFont(parent.getFont());
 
@@ -371,36 +364,36 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		Group group = new Group(comp, SWT.NONE);
 		group.setText("Log");
 		group.setLayout(new GridLayout());
-		GridData  gd = new GridData(GridData.FILL_BOTH);
+		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = 100;
 		gd.minimumHeight = 100;
 		group.setLayoutData(gd);
-		
-		
+
 		logViewer = new TableViewer(group, SWT.FULL_SELECTION | SWT.FILL
 				| SWT.CHECK);
-		
-//		GridData  gd = new GridData(GridData.FILL_BOTH);
-//		gd.heightHint = 100;
-//		gd.minimumHeight = 100;
+
+		// GridData gd = new GridData(GridData.FILL_BOTH);
+		// gd.heightHint = 100;
+		// gd.minimumHeight = 100;
 		logViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		final Table table = logViewer.getTable();
 
 		table.setHeaderVisible(true);
 		logViewer.setSorter(new Clp20simLogViewerSorter());
-		
+
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText("Variable Name");
 		column.setWidth(500);
 
 		GridData data = new GridData(GridData.FILL_BOTH);
-		//data.heightHint = 10;
+		// data.heightHint = 10;
 		table.setLayoutData(data);
 		logViewer.setContentProvider(new ArrayContentProvider());
 		logViewer.setLabelProvider(new LabelProvider());
 
-		logViewer.getTable().addListener(SWT.Selection, new Listener() {
+		logViewer.getTable().addListener(SWT.Selection, new Listener()
+		{
 
 			public void handleEvent(Event event)
 			{
@@ -428,46 +421,47 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 	public void createSettingsTable(Composite comp)
 	{
-
 		Group group = new Group(comp, SWT.NONE);
 		group.setText("Settings");
-		group.setLayout(new GridLayout(2,true));
+		group.setLayout(new GridLayout(2, true));
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = 100;
 		group.setLayoutData(gd);
-		
-		settingsTreeViewer  = new TreeViewer(group,SWT.BORDER);
+
+		settingsTreeViewer = new TreeViewer(group, SWT.BORDER);
 		settingsTreeViewer.setContentProvider(new SettingsTreeContentProvider());
 		settingsTreeViewer.setLabelProvider(new SettingsTreeLabelProvider());
 		settingsTreeViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+
 		optionsGroup = new Group(group, SWT.NONE);
 		optionsGroup.setText("Options");
-		optionsGroup.setLayout(new GridLayout(1,true));
+		optionsGroup.setLayout(new GridLayout(1, true));
 		optionsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
-				
-		settingsTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			
-			public void selectionChanged(SelectionChangedEvent event) {
-				
-				if(event.getSelection().isEmpty()) 
-				{			           
-			           return;
-			    }
-				
-				 if(event.getSelection() instanceof IStructuredSelection) 
-				 {
-			           IStructuredSelection selection = (IStructuredSelection)event.getSelection();
-			           Object selected = selection.getFirstElement();
-			           if(selected instanceof SettingTreeNode)
-			           {
-			        	   SettingTreeNode node = (SettingTreeNode) selected;
-			        	   node.drawIn(optionsGroup);
-			           }
-				 }
+
+		settingsTreeViewer.addSelectionChangedListener(new ISelectionChangedListener()
+		{
+
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+
+				if (event.getSelection().isEmpty())
+				{
+					return;
+				}
+
+				if (event.getSelection() instanceof IStructuredSelection)
+				{
+					IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+					Object selected = selection.getFirstElement();
+					if (selected instanceof SettingTreeNode)
+					{
+						SettingTreeNode node = (SettingTreeNode) selected;
+						node.drawIn(optionsGroup);
+					}
+				}
 			}
 		});
-		
+
 	}
 
 	private File getFileFromPath(IProject project, String path)
@@ -499,18 +493,19 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 		PopulatorJob populator = new PopulatorJob(ctFile, ctUrl);
 
-		final UIJob changeButton = new UIJob("Enable populate button") {
+		final UIJob changeButton = new UIJob("Enable populate button")
+		{
 
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
 				populateButton.setEnabled(true);
-				return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID,
-						"Enabled populate button");
+				return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID, "Enabled populate button");
 			}
 		};
 
-		populator.addJobChangeListener(new JobChangeAdapter() {
+		populator.addJobChangeListener(new JobChangeAdapter()
+		{
 			public void done(IJobChangeEvent event)
 			{
 				changeButton.schedule();
@@ -525,7 +520,8 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	{
 		populateButton = createPushButton(comp, "Populate...", null);
 
-		populateButton.addSelectionListener(new SelectionListener() {
+		populateButton.addSelectionListener(new SelectionListener()
+		{
 
 			public void widgetSelected(SelectionEvent e)
 			{
@@ -542,17 +538,14 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
-
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration)
 	{
-
 		try
 		{
-			logManager.parseConfigValue(configuration.getAttribute(
-					IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES,
-					""));
+			logManager.parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, ""));
 		} catch (CoreException e)
 		{
 			// TODO Auto-generated catch block
@@ -576,62 +569,60 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			}
 
 		}
-		
+
 		deleteUnexistentVariables();
 
 	}
 
-	private void deleteUnexistentVariables() {
+	private void deleteUnexistentVariables()
+	{
 		Set<String> varsToRemove = new HashSet<String>();
-		
-		for (String var : logManager.selectedVariables) {
+
+		for (String var : logManager.selectedVariables)
+		{
 			boolean exists = false;
-			
+
 			for (TableItem elem : logViewer.getTable().getItems())
 			{
 				if (elem.getData() instanceof LogItem)
 				{
 					LogItem logItem = (LogItem) elem.getData();
-					if(logItem.name.equals(var))
+					if (logItem.name.equals(var))
 					{
 						exists = true;
 						break;
 					}
 				}
 			}
-			
-			if(!exists)
+
+			if (!exists)
 			{
 				varsToRemove.add(var);
 			}
 		}
-		
+
 		logManager.selectedVariables.removeAll(varsToRemove);
-		if(!varsToRemove.isEmpty())
+		if (!varsToRemove.isEmpty())
 		{
 			updateLaunchConfigurationDialog();
 		}
-		
+
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
-		configuration.setAttribute(
-				IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES,
-				logManager.getConfigValue());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, logManager.getConfigValue());
 
 	}
 
 	public String getName()
 	{
-
 		return "20-sim";
 	}
 
 	public IProject getProject()
 	{
-		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog()
-				.getTabs())
+		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
 		{
 			if (tab instanceof CoSimLaunchConfigurationTab)
 			{
@@ -643,8 +634,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 	private String getCtPath()
 	{
-		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog()
-				.getTabs())
+		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
 		{
 			if (tab instanceof CoSimLaunchConfigurationTab)
 			{
@@ -656,8 +646,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 	private String getCtEndpoint()
 	{
-		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog()
-				.getTabs())
+		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
 		{
 			if (tab instanceof DevelopLaunchConfigurationTab)
 			{
