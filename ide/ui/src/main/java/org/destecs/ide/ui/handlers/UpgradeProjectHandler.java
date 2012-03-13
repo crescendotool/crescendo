@@ -29,7 +29,6 @@ public class UpgradeProjectHandler extends AbstractHandler implements IHandler
 			final IProject project = c.getProject();
 
 			if ((IDestecsProject) project.getAdapter(IDestecsProject.class) != null)
-				;
 			{
 				try
 				{
