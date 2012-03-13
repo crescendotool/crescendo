@@ -151,8 +151,6 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					@Override
 					public IStatus runInUIThread(IProgressMonitor monitor)
 					{
-						// b.setEnabled(true);
-
 						if (optionsGroup != null)
 						{
 							for (Control map : optionsGroup.getChildren())
@@ -180,8 +178,6 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 						}
 
 						reSelectVariables();
-						// logViewer.getTable().redraw();
-
 						return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID, "Refreshed Tables Job");
 					}
 				};
@@ -189,16 +185,13 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 			} catch (MalformedURLException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsDebugPlugin.logWarning("Failed to resolve url for log variable and settings retrival", e);
 			} catch (SimulationException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsDebugPlugin.logWarning("Failed to retrieve log variable and settings", e);
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsDebugPlugin.logWarning("Failure with log variable and settings retrival", e);
 			}
 
 			return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID, "Populated ok");
@@ -537,7 +530,6 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 			public void widgetDefaultSelected(SelectionEvent e)
 			{
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -571,13 +563,9 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			logViewer.refresh();
 			reSelectVariables();
 			
-			
-			
-			
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logWarning("Faild to initialize Clp20SimTab with log variables", e);
 		}
 
 	}

@@ -23,21 +23,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.core.parsers.ScenarioParserWrapper;
@@ -346,8 +341,7 @@ public class CoSimLaunchConfigurationDelegate extends
 									}
 								} catch (CoreException e)
 								{
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									DestecsDebugPlugin.logWarning("Failed to resume simulator", e);
 								}
 							}
 							engine.resume();
@@ -524,8 +518,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		try {
 			properties.store(sw, "");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logWarning("Failed record CT Tool settings for use in simulation", e);
 		}
 		engine.setCtSettings(sw.toString());
 	}
@@ -772,6 +765,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			}
 			else if(result.get(name) instanceof List)
 			{
+				@SuppressWarnings("rawtypes")
 				List list = (List) result.get(name);
 				for (Object object : list) {
 					value.add(convertToDouble(object));
@@ -820,46 +814,6 @@ public class CoSimLaunchConfigurationDelegate extends
 			return val;
 		}
 		return null;
-	}
-
-	
-
-	private static HashMap<String, Object> preProcessResult(
-			HashMap<String, Object> in) {
-		
-		Set<String> c = in.keySet();
-		
-		List<String> keys = new ArrayList<String>(c);
-		
-		Collections.sort(keys);
-		
-		HashMap<String, Object> out = new HashMap<String, Object>();
-		
-		for (String name : keys) {
-			if(name.contains("["))
-			{
-				String strippedName = name.substring(0, name.indexOf("["));
-				
-				if(out.containsKey(strippedName))
-				{
-					List<Object> variable = (List<Object>) out.get(strippedName);
-					variable.add(in.get(name));
-				}
-				else
-				{
-					List<Object> variable = new ArrayList<Object>();
-					variable.add(in.get(name));
-					out.put(strippedName, variable);
-				}
-				
-			}
-			else
-			{
-				out.put(name, in.get(name));
-			}
-		}
-		
-		return out;
 	}
 
 	public static InfoTableView getInfoTableView(String id)

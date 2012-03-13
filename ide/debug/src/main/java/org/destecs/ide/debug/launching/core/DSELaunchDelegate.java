@@ -28,7 +28,6 @@ import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.AcaGenerator;
-import org.destecs.ide.debug.aca.plugin.ArchitectureAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.ArchitecturesAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.IncludeBaseConfigAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.ScenarioAcaPlugin;

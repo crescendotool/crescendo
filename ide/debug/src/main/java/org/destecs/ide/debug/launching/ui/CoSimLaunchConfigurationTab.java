@@ -18,9 +18,6 @@
  *******************************************************************************/
 package org.destecs.ide.debug.launching.ui;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
@@ -29,7 +26,6 @@ import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.ui.DestecsUIPlugin;
 import org.destecs.ide.ui.IDestecsPreferenceConstants;
 import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
-import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
