@@ -285,5 +285,10 @@ public class DevelopLaunchConfigurationTab extends
 	public String getCtUrl() {
 		return ctUrl.getText();
 	}
+	
+	public boolean useRemoteCtSimulator()
+	{
+		return checkBoxRemoteCtSimulator.getSelection();
+	}
 
 }

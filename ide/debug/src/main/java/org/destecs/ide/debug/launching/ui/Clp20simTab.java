@@ -678,6 +678,10 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 	private String getCtEndpoint()
 	{
+		if(!getUseRemoteCtSimulator())
+		{
+			return IDebugConstants.DEFAULT_CT_ENDPOINT;
+		}
 		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
 		{
 			if (tab instanceof DevelopLaunchConfigurationTab)
@@ -686,6 +690,18 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			}
 		}
 		return null;
+	}
+	
+	private boolean getUseRemoteCtSimulator()
+	{
+		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
+		{
+			if (tab instanceof DevelopLaunchConfigurationTab)
+			{
+				return ((DevelopLaunchConfigurationTab) tab).useRemoteCtSimulator();
+			}
+		}
+		return false;
 	}
 
 }
