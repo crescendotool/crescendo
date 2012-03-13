@@ -402,13 +402,15 @@ public class CoSimLaunchConfigurationDelegate extends
 			if(!useRemoteCtSimulator)
 			{
 				engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
+				engine.setCtEndpoint(new URL(IDebugConstants.DEFAULT_CT_ENDPOINT));
 			}else	
 			{
 				engine.setCtSimulationLauncher(new DummyLauncher("20-sim"));
+				engine.setCtEndpoint(ctUrl);
 			}
 			ModelConfig ctModel = getCtModelConfig(ctFile);
 			engine.setCtModel(ctModel);
-			engine.setCtEndpoint(ctUrl);
+			
 
 			engine.setOutputFolder(outputFolder);
 			engine.debug(debug);
@@ -963,8 +965,6 @@ public class CoSimLaunchConfigurationDelegate extends
 	 */
 	private void abort(String message, Throwable e) throws CoreException
 	{
-		// TODO: the plug-in code should be the example plug-in, not Perl debug
-		// model id
 		throw new CoreException((IStatus) new Status(IStatus.ERROR, IDebugConstants.PLUGIN_ID, 0, message, e));
 	}
 
