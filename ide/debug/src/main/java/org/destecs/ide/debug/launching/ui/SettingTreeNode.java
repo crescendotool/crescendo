@@ -338,7 +338,6 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		textInput.addModifyListener(new ModifyListener() {
 			
 			public void modifyText(ModifyEvent event) {
-				System.out.println("Modified text: " + textInput.getText());
 				String stringValue = textInput.getText();
 				
 				try
