@@ -19,8 +19,11 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -50,6 +53,7 @@ import org.overturetool.vdmj.ExitStatus;
 import org.overturetool.vdmj.Release;
 import org.overturetool.vdmj.Settings;
 import org.overturetool.vdmj.config.Properties;
+import org.overturetool.vdmj.debug.DBGPReaderV2;
 import org.overturetool.vdmj.debug.DBGPStatus;
 import org.overturetool.vdmj.definitions.CPUClassDefinition;
 import org.overturetool.vdmj.definitions.ClassDefinition;
@@ -104,6 +108,7 @@ public class SimulationManager extends BasicSimulationManager
 	final private List<String> variablesToLog = new Vector<String>();
 	private File simulationLogFile;
 	private boolean isSchedulingHookConfigured = false;
+	private File coverageDirectory = null;
 	
 	/**
 	 * A handle to the unique Singleton instance.
@@ -283,7 +288,7 @@ public class SimulationManager extends BasicSimulationManager
 	
 
 	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
-			File baseDirFile, boolean disableRtLog)
+			File baseDirFile, boolean disableRtLog, boolean disableCoverage)
 			throws RemoteSimulationException
 	{
 		try
@@ -310,7 +315,11 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				controller.setLogFile(new File(outputDir, "ExecutionTrace.logrt"));
 			}
-
+			
+			if(!disableCoverage)
+			{
+				coverageDirectory = new File(outputDir,"coverage");
+			}
 			if (this.variablesToLog.isEmpty())
 			{
 				SimulationLogger.enable(false);
@@ -913,6 +922,32 @@ public class SimulationManager extends BasicSimulationManager
 			if(scheduler!=null)
 			{
 				scheduler.stop();
+			}
+			if(coverageDirectory!=null)
+			{
+				coverageDirectory.mkdirs();
+				DBGPReaderV2.writeCoverage(interpreter, coverageDirectory);
+				for (File source : interpreter.getSourceFiles())
+				{
+					String name = source.getName() + "cov";
+
+					
+					try{
+						InputStream in = new FileInputStream(source);
+						OutputStream out = new FileOutputStream(new File(coverageDirectory,name));
+						byte[] buf = new byte[1024];
+						int len;
+						while ((len = in.read(buf)) > 0) {
+						   out.write(buf, 0, len);
+						}
+						in.close();
+						out.close(); 
+					}catch(Exception e)
+					{
+						
+					}
+
+				}
 			}
 			RTLogger.dump(true);
 			SimulationLogger.dump(true);

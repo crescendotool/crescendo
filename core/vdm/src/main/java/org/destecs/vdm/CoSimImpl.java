@@ -75,6 +75,7 @@ public class CoSimImpl implements IDestecs
 
 	private static final String version = "0.0.1.0";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
+	private static final String LOAD_SETTING_DISABLE_COVERAGE = "settings_disable_coverage";
 	private String interfaceVersion = "3.0.2.0";
 	private static Double finishTime = 0.0;
 
@@ -116,6 +117,7 @@ public class CoSimImpl implements IDestecs
 		Settings.dynamictypechecks = true;
 		Settings.measureChecks = true;
 		boolean disableRtLog = false;
+		boolean disableCoverage = false;
 
 		List<File> specfiles = new Vector<File>();
 		File linkFile = null;
@@ -197,6 +199,10 @@ public class CoSimImpl implements IDestecs
 				{
 					// TODO: disable runtime validation.
 				}
+				if (arg.key.startsWith(LOAD_SETTING_DISABLE_COVERAGE))
+				{
+					disableCoverage = true;
+				}
 				if (arg.key.startsWith(LOAD_SETTING_LOG_VARIABLES))
 				{
 					String[] variables = arg.value.split(",");
@@ -213,7 +219,7 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog)).toMap();
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog,disableCoverage)).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
