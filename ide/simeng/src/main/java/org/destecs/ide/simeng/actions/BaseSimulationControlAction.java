@@ -18,12 +18,13 @@
  *******************************************************************************/
 package org.destecs.ide.simeng.actions;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 
-import org.destecs.ide.simeng.Activator;
+import org.destecs.ide.simeng.ISimengConstants;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -36,45 +37,32 @@ public abstract class BaseSimulationControlAction extends Action
 
 	public BaseSimulationControlAction(ISimulationControlProxy proxy)
 	{
-		this.proxy.add( proxy);
+		this.proxy.add(proxy);
 	}
-
-	
 
 	public abstract ImageDescriptor getImageDescriptor();
 
 	/**
 	 * Returns the image descriptor with the given relative path.
 	 */
-//	@SuppressWarnings("deprecation")
 	protected ImageDescriptor getImageDescriptor(String relativePath)
-	{//FIXME image is missing and this gives a null pointer
-//		String iconPath = "icons/";
-//		try
-//		{
-//			Activator plugin = Activator.getDefault();
-//			URL installURL = plugin.getDescriptor().getInstallURL();
-//			URL url = new URL(installURL, iconPath + relativePath);
-//			return ImageDescriptor.createFromURL(url);
-//		} catch (MalformedURLException e)
-//		{
-//			// should not happen
-//			return ImageDescriptor.getMissingImageDescriptor();
-//		}
-		return null;
+	{
+		return ImageDescriptor.createFromURL(FileLocator.find(Platform.getBundle(ISimengConstants.PLUGIN_ID), new Path("icons/"
+				+ relativePath), null));
 	}
 
 	protected final List<ISimulationControlProxy> proxy = new Vector<ISimulationControlProxy>();
 
-	public synchronized void addSimulationControlProxy(ISimulationControlProxy proxy)
+	public synchronized void addSimulationControlProxy(
+			ISimulationControlProxy proxy)
 	{
 		this.proxy.add(proxy);
 	}
 
-	public synchronized void removeSimulationControlProxy(ISimulationControlProxy proxy)
+	public synchronized void removeSimulationControlProxy(
+			ISimulationControlProxy proxy)
 	{
 		this.proxy.remove(proxy);
 	}
 
-	
 }
