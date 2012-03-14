@@ -222,14 +222,18 @@ start
 intf
     : OUTPUT  
     | INPUT  
-    | SHARED 
     | EVENT 
     | MODEL
     ;  
     
 link
     :  
-   intf a=ID '=' b=qualifiedId ';'
+    SHARED a=ID '=' b=onlyTwoId ';'
+    {
+     links.addLink($a.text, new LinkInfo($a.text,b,$SHARED.start.getLine()));
+     links.addSDP($a.text);
+    }
+   | intf a=ID '=' b=qualifiedId ';'
     {
       links.addLink($a.text, new LinkInfo($a.text,b,$intf.start.getLine()));
       String s = $intf.text;
@@ -243,10 +247,7 @@ link
         links.addInput($a.text);
       }else
       
-      if(s.equalsIgnoreCase("sdp"))
-      {
-        links.addSDP($a.text);
-      }else
+ 
       
       if(s.equalsIgnoreCase("event"))
       {
@@ -261,7 +262,15 @@ link
     ;
 
 
-
+onlyTwoId returns [List<String> ids]
+@init{
+  ids = new ArrayList<String>();
+  }
+  : a=ID '.' b=ID 
+      {$ids.add($a.text);
+       $ids.add($b.text);} 
+    
+  ;
 
 qualifiedId returns [List<String> ids]
 @init{
