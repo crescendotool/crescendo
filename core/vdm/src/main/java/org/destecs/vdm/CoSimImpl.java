@@ -617,4 +617,15 @@ public class CoSimImpl implements IDestecs
 		throw new RemoteSimulationException("Not implemented");
 	}
 
+	public List<Map<String, Object>> queryImplementations() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Boolean setImplementations(List<Map<String, Object>> data)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
