@@ -11,7 +11,7 @@
 	<interfaceVersion>
 		<major>3</major>
 		<minor>0</minor>
-		<revision>1</revision>
+		<revision>3</revision>
 	</interfaceVersion>
 	<implementationVersion>
 		<major>3</major>
@@ -86,14 +86,14 @@ Commands that can be fired at any point:
 								<member>
 									<name>version</name>
 									<value>
-										<string>4.1.2.3</string>
+										<string>4.2.3.3000</string>
 									</value>
 									<description>The version of the tool/simulator : major.minor.build.patch</description>
 								</member>
 								<member>
 									<name>interfaceVersion</name>
 									<value>
-										<string>3.0.0.0</string>
+										<string>3.0.2.0</string>
 									</value>
 									<description>The interface version : major.minor.build.patch</description>
 								</member>
@@ -391,6 +391,51 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
+		<!--QueryImplementations-->
+		<method>
+			<methodCall>
+				<methodName>destecs.queryImplementations</methodName>
+			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<array>
+								<data>
+									<value>
+										<struct>
+											<member>
+												<name>name</name>
+												<value>
+													<string>name</string>
+												</value>
+												<description>The name of the (sub)model</description>
+											</member>
+											<member>
+												<name>implementations</name>
+												<value>
+													<array><data><value>
+														<string>implementationX</string>
+													</value></data></array>
+												</value>
+												<description>List with available implementations for this model</description>
+											</member>
+											<member>
+												<name>implementation</name>
+												<value>
+													<string>implementationX</string>
+												</value>
+												<description>The current selected implementation</description>
+											</member>
+										</struct>
+									</value>
+								</data>
+							</array>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>
 		<!--SetParameters-->
 		<method>
 			<description>Sets parameters that are *not* used in the co-simulation.</description>
@@ -515,6 +560,49 @@ Commands that can be fired at any point:
 					</param>
 				</params>
 			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>
+		<!--SetImplementations-->
+		<method>
+			<methodCall>
+				<methodName>destecs.setImplementations</methodName>
+				<params>
+					<param>
+						<value>
+							<array>
+								<data>
+									<value>
+										<struct>
+											<member>
+												<name>name</name>
+												<value>
+													<string>name</string>
+												</value>
+												<description>The name of the (sub)model</description>
+											</member>
+											<member>
+												<name>implementation</name>
+												<value>
+													<string>implementationX</string>
+												</value>
+												<description>The implementation to set</description>
+											</member>
+										</struct>
+									</value>
+								</data>
+							</array>
+						</value>
+					</param>
+				</params>
+				</methodCall>
 			<methodResponse>
 				<params>
 					<param>
@@ -860,27 +948,27 @@ Commands that can be fired at any point:
 			<methodCall>
 				<methodName>destecs.start</methodName>
 				<params>
-                    <param>
-                        <value>
-                            <struct>
-                                <member>
-                                    <name>startTime</name>
-                                    <value>
-                                        <double>0.0</double>
-                                    </value>
-                                    <description>start time of the simulation</description>
-                                </member>
-                                <member>
-                                    <name>finishTime</name>
-                                    <value>
-                                        <double>10.0</double>
-                                    </value>
-                                    <description>finish time of the simulation</description>
-                                </member>
-                            </struct>
-                        </value>
-                    </param>
-                </params>
+					<param>
+						<value>
+							<struct>
+								<member>
+									<name>startTime</name>
+									<value>
+										<double>0.0</double>
+									</value>
+									<description>start time of the simulation</description>
+								</member>
+								<member>
+									<name>finishTime</name>
+									<value>
+										<double>10.0</double>
+									</value>
+									<description>finish time of the simulation</description>
+								</member>
+							</struct>
+						</value>
+					</param>
+				</params>
 			</methodCall>
 			<methodResponse>
 				<params>
@@ -909,38 +997,37 @@ Commands that can be fired at any point:
 			</methodResponse>
 		</method>
 		<!--suspend-->
-        <method>
-            <description>Suspends the simulator or interpreter. After this function is no Steps can be taken. Simulation may be stopped</description>
-            <methodCall>
-                <methodName>destecs.suspend</methodName>
-            </methodCall>
-            <methodResponse>
-                <params>
-                    <param>
-                        <value>
-                            <boolean>true</boolean>
-                        </value>
-                    </param>
-                </params>
-            </methodResponse>
-        </method>
-        <!--resume-->
-        <method>
-            <description>Resumes the simulator or interpreter from suspended state. (Does nothing if state was not suspended)</description>
-            <methodCall>
-                <methodName>destecs.resume</methodName>
-            </methodCall>
-            <methodResponse>
-                <params>
-                    <param>
-                        <value>
-                            <boolean>true</boolean>
-                        </value>
-                    </param>
-                </params>
-            </methodResponse>
-        </method>   
-		
+		<method>
+			<description>Suspends the simulator or interpreter. After this function is no Steps can be taken. Simulation may be stopped</description>
+			<methodCall>
+				<methodName>destecs.suspend</methodName>
+			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>
+		<!--resume-->
+		<method>
+			<description>Resumes the simulator or interpreter from suspended state. (Does nothing if state was not suspended)</description>
+			<methodCall>
+				<methodName>destecs.resume</methodName>
+			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>	
 		<!--SetSetting-->
 		<method>
 			<description>Set a setting.</description>
@@ -964,13 +1051,6 @@ Commands that can be fired at any point:
 											<string>Euler</string>
 										</value>
 										<description>The value belonging to the spefied key, in string format</description>
-									</member>
-									<member>
-										<name>type</name>
-										<value>
-											<string>type</string>
-										</value>
-										<description>The type of the value : int, string, double, boolean (any xmlrpc scalar type)</description>
 									</member>
 								</struct>
 							</value>
@@ -1070,6 +1150,13 @@ Commands that can be fired at any point:
 												</value>
 												<description>Array with additional properties of the key. Each property is a key/value pair. Leave array empty if key has no additional properties. Defined properties are "lowerbound" and "upperbound" in order to define a range.</description>
 											</member>
+											<member>
+												<name>description</name>
+												<value>
+													<string>a description of this key</string>
+												</value>
+												<description>description of this key</description>
+											</member>
 										</struct>
 									</value>
 								</data>
@@ -1128,19 +1215,6 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		<!-- Load2 -->
         <method>
             <description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
@@ -1205,19 +1279,6 @@ Commands that can be fired at any point:
                 </params>
             </methodResponse>
         </method>
-        
-      
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 	</methods>
 	<methodFaultResponses>
 		<methodResponse>
