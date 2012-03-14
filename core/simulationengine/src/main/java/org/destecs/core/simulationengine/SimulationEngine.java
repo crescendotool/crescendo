@@ -631,6 +631,8 @@ public class SimulationEngine
 		StepStruct deResult = step(Simulator.DE, dtProxy, ctProxy, initTime, new Vector<StepinputsStructParam>(), false, events);
 		StepStruct ctResult = step(Simulator.CT, dtProxy, ctProxy, initTime, outputToInput(deResult.outputs), false, events);
 
+		engineInfo(Simulator.ALL, String.format("Simulation:  %2d %%", percentCompleted));
+		
 		variableSyncInfo(merge(deResult, ctResult).getHeaders());
 		while (time <= totalSimulationTime)
 		{

@@ -164,13 +164,11 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				throw new RemoteSimulationException("VDM Main Thread no longer active. Forced to stop before end time.", null);
 			}
+		}else
+		{
+			throw new RemoteSimulationException("Interpreter is not correctly initialized.", null);
 		}
 		
-		if(!isSchedulingHookConfigured)
-		{
-			configureSchedulingHooks();
-		}
-
 		for (StepinputsStructParam p : inputs)
 		{
 			setValue(p.name, CoSimType.Auto, new ValueContents(p.value, p.size));
@@ -482,6 +480,7 @@ public class SimulationManager extends BasicSimulationManager
 				return false;
 			}
 		});
+		isSchedulingHookConfigured = true;
 	}
 
 	public Boolean initialize() throws RemoteSimulationException
@@ -540,6 +539,10 @@ public class SimulationManager extends BasicSimulationManager
 		this.mainContext = ctxt;
 
 		setLogVariables(simulationLogFile,new Vector<String>(variablesToLog));
+		if(!isSchedulingHookConfigured)
+		{
+			configureSchedulingHooks();
+		}
 	}
 
 	protected void setLogVariables(File logFile, List<String> logVariables)
