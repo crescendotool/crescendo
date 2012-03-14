@@ -230,7 +230,7 @@ link
     :  
     SHARED a=ID '=' b=onlyTwoId ';'
     {
-     links.addLink($a.text, new LinkInfo($a.text,b,$SHARED.start.getLine()));
+     links.addLink($a.text, new LinkInfo($a.text,b,$SHARED.getLine()));
      links.addSDP($a.text);
     }
    | intf a=ID '=' b=qualifiedId ';'
