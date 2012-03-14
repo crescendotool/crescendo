@@ -22,6 +22,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -121,21 +122,74 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 			try
 			{
+				/*
+				 * Connecting to 20sim
+				 */
 				Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(ctFile);
 				clp20sim.launch();
-
 				ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(ctUrl));
-
 				protocol.load(ctFile.getAbsolutePath());
-				List<Map<String, Object>> getst = protocol.querySettings(new Vector<String>(Arrays.asList(new String[] {})));
+				
+				/*
+				 * Querying 20sim settings
+				 */
 				settingItems.clear();
+				/*
+				 * Querying multiple implementations - transforming to settings
+				 */
+				List<Map<String, Object>> implementations = protocol.queryImplementations();
+				for (Map<String, Object> map : implementations) {
+					
+					String name = (String) map.get("name");
+					String value = (String) map.get("implementation");
+					
+					Object[] enumerations = (Object[]) map.get("implementations");
+					List<String> enumerationsVector = new Vector<String>();
+						
+					for (Object object : enumerations) {
+						if(object instanceof String)
+						{
+							enumerationsVector.add((String) object);
+						}
+					}
+					
+					
+					SettingItem settingItem = new SettingItem("model.implementations." + name, value, enumerationsVector, "string", new HashMap<String, String>());
+					settingItems.add(settingItem);
+				}
+				
+				List<Map<String, Object>> getst = protocol.querySettings(new Vector<String>(Arrays.asList(new String[] {})));
 				for (Map<String, Object> elem : getst)
 				{
-					SettingItem item = new SettingItem(elem.get("key").toString(), elem.get("value").toString(), new Vector<String>(), elem.get("type").toString());
+					Object[] enumerations = (Object[]) elem.get("enumerations");
+					List<String> enumerationsVector = new Vector<String>();
+						
+					for (Object object : enumerations) {
+						if(object instanceof String)
+						{
+							enumerationsVector.add((String) object);
+						}
+					}
+					
+					Object[] properties = (Object[]) elem.get("properties");
+					
+					HashMap<String, String> propertiesMap = new HashMap<String, String>();
+					
+					for (Object object : properties) {
+						if(object instanceof HashMap)
+						{
+							HashMap<String, Object> singlePropertyMap = (HashMap<String, Object>) object;
+							String key = (String) singlePropertyMap.get("key");
+							String value = (String) singlePropertyMap.get("value");
+							propertiesMap.put(key, value);
+						}
+					}
+					
+					SettingItem item = new SettingItem(elem.get("key").toString(), elem.get("value").toString(), enumerationsVector  , elem.get("type").toString(),propertiesMap);
 					settingItems.add(item);
 				}
 
-				settingsRootNode = SettingTreeNode.createSettingsTree(settingItems);
+				settingsRootNode = SettingTreeNode.createSettingsTree(settingItems,settingsRootNode,tab);
 
 				logItems.clear();
 				List<Map<String, Object>> getLog = protocol.queryVariables();
@@ -164,7 +218,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 						{
 							settingsTreeViewer.setInput(settingsRootNode);
 							settingsTreeViewer.refresh();
-							settingsTreeViewer.expandAll();
+							settingsTreeViewer.expandToLevel(2);
 						}
 
 						if (settingsViewer != null)
@@ -227,21 +281,6 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 			return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
 		}
-
-//		public void parseConfigValue(String attribute)
-//		{
-//			String[] variables = attribute.split(",");
-//
-//			for (String name : variables)
-//			{
-//				if (!name.equals(""))
-//				{
-//					selectedVariables.add(name);
-//				}
-//
-//			}
-//
-//		}
 		
 		
 		public void addSelectedVariable(String name)
@@ -277,16 +316,18 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 		public final String key;
 		public String value;
-		public final List<String> values = new Vector<String>();
+		public final List<String> enumerations = new Vector<String>();
 		public final ValueType type;
+		public final HashMap<String, String> propertiesMap;
 
 		public SettingItem(String key, String value, List<String> values,
-				String type)
+				String type, HashMap<String, String> propertiesMap)
 		{
 			this.key = key;
 			this.value = value;
-			this.values.addAll(values);
+			this.enumerations.addAll(values);
 			this.type = convertType(type);
+			this.propertiesMap = propertiesMap;
 
 		}
 
@@ -312,7 +353,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		public String toString()
 		{
 			return getShortName() + " = " + this.value + " possible values: "
-					+ values;
+					+ enumerations;
 		}
 
 		public String getShortName()
@@ -340,11 +381,16 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	private final Set<LogItem> logItems = new HashSet<LogItem>();
 	private TableViewer logViewer;
 	private TreeViewer settingsTreeViewer = null;
+	//private SettingsTreeContent settingsContent = new SettingsTreeContent();
 	private SettingTreeNode settingsRootNode;
 	private Group optionsGroup;
+	private Clp20simTab tab;
+	
 
 	public void createControl(Composite parent)
 	{
+		tab = this;
+		
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
 		GridLayout gl = new GridLayout(1, true);
@@ -539,6 +585,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration)
@@ -570,7 +617,6 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -578,6 +624,10 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		 * Initializing the settings
 		 */
 		try {
+			
+			/*
+			 * getting the settings
+			 */
 			String settings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
 			String[] splitSettings = settings.split(";");
 			
@@ -591,10 +641,25 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				}
 			}
 			
-			settingsRootNode  = SettingTreeNode.createSettingsTreeFromConfiguration(settingsSet);
+			/*
+			 * 	getting the implementations
+			 */
+			
+			settings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
+			splitSettings = settings.split(";");
+			
+			for (String setting : splitSettings) {
+				String[] splitSetting = setting.split("=");
+				if(splitSetting.length == 2)
+				{
+					settingsSet.add(splitSetting);
+				}
+			}
+			
+			settingsRootNode = SettingTreeNode.createSettingsTreeFromConfiguration(settingsSet);
 			settingsTreeViewer.setInput(settingsRootNode);
 			settingsTreeViewer.refresh();
-			settingsTreeViewer.expandAll();
+			settingsTreeViewer.expandToLevel(2);
 			
 		} catch (CoreException e) {
 			DestecsDebugPlugin.logWarning("Faild to initialize Clp20SimTab with log variables", e);
@@ -661,9 +726,22 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, logManager.getConfigValue());
-
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, getSettingsString());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, getImplementationsString());
 		
+	}
+
+	private String getImplementationsString() {
+
+		Object rootSettingsNode = settingsTreeViewer.getInput();
+		
+		if(rootSettingsNode instanceof SettingTreeNode)
+		{
+			String result = ((SettingTreeNode) rootSettingsNode).toImplementationString();
+			return result;
+		}
+		
+		return "";
 	}
 
 	private String getSettingsString() {
@@ -735,6 +813,11 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			}
 		}
 		return false;
+	}
+
+	public void updateTab() {
+		updateLaunchConfigurationDialog();
+		
 	}
 
 }

@@ -433,7 +433,6 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		if (fProjectText != null && fProjectText.getText().length() > 0)
 		{
 			IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(fProjectText.getText());
-			System.out.println("Project name: " + p.getName());
 			if (p.isAccessible())
 			{
 				return p;
