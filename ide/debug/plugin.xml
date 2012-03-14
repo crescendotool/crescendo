@@ -138,57 +138,53 @@
           commandId="org.destecs.ide.debug.relaunchCommand">
     </handler>
  </extension>
-	 <!--extension
-         point="org.eclipse.ui.menus">
-         <menuContribution
-           locationURI="popup:org.destecs.ide.ui.destecsExplorer">
-        <menu
-              label="Debug">
-           <command
-                 commandId="org.destecs.ide.debug.relaunchCommand"
-                 label="Relaunch"
-                 style="push">
-              <visibleWhen
-                    checkEnabled="false">
-                 <iterate>
-                 <or>
-                    <instanceof
-                          value="org.eclipse.core.resources.IFile">
-                    </instanceof>
-                    <instanceof
-                          value="org.eclipse.core.resources.IFolder">
-                    </instanceof>
-                 </or>
-                 </iterate>
-              </visibleWhen>
-           </command>
-        </menu>
-     </menuContribution>
-   </extension-->
+
+<!--
+For menu additions see: 
+org.eclipse.ui.ide
+or
+org.eclipse.ui.menus.MenuUtil
+or
+org.eclipse.debug.ui
+or
+http://wiki.eclipse.org/Menu_Contributions
+http://wiki.eclipse.org/Menu_Contributions/IFile_objectContribution
+http://wiki.eclipse.org/Menus_Extension_Mapping
+http://wiki.eclipse.org/Platform_Command_Framework
+http://help.eclipse.org/helios/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Fworkbench_basicext_popupMenus.htm
+
+-->
  <extension
          point="org.eclipse.ui.menus">
          <menuContribution
-           locationURI="popup:org.destecs.ide.ui.destecsExplorer?after=additions">
+           locationURI="popup:org.destecs.ui?after=additions">
        
            <command
                  commandId="org.destecs.ide.debug.relaunchCommand"
-                 label="Relaunch"
+                 icon="icons/ctool16/compilerun_misc.png"
+                 label="Create and launch"
                  style="push">
               <visibleWhen
                     checkEnabled="false">
                  <iterate>
-                 <or>
-                    <instanceof
-                          value="org.eclipse.core.resources.IFile">
-                    </instanceof>
-                    <instanceof
-                          value="org.eclipse.core.resources.IFolder">
-                    </instanceof>
-                 </or>
+                 <with variable="activeMenuSelection">
+                     <reference definitionId="org.destecs.debug.relaunchfile"/>
+                  </with>
                  </iterate>
               </visibleWhen>
            </command>
        
      </menuContribution>
+   </extension>
+   
+   <extension point="org.eclipse.core.expressions.definitions">
+      <definition id="org.destecs.debug.relaunchfile">
+         <iterate ifEmpty="false">
+            <adapt type="org.eclipse.core.resources.IFile">
+               <test property="org.eclipse.core.resources.name" 
+                     value="*.dlaunch"/>
+            </adapt>
+         </iterate>
+      </definition>
    </extension>
 </plugin>

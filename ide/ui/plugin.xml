@@ -405,26 +405,20 @@
          <menuContribution
            locationURI="popup:org.destecs.ide.ui.destecsExplorer">
         <menu
-              label="Maintenance">
+              id="org.destecs.ui"
+              label="DESTECS">
            <command
                  commandId="org.destecs.ide.ui.projectUpgradeCommand"
+                 icon="icons/obj16/systemupgrade_obj.gif"
                  label="Upgrade Project"
                  style="push">
               <visibleWhen
                     checkEnabled="false">
                  <iterate>
-                     <and>
-                        <or>
-                            <adapt type="org.overture.ide.core.resources.IVdmProject">
+                     
+                            <adapt type="org.destecs.ide.core.resources.IDestecsProject">
                             </adapt>
-                            <adapt type="org.eclipse.core.resources.IFolder">
-                            </adapt>
-                        </or>
-                        <test
-                            property="org.overture.ide.core.resources.IsInBuildPath"
-                            value="false">
-                        </test>
-                      </and>
+                       
                  </iterate>
               </visibleWhen>
            </command>
