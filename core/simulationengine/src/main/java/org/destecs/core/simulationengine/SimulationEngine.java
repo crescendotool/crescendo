@@ -140,6 +140,11 @@ public class SimulationEngine
 	 */
 	private static final Integer[] MIN_VERSION_PROTOCOL = new Integer[] { 3, 0,
 			2, 0 };
+	
+	/**
+	 * Default step size in case of deadlocked de controller
+	 */
+	private static final double DEFAULT_MIN_TIME_STEP = 0.00001;
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
@@ -673,8 +678,15 @@ public class SimulationEngine
 					//  request the same time again or a point in the future
 					break;
 				}
-
-				time = deResult.time;// res.time;
+				
+				if(deResult.time<=time)
+				{
+					//We have a deadlocked model, but the world must go on
+					deResult.time = deResult.time+DEFAULT_MIN_TIME_STEP;
+					engineInfo(Simulator.ALL, "No progress in DE simulator auto stepping by: "+DEFAULT_MIN_TIME_STEP);
+				}
+				time = deResult.time;
+				
 			} catch (UserStoppedSimulation e)
 			{
 				break;
