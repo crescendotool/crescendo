@@ -19,7 +19,9 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +35,8 @@ import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStr
 import org.destecs.protocol.structs.GetParametersStruct;
 import org.destecs.protocol.structs.GetParametersStructparametersStruct;
 import org.destecs.protocol.structs.GetStatusStruct;
+import org.destecs.protocol.structs.GetVariablesStruct;
+import org.destecs.protocol.structs.GetVariablesStructvariablesStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
 import org.destecs.protocol.structs.LoadpropertiesStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
@@ -315,8 +319,6 @@ public class CoSimImpl implements IDestecs
 				}
 			}
 
-			// Boolean singleStep = (Boolean) data.get("singleStep");
-
 			List<Object> tmp1 = Arrays.asList((Object[]) data.get("events"));
 
 			List<String> events = new Vector<String>();
@@ -328,7 +330,6 @@ public class CoSimImpl implements IDestecs
 				}
 			}
 
-			// Ignore single step
 			StepStruct result;
 
 			outputTime = new Double(SystemClock.timeToInternal(TimeUnit.seconds, outputTime));
@@ -406,10 +407,11 @@ public class CoSimImpl implements IDestecs
 		List<GetParametersStructparametersStruct> list = new Vector<GetParametersStructparametersStruct>();
 		try
 		{
-			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getParameters(data).entrySet())
+			for (String name : data)
 			{
-				list.add(new GetParametersStructparametersStruct(p.getKey(), p.getValue().value, p.getValue().size));
+				list.add(new GetParametersStructparametersStruct(name, SimulationManager.getInstance().getParameter(name), SimulationManager.getInstance().getParameterSize(name)));
 			}
+			
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -484,7 +486,7 @@ public class CoSimImpl implements IDestecs
 		Boolean success;
 		try
 		{
-			success = SimulationManager.getInstance().setParameter(name, new ValueContents(value, size));
+			success = SimulationManager.getInstance().setInstanceVariable(name, new ValueContents(value, size));
 
 			return success;
 		} catch (RemoteSimulationException e)
@@ -559,14 +561,28 @@ public class CoSimImpl implements IDestecs
 
 	public List<Map<String, Object>> queryVariables() throws Exception
 	{
-		// TODO return all instance variables accessible from the system class
-		return null;
+		List<Map<String, Object>> result = new Vector<Map<String, Object>>();
+		for (String name : SimulationManager.getInstance().getLogEnabledVariables())
+		{
+			Hashtable<String, Object> table = new Hashtable<String, Object>();
+			table.put("name", name);
+			table.put("size", new Integer[]{});
+			result.add(table);
+		}
+		return result;
 	}
 
 	public List<Map<String, Object>> queryParameters() throws Exception
 	{
-		// TODO return all values
-		return null;
+		List<Map<String, Object>> result = getParameters(new Vector<String>()).get("parameters");
+		for (Map<String, Object> map : result)
+		{
+			if(map.containsKey("value"))
+			{
+				map.remove("value");
+			}
+		}
+		return result;
 	}
 
 	public Boolean suspend() throws Exception
@@ -591,15 +607,116 @@ public class CoSimImpl implements IDestecs
 		return true;
 	}
 
+	@SuppressWarnings("static-access")
 	public Boolean setSettings(List<Map<String, Object>> data) throws Exception
 	{
-		throw new RemoteSimulationException("Not implemented");
+		try
+		{
+			for (Map<String, Object> map : data)
+			{
+				String name = map.get("key").toString();
+				Object  value = map.get("value");
+				if(value instanceof Boolean)
+				{
+					Field field = Settings.class.getField(name);
+					if(field.getType() == Boolean.class)
+					{
+						field.set(null, value);
+					}
+				}else if(value instanceof Integer)
+				{
+					Field field = Settings.class.getField(name);
+					if(field.getType() == Integer.class)
+					{
+						field.set(null, value);
+					}
+				}else if(value instanceof Double)
+				{
+					Field field = Settings.class.getField(name);
+					if(field.getType() == Double.class)
+					{
+						field.set(null, value);
+					}
+				}else if(value instanceof String)
+				{
+					Field field = Settings.class.getField(name);
+					if(field.getType() == String.class)
+					{
+						field.set(null, value);
+					}
+				}else 
+				{
+					Field field = Settings.class.getField(name);
+					if(field.getType().isEnum())
+					{
+						@SuppressWarnings("rawtypes")
+						Enum e =(Enum) field.getType().newInstance();
+						field.set(null, e.valueOf(e.getClass(), value.toString()));
+					}
+				}
+				
+			}
+		} catch (Exception e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
+		return true;
 	}
 
 	public List<Map<String, Object>> querySettings(List<String> data)
 			throws Exception
 	{
-		throw new RemoteSimulationException("Not implemented");
+		try
+		{
+			List<Map<String, Object>> settings = new Vector<Map<String, Object>>();
+			settings.add(createSettingsMapElement("release", Settings.release, Settings.release.name()));
+			settings.add(createSettingsMapElement("dialect", Settings.dialect, Settings.dialect.name()));
+			settings.add(createSettingsMapElement("prechecks", Settings.prechecks));
+			settings.add(createSettingsMapElement("postchecks", Settings.postchecks));
+			settings.add(createSettingsMapElement("invchecks", Settings.invchecks));
+			settings.add(createSettingsMapElement("dynamictypechecks", Settings.dynamictypechecks));
+			settings.add(createSettingsMapElement("measureChecks", Settings.measureChecks));
+			settings.add(createSettingsMapElement("timingInvChecks", Settings.timingInvChecks));
+			settings.add(createSettingsMapElement("", Settings.dialect));
+			settings.add(createSettingsMapElement("", Settings.dialect));
+
+			return settings;
+		} catch (Exception e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
+	}
+	private Map<String,Object> createSettingsMapElement(String key,Object value,String... values)
+	{
+		Map<String,Object> setting = new Hashtable<String, Object>();
+		setting.put("key", key);
+		setting.put("value", value.toString());
+		if(value instanceof Integer)
+		{
+			setting.put("type", "int");
+		}else if(value instanceof Double)
+		{
+			setting.put("type", "double");
+		}else if(value instanceof Boolean)
+		{
+			setting.put("type", "bool");
+		}else if(value instanceof Enum)
+		{
+			setting.put("type", "enum");
+		}else
+		{
+			setting.put("type", "string");
+		}
+		
+		if(values == null)
+		{
+			values = new String[]{};
+		}
+		setting.put("enumerations", value);
+		setting.put("properties", new Object[]{});
+		return setting;
 	}
 
 	public List<Map<String, Object>> queryImplementations() throws Exception
@@ -616,20 +733,20 @@ public class CoSimImpl implements IDestecs
 	public Map<String, List<Map<String, Object>>> getVariables(List<String> data)
 			throws Exception
 	{
-//		List<GetV> list = new Vector<GetParametersStructparametersStruct>();
-//		try
-//		{
-//			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getParameters(data).entrySet())
-//			{
-//				list.add(new GetParametersStructparametersStruct(p.getKey(), p.getValue().value, p.getValue().size));
-//			}
-//		} catch (RemoteSimulationException e)
-//		{
-//			ErrorLog.log(e);
-//			throw e;
-//		}
-//		return new GetParametersStruct(list).toMap();
-		throw new RemoteSimulationException("Not implemented");
+		GetVariablesStruct vars = new GetVariablesStruct();
+		try
+		{
+			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getInstanceVariables(data).entrySet())
+			{
+				vars.variables.add(new GetVariablesStructvariablesStruct(p.getKey(), p.getValue().value, p.getValue().size));
+			}
+		} catch (RemoteSimulationException e)
+		{
+			ErrorLog.log(e);
+			throw e;
+		}
+		
+		return vars.toMap();
 	}
 
 }

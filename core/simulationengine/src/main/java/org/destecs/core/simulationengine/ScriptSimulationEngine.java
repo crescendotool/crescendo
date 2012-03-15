@@ -32,9 +32,8 @@ import org.destecs.core.simulationengine.model.ModelConfig;
 import org.destecs.core.simulationengine.script.ISimulatorControl;
 import org.destecs.core.simulationengine.script.ScriptEvaluator;
 import org.destecs.protocol.ProxyICoSimProtocol;
-import org.destecs.protocol.structs.GetParametersStruct;
-import org.destecs.protocol.structs.GetParametersStructparametersStruct;
 import org.destecs.protocol.structs.GetVariablesStruct;
+import org.destecs.protocol.structs.GetVariablesStructvariablesStruct;
 import org.destecs.protocol.structs.SetParametersparametersStructParam;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
@@ -191,12 +190,12 @@ public class ScriptSimulationEngine extends SimulationEngine
 					}
 						break;
 					case DE:
-					{//TODO change to variables instead of parameters
-						GetParametersStruct data = deProxy.getParameters(Arrays.asList(new String[] { name }));
+					{
+						GetVariablesStruct data = deProxy.getVariables(Arrays.asList(new String[] { name }));
 
-						if (!data.parameters.isEmpty())
+						if (!data.variables.isEmpty())
 						{
-							for (GetParametersStructparametersStruct p : data.parameters)
+							for (GetVariablesStructvariablesStruct p : data.variables)
 							{
 								if(p.name.equals(name))
 								{

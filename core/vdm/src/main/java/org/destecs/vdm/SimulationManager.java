@@ -29,6 +29,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,7 @@ import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.definitions.ExplicitFunctionDefinition;
 import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
+import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.expressions.IntegerLiteralExpression;
@@ -904,18 +906,13 @@ public class SimulationManager extends BasicSimulationManager
 	 * @return
 	 * @throws RemoteSimulationException
 	 */
-	public Map<String, ValueContents> getParameters(List<String> filter)
+	public Map<String, ValueContents> getInstanceVariables(List<String> filter)
 			throws RemoteSimulationException
 	{
 		try
 		{
 			Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
 
-			// NameValuePairList list = SystemDefinition.getSystemMembers();
-			// if (list != null && list.size() > 0)
-			// {
-			// parameters.putAll(getParameters(list.get(0).name.module, list, 0));
-			// }
 			for (Entry<String, LinkInfo> entrySet : this.links.getModel().entrySet())
 			{
 				if (!filter.isEmpty() && !filter.contains(entrySet.getKey()))
@@ -938,7 +935,7 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	public Boolean setParameter(String name, ValueContents valueContents)
+	public Boolean setInstanceVariable(String name, ValueContents valueContents)
 			throws RemoteSimulationException
 	{
 		try
@@ -1049,5 +1046,42 @@ public class SimulationManager extends BasicSimulationManager
 	public boolean isOptimizationEnabled()
 	{
 		return !noOptimization && !hasEvents();
+	}
+
+	public List<String> getLogEnabledVariables()
+	{
+		List<String> list = new Vector<String>();
+		for (ClassDefinition c : interpreter.getClasses())
+		{
+			if(c instanceof SystemDefinition)
+			{
+				String prefix = "System";
+				for (Definition def : c.getDefinitions())
+				{
+					list.addAll(getLogEnabledVariables(list,prefix,def,new Vector<Definition>()));	
+				}
+			}
+		}
+		return list;
+	}
+
+	private Collection<? extends String> getLogEnabledVariables(
+			final List<String> list, String prefix, Definition def,List<Definition> path)
+	{
+		List<String> result = new Vector<String>();
+		if(def instanceof InstanceVariableDefinition && !path.contains(def))
+		{
+			InstanceVariableDefinition var = (InstanceVariableDefinition) def;
+			String name=prefix+"."+var.getName();
+			result.add(name);
+			path.add(var);
+			if (var.type instanceof ClassType)
+			{
+				result.addAll(getLogEnabledVariables(result, name, ((ClassType) var.type).classdef,path));
+			}
+			
+		}
+		
+		return result;
 	}
 }
