@@ -71,6 +71,7 @@ import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.lex.LexRealToken;
 import org.overturetool.vdmj.messages.rtlog.RTLogger;
 import org.overturetool.vdmj.runtime.Context;
+import org.overturetool.vdmj.runtime.RuntimeValidator;
 import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.SharedStateListner;
@@ -312,6 +313,10 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				controller.setLogFile(new File(outputDir, "ExecutionTrace.logrt"));
 			}
+			
+			PrintWriter p = new PrintWriter(new FileOutputStream(
+					new File(outputDir,"Timing.logtv"), false));
+			RuntimeValidator.setLogFile(p);
 
 			if (!disableCoverage)
 			{
@@ -500,6 +505,9 @@ public class SimulationManager extends BasicSimulationManager
 		Settings.usingCmdLine = false;
 		Settings.usingDBGP = true;
 		Settings.release = Release.VDM_10;
+		Settings.timingInvChecks = true;
+		RuntimeValidator.setLogFile(null);
+		
 		controller = new VDMCO();
 		SharedStateListner.setIdentityChecker(null);
 		isSchedulingHookConfigured = false;

@@ -78,6 +78,7 @@ public class CoSimImpl implements IDestecs
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 	private static final String LOAD_SETTING_DISABLE_COVERAGE = "settings_disable_coverage";
 	private String interfaceVersion = "3.0.2.0";
+	public static boolean DEBUG = false;;
 	private static Double finishTime = 0.0;
 
 	public Map<String, Integer> getStatus()
@@ -185,7 +186,7 @@ public class CoSimImpl implements IDestecs
 					disableRtLog = true;
 				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
 				{
-					// TODO: disable runtime validation.
+					Settings.timingInvChecks = false;
 				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_COVERAGE))
 				{
 					disableCoverage = true;
@@ -369,7 +370,10 @@ public class CoSimImpl implements IDestecs
 				System.exit(0);
 			}
 		});
-		shutdown.start();
+		if(!DEBUG )
+		{
+			shutdown.start();
+		}
 		return true;
 	}
 

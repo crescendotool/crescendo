@@ -62,6 +62,16 @@ public class CoSim
 				System.err.println("Parse error of port number");
 			}
 		}
+		if (args.length>0 )
+		{
+			for (String string : args)
+			{
+				if(string.equalsIgnoreCase("debug"))
+				{
+					CoSimImpl.DEBUG = true;
+				}
+			}
+		}
 		WebServer webServer = new WebServer(port);
 		
 		Logger log = Logger.getLogger("org.apache.xmlrpc.server.XmlRpcStreamServer");
