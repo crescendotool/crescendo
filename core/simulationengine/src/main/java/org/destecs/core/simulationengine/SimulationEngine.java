@@ -350,9 +350,6 @@ public class SimulationEngine
 			runningSimulators.add(Simulator.CT);
 			initialize(Simulator.CT, ctProxy);
 			
-			setSimSettings(Simulator.CT,ctProxy);
-			setSimImplementations(Simulator.CT,ctProxy);
-			
 			// Turn off timeout, simulators may be slow at loading the model
 			// which should not cause a timeout. Instead
 			// they should try to load and report an error if they fail.
@@ -368,7 +365,12 @@ public class SimulationEngine
 			loadModel(Simulator.DE, deProxy, deModelBase);
 			loadModel(Simulator.CT, ctProxy, ctModel);
 
-			// TODO set model settings (Settings)
+			
+			// set model settings (Settings)
+			setSimSettings(Simulator.CT,ctProxy);
+			setSimImplementations(Simulator.CT,ctProxy);
+			
+			
 
 			// validate interfaces
 			validateInterfaces(contract, deProxy, ctProxy);
