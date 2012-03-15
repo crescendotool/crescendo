@@ -574,7 +574,7 @@ public class SimulationManager extends BasicSimulationManager
 				BasicRuntimeValidator validator = (BasicRuntimeValidator) RuntimeValidator.validator;
 				for (ConjectureDefinition conj : validator.getConjectures())
 				{
-					Console.out.println(conj);
+					Console.out.println("\t"+conj+"\n");
 				}
 				Console.out.println("----------------------------------------------------------------------------------");
 			}
