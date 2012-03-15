@@ -7,8 +7,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem;
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem.ValueType;
+import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -22,6 +27,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 
@@ -43,7 +50,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	private boolean implementation = false;
 	private boolean recovered = false;
 
-	private Clp20simTab tab;
+	private ILaunchConfigurationTab tab;
 
 	private HashMap<String, String> properties;
 	
@@ -110,7 +117,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	}
 	
 
-	public static SettingTreeNode createSettingsTree(Set<SettingItem> settingItems, SettingTreeNode oldSettingsNodeTree, Clp20simTab tab) 
+	public static SettingTreeNode createSettingsTree(Set<SettingItem> settingItems, SettingTreeNode oldSettingsNodeTree, ILaunchConfigurationTab tab) 
 	{
 		List<SettingTreeNode> in = new Vector<SettingTreeNode>();
 		SettingTreeNode root = new SettingTreeNode("root", "root", false);
@@ -121,11 +128,15 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 			if(checkIfWanted(settingItem))
 			{
 				SettingTreeNode newNode = convertToSettingTreeNode(settingItem);
-				String oldValue = oldSettingsNodeTree.getValueForKey(newNode.getKey());
-				if(oldValue != null)
+				if(oldSettingsNodeTree != null)
 				{
-					newNode.value = oldValue;
+					String oldValue = oldSettingsNodeTree.getValueForKey(newNode.getKey());
+					if(oldValue != null)
+					{
+						newNode.value = oldValue;
+					}
 				}
+				
 				newNode.setTab(tab);
 				in.add(newNode);
 			}
@@ -140,7 +151,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		return root;
 	}
 	
-	private void setTab(Clp20simTab tab) {
+	private void setTab(ILaunchConfigurationTab tab) {
 		this.tab = tab;
 		
 	}
@@ -347,7 +358,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 					if(checkConstrains(dValue))
 					{
 						value = stringValue;
-						tab.updateTab();
+						//TODO: see if this has to be here: tab.updateTab();
 					}
 					else
 					{
@@ -398,7 +409,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 				
 				public void widgetSelected(SelectionEvent e) {
 					value = combo.getItem(combo.getSelectionIndex());
-					tab.updateTab();
+					//TODO: see if this has to be here: tab.updateTab();
 				}
 				
 				public void widgetDefaultSelected(SelectionEvent e) {
@@ -434,7 +445,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 				{
 					value = "false";
 				}
-				tab.updateTab();
+				//TODO: see if this has to be here: tab.updateTab();
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -472,7 +483,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		if(this.implementation && !this.isVirtual)
 		{
 			
-			sb.append(key.replace(Clp20simTab.IMPLEMENTATION_PREFIX, ""));
+			sb.append(key.replace(IDebugConstants.IMPLEMENTATION_PREFIX, ""));
 			sb.append("=");
 			sb.append(value);
 			sb.append(";");
@@ -503,6 +514,87 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		}
 		
 		return null;
+	}
+
+	public void drawInAca(Group optionsGroup) {
+Control[] children = optionsGroup.getChildren();
+		
+		for (Control control : children) {
+			control.dispose();
+		}
+		
+		if(isVirtual)
+		{
+			Label label = new Label(optionsGroup,SWT.NONE);
+			label = new Label(optionsGroup, SWT.WRAP);
+			label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+			label.setText("No Options. This is a virtual node which contains no options.");
+		}
+		else
+		if(recovered)
+		{
+			Label label = new Label(optionsGroup,SWT.NONE);
+			label.setText("Value: " + value);
+			label = new Label(optionsGroup, SWT.WRAP);
+			Color red = new Color(optionsGroup.getDisplay(), 255, 0, 0);
+		    label.setForeground(red);
+		    label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+			label.setText("To edit, press the populate button." );
+		}
+		else
+		{
+			createOptionGUIforAca(optionsGroup);
+		}
+		
+		optionsGroup.layout();
+		
+	}
+
+	private void createOptionGUIforAca(Group optionsGroup) {
+		switch (type) {
+		case Bool:
+			//createBoolOptionGUIforAca(optionsGroup);			
+			break;
+		case Double:
+			//createDoubleGUI(optionsGroup);
+			break;
+		case String:
+			createStringGUIforAca(optionsGroup);
+			break;
+		case Unknown:
+		default:
+			break;
+		}
+		
+	}
+
+	private void createStringGUIforAca(Group optionsGroup) {
+		if(enumerations.size() > 0)
+		{
+			String[] items = new String[enumerations.size()];
+			enumerations.toArray(items);
+			
+			TableViewer tableViewer = new TableViewer(optionsGroup, SWT.FULL_SELECTION | SWT.FILL
+					| SWT.CHECK);
+
+			tableViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
+
+			final Table table = tableViewer.getTable();
+
+			table.setHeaderVisible(true);
+			tableViewer.setSorter(new Clp20simLogViewerSorter());
+
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText("Variable Name");
+			column.setWidth(200);
+
+			GridData data = new GridData(GridData.FILL_BOTH);
+			table.setLayoutData(data);
+			tableViewer.setContentProvider(new ArrayContentProvider());
+			tableViewer.setLabelProvider(new LabelProvider());
+			tableViewer.setInput(items);
+		}
+		
 	}
 	
 }

@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,7 +29,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
+public class ArchitectureSelectionTab extends AbstractAcaTab
 		implements ILaunchConfigurationTab {
 
 	
@@ -224,18 +223,6 @@ public class ArchitectureSelectionTab extends AbstractLaunchConfigurationTab
 		return "Architectures";
 	}
 
-	public IProject getActiveProject()
-	{
-		IProject project = null;
-		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
-		{
-			if (tab instanceof DseMainTab)
-			{
-				DseMainTab dseLaunchTab = (DseMainTab) tab;
-				project = dseLaunchTab.getProject();
-			}
-		}
-		return project;
-	}
+	
 	
 }

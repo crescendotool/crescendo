@@ -20,7 +20,6 @@ package org.destecs.ide.debug.launching.ui;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,16 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Map.Entry;
 
-import org.destecs.core.simulationengine.Clp20SimUtility;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
-import org.destecs.core.simulationengine.model.CtModelConfig;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
-import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.protocol.ProxyICoSimProtocol;
-import org.destecs.protocol.structs.LoadpropertiesStructParam;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -128,21 +122,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 
 			try
 			{
-				/*
-				 * Connecting to 20sim
-				 */
-				Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(ctFile);
-				clp20sim.launch();
-				ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(ctUrl));
-				
-				CtModelConfig model = new CtModelConfig(ctFile.getAbsolutePath());
-				List<LoadpropertiesStructParam> arguments = new Vector<LoadpropertiesStructParam>();
-				for (Entry<String, String> entry : model.arguments.entrySet())
-				{
-					arguments.add(new LoadpropertiesStructParam(entry.getValue(), entry.getKey()));
-				}
-
-				 protocol.load(arguments);
+				ProxyICoSimProtocol protocol = Launch20simUtility.launch20sim(ctFile, ctUrl);
 				
 				/*
 				 * Querying 20sim settings

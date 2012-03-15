@@ -256,6 +256,29 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		return null;
 	}
 	
+	public ILaunchConfiguration getBaseLaunchConfig()
+	{
+		if (!fBaseLaunchConfigNameText.getText().isEmpty())
+		{
+			try
+			{
+				for (ILaunchConfiguration tmp : DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurations())
+				{
+					if (tmp.getName().equals(fBaseLaunchConfigNameText.getText()))
+					{
+						return tmp;
+					}
+				}
+
+			} catch (CoreException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
 	
 	public ILaunchConfiguration getSelectedBaseConfig()
 	{

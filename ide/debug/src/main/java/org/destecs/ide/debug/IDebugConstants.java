@@ -96,4 +96,8 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS = "DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS".toLowerCase();
 
 	public static final String DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS = "DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS".toLowerCase();
+
+	public static final String DESTECS_ACA_20SIM_IMPLEMENTATIONS = "DESTECS_ACA_20SIM_IMPLEMENTATIONS".toLowerCase();
+	
+	public static final String IMPLEMENTATION_PREFIX = "model.implementations.";
 }
