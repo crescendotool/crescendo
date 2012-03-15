@@ -571,10 +571,16 @@ public class CoSimLaunchConfigurationDelegate extends
 		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
 		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder().getLocation().toFile().getAbsolutePath());
 
-		// if (logVariablesVdm != null && !logVariablesVdm.trim().isEmpty())
-		// {
-		// model.arguments.put(DeModelConfig.LOAD_SETTING_LOG_VARIABLES, logVariablesVdm);
-		// }
+		try{
+			if(!configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, false))
+			{
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_RT_VALIDATOR, "true");
+			}
+		}catch(CoreException e)
+		{
+			DestecsDebugPlugin.logError("Could not get realtime check option from launch configuration", e);
+		}
+		
 		if (deArchitectureFile != null && deArchitectureFile.exists())
 		{
 			StringBuffer architecture = new StringBuffer();
