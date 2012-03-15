@@ -57,6 +57,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -178,6 +180,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					for (Object object : properties) {
 						if(object instanceof HashMap)
 						{
+							@SuppressWarnings("unchecked")
 							HashMap<String, Object> singlePropertyMap = (HashMap<String, Object>) object;
 							String key = (String) singlePropertyMap.get("key");
 							String value = (String) singlePropertyMap.get("value");
@@ -196,6 +199,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				for (Map<String, Object> elem : getLog)
 				{
 					LogItem item = new LogItem(elem.get("name").toString());
+					
 					logItems.add(item);
 				}
 
@@ -279,7 +283,9 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				sb.append(",");
 			}
 
-			return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
+			sb.append("time");
+			
+			return sb.toString();
 		}
 		
 		
@@ -462,6 +468,22 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			}
 		});
 
+		logViewer.addFilter(new ViewerFilter() {
+			
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				if(element instanceof LogItem)
+				{
+					LogItem logItem = (LogItem) element;
+					if(logItem.name.equals("time"))
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+		});
+		
 		logViewer.setInput(logItems);
 	}
 
