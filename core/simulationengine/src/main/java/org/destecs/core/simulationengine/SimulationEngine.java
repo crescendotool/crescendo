@@ -185,6 +185,7 @@ public class SimulationEngine
 	
 	
 	public final Properties ctSimSettings = new Properties();
+	public final Properties ctSimImplementations = new Properties();
 
 	private File outputDirectory = null;
 
@@ -192,6 +193,7 @@ public class SimulationEngine
 
 	ProxyICoSimProtocol deProxy;
 	ProxyICoSimProtocol ctProxy;
+	
 
 	public SimulationEngine(File contractFile)
 	{
@@ -342,15 +344,14 @@ public class SimulationEngine
 			runningSimulators.add(Simulator.DE);
 
 			initialize(Simulator.DE, deProxy);
-
-			
 			
 			
 			ctProxy = connect(Simulator.CT, ctEndpoint);
 			runningSimulators.add(Simulator.CT);
 			initialize(Simulator.CT, ctProxy);
-			setSimSettings(Simulator.CT,ctProxy);
 			
+			setSimSettings(Simulator.CT,ctProxy);
+			setSimImplementations(Simulator.CT,ctProxy);
 			
 			// Turn off timeout, simulators may be slow at loading the model
 			// which should not cause a timeout. Instead
@@ -446,6 +447,40 @@ public class SimulationEngine
 			} catch (Exception e)
 			{
 			}
+		}
+	}
+
+	private void setSimImplementations(Simulator simulator,
+			ProxyICoSimProtocol proxy) {
+		
+		List<Map<String, Object>> data = new Vector<Map<String,Object>>();
+		
+		switch (simulator) {
+		case ALL:
+			break;
+		case CT:
+			for (Object o : ctSimImplementations.keySet()) {
+				if(o instanceof String)
+				{
+					HashMap<String, Object> setting = new HashMap<String, Object>();
+					String key = (String) o;
+					String value = (String)  ctSimImplementations.get(key);
+					setting.put("name", key);
+					setting.put("implementation", value);
+					System.out.println("Setting the implementation: " + key + " to " + value);
+					data.add(setting);
+				}
+			}			
+			break;
+		case DE:
+			break;
+		
+		}
+		
+		try {
+			proxy.setImplementations(data);
+		} catch (Exception e) {
+			engineInfo(simulator, "Failed to set implementations - " + e.getMessage());
 		}
 	}
 
@@ -1540,17 +1575,17 @@ public class SimulationEngine
 	}
 	
 	
-	public void setCtSettings(String settings)
+	public void setCtSettings(String settings) throws IOException
 	{
-		
 		StringReader sr = new StringReader(settings);
 		//Settings can be read by java.util.properties
-		try {
-			ctSimSettings.load(sr);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(ctSimSettings);
+		ctSimSettings.load(sr);
+	}
+	
+	public void setCtImplementations(String settings) throws IOException
+	{
+		StringReader sr = new StringReader(settings);
+		//Settings can be read by java.util.properties
+		ctSimImplementations.load(sr);
 	}
 }
