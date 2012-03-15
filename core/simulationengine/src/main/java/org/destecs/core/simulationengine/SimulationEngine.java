@@ -63,7 +63,7 @@ import org.destecs.protocol.ICoSimProtocol;
 import org.destecs.protocol.ProxyICoSimProtocol;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetVersionStruct;
-import org.destecs.protocol.structs.Load2propertiesStructParam;
+import org.destecs.protocol.structs.LoadpropertiesStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructinputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructoutputsStruct;
@@ -127,19 +127,19 @@ public class SimulationEngine
 		Default, Theoretical
 	}
 
-	/**
-	 * Minimum required version for the CT simulator
-	 */
-	private static final Integer[] MIN_VERSION_CT = new Integer[] { 4, 2, 0, 0 };
-	/**
-	 * Minimum required version for the DE simulator
-	 */
-	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 1, 0 };
+//	/**
+//	 * Minimum required version for the CT simulator
+//	 */
+//	private static final Integer[] MIN_VERSION_CT = new Integer[] { 4, 2, 0, 0 };
+//	/**
+//	 * Minimum required version for the DE simulator
+//	 */
+//	private static final Integer[] MIN_VERSION_DE = new Integer[] { 0, 0, 1, 0 };
 	/**
 	 * Minimum required version protocol version
 	 */
 	private static final Integer[] MIN_VERSION_PROTOCOL = new Integer[] { 3, 0,
-			2, 0 };
+			3, 0 };
 	
 	/**
 	 * Default step size in case of deadlocked de controller
@@ -180,8 +180,8 @@ public class SimulationEngine
 
 	private boolean forceStopSimulation = false;
 
-	private String deVersion = "";
-	private String ctVersion = "";
+//	private String deVersion = "";
+//	private String ctVersion = "";
 	
 	
 	public final Properties ctSimSettings = new Properties();
@@ -1170,20 +1170,7 @@ public class SimulationEngine
 		{
 			try
 			{
-				GetVersionStruct version = proxy.getVersion();
-
-				switch (simulator)
-				{
-					case ALL:
-						break;
-					case CT:
-						ctVersion = version.version.trim();
-						break;
-					case DE:
-						deVersion = version.version.trim();
-						break;
-
-				}
+				proxy.getVersion();
 				break;
 			} catch (Exception e)
 			{
@@ -1197,45 +1184,18 @@ public class SimulationEngine
 			}
 		}
 
-		String ctProtocol = null;
-		String deProtocol = null;
 		try
 		{
 			messageInfo(simulator, new Double(0), "getVersion");
 			GetVersionStruct version = proxy.getVersion();
 			engineInfo(simulator, "Interface Version: " + version);
+			versionCheck(simulator, true, version.interfaceVersion, MIN_VERSION_PROTOCOL);
 
-			switch (simulator)
-			{
-				case ALL:
-					break;
-				case CT:
-					ctVersion = version.version.trim();
-					ctProtocol = version.interfaceVersion.trim();
-					break;
-				case DE:
-					deVersion = version.version.trim();
-					deProtocol = version.interfaceVersion.trim();
-					break;
-
-			}
 		} catch (Exception e)
 		{
 			abort(simulator, "getVersion failed", e);
 		}
 
-		switch (simulator)
-		{
-			case CT:
-				versionCheck(simulator, false, ctVersion, MIN_VERSION_CT);
-				versionCheck(simulator, true, ctProtocol, MIN_VERSION_PROTOCOL);
-				break;
-			case DE:
-				versionCheck(simulator, false, deVersion, MIN_VERSION_DE);
-				versionCheck(simulator, true, deProtocol, MIN_VERSION_PROTOCOL);
-				break;
-
-		}
 
 		try
 		{
@@ -1260,20 +1220,16 @@ public class SimulationEngine
 			engineInfo(simulator, "Loading model: " + model);
 			messageInfo(simulator, new Double(0), "load");
 			boolean success = false;
-			if (simulator == Simulator.CT)
-			{// FIXME: this call to load should be removed, it is only keept in the protocol because 20sim isnt updated
-				// yet.
-				success = proxy.load(absolutePath);
-			} else
+			
+			List<LoadpropertiesStructParam> arguments = new Vector<LoadpropertiesStructParam>();
+			for (Entry<String, String> entry : model.arguments.entrySet())
 			{
-				List<Load2propertiesStructParam> arguments = new Vector<Load2propertiesStructParam>();
-				for (Entry<String, String> entry : model.arguments.entrySet())
-				{
-					arguments.add(new Load2propertiesStructParam(entry.getValue(), entry.getKey()));
-				}
-
-				success = proxy.load2(arguments).success;
+				arguments.add(new LoadpropertiesStructParam(entry.getValue(), entry.getKey()));
 			}
+
+			success = proxy.load(arguments);
+			
+			
 			engineInfo(simulator, "Loading model completed with no errors: "
 					+ success);
 			return success;

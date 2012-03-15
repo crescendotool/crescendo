@@ -34,8 +34,7 @@ import org.destecs.protocol.structs.GetParametersStruct;
 import org.destecs.protocol.structs.GetParametersStructparametersStruct;
 import org.destecs.protocol.structs.GetStatusStruct;
 import org.destecs.protocol.structs.GetVersionStruct;
-import org.destecs.protocol.structs.Load2Struct;
-import org.destecs.protocol.structs.Load2propertiesStructParam;
+import org.destecs.protocol.structs.LoadpropertiesStructParam;
 import org.destecs.protocol.structs.QueryInterfaceStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructinputsStruct;
 import org.destecs.protocol.structs.QueryInterfaceStructoutputsStruct;
@@ -74,10 +73,10 @@ public class CoSimImpl implements IDestecs
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
 
-	private static final String version = "0.0.1.0";
+	private static final String version = "1.0.0.0";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 	private static final String LOAD_SETTING_DISABLE_COVERAGE = "settings_disable_coverage";
-	private String interfaceVersion = "3.0.2.0";
+	private String interfaceVersion = "3.0.3.0";
 	public static boolean DEBUG = false;;
 	private static Double finishTime = 0.0;
 
@@ -105,7 +104,7 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Map<String, Boolean> load2(
+	public Boolean load(
 			Map<String, List<Map<String, Object>>> data)
 			throws RemoteSimulationException
 	{
@@ -131,7 +130,7 @@ public class CoSimImpl implements IDestecs
 		{
 			if (in instanceof Map)
 			{
-				Load2propertiesStructParam arg = new Load2propertiesStructParam((Map<String, Object>) in);
+				LoadpropertiesStructParam arg = new LoadpropertiesStructParam((Map<String, Object>) in);
 
 				if (arg.key.startsWith(LOAD_FILE))
 				{
@@ -206,7 +205,7 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog, disableCoverage, disableOptimization)).toMap();
+			return SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog, disableCoverage, disableOptimization);
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -570,12 +569,6 @@ public class CoSimImpl implements IDestecs
 		return null;
 	}
 
-	@Deprecated
-	public Boolean load(Map<String, String> data) throws Exception
-	{
-		throw new RemoteSimulationException("Deprecated: Load not supported, use Load2");
-	}
-
 	public Boolean suspend() throws Exception
 	{
 		try
@@ -618,6 +611,25 @@ public class CoSimImpl implements IDestecs
 			throws Exception
 	{
 		return false;
+	}
+
+	public Map<String, List<Map<String, Object>>> getVariables(List<String> data)
+			throws Exception
+	{
+//		List<GetV> list = new Vector<GetParametersStructparametersStruct>();
+//		try
+//		{
+//			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getParameters(data).entrySet())
+//			{
+//				list.add(new GetParametersStructparametersStruct(p.getKey(), p.getValue().value, p.getValue().size));
+//			}
+//		} catch (RemoteSimulationException e)
+//		{
+//			ErrorLog.log(e);
+//			throw e;
+//		}
+//		return new GetParametersStruct(list).toMap();
+		throw new RemoteSimulationException("Not implemented");
 	}
 
 }

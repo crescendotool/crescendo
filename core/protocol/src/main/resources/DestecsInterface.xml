@@ -145,11 +145,30 @@ Commands that can be fired at any point:
 						<value>
 							<struct>
 								<member>
-									<name>name</name>
+									<name>properties</name>
 									<value>
-										<string>C:\My Models\PID_Controller.emx</string>
+										<array>
+											<data>
+												<value>
+													<struct>
+														<member>
+															<name>key</name>
+															<value>
+																<string>name</string>
+															</value>
+														</member>
+														<member>
+															<name>value</name>
+															<value>
+																<string>C:\My Models\PID_Controller.emx</string>
+															</value>
+														</member>
+													</struct>
+												</value>
+											</data>
+										</array>
 									</value>
-									<description>name of the file or project to load. This loaded model is also made active</description>
+									<description>Array with load properties. Each property is a key/value pair. Query defined properties with queryLoad function.</description>
 								</member>
 							</struct>
 						</value>
@@ -753,6 +772,76 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
+		<!--GetVariables-->
+		<method>
+			<description>Gets values from all variables in the given list.</description>
+			<methodCall>
+				<methodName>destecs.getVariables</methodName>
+				<params>
+					<param>
+						<value>
+							<array><data>
+								<value><string>submodelA.variableB</string></value>
+							</data></array>
+						</value>
+					</param>
+				</params>
+			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<struct>
+								<member>
+									<name>variables</name>
+									<value>
+										<array>
+											<data>
+												<value>
+													<struct>
+														<member>
+															<name>name</name>
+															<value>
+																<string>varName</string>
+															</value>
+														</member>
+														<member>
+															<name>size</name>
+															<value>
+																<array>
+																	<data>
+																		<value>
+																			<int>2</int>
+																		</value>
+																	</data>
+																</array>
+															</value>
+														</member>
+														<member>
+															<name>value</name>
+															<value>
+																<array>
+																	<data>
+																		<value>
+																			<double>3.14159265</double>
+																		</value>
+																	</data>
+																</array>
+															</value>
+														</member>
+													</struct>
+												</value>
+											</data>
+										</array>
+									</value>
+									<description>name value pairs of all variables</description>
+								</member>
+							</struct>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>
 		<!--step-->
 		<method>
 			<description>Step is used to progress in simulation, it pushes time forward. A step inputs variables and the step time and returns variables changed during the step and the time at which the next change in the server can take place.</description>
@@ -1215,70 +1304,6 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!-- Load2 -->
-        <method>
-            <description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
-            <methodCall>
-                <methodName>Destecs.Load2</methodName>
-                <params>
-                    <param>
-                        <value>
-                            <struct>
-                                <member>
-                                    <name>properties</name>
-                                    <value>
-                                        <array>
-                                            <data>
-                                                <value>
-                                                    <struct>
-                                                        <member>
-                                                            <name>key</name>
-                                                            <value>
-                                                                <string>modelName</string>
-                                                            </value>
-                                                            <description>name</description>
-                                                        </member>
-                                                        <member>
-                                                            <name>value</name>
-                                                            <value>
-                                                                <string>mymodel.vdm</string>
-                                                            </value>
-                                                            <description>value</description>
-                                                        </member>
-                                                    </struct>
-                                                </value>
-                                            </data>
-                                        </array>
-                                    </value>
-                                    <description>argument list for the tool to load and prepare 
-                                a simulation</description>
-                                </member>
-                                <!-- member> <name>outputDir</name> <value> <string>c:\temp</string> 
-                                    </value> <description>output directory (relative or absolute) for the simulator 
-                                    to store e.g. logfiles</description> </member -->
-                            </struct>
-                        </value>
-                    </param>
-                </params>
-            </methodCall>
-            <methodResponse>
-                <params>
-                    <param>
-                        <value>
-                            <struct>
-                                <member>
-                                    <name>success</name>
-                                    <value>
-                                        <boolean>true</boolean>
-                                    </value>
-                                    <description>if failed then the function will return a fault response</description>
-                                </member>
-                            </struct>
-                        </value>
-                    </param>
-                </params>
-            </methodResponse>
-        </method>
 	</methods>
 	<methodFaultResponses>
 		<methodResponse>

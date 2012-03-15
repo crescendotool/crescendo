@@ -35,6 +35,7 @@ import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.protocol.ProxyICoSimProtocol;
+import org.destecs.protocol.structs.LoadpropertiesStructParam;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -131,7 +132,11 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(ctFile);
 				clp20sim.launch();
 				ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(ctUrl));
-				protocol.load(ctFile.getAbsolutePath());
+				
+				List<LoadpropertiesStructParam> arguments = new Vector<LoadpropertiesStructParam>();
+				arguments.add(new LoadpropertiesStructParam("name",ctFile.getAbsolutePath() ));
+
+				protocol.load(arguments);
 				
 				/*
 				 * Querying 20sim settings

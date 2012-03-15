@@ -32,7 +32,7 @@ public class CtModelConfig extends ModelConfig
 	 */
 	public CtModelConfig(File file)
 	{
-		this.arguments.put("file", file.getAbsolutePath());
+		this.arguments.put("name", file.getAbsolutePath());
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class CtModelConfig extends ModelConfig
 	public CtModelConfig(String remoteBase)
 	{
 		this.remote = true;
-		this.arguments.put("file", remoteBase);
+		this.arguments.put("name", remoteBase);
 	}
 	
 	
@@ -52,7 +52,7 @@ public class CtModelConfig extends ModelConfig
 		{	
 			for (Entry<String, String> entry : arguments.entrySet())
 			{
-				if (entry.getKey().startsWith("file")) 
+				if (entry.getKey().startsWith("name")) 
 				{
 					if((!(new File(entry.getValue()).exists()) && !(new File(entry.getValue()).isDirectory()))){
 						return false;
@@ -66,6 +66,6 @@ public class CtModelConfig extends ModelConfig
 	
 	@Override
 	public String toString() {
-		return this.arguments.get("file");
+		return this.arguments.get("name");
 	}
 }
