@@ -69,6 +69,7 @@ public class CoSimImpl implements IDestecs
 	public static final String LOAD_SETTING_DISABLE_INV = "settings_disable_inv";
 	public static final String LOAD_SETTING_DISABLE_DYNAMIC_TC = "settings_disable_dtc";
 	public static final String LOAD_SETTING_DISABLE_MEASURE = "settings_disable_measure";
+	public static final String LOAD_SETTING_DISABLE_OPTIMIZATION = "settings_disable_optimization";
 
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
@@ -118,6 +119,7 @@ public class CoSimImpl implements IDestecs
 		Settings.measureChecks = true;
 		boolean disableRtLog = false;
 		boolean disableCoverage = false;
+		boolean disableOptimization = false;
 
 		List<File> specfiles = new Vector<File>();
 		File linkFile = null;
@@ -133,17 +135,13 @@ public class CoSimImpl implements IDestecs
 				if (arg.key.startsWith(LOAD_FILE))
 				{
 					specfiles.add(new File(arg.value));
-				}
-
-				if (arg.key.startsWith(LOAD_LINK))
+				} else if (arg.key.startsWith(LOAD_LINK))
 				{
 					linkFile = new File(arg.value);
-				}
-				if (arg.key.startsWith(LOAD_BASE_DIR))
+				} else if (arg.key.startsWith(LOAD_BASE_DIR))
 				{
 					baseDirFile = new File(arg.value);
-				}
-				if (arg.key.startsWith(LOAD_REPLACE))
+				} else if (arg.key.startsWith(LOAD_REPLACE))
 				{
 					List<String> replacePatterns = Arrays.asList(arg.value.split(","));
 					for (String pattern : replacePatterns)
@@ -158,68 +156,56 @@ public class CoSimImpl implements IDestecs
 							}
 						}
 					}
-				}
-				if (arg.key.startsWith(LOAD_ARCHITECTURE))
+				} else if (arg.key.startsWith(LOAD_ARCHITECTURE))
 				{
 					VDMCO.architecture = arg.value;
-				}
-				if (arg.key.startsWith(LOAD_DEPLOY))
+				} else if (arg.key.startsWith(LOAD_DEPLOY))
 				{
 					VDMCO.deploy = arg.value;
-				}
-				if (arg.key.startsWith(LOAD_DEBUG_PORT))
+				} else if (arg.key.startsWith(LOAD_DEBUG_PORT))
 				{
 					VDMCO.debugPort = Integer.valueOf(arg.value);
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_PRE))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_PRE))
 				{
 					Settings.prechecks = false;
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_POST))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_POST))
 				{
 					Settings.postchecks = false;
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_INV))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_INV))
 				{
 					Settings.invchecks = false;
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_DYNAMIC_TC))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_DYNAMIC_TC))
 				{
 					Settings.dynamictypechecks = false;
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_MEASURE))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_MEASURE))
 				{
 					Settings.measureChecks = false;
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_RT_LOG))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_RT_LOG))
 				{
 					disableRtLog = true;
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_RT_VALIDATOR))
 				{
 					// TODO: disable runtime validation.
-				}
-				if (arg.key.startsWith(LOAD_SETTING_DISABLE_COVERAGE))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_COVERAGE))
 				{
 					disableCoverage = true;
-				}
-				if (arg.key.startsWith(LOAD_SETTING_LOG_VARIABLES))
+				} else if (arg.key.startsWith(LOAD_SETTING_DISABLE_OPTIMIZATION))
+				{
+					disableOptimization = true;
+				} else if (arg.key.startsWith(LOAD_SETTING_LOG_VARIABLES))
 				{
 					String[] variables = arg.value.split(",");
 					variablesToLog.addAll(Arrays.asList(variables));
-				}
-				if (arg.key.startsWith(LOAD_OUTPUT_DIR))
+				} else if (arg.key.startsWith(LOAD_OUTPUT_DIR))
 				{
 					outputDir = arg.value;
 				}
 			}
 		}
 
-		// String outputDir = (String) arg0.get("outputDir");
-
 		try
 		{
-			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog,disableCoverage)).toMap();
+			return new Load2Struct(SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog, disableCoverage, disableOptimization)).toMap();
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -228,13 +214,16 @@ public class CoSimImpl implements IDestecs
 	}
 
 	private Integer findVariableDimension(LinkInfo linkInfo)
+			throws RemoteSimulationException
 	{
 		List<String> qualifiedName = linkInfo.getQualifiedName();
 
 		if (qualifiedName.size() < 2)
 		{
-			System.out.println("qualified name is too small");
-			return -2;
+			throw new RemoteSimulationException("Error in dimention calculation for \""
+					+ linkInfo
+					+ "\". Qualified name too small: "
+					+ qualifiedName);
 		}
 
 		try
@@ -250,12 +239,11 @@ public class CoSimImpl implements IDestecs
 
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ErrorLog.log(e);
+			throw new RemoteSimulationException("Fatal error in dimention calculation for \"" 	+ linkInfo 	+ "\"",e);
 
 		}
 
-		return -2;
 
 	}
 
@@ -272,7 +260,7 @@ public class CoSimImpl implements IDestecs
 
 	}
 
-	public Map<String, Object> queryInterface()
+	public Map<String, Object> queryInterface() throws RemoteSimulationException
 	{
 		/*
 		 * Shared design variables minLevel maxLevel Variables level :IN valveState :OUT Events HIGH_LEVEL LOW_LEVEL
@@ -342,7 +330,7 @@ public class CoSimImpl implements IDestecs
 
 			// Ignore single step
 			StepStruct result;
-			
+
 			outputTime = new Double(SystemClock.timeToInternal(TimeUnit.seconds, outputTime));
 			result = SimulationManager.getInstance().step(outputTime, inputs, events);
 
@@ -617,14 +605,14 @@ public class CoSimImpl implements IDestecs
 		throw new RemoteSimulationException("Not implemented");
 	}
 
-	public List<Map<String, Object>> queryImplementations() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Map<String, Object>> queryImplementations() throws Exception
+	{
+		return new Vector<Map<String, Object>>();
 	}
 
 	public Boolean setImplementations(List<Map<String, Object>> data)
-			throws Exception {
-		// TODO Auto-generated method stub
+			throws Exception
+	{
 		return false;
 	}
 

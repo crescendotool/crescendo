@@ -1216,7 +1216,7 @@ public class SimulationEngine
 		return false;
 	}
 
-	private boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
+	protected boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
 			ModelConfig model) throws SimulationException
 	{
 		String absolutePath = model.arguments.values().iterator().next();

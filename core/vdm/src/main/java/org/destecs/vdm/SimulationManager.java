@@ -109,7 +109,8 @@ public class SimulationManager extends BasicSimulationManager
 	private File simulationLogFile;
 	private boolean isSchedulingHookConfigured = false;
 	private File coverageDirectory = null;
-	
+	private boolean noOptimization;
+
 	/**
 	 * A handle to the unique Singleton instance.
 	 */
@@ -150,7 +151,7 @@ public class SimulationManager extends BasicSimulationManager
 			List<StepinputsStructParam> inputs, List<String> events)
 			throws RemoteSimulationException
 	{
-		if(runtimeException!=null)
+		if (runtimeException != null)
 		{
 			throw runtimeException;
 		}
@@ -164,11 +165,11 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				throw new RemoteSimulationException("VDM Main Thread no longer active. Forced to stop before end time.", null);
 			}
-		}else
+		} else
 		{
 			throw new RemoteSimulationException("Interpreter is not correctly initialized.", null);
 		}
-		
+
 		for (StepinputsStructParam p : inputs)
 		{
 			setValue(p.name, CoSimType.Auto, new ValueContents(p.value, p.size));
@@ -213,7 +214,7 @@ public class SimulationManager extends BasicSimulationManager
 				ValueContents value = getOutput(key);
 				if (value != null)
 				{
-					outputs.add(new StepStructoutputsStruct(key, value.value,value.size));
+					outputs.add(new StepStructoutputsStruct(key, value.value, value.size));
 				} else
 				{
 					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "
@@ -236,7 +237,7 @@ public class SimulationManager extends BasicSimulationManager
 		boolean evaluated = false;
 		if (links.getEvents().keySet().contains(event))
 		{
-			Value val = getValue(event).value; 
+			Value val = getValue(event).value;
 			if (val.deref() instanceof OperationValue)
 			{
 				OperationValue eventOp = (OperationValue) val;
@@ -266,33 +267,31 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	private ValueContents getOutput(String name) throws ValueException,RemoteSimulationException
+	private ValueContents getOutput(String name) throws ValueException,
+			RemoteSimulationException
 	{
 		NameValuePairList list = SystemDefinition.getSystemMembers();
-		if (list != null && links.getLinks().containsKey(name)){
+		if (list != null && links.getLinks().containsKey(name))
+		{
 			List<String> varName = links.getQualifiedName(name);
-			
-			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list).value;
-					
+
+			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()), list).value;
+
 			return new ValueContents(VDMClassHelper.getDoubleListFromValue(value), VDMClassHelper.getValueDimensions(value));
-			
+
 		}
 		throw new RemoteSimulationException("Value: " + name + " not found");
 	}
-	
-	
-
-	
-	
 
 	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
-			File baseDirFile, boolean disableRtLog, boolean disableCoverage)
+			File baseDirFile, boolean disableRtLog, boolean disableCoverage, boolean disableOptimization)
 			throws RemoteSimulationException
 	{
 		try
 		{
+			noOptimization = disableOptimization;
 			this.variablesToLog.clear();
-//			this.variablesToLog.addAll(variablesToLog);
+			// this.variablesToLog.addAll(variablesToLog);
 			if (!linkFile.exists() || linkFile.isDirectory())
 			{
 				throw new RemoteSimulationException("The VDM link file does not exist: "
@@ -305,7 +304,7 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				throw new RemoteSimulationException("Faild to parse vdm links");
 			}
-			
+
 			if (disableRtLog)
 			{
 				RTLogger.enable(false);
@@ -313,10 +312,10 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				controller.setLogFile(new File(outputDir, "ExecutionTrace.logrt"));
 			}
-			
-			if(!disableCoverage)
+
+			if (!disableCoverage)
 			{
-				coverageDirectory = new File(outputDir,"coverage");
+				coverageDirectory = new File(outputDir, "coverage");
 			}
 			if (this.variablesToLog.isEmpty())
 			{
@@ -348,9 +347,9 @@ public class SimulationManager extends BasicSimulationManager
 					throw new RemoteSimulationException("Type check error: "
 							+ result.toString());
 				}
-			}else
+			} else
 			{
-					throw new RemoteSimulationException("Cannot not parse specification", null);
+				throw new RemoteSimulationException("Cannot not parse specification", null);
 			}
 
 			boolean hasScriptCall = false;
@@ -363,7 +362,7 @@ public class SimulationManager extends BasicSimulationManager
 					for (Definition d : def.definitions)
 					{
 						Type t = d.getType();
-						
+
 						if (t instanceof ClassType)
 						{
 							ClassType ct = (ClassType) t;
@@ -379,7 +378,8 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						for (Definition d : def.definitions)
 						{
-							if (d.getName() != null && d.getName().equals(scriptOperation)
+							if (d.getName() != null
+									&& d.getName().equals(scriptOperation)
 									&& (d instanceof ExplicitOperationDefinition || d instanceof ExplicitFunctionDefinition))
 							{
 								hasScriptCall = true;
@@ -416,39 +416,45 @@ public class SimulationManager extends BasicSimulationManager
 
 	private void configureSchedulingHooks()
 	{
+		if(!isOptimizationEnabled())
+		{
+			return;
+		}
 		final List<LexNameToken> readCheck = new Vector<LexNameToken>();
 		final List<LexNameToken> writeCheck = new Vector<LexNameToken>();
-		try{
-		
-		for (Entry<String, LinkInfo> entry : links.getInputs().entrySet())
+		try
 		{
-			
+
+			for (Entry<String, LinkInfo> entry : links.getInputs().entrySet())
+			{
+
 				NameValuePairList list = SystemDefinition.getSystemMembers();
-				if (list != null )
+				if (list != null)
 				{
 					List<String> varName = entry.getValue().getQualifiedName();
-					ValueInfo value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list);
+					ValueInfo value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()), list);
 					readCheck.add(value.name);
 				}
-			
-		}
-		for (Entry<String, LinkInfo> entry : links.getOutputs().entrySet())
-		{
+
+			}
+			for (Entry<String, LinkInfo> entry : links.getOutputs().entrySet())
+			{
 				NameValuePairList list = SystemDefinition.getSystemMembers();
-				if (list != null )
+				if (list != null)
 				{
 					List<String> varName = entry.getValue().getQualifiedName();
-					ValueInfo value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()),list);
+					ValueInfo value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()), list);
 					writeCheck.add(value.name);
 				}
-		}}catch(Exception e)
+			}
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		SharedStateListner.setIdentityChecker(new SharedStateListner.IdentityChecker()
 		{
-			
+
 			public boolean reuiresCheck(StateDesignator target)
 			{
 				if (target instanceof IdentifierDesignator)
@@ -466,7 +472,7 @@ public class SimulationManager extends BasicSimulationManager
 
 				return false;
 			}
-			
+
 			public boolean reuiresCheck(LexNameToken name)
 			{
 				for (LexNameToken n : readCheck)
@@ -504,16 +510,17 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		final List<File> files = getFiles();
 
-			if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
-			{
-				this.status = CoSimStatusEnum.INITIALIZED;
-				return true;
-			} else
-			{
-				this.status = CoSimStatusEnum.NOT_INITIALIZED;
-				throw new RemoteSimulationException("Status = " + this.status + ". Internal error: "
-								+ controller.exception!=null?controller.exception.getMessage():"unknown");
-			}
+		if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
+		{
+			this.status = CoSimStatusEnum.INITIALIZED;
+			return true;
+		} else
+		{
+			this.status = CoSimStatusEnum.NOT_INITIALIZED;
+			throw new RemoteSimulationException("Status = " + this.status
+					+ ". Internal error: " + controller.exception != null ? controller.exception.getMessage()
+					: "unknown");
+		}
 	}
 
 	private List<File> getFiles() throws RemoteSimulationException
@@ -538,8 +545,8 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		this.mainContext = ctxt;
 
-		setLogVariables(simulationLogFile,new Vector<String>(variablesToLog));
-		if(!isSchedulingHookConfigured)
+		setLogVariables(simulationLogFile, new Vector<String>(variablesToLog));
+		if (!isSchedulingHookConfigured)
 		{
 			configureSchedulingHooks();
 		}
@@ -547,14 +554,14 @@ public class SimulationManager extends BasicSimulationManager
 
 	protected void setLogVariables(File logFile, List<String> logVariables)
 	{
-		//Cache info it called before execution is started.
+		// Cache info it called before execution is started.
 		this.simulationLogFile = logFile;
 		this.variablesToLog.clear();
 		this.variablesToLog.addAll(logVariables);
-		
-		if(this.mainContext==null)
+
+		if (this.mainContext == null)
 		{
-			return;//Cant set log variables we dont have a running system.
+			return;// Cant set log variables we dont have a running system.
 		}
 		// This is called from the scheduler so we have a running system. So add listeners for log variables
 		if (!logVariables.isEmpty())
@@ -646,9 +653,10 @@ public class SimulationManager extends BasicSimulationManager
 					throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 				}
+				@SuppressWarnings("deprecation")
 				StringPair vName = links.getBoundVariable(parameterName);
 				Object[] objValue = (Object[]) parameter.get("value");
-				
+
 				Double newValue = (Double) objValue[0];
 				for (ClassDefinition cd : controller.getInterpreter().getClasses())
 				{
@@ -666,7 +674,7 @@ public class SimulationManager extends BasicSimulationManager
 									&& vDef.isValueDefinition()
 									&& vDef.getType() instanceof RealType)
 							{
-									
+
 								if (vDef.exp instanceof RealLiteralExpression)
 								{
 									RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
@@ -678,10 +686,10 @@ public class SimulationManager extends BasicSimulationManager
 									valueField.setDouble(token, newValue);
 									found = true;
 								}
-								
+
 								if (vDef.exp instanceof IntegerLiteralExpression)
 								{
-									RealLiteralExpression newReal = new RealLiteralExpression( new LexRealToken(newValue, vDef.exp.location));
+									RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.exp.location));
 									Field valDefField = ValueDefinition.class.getField("exp");
 									valDefField.setAccessible(true);
 									valDefField.set(vDef, newReal);
@@ -716,8 +724,8 @@ public class SimulationManager extends BasicSimulationManager
 		return true;
 	}
 
-	public GetDesignParametersStructdesignParametersStruct getDesignParameter(String parameterName)
-			throws RemoteSimulationException
+	public GetDesignParametersStructdesignParametersStruct getDesignParameter(
+			String parameterName) throws RemoteSimulationException
 	{
 		try
 		{
@@ -730,6 +738,7 @@ public class SimulationManager extends BasicSimulationManager
 				throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 						+ parameterName);
 			}
+			@SuppressWarnings("deprecation")
 			StringPair vName = links.getBoundVariable(parameterName);
 
 			for (ClassDefinition cd : controller.getInterpreter().getClasses())
@@ -756,14 +765,12 @@ public class SimulationManager extends BasicSimulationManager
 								value.add(token.value);
 								List<Integer> size = new Vector<Integer>();
 								size.add(1);
-								return new GetDesignParametersStructdesignParametersStruct(parameterName,value, size);
-							}
-							else if(vDef.exp instanceof SeqExpression)
+								return new GetDesignParametersStructdesignParametersStruct(parameterName, value, size);
+							} else if (vDef.exp instanceof SeqExpression)
 							{
-								//FIXME: Whats this.
-								System.out.println("getDesignParameter:Sequence");
+								throw new RemoteSimulationException("getDesignParameter with type SeqExpression not supported: "+vDef.exp);
 							}
-								
+
 						}
 					}
 				}
@@ -791,12 +798,15 @@ public class SimulationManager extends BasicSimulationManager
 
 		throw new RemoteSimulationException("Internal error in get design parameter");
 	}
-/**
- * This function returns VDM values which is constants
- * @return
- * @throws RemoteSimulationException
- */
-	public Map<String, ValueContents> getParameters() throws RemoteSimulationException
+
+	/**
+	 * This function returns VDM values which is constants
+	 * 
+	 * @return
+	 * @throws RemoteSimulationException
+	 */
+	public Map<String, ValueContents> getParameters()
+			throws RemoteSimulationException
 	{
 		try
 		{
@@ -819,9 +829,8 @@ public class SimulationManager extends BasicSimulationManager
 			throw new RemoteSimulationException("Internal error in get parameters", e);
 		}
 	}
-	
 
-	private Map<String,ValueContents> getParameters(String name,
+	private Map<String, ValueContents> getParameters(String name,
 			NameValuePairList members, int depth) throws ValueException
 	{
 		Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
@@ -841,15 +850,15 @@ public class SimulationManager extends BasicSimulationManager
 					realValue.add(p.value.realValue(null));
 					List<Integer> valueSize = new Vector<Integer>();
 					valueSize.add(1);
-					parameters.put(prefix + p.name.name, new ValueContents(realValue,valueSize));
-				}else if (p.value.deref() instanceof BooleanValue)
+					parameters.put(prefix + p.name.name, new ValueContents(realValue, valueSize));
+				} else if (p.value.deref() instanceof BooleanValue)
 				{
 					List<Double> realValue = new Vector<Double>();
-					realValue.add(p.value.boolValue(null)?1.0:0.0);
+					realValue.add(p.value.boolValue(null) ? 1.0 : 0.0);
 					List<Integer> valueSize = new Vector<Integer>();
 					valueSize.add(1);
-					parameters.put(prefix + p.name.name, new ValueContents(realValue,valueSize));
-				}  else if(p.value.deref() instanceof SeqValue)
+					parameters.put(prefix + p.name.name, new ValueContents(realValue, valueSize));
+				} else if (p.value.deref() instanceof SeqValue)
 				{
 					System.out.println("getParameters:sequence");
 				}
@@ -860,24 +869,27 @@ public class SimulationManager extends BasicSimulationManager
 
 	/**
 	 * This function returns a collection of VDM instance variables
-	 * @param filter a filter used to restrict the returned collection, if empty the full set is returned
+	 * 
+	 * @param filter
+	 *            a filter used to restrict the returned collection, if empty the full set is returned
 	 * @return
 	 * @throws RemoteSimulationException
 	 */
-	public Map<String, ValueContents> getParameters(List<String> filter) throws RemoteSimulationException
+	public Map<String, ValueContents> getParameters(List<String> filter)
+			throws RemoteSimulationException
 	{
 		try
 		{
 			Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
 
-//			NameValuePairList list = SystemDefinition.getSystemMembers();
-//			if (list != null && list.size() > 0)
-//			{
-//				parameters.putAll(getParameters(list.get(0).name.module, list, 0));
-//			}
+			// NameValuePairList list = SystemDefinition.getSystemMembers();
+			// if (list != null && list.size() > 0)
+			// {
+			// parameters.putAll(getParameters(list.get(0).name.module, list, 0));
+			// }
 			for (Entry<String, LinkInfo> entrySet : this.links.getModel().entrySet())
 			{
-				if(!filter.isEmpty() && !filter.contains(entrySet.getKey()))
+				if (!filter.isEmpty() && !filter.contains(entrySet.getKey()))
 				{
 					continue;
 				}
@@ -896,7 +908,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw new RemoteSimulationException("Internal error in get parameters", e);
 		}
 	}
-	
+
 	public Boolean setParameter(String name, ValueContents valueContents)
 			throws RemoteSimulationException
 	{
@@ -922,11 +934,11 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		try
 		{
-			if(scheduler!=null)
+			if (scheduler != null)
 			{
 				scheduler.stop();
 			}
-			if(coverageDirectory!=null)
+			if (coverageDirectory != null)
 			{
 				coverageDirectory.mkdirs();
 				DBGPReaderV2.writeCoverage(interpreter, coverageDirectory);
@@ -934,20 +946,21 @@ public class SimulationManager extends BasicSimulationManager
 				{
 					String name = source.getName() + "cov";
 
-					
-					try{
+					try
+					{
 						InputStream in = new FileInputStream(source);
-						OutputStream out = new FileOutputStream(new File(coverageDirectory,name));
+						OutputStream out = new FileOutputStream(new File(coverageDirectory, name));
 						byte[] buf = new byte[1024];
 						int len;
-						while ((len = in.read(buf)) > 0) {
-						   out.write(buf, 0, len);
+						while ((len = in.read(buf)) > 0)
+						{
+							out.write(buf, 0, len);
 						}
 						in.close();
-						out.close(); 
-					}catch(Exception e)
+						out.close();
+					} catch (Exception e)
 					{
-						
+
 					}
 
 				}
@@ -968,7 +981,8 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	public List<Double> getParameter(String name) throws RemoteSimulationException
+	public List<Double> getParameter(String name)
+			throws RemoteSimulationException
 	{
 		try
 		{
@@ -990,15 +1004,21 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
-	public List<Integer> getParameterSize(String name) throws RemoteSimulationException
-	{	
-			Value value = getValue(name).value;
-			return VDMClassHelper.getValueDimensions(value);
-				
+	public List<Integer> getParameterSize(String name)
+			throws RemoteSimulationException
+	{
+		Value value = getValue(name).value;
+		return VDMClassHelper.getValueDimensions(value);
+
 	}
 
 	public boolean hasEvents()
 	{
 		return !links.getEvents().isEmpty();
+	}
+
+	public boolean isOptimizationEnabled()
+	{
+		return !noOptimization && !hasEvents();
 	}
 }

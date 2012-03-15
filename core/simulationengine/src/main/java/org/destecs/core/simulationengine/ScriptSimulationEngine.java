@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.exceptions.SimulationException;
+import org.destecs.core.simulationengine.model.DeModelConfig;
+import org.destecs.core.simulationengine.model.ModelConfig;
 import org.destecs.core.simulationengine.script.ISimulatorControl;
 import org.destecs.core.simulationengine.script.ScriptEvaluator;
 import org.destecs.protocol.ProxyICoSimProtocol;
@@ -279,6 +281,17 @@ public class ScriptSimulationEngine extends SimulationEngine
 		{
 			stm.apply(eval);
 		}
+	}
+	
+	@Override
+	protected boolean loadModel(Simulator simulator, ProxyICoSimProtocol proxy,
+			ModelConfig model) throws SimulationException
+	{
+		if(simulator==Simulator.DE && model instanceof DeModelConfig)
+		{
+			model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_OPTIMIZATION, "true");
+		}
+		return super.loadModel(simulator, proxy, model);
 	}
 
 }
