@@ -245,6 +245,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 	private Button checkBoxUseMeasure = null;
 	private Button checkBoxUseCoverage = null;
 	private Button checkBoxUseLogRt = null;
+	private Button checkBoxTimingInvariants = null;
 
 	private Tree logTree = null;
 	private LogVariableSelectionManager logManager = new LogVariableSelectionManager();
@@ -538,6 +539,10 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		checkBoxUseLogRt = new Button(interperterGroup, SWT.CHECK);
 		checkBoxUseLogRt.setText("Log Real-Time Events");
 		checkBoxUseLogRt.addSelectionListener(fListener);
+		
+		checkBoxTimingInvariants = new Button(interperterGroup, SWT.CHECK);
+		checkBoxTimingInvariants.setText("Check timing invariants");
+		checkBoxTimingInvariants.addSelectionListener(fListener);
 
 	}
 
@@ -557,6 +562,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 			checkBoxUseMeasure.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true));
 			checkBoxUseCoverage.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true));
 			checkBoxUseLogRt.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true));
+			checkBoxTimingInvariants.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, false));
 			logManager.parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, ""));
 			fArchitecturePathText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
 			removeArchitectureButton.setEnabled(!fArchitecturePathText.getText().isEmpty());
@@ -620,6 +626,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, checkBoxUseMeasure.getSelection());
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, checkBoxUseCoverage.getSelection());
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, checkBoxUseLogRt.getSelection());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, checkBoxTimingInvariants.getSelection());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, logManager.getConfigValue());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, fArchitecturePathText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, replacePattern.getText());
@@ -634,6 +641,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_MEASURE_CHECKS, true);
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true);
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true);
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, false);
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, "");
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 	}

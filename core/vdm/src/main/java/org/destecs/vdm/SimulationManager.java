@@ -69,10 +69,13 @@ import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.lex.LexRealToken;
+import org.overturetool.vdmj.messages.Console;
 import org.overturetool.vdmj.messages.rtlog.RTLogger;
 import org.overturetool.vdmj.runtime.Context;
 import org.overturetool.vdmj.runtime.RuntimeValidator;
 import org.overturetool.vdmj.runtime.ValueException;
+import org.overturetool.vdmj.runtime.validation.BasicRuntimeValidator;
+import org.overturetool.vdmj.runtime.validation.ConjectureDefinition;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
 import org.overturetool.vdmj.scheduler.SharedStateListner;
 import org.overturetool.vdmj.scheduler.SystemClock;
@@ -314,10 +317,12 @@ public class SimulationManager extends BasicSimulationManager
 				controller.setLogFile(new File(outputDir, "ExecutionTrace.logrt"));
 			}
 			
-			PrintWriter p = new PrintWriter(new FileOutputStream(
-					new File(outputDir,"Timing.logtv"), false));
-			RuntimeValidator.setLogFile(p);
-
+			if(Settings.timingInvChecks)
+			{
+				PrintWriter p = new PrintWriter(new FileOutputStream(
+						new File(outputDir,"Timing.logtv"), false));
+				RuntimeValidator.setLogFile(p);
+			}
 			if (!disableCoverage)
 			{
 				coverageDirectory = new File(outputDir, "coverage");
@@ -557,6 +562,22 @@ public class SimulationManager extends BasicSimulationManager
 		if (!isSchedulingHookConfigured)
 		{
 			configureSchedulingHooks();
+		}
+		
+		//show timing invariants if any
+		if(Settings.timingInvChecks)
+		{
+			if(RuntimeValidator.validator!=null && RuntimeValidator.validator instanceof BasicRuntimeValidator)
+			{
+				Console.out.println("----------------------------------------------------------------------------------");
+				Console.out.println("Runtime Validator Initialized with conjectures:");
+				BasicRuntimeValidator validator = (BasicRuntimeValidator) RuntimeValidator.validator;
+				for (ConjectureDefinition conj : validator.getConjectures())
+				{
+					Console.out.println(conj);
+				}
+				Console.out.println("----------------------------------------------------------------------------------");
+			}
 		}
 	}
 
