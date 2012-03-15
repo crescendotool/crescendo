@@ -28,9 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.destecs.core.simulationengine.Clp20SimUtility;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
+import org.destecs.core.simulationengine.model.CtModelConfig;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
@@ -133,10 +135,14 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				clp20sim.launch();
 				ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(ctUrl));
 				
+				CtModelConfig model = new CtModelConfig(ctFile.getAbsolutePath());
 				List<LoadpropertiesStructParam> arguments = new Vector<LoadpropertiesStructParam>();
-				arguments.add(new LoadpropertiesStructParam("name",ctFile.getAbsolutePath() ));
+				for (Entry<String, String> entry : model.arguments.entrySet())
+				{
+					arguments.add(new LoadpropertiesStructParam(entry.getValue(), entry.getKey()));
+				}
 
-				protocol.load(arguments);
+				 protocol.load(arguments);
 				
 				/*
 				 * Querying 20sim settings
