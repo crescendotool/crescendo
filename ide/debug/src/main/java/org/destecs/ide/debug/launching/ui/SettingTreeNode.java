@@ -471,7 +471,8 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		
 		if(this.implementation && !this.isVirtual)
 		{
-			sb.append(key);
+			
+			sb.append(key.replace(Clp20simTab.IMPLEMENTATION_PREFIX, ""));
 			sb.append("=");
 			sb.append(value);
 			sb.append(";");

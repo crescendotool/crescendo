@@ -134,6 +134,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	private String ourputFolderPrefix = "";
 	private boolean debug = false;
 	private String clp20simToolSettings = null;
+	private String clp20simImplementationSettings = null;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -218,7 +219,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
 			logVariablesVdm.clear();
 			clp20simToolSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
-			
+			clp20simImplementationSettings  = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
 			
 			String tmpVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
 			for (String var : tmpVdm.split(","))
@@ -424,7 +425,8 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.setCtModel(ctModel);
 			
 
-			setCtSettings(engine, clp20simToolSettings);
+			setCtSettings(engine);
+			setCtImplementations(engine);
 			
 			engine.setOutputFolder(outputFolder);
 			engine.debug(debug);
@@ -510,7 +512,33 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 	}
 
-	private void setCtSettings(SimulationEngine engine, String clp20simToolSettings) {
+	private void setCtImplementations(SimulationEngine engine) {
+		
+		Properties properties = new Properties();
+		
+		String[] settings = clp20simImplementationSettings.split(";");
+		
+		for (String setting : settings) {
+			
+			String[] splitSetting = setting.split("=");
+			if(splitSetting.length == 2)
+			{
+				properties.put(splitSetting[0], splitSetting[1]);
+			}
+		}
+		
+		StringWriter sw = new StringWriter();
+		try {
+			properties.store(sw, "");
+			engine.setCtImplementations(sw.toString());
+		} catch (IOException e) {
+			DestecsDebugPlugin.logWarning("Failed record CT implementation settings for use in simulation", e);
+		}
+		
+		
+	}
+
+	private void setCtSettings(SimulationEngine engine) {
 		Properties properties = new Properties();
 		
 		String[] settings = clp20simToolSettings.split(";");
@@ -527,10 +555,11 @@ public class CoSimLaunchConfigurationDelegate extends
 		StringWriter sw = new StringWriter();
 		try {
 			properties.store(sw, "");
+			engine.setCtSettings(sw.toString());
 		} catch (IOException e) {
 			DestecsDebugPlugin.logWarning("Failed record CT Tool settings for use in simulation", e);
 		}
-		engine.setCtSettings(sw.toString());
+		
 	}
 
 	private ModelConfig getCtModelConfig(File ctFile)

@@ -107,6 +107,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	public class PopulatorJob extends Job
 	{
 
+		
 		private File ctFile;
 		private String ctUrl;
 
@@ -156,7 +157,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					}
 					
 					
-					SettingItem settingItem = new SettingItem("model.implementations." + name, value, enumerationsVector, "string", new HashMap<String, String>());
+					SettingItem settingItem = new SettingItem(IMPLEMENTATION_PREFIX + name, value, enumerationsVector, "string", new HashMap<String, String>());
 					settingItems.add(settingItem);
 				}
 				
@@ -392,6 +393,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	private Group optionsGroup;
 	private Clp20simTab tab;
 	
+	static final String IMPLEMENTATION_PREFIX = "model.implementations.";
 
 	public void createControl(Composite parent)
 	{
@@ -674,6 +676,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				String[] splitSetting = setting.split("=");
 				if(splitSetting.length == 2)
 				{
+					splitSetting[0] = IMPLEMENTATION_PREFIX + splitSetting[0];
 					settingsSet.add(splitSetting);
 				}
 			}
