@@ -3,6 +3,7 @@ package org.destecs.ide.debug.launching.ui;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -10,7 +11,6 @@ import java.util.Vector;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem;
 import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem.ValueType;
-import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -25,10 +25,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 
@@ -46,13 +49,13 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	private List<String> enumerations = null;
 	private String value = null;
 	
-	
 	private boolean implementation = false;
 	private boolean recovered = false;
 
-	private ILaunchConfigurationTab tab;
+	private IUpdatableTab tab;
 
 	private HashMap<String, String> properties;
+	private List<String> acaValues = new Vector<String>();
 	
 	public SettingTreeNode(String name, String key,boolean recovered) {
 		this.name = name;
@@ -71,6 +74,21 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		this.key = key;
 		this.recovered = recovered;
 		this.value = value;
+		if(this.key.contains("implementation"))
+		{
+			this.implementation = true;
+		}
+	}
+	
+	/*
+	 * Used for ACA settings
+	 */
+	public SettingTreeNode(String name, String key, boolean recovered, List<String> value)
+	{
+		this.name = name;
+		this.key = key;
+		this.recovered = recovered;
+		this.acaValues.addAll(value);
 		if(this.key.contains("implementation"))
 		{
 			this.implementation = true;
@@ -117,7 +135,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	}
 	
 
-	public static SettingTreeNode createSettingsTree(Set<SettingItem> settingItems, SettingTreeNode oldSettingsNodeTree, ILaunchConfigurationTab tab) 
+	public static SettingTreeNode createSettingsTree(Set<SettingItem> settingItems, SettingTreeNode oldSettingsNodeTree, IUpdatableTab tab) 
 	{
 		List<SettingTreeNode> in = new Vector<SettingTreeNode>();
 		SettingTreeNode root = new SettingTreeNode("root", "root", false);
@@ -151,7 +169,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		return root;
 	}
 	
-	private void setTab(ILaunchConfigurationTab tab) {
+	private void setTab(IUpdatableTab tab) {
 		this.tab = tab;
 		
 	}
@@ -358,7 +376,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 					if(checkConstrains(dValue))
 					{
 						value = stringValue;
-						//TODO: see if this has to be here: tab.updateTab();
+						tab.updateTab();
 					}
 					else
 					{
@@ -409,7 +427,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 				
 				public void widgetSelected(SelectionEvent e) {
 					value = combo.getItem(combo.getSelectionIndex());
-					//TODO: see if this has to be here: tab.updateTab();
+					tab.updateTab();
 				}
 				
 				public void widgetDefaultSelected(SelectionEvent e) {
@@ -445,7 +463,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 				{
 					value = "false";
 				}
-				//TODO: see if this has to be here: tab.updateTab();
+				tab.updateTab();
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -496,6 +514,33 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		
 		return sb.toString();
 	}
+	
+	public String toImplementationAcaString()
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		if(this.implementation && !this.isVirtual && this.acaValues.size() > 0)
+		{
+			sb.append(key.replace(IDebugConstants.IMPLEMENTATION_PREFIX, ""));
+			sb.append("=");
+			int acaValuesSize = acaValues.size();
+			for (int i=0; i<acaValuesSize-1;i++) 
+			{
+				sb.append(acaValues.get(i));
+				sb.append(",");
+			}
+			sb.append(acaValues.get(acaValuesSize-1));
+			
+			sb.append(";");
+		}
+		
+
+		for (SettingTreeNode child : children) {
+			sb.append(child.toImplementationAcaString());
+		}
+		
+		return sb.toString();
+	}
 
 	public String getValueForKey(String key)
 	{
@@ -517,7 +562,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	}
 
 	public void drawInAca(Group optionsGroup) {
-Control[] children = optionsGroup.getChildren();
+		Control[] children = optionsGroup.getChildren();
 		
 		for (Control control : children) {
 			control.dispose();
@@ -534,7 +579,7 @@ Control[] children = optionsGroup.getChildren();
 		if(recovered)
 		{
 			Label label = new Label(optionsGroup,SWT.NONE);
-			label.setText("Value: " + value);
+			label.setText("Selected values: " + getValuesString());
 			label = new Label(optionsGroup, SWT.WRAP);
 			Color red = new Color(optionsGroup.getDisplay(), 255, 0, 0);
 		    label.setForeground(red);
@@ -548,6 +593,20 @@ Control[] children = optionsGroup.getChildren();
 		
 		optionsGroup.layout();
 		
+	}
+
+	private String getValuesString() {
+		StringBuffer sb = new StringBuffer();
+		int acaValuesSize = acaValues.size();
+		for (int i=0; i<acaValuesSize -1;i++) 
+		{
+			sb.append(acaValues.get(i));
+			sb.append(",");
+		}
+		sb.append(acaValues.get(acaValuesSize-1));
+		
+		sb.append(";");
+		return sb.toString();
 	}
 
 	private void createOptionGUIforAca(Group optionsGroup) {
@@ -588,13 +647,77 @@ Control[] children = optionsGroup.getChildren();
 			column.setText("Variable Name");
 			column.setWidth(200);
 
-			GridData data = new GridData(GridData.FILL_BOTH);
-			table.setLayoutData(data);
+			GridData gd = new GridData(GridData.FILL_BOTH);
+			table.setLayoutData(gd);
 			tableViewer.setContentProvider(new ArrayContentProvider());
 			tableViewer.setLabelProvider(new LabelProvider());
 			tableViewer.setInput(items);
+			final Table concreteTable = tableViewer.getTable();
+			
+			for (TableItem item : concreteTable.getItems()) {
+				Object data = item.getData();
+				
+				if(data instanceof String)
+				{
+					String nameOfItem = (String) data;
+					if(acaValues.contains(nameOfItem))
+					{
+						item.setChecked(true);
+					}
+				}
+			}
+			
+			concreteTable.addListener(SWT.Selection, new Listener()
+			{
+
+				public void handleEvent(Event event)
+				{
+					try
+					{
+						if (event.detail == SWT.CHECK)
+						{
+							acaValues.clear();
+							for (TableItem item : concreteTable.getItems()) {
+								if(item.getChecked())
+								{
+									acaValues.add((String) item.getData());
+								}
+							}
+							tab.updateTab();
+						}
+					} catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 		
+	}
+
+	public static SettingTreeNode createAcaSettingsTreeFromConfiguration(
+			HashSet<String[]> settingItems) {
+		List<SettingTreeNode> in = new Vector<SettingTreeNode>();
+		SettingTreeNode root = new SettingTreeNode("root", "root",true);
+		
+		
+		for (String[] settingItem : settingItems) {
+			String[] splitValues = settingItem[1].split(",");
+			List<String> acaValues = new Vector<String>();
+			for (String acaValue : splitValues) {
+				acaValues.add(acaValue);
+			}
+			
+			in.add(new SettingTreeNode(settingItem[0], settingItem[0], true, acaValues));
+		}
+		
+		Collections.sort(in);
+		
+		for (SettingTreeNode settingTreeNode : in) {
+			root.insertNodeInTree(settingTreeNode);
+		}
+		
+		return root;
 	}
 	
 }

@@ -73,7 +73,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
 
-public class Clp20simTab extends AbstractLaunchConfigurationTab
+public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpdatableTab
 {
 	static class ClpSettingsLabelProvider extends LabelProvider implements
 			ITableLabelProvider
@@ -148,7 +148,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 					}
 					
 					
-					SettingItem settingItem = new SettingItem(IMPLEMENTATION_PREFIX + name, value, enumerationsVector, "string", new HashMap<String, String>());
+					SettingItem settingItem = new SettingItem(IDebugConstants.IMPLEMENTATION_PREFIX + name, value, enumerationsVector, "string", new HashMap<String, String>());
 					settingItems.add(settingItem);
 				}
 				
@@ -384,7 +384,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 	private Group optionsGroup;
 	private Clp20simTab tab;
 	
-	static final String IMPLEMENTATION_PREFIX = "model.implementations.";
+	//sstatic final String IMPLEMENTATION_PREFIX = "model.implementations.";
 
 	public void createControl(Composite parent)
 	{
@@ -667,7 +667,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 				String[] splitSetting = setting.split("=");
 				if(splitSetting.length == 2)
 				{
-					splitSetting[0] = IMPLEMENTATION_PREFIX + splitSetting[0];
+					splitSetting[0] = IDebugConstants.IMPLEMENTATION_PREFIX + splitSetting[0];
 					settingsSet.add(splitSetting);
 				}
 			}
@@ -678,7 +678,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 			settingsTreeViewer.expandToLevel(2);
 			
 		} catch (CoreException e) {
-			DestecsDebugPlugin.logWarning("Faild to initialize Clp20SimTab with log variables", e);
+			DestecsDebugPlugin.logWarning("Failed to initialize Clp20SimTab with log variables", e);
 		}
 		
 		
@@ -831,6 +831,9 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.destecs.ide.debug.launching.ui.IUpdatableTab#updateTab()
+	 */
 	public void updateTab() {
 		updateLaunchConfigurationDialog();
 		

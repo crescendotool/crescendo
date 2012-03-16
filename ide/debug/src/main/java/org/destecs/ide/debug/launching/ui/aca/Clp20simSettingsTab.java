@@ -2,7 +2,6 @@ package org.destecs.ide.debug.launching.ui.aca;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,19 +10,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.destecs.core.simulationengine.Clp20SimUtility;
 import org.destecs.core.simulationengine.exceptions.SimulationException;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.launching.ui.Clp20simTab;
+import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem;
+import org.destecs.ide.debug.launching.ui.IUpdatableTab;
 import org.destecs.ide.debug.launching.ui.Launch20simUtility;
 import org.destecs.ide.debug.launching.ui.SettingTreeNode;
 import org.destecs.ide.debug.launching.ui.SettingsTreeContentProvider;
 import org.destecs.ide.debug.launching.ui.SettingsTreeLabelProvider;
-import org.destecs.ide.debug.launching.ui.Clp20simTab.LogItem;
-import org.destecs.ide.debug.launching.ui.Clp20simTab.PopulatorJob;
-import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem;
-import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
 import org.destecs.protocol.ProxyICoSimProtocol;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -35,8 +31,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -52,7 +46,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.progress.UIJob;
 
-public class Clp20simSettingsTab extends AbstractAcaTab {
+public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab{
 
 	
 	public class PopulatorJob extends Job
@@ -188,7 +182,7 @@ public class Clp20simSettingsTab extends AbstractAcaTab {
 	
 	private final Set<SettingItem> settingItems = new HashSet<Clp20simTab.SettingItem>();
 	private SettingTreeNode settingsRootNode;
-	private ILaunchConfigurationTab tab;
+	private IUpdatableTab tab;
 	private Group optionsGroup = null;
 	private TreeViewer settingsTreeViewer;
 	private Button populateButton;
@@ -340,16 +334,43 @@ public class Clp20simSettingsTab extends AbstractAcaTab {
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		
+		try {
+			String acaImplementations = configuration.getAttribute(IDebugConstants.DESTECS_ACA_20SIM_IMPLEMENTATIONS,"");
+			
+			HashSet<String[]> settingsSet = new HashSet<String[]>();
+			String[] splitSettings = acaImplementations.split(";");
+			
+			for (String setting : splitSettings) {
+				String[] splitSetting = setting.split("=");
+				if(splitSetting.length == 2)
+				{
+					splitSetting[0] = IDebugConstants.IMPLEMENTATION_PREFIX + splitSetting[0];
+					settingsSet.add(splitSetting);
+				}
+			}
+			
+			settingsRootNode = SettingTreeNode.createAcaSettingsTreeFromConfiguration(settingsSet);
+			settingsTreeViewer.setInput(settingsRootNode);
+			settingsTreeViewer.refresh();
+			settingsTreeViewer.expandToLevel(2);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		// TODO Auto-generated method stub
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_20SIM_IMPLEMENTATIONS, settingsRootNode.toImplementationAcaString());
 		
 	}
 
 	public String getName() {
 		return "CT Settings";
+	}
+
+	public void updateTab() {
+		this.updateLaunchConfigurationDialog();
+		
 	}
 
 	
