@@ -172,8 +172,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 					dialog.setInput(DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurations(getConfigurationType()));
 				} catch (CoreException e1)
 				{
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					DestecsDebugPlugin.log(e1);
 				}
 
 				if (dialog.open() == Window.OK)
@@ -249,8 +248,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 				}
 			} catch (CoreException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsDebugPlugin.logError("Failed to find project in DseMainTab: "+fBaseLaunchConfigNameText.getText(), e);
 			}
 		}
 		return null;
@@ -272,8 +270,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 
 			} catch (CoreException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsDebugPlugin.log(e);
 			}
 		}
 		return null;
@@ -302,8 +299,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 				}
 			} catch (CoreException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsDebugPlugin.log( e);
 			}
 		}
 		return null;

@@ -18,16 +18,19 @@ public class Launch20simUtility {
 	public Launch20simUtility() {
 	}
 	
-	public static ProxyICoSimProtocol launch20sim(File ctFile, String ctUrl) throws Exception
+	public static ProxyICoSimProtocol launch20sim(String ctFile, String ctUrl,boolean remoteLaunch) throws Exception
 	{
 		/*
 		 * Connecting to 20sim
 		 */
-		Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(ctFile);
+		if(!remoteLaunch)
+		{
+		Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(new File(ctFile));
 		clp20sim.launch();
+		}
 		ProxyICoSimProtocol protocol = Clp20SimUtility.connect(new URL(ctUrl));
 		
-		CtModelConfig model = new CtModelConfig(ctFile.getAbsolutePath());
+		CtModelConfig model = new CtModelConfig(ctFile);
 		List<LoadpropertiesStructParam> arguments = new Vector<LoadpropertiesStructParam>();
 		for (Entry<String, String> entry : model.arguments.entrySet())
 		{

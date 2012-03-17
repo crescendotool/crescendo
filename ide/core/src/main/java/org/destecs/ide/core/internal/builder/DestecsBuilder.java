@@ -7,6 +7,7 @@ import org.destecs.core.contract.Contract;
 import org.destecs.core.contract.IVariable;
 import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.Links;
+import org.destecs.ide.core.DestecsCorePlugin;
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.metadata.DeMetadataChecker;
 import org.destecs.ide.core.metadata.LinkError;
@@ -89,23 +90,15 @@ public class DestecsBuilder
 				model.setChecked(true);
 			}
 
-			// //TODO: The check below has some issues with the build order
-			// DeMetadata deMetadata = new DeMetadata(vdmlinks,project);
-			// deMetadata.checkLinks();
-			// for (String err : deMetadata.getErrorMsgs()) {
-			// addError(project.getVdmLinkFile(), err);
-			// }
 
 		} catch (Exception e)
 		{
 			model.setOk(false);
 			model.setChecked(true);
 			e.printStackTrace();
-			// TODO build with errors, set project state to build and error
+			DestecsCorePlugin.log("Error in Destecs builder for project: "+project, e);
 		}
 
-		// model.setChecked(isChecked);
-		// model.setOk(isOk);
 
 	}
 

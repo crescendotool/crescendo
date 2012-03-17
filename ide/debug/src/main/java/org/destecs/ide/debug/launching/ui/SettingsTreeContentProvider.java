@@ -6,11 +6,9 @@ import org.eclipse.jface.viewers.Viewer;
 public class SettingsTreeContentProvider implements ITreeContentProvider {
 
 	public void dispose() {
-		// TODO Auto-generated method stub
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -34,7 +32,6 @@ public class SettingsTreeContentProvider implements ITreeContentProvider {
 	}
 
 	public Object getParent(Object element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

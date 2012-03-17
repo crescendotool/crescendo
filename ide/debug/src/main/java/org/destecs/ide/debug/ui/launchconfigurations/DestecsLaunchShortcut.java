@@ -368,14 +368,6 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 	 */
 	public void launch(IEditorPart editor, String mode)
 	{
-		// IEditorInput input = editor.getEditorInput();
-		// IJavaElement je = (IJavaElement) input.getAdapter(IJavaElement.class);
-		// TODO get ISourceUnit from editor
-//		Object je = null;
-//		if (je != null)
-//		{
-//			searchAndLaunch(new Object[] { je }, mode, getTypeSelectionTitle(), getEditorEmptyMessage());
-//		}
 	}
 
 	public void launch(ISelection selection, String mode)
@@ -425,11 +417,6 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 	 */
 	private IResource getLaunchableResource(IAdaptable adaptable)
 	{
-		// IJavaElement je = (IJavaElement) adaptable.getAdapter(IJavaElement.class);
-		// if (je != null) {
-		// return je.getResource();
-		// }
-		// TODO
 		return null;
 	}
 
@@ -473,44 +460,5 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 	{
 		return DebugPlugin.getDefault().getLaunchManager();
 	}
-
-//	protected IAstNode[] findTypes(Object[] elements, IRunnableContext context)
-//			throws InterruptedException, CoreException
-//	{
-//		for (Object object : elements)
-//		{
-//			if (object instanceof IAdaptable)
-//			{
-//				IVdmProject vdmProject = (IVdmProject) ((IAdaptable) object).getAdapter(IVdmProject.class);
-//				if (vdmProject != null)
-//				{
-//					final IVdmModel model = vdmProject.getModel();
-//					try
-//					{
-//						context.run(false, false, new IRunnableWithProgress()
-//						{
-//
-//							public void run(IProgressMonitor monitor)
-//									throws InvocationTargetException,
-//									InterruptedException
-//							{
-//								model.refresh(false, monitor);
-//
-//							}
-//						});
-//					} catch (InvocationTargetException e)
-//					{
-//						if (VdmDebugPlugin.DEBUG)
-//						{
-//							e.printStackTrace();
-//						}
-//					}
-//
-//					return filterTypes(model.getRootElementList().toArray(), context);
-//				}
-//			}
-//		}
-//		return null;
-//	}
 
 }

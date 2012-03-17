@@ -104,15 +104,16 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 	public class PopulatorJob extends Job
 	{
 
-		
-		private File ctFile;
+		private boolean remote;
+		private String ctFile;
 		private String ctUrl;
 
-		public PopulatorJob(File ctFile, String ctUrl)
+		public PopulatorJob(String ctFile, String ctUrl,boolean remote)
 		{
 			super("20-sim table Populator");
 			this.ctFile = ctFile;
 			this.ctUrl = ctUrl;
+			this.remote = remote;
 
 		}
 
@@ -122,7 +123,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 
 			try
 			{
-				ProxyICoSimProtocol protocol = Launch20simUtility.launch20sim(ctFile, ctUrl);
+				ProxyICoSimProtocol protocol = Launch20simUtility.launch20sim(ctFile, ctUrl,remote);
 				
 				/*
 				 * Querying 20sim settings
@@ -549,10 +550,10 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 
 		}
 
-		final File ctFile = getFileFromPath(project, getCtPath());
+		final String ctFile =  getCtPath();
 		final String ctUrl = getCtEndpoint();
 
-		PopulatorJob populator = new PopulatorJob(ctFile, ctUrl);
+		PopulatorJob populator = new PopulatorJob(ctFile, ctUrl,getUseRemoteCtSimulator());
 
 		final UIJob changeButton = new UIJob("Enable populate button")
 		{
@@ -793,14 +794,27 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 
 	private String getCtPath()
 	{
+		String base = null;
+		String path = null;
 		for (ILaunchConfigurationTab tab : getLaunchConfigurationDialog().getTabs())
 		{
 			if (tab instanceof CoSimLaunchConfigurationTab)
 			{
-				return ((CoSimLaunchConfigurationTab) tab).getCtPath();
+				path =  ((CoSimLaunchConfigurationTab) tab).getCtPath();
+			}else if (tab instanceof DevelopLaunchConfigurationTab)
+			{
+				base = ((DevelopLaunchConfigurationTab) tab).getRemoteProjectBase();
 			}
 		}
-		return null;
+		
+		if(getUseRemoteCtSimulator())
+		{
+			return base+"\\"+path;
+		}else
+		{
+			return getFileFromPath(getProject(), path).getAbsolutePath();
+		}
+		
 	}
 
 	private String getCtEndpoint()

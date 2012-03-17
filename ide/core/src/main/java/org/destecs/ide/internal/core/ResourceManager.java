@@ -225,8 +225,7 @@ public class ResourceManager implements IResourceChangeListener
 			}
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsCorePlugin.log(e);
 		}
 	}
 

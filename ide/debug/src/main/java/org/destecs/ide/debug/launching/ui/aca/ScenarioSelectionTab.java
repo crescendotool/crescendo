@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -61,6 +62,7 @@ public class ScenarioSelectionTab extends AbstractLaunchConfigurationTab
 		scenariosTable = new Table(group, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL
 		        | SWT.H_SCROLL);
 	    scenariosTable.setSize(100, 100);
+	    scenariosTable.setLayoutData(new GridData(GridData.FILL_BOTH));
 	    scenariosTable.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event event) {
 	         updateLaunchConfigurationDialog();
@@ -98,8 +100,7 @@ public class ScenarioSelectionTab extends AbstractLaunchConfigurationTab
 						try {
 							project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 						} catch (CoreException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							DestecsDebugPlugin.logError("Failed to refresh project",e1);
 						}
 					}
 					
@@ -134,8 +135,7 @@ public class ScenarioSelectionTab extends AbstractLaunchConfigurationTab
 		try {
 			 architectureString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_SCENARIOS,"");
 		} catch (CoreException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			DestecsDebugPlugin.log(e1);
 		}
 		
 		String[] architectures = architectureString.split(";");
@@ -185,8 +185,7 @@ public class ScenarioSelectionTab extends AbstractLaunchConfigurationTab
 							}
 						}
 					} catch (CoreException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						DestecsDebugPlugin.log(e);
 					} 
 				}
 				

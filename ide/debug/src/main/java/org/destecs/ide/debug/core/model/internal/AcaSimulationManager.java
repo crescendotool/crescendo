@@ -118,8 +118,7 @@ public class AcaSimulationManager extends Thread
 				internalSleep(1000);// just let the tools calm down.
 			} catch (Exception e)
 			{
-				// TODO
-				e.printStackTrace();
+				DestecsDebugPlugin.logError("Error in AcaSimlation manager", e);
 			}
 		}
 

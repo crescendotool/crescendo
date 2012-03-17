@@ -1,6 +1,5 @@
 package org.destecs.ide.debug.launching.ui.aca;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,16 +51,17 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 	public class PopulatorJob extends Job
 	{
 
-		
-		private File ctFile;
+		private boolean remote;
+		private String ctFile;
 		private String ctUrl;
 		
 
-		public PopulatorJob(File ctFile, String ctUrl)
+		public PopulatorJob(String ctFile, String ctUrl,boolean remote)
 		{
 			super("20-sim table Populator");
 			this.ctFile = ctFile;
 			this.ctUrl = ctUrl;
+			this.remote = remote;
 
 		}
 
@@ -71,7 +71,7 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 
 			try
 			{
-				ProxyICoSimProtocol protocol = Launch20simUtility.launch20sim(ctFile, ctUrl);
+				ProxyICoSimProtocol protocol = Launch20simUtility.launch20sim(ctFile, ctUrl,remote);
 				
 				/*
 				 * Querying 20sim settings
@@ -229,28 +229,40 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 		IProject project = getActiveProject();
 		ILaunchConfiguration baseConfig = getBaseConfiguration();
 		String ctPath = null;
+		String remoteBase = null;
+		boolean useRemote = false;
 		String ctUrlFromConfig = null;
 		try {
 			ctPath = baseConfig.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "");
 			ctUrlFromConfig = baseConfig.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_ENDPOINT, "");
-			
+			useRemote = baseConfig.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR, false);
+			remoteBase = baseConfig.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE, "");
 			if(ctUrlFromConfig != null && ctUrlFromConfig.equals(""))
 			{
 				ctUrlFromConfig = IDebugConstants.DEFAULT_CT_ENDPOINT;
 			}
 			
 
-			
+			String ctbase = null;
 			if (project == null)
 			{
 				return; // new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID,
 						// "Project is not set");
 
 			}
+			
+			
+			if(useRemote)
+			{
+				ctbase = remoteBase+"\\"+ctPath;
+			}else
+			{
+				ctbase = getFileFromPath(project, ctPath).getAbsolutePath();
+			}
 
-			final File ctFile = getFileFromPath(project, ctPath);
+			final String ctFile = ctbase;
 			final String ctUrl = ctUrlFromConfig;
-			PopulatorJob populator = new PopulatorJob(ctFile, ctUrl);
+			PopulatorJob populator = new PopulatorJob(ctFile, ctUrl,useRemote);
 
 			final UIJob changeButton = new UIJob("Enable populate button")
 			{
@@ -286,13 +298,18 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 	public void createSettingsTable(Composite comp)
 	{
 		Group group = new Group(comp, SWT.NONE);
-		group.setText("Settings");
+//		group.setText("Settings");
 		group.setLayout(new GridLayout(2, true));
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = 100;
 		group.setLayoutData(gd);
+		
+		Group settingsGroup = new Group(group, SWT.NONE);
+		settingsGroup.setText("Settings");
+		settingsGroup.setLayout(new GridLayout(1, true));
+		settingsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		settingsTreeViewer = new TreeViewer(group, SWT.BORDER);
+		settingsTreeViewer = new TreeViewer(settingsGroup, SWT.BORDER);
 		settingsTreeViewer.setContentProvider(new SettingsTreeContentProvider());
 		settingsTreeViewer.setLabelProvider(new SettingsTreeLabelProvider());
 		settingsTreeViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -354,8 +371,7 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 			settingsTreeViewer.refresh();
 			settingsTreeViewer.expandToLevel(2);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to initialize Clp20sim settings tab", e);
 		}
 	}
 

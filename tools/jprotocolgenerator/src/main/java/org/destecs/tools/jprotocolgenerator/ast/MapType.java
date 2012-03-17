@@ -37,7 +37,6 @@ public class MapType implements ITypeNode
 
 	public MapType()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

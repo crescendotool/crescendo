@@ -290,5 +290,9 @@ public class DevelopLaunchConfigurationTab extends
 	{
 		return checkBoxRemoteCtSimulator.getSelection();
 	}
+	public String getRemoteProjectBase()
+	{
+		return ctRemoteProjectBase.getText();
+	}
 
 }

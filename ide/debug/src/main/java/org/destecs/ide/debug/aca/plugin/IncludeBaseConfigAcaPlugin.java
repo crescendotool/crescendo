@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.IAcaGeneratorPlugin;
 import org.eclipse.core.resources.IProject;
@@ -38,7 +39,6 @@ public class IncludeBaseConfigAcaPlugin implements IAcaGeneratorPlugin
 			Set<ILaunchConfiguration> configurations, IProject project, String outputPreFix)
 	{
 		final Set<ILaunchConfiguration> results = new HashSet<ILaunchConfiguration>();
-		//ILaunchConfigurationWorkingCopy copy;
 		try
 		{
 			for (ILaunchConfiguration iLaunchConf : configurations)
@@ -47,13 +47,9 @@ public class IncludeBaseConfigAcaPlugin implements IAcaGeneratorPlugin
 				copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
 				results.add(copy);
 			}
-//			copy = baseConfig.getWorkingCopy();
-//			copy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
-			//results.add(copy);
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.log( e);
 		}
 		
 		return results;

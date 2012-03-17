@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.IAcaGeneratorPlugin;
 import org.eclipse.core.resources.IFile;
@@ -90,8 +91,7 @@ public class ArchitecturesAcaPlugin implements IAcaGeneratorPlugin
 
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Error in architecture generation plugin", e);
 		}
 		return results;
 	}
@@ -107,8 +107,7 @@ public class ArchitecturesAcaPlugin implements IAcaGeneratorPlugin
 			}
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to get members from "+folder, e);
 		}
 		
 		return false;

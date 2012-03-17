@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -61,6 +62,7 @@ public class ArchitectureSelectionTab extends AbstractAcaTab
 		
 		architecturesTable = new Table(group, SWT.CHECK);
 	    architecturesTable.setSize(100, 100);
+	    architecturesTable.setLayoutData(new GridData(GridData.FILL_BOTH));
 	    architecturesTable.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event event) {
 	         updateLaunchConfigurationDialog();
@@ -99,8 +101,7 @@ public class ArchitectureSelectionTab extends AbstractAcaTab
 						try {
 							project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 						} catch (CoreException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							DestecsDebugPlugin.logError("Failed to refresh project", e1);
 						}
 					}
 					
@@ -135,8 +136,7 @@ public class ArchitectureSelectionTab extends AbstractAcaTab
 		try {
 			 architectureString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_ARCHITECTURES,"");
 		} catch (CoreException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			DestecsDebugPlugin.logError("Failed get aca architectures attribute", e1);
 		}
 		
 		String[] architectures = architectureString.split(";");
@@ -186,8 +186,7 @@ public class ArchitectureSelectionTab extends AbstractAcaTab
 							}
 						}
 					} catch (CoreException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						DestecsDebugPlugin.logError("Failed to get members from "+architectureFolder, e);
 					} 
 				}
 				

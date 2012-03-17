@@ -75,8 +75,7 @@ public class DestecsProject implements
 			}
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsCorePlugin.log("Failed to check project: "+project, e);
 		}
 		return false;
 
@@ -194,8 +193,7 @@ public class DestecsProject implements
 				output.create(IResource.FORCE, false, null);
 			} catch (CoreException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsCorePlugin.log("Failed to create destecs output folder, project: "+project, e);
 			}
 		}
 		return output;

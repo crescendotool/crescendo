@@ -295,8 +295,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			LaunchStore.store(configuration, outputFolder);
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Failed to store launch configuration to"+outputFolder, e);
 		}
 
 	}

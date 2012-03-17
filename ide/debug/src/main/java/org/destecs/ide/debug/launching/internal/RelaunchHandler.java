@@ -3,6 +3,7 @@ package org.destecs.ide.debug.launching.internal;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -64,20 +65,16 @@ public class RelaunchHandler extends AbstractHandler implements IHandler
 					}
 				} catch (FileNotFoundException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					DestecsDebugPlugin.logError("Failed to get relaunch "+file+" file not found", e);
 				} catch (IOException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					DestecsDebugPlugin.logError("Failed to get relaunch "+file+" file could not be read", e);
 				} catch (ClassNotFoundException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					DestecsDebugPlugin.logError("Failed to get relaunch "+file+" a class could not be loaded in deserilization", e);
 				} catch (CoreException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					DestecsDebugPlugin.logError("Failed to get relaunch "+file+" core exception", e);
 				}
 				
 			}
