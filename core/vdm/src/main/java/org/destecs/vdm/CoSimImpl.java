@@ -530,7 +530,8 @@ public class CoSimImpl implements IDestecs
 		try
 		{
 			finishTime = (Double) data.get("finishTime");
-			return SimulationManager.getInstance().start();
+			long internalFinishTime = SystemClock.timeToInternal(TimeUnit.seconds, finishTime);
+			return SimulationManager.getInstance().start(internalFinishTime);
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);

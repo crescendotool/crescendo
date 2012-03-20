@@ -132,14 +132,16 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 	private synchronized boolean canAdvanceSimulationTime(long minstep)
 	{
-		if (SystemClock.getWallTime() + minstep <= nextSimulationStop || (SimulationManager.getInstance().isOptimizationEnabled()&&SharedStateListner.isAutoIncrementTime()))
+		long newTime = SystemClock.getWallTime() + minstep;
+		SimulationManager manager = SimulationManager.getInstance();
+		if (newTime <= nextSimulationStop || ( manager.isOptimizationEnabled() && SharedStateListner.isAutoIncrementTime() && newTime <manager.getFinishTime()))
 		{
 			return true; // OK, just proceed there is still simulation time left
 		} else
 		{
 			// We have reached the allowed simulation time
-			nextSimulationStop = SimulationManager.getInstance().waitForStep(minstep);
-			if (SystemClock.getWallTime() + minstep <= nextSimulationStop)
+			nextSimulationStop = manager.waitForStep(minstep);
+			if (newTime <= nextSimulationStop)
 			{
 				return true;
 			} else

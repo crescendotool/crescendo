@@ -82,7 +82,7 @@ public abstract class BasicSimulationManager
 
 	enum CoSimStatusEnum
 	{
-		NOT_INITIALIZED(0), LOADED(4), INITIALIZED(1), STEP_TAKEN(2), FINISHED(
+		NOT_INITIALIZED(0), LOADED(4), INITIALIZED(1), STARTED(5),STEP_TAKEN(2), FINISHED(
 				3);
 
 		public int value;

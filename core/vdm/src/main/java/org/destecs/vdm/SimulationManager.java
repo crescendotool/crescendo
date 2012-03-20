@@ -116,6 +116,7 @@ public class SimulationManager extends BasicSimulationManager
 	private boolean isSchedulingHookConfigured = false;
 	private File coverageDirectory = null;
 	private boolean noOptimization;
+	private long internalFinishTime;
 
 	/**
 	 * A handle to the unique Singleton instance.
@@ -518,16 +519,27 @@ public class SimulationManager extends BasicSimulationManager
 		controller = new VDMCO();
 		SharedStateListner.setIdentityChecker(null);
 		isSchedulingHookConfigured = false;
+		internalFinishTime = -1;
 		return true;
 	}
 
-	public Boolean start() throws RemoteSimulationException
+	public Boolean start(long internalFinishTime) throws RemoteSimulationException
 	{
 		final List<File> files = getFiles();
+		this.internalFinishTime = internalFinishTime;
 
 		if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
 		{
-			this.status = CoSimStatusEnum.INITIALIZED;
+//			this.status = CoSimStatusEnum.INITIALIZED;
+			while(this.status!=CoSimStatusEnum.STARTED)
+			{
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			return true;
 		} else
 		{
@@ -560,7 +572,12 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		this.mainContext = ctxt;
 
-		setLogVariables(simulationLogFile, new Vector<String>(variablesToLog));
+		try {
+			setLogVariables(simulationLogFile, new Vector<String>(variablesToLog));
+		} catch (RemoteSimulationException e) {
+			this.runtimeException = e;
+		}
+		
 		if (!isSchedulingHookConfigured)
 		{
 			configureSchedulingHooks();
@@ -581,9 +598,10 @@ public class SimulationManager extends BasicSimulationManager
 				Console.out.println("----------------------------------------------------------------------------------");
 			}
 		}
+		this.status = CoSimStatusEnum.STARTED;
 	}
 
-	protected void setLogVariables(File logFile, List<String> logVariables)
+	protected void setLogVariables(File logFile, List<String> logVariables) throws RemoteSimulationException
 	{
 		// Cache info it called before execution is started.
 		this.simulationLogFile = logFile;
@@ -616,9 +634,8 @@ public class SimulationManager extends BasicSimulationManager
 				Value v = getRawValue(Arrays.asList(names), null);
 				if (v == null)
 				{
-					System.err.println("Could not find variable: " + name
+					throw new RemoteSimulationException("Could not find variable: " + name
 							+ " logging is skipped.");
-					continue;
 				}
 
 				if (v instanceof UpdatableValue)
@@ -1083,5 +1100,9 @@ public class SimulationManager extends BasicSimulationManager
 		}
 		
 		return result;
+	}
+
+	public long getFinishTime() {
+		return internalFinishTime;
 	}
 }
