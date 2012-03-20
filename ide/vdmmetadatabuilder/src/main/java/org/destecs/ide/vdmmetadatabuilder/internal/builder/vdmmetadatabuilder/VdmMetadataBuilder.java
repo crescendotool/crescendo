@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.vdmmetadatabuilder.VdmMetadataBuilderPlugin;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -48,8 +49,10 @@ import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.modules.Module;
 import org.overturetool.vdmj.types.BooleanType;
+import org.overturetool.vdmj.types.CharacterType;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.IntegerType;
+import org.overturetool.vdmj.types.NaturalOneType;
 import org.overturetool.vdmj.types.NaturalType;
 import org.overturetool.vdmj.types.OptionalType;
 import org.overturetool.vdmj.types.RealType;
@@ -81,9 +84,15 @@ public class VdmMetadataBuilder extends
 
 				if (!model.isTypeChecked())
 				{
-					project.typeCheck(new NullProgressMonitor());
+					if(!project.typeCheck(new NullProgressMonitor()))
+					{
+						props.put("TYPE_CHECK_STATUS", false);
+						storeProperties(monitor, props);
+						return null;
+					}
 				}
 
+				props.put("TYPE_CHECK_STATUS", true);
 				for (IAstNode node : model.getRootElementList())
 				{
 					if (node instanceof SystemDefinition)
@@ -142,30 +151,7 @@ public class VdmMetadataBuilder extends
 					}
 				}
 
-				IDestecsProject dp = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
-				if (dp != null)
-				{
-					IFile file = dp.getVdmModelFolder().getFile(".metadata");
-
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					try
-					{
-						props.store(out, "");
-					} catch (IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					if (file.exists())
-					{
-						file.setContents(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
-					} else
-					{
-						file.create(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
-					}
-
-				}
+				storeProperties(monitor, props);
 			}
 		} catch (Exception e)
 		{
@@ -173,6 +159,34 @@ public class VdmMetadataBuilder extends
 		}
 
 		return null;
+	}
+
+	protected void storeProperties(IProgressMonitor monitor, Properties props)
+			throws CoreException
+	{
+		IDestecsProject dp = (IDestecsProject) getProject().getAdapter(IDestecsProject.class);
+		if (dp != null)
+		{
+			IFile file = dp.getVdmModelFolder().getFile(".metadata");
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			try
+			{
+				props.store(out, "");
+			} catch (IOException e)
+			{
+				VdmMetadataBuilderPlugin.log("Failed to store metadatafile for project: "+getProject(), e);
+			}
+
+			if (file.exists())
+			{
+				file.setContents(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
+			} else
+			{
+				file.create(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
+			}
+
+		}
 	}
 
 	Set<Definition> expandedDefinitions = new HashSet<Definition>();
@@ -271,9 +285,15 @@ public class VdmMetadataBuilder extends
 		} else if (t instanceof NaturalType)
 		{
 			return "nat";
-		} else if (t instanceof BooleanType)
+		}else if (t instanceof NaturalOneType)
+		{
+			return "nat1";
+		}  else if (t instanceof BooleanType)
 		{
 			return "bool";
+		}else if (t instanceof CharacterType)
+		{
+			return "char";
 		}
 		 else if (t instanceof SeqType)
 		 {
