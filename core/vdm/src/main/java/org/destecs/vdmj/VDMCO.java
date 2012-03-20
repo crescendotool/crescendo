@@ -77,23 +77,23 @@ public class VDMCO extends VDMRT
 
 	public ExitStatus asyncStartInterpret(final List<File> filenames)
 	{
-		class AsyncInterpreterExecutionThread extends Thread
-		{
-			ExitStatus status = null;
+//		class AsyncInterpreterExecutionThread extends Thread
+//		{
+			ExitStatus status = ExitStatus.EXIT_ERRORS;
 			boolean finished = false;
 
-			public AsyncInterpreterExecutionThread()
-			{
-				setDaemon(true);
-				setName("Async interpreter thread - runs scheduler");
-			}
-
-			@Override
-			public void run()
-			{
+//			public AsyncInterpreterExecutionThread()
+//			{
+//				setDaemon(true);
+//				setName("Async interpreter thread - runs scheduler");
+//			}
+//
+//			@Override
+//			public void run()
+//			{
 				try
 				{
-					InitThread iniThread = new InitThread(this);
+					InitThread iniThread = new InitThread(Thread.currentThread());
 					BasicSchedulableThread.setInitialThread(iniThread);
 
 					if (script != null)
@@ -124,7 +124,7 @@ public class VDMCO extends VDMRT
 							if(retryCountDown==0)
 							{
 								status = ExitStatus.EXIT_ERRORS;
-								return;
+								return status;
 							}
 							retryCountDown--;
 						}
@@ -139,7 +139,7 @@ public class VDMCO extends VDMRT
 							{
 								finished = true;
 								status = ExitStatus.EXIT_ERRORS;
-								return;
+								return status;
 							}
 							retryCountDown--;
 						}
@@ -166,7 +166,7 @@ public class VDMCO extends VDMRT
 						infoln("RT events dumped to " + logfile);
 					}
 					finished = true;
-					return;
+					return status;
 				} catch (ContextException e)
 				{
 					println("Execution: " + e);
@@ -176,39 +176,40 @@ public class VDMCO extends VDMRT
 					exception = e;
 					println("Execution: " + e);
 				}
-
-				status = ExitStatus.EXIT_ERRORS;
-				finished = true;
-				return;
-			}
-
-			public boolean isFinished()
-			{
-				return finished;
-			}
-
-			public ExitStatus getExitStatus()
-			{
+//
+//				status = ExitStatus.EXIT_ERRORS;
+//				finished = true;
+//				return;
+//			}
+//
+//			public boolean isFinished()
+//			{
+//				return finished;
+//			}
+//
+//			public ExitStatus getExitStatus()
+//			{
+//				return status;
+//			}
+//		}
+//		;
+//		AsyncInterpreterExecutionThread runner = new AsyncInterpreterExecutionThread();
+//
+//		runner.start();
 				return status;
-			}
-		}
-		;
-		AsyncInterpreterExecutionThread runner = new AsyncInterpreterExecutionThread();
 
-		runner.start();
-
-		while (!runner.isFinished())
-		{
-			try
-			{
-				Thread.sleep(100);
-			} catch (InterruptedException e)
-			{
-				// Ignore it
-			}
-		}
-
-		return runner.getExitStatus();
+//		while (!runner.isFinished())
+//		{
+//			try
+//			{
+//				Thread.sleep(100);
+//			} catch (InterruptedException e)
+//			{
+//				// Ignore it
+//			}
+//		}
+//
+//		return runner.getExitStatus();
 	}
 
 	public void setLogFile(File file)
