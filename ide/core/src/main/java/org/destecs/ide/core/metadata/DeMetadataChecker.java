@@ -36,10 +36,10 @@ import org.eclipse.core.runtime.CoreException;
 public class DeMetadataChecker {
 
 	private IDestecsProject project = null;
-	private boolean isDataLoaded = false;
 	private Map<String, List<String>> vdmMetadata = new Hashtable<String, List<String>>();
 	private Links links = null;
 	private List<LinkError> errors = new Vector<LinkError>();
+	private boolean typeCheckStatus = false;
 
 	enum LinkType {
 		Event, Input, Output, SDP, Model
@@ -49,8 +49,7 @@ public class DeMetadataChecker {
 		this.project = project;
 		this.links = vdmlinks;
 
-		loadVdmMetadata();
-		isDataLoaded = true;
+		loadVdmMetadata();		
 
 	}
 
@@ -66,6 +65,10 @@ public class DeMetadataChecker {
 		if (file.exists()) {
 			props.load(file.getContents());
 
+			typeCheckStatus  = Boolean.parseBoolean((String) props.get("TYPE_CHECK_STATUS"));
+			
+			
+			
 			for (Entry<Object, Object> entry : props.entrySet()) {
 				vdmMetadata.put(entry.getKey().toString(),
 						Arrays.asList(entry.getValue().toString().split(",")));
@@ -86,8 +89,17 @@ public class DeMetadataChecker {
 	}
 
 	public void checkLinks() {
-		if (!isDataLoaded || links == null)
+		if(!typeCheckStatus)
+		{
+			errors.add(new LinkError(1, "Model is not type-checked"));
 			return;
+		}
+		
+		if (links == null)
+			return;
+		
+		
+			
 
 		String systemName = findSystemClass();
 

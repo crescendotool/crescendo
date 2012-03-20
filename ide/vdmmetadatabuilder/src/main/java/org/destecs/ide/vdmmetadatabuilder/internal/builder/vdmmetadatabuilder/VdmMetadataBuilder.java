@@ -86,13 +86,13 @@ public class VdmMetadataBuilder extends
 				{
 					if(!project.typeCheck(new NullProgressMonitor()))
 					{
-						props.put("TYPE_CHECK_STATUS", false);
+						props.put("TYPE_CHECK_STATUS", "false");
 						storeProperties(monitor, props);
 						return null;
 					}
 				}
 
-				props.put("TYPE_CHECK_STATUS", true);
+				props.put("TYPE_CHECK_STATUS", "true");
 				for (IAstNode node : model.getRootElementList())
 				{
 					if (node instanceof SystemDefinition)
@@ -128,6 +128,7 @@ public class VdmMetadataBuilder extends
 											+ def.getName(), typeName + "," + "const");
 								}
 							}
+							else
 							if(def instanceof InstanceVariableDefinition)
 							{
 								values.add(def.getName());
@@ -137,8 +138,12 @@ public class VdmMetadataBuilder extends
 								{
 									save(props, node.getName() + "."
 											+ def.getName(), typeName+ "," + "variable");
+								}else
+								{
+									System.out.println(def);
 								}
 							}
+							else
 							if(def instanceof ExplicitOperationDefinition)
 							{
 								ExplicitOperationDefinition op = (ExplicitOperationDefinition) def;
@@ -147,6 +152,7 @@ public class VdmMetadataBuilder extends
 								save(props, node.getName() + "."
 										+ def.getName(), "_operation"+ "," + (op.accessSpecifier.isAsync  ? "async" : "sync") );
 							}
+							
 						}
 					}
 				}
@@ -276,22 +282,24 @@ public class VdmMetadataBuilder extends
 
 	private String getTypeName(Type t)
 	{
-		if (t instanceof RealType)
+		
+		
+		if (t instanceof RealType || t.isType("real") != null)
 		{
 			return "real";
-		} else if (t instanceof IntegerType)
+		} else if (t instanceof IntegerType || t.isType("int") != null)
 		{
 			return "int";
-		} else if (t instanceof NaturalType)
+		} else if (t instanceof NaturalType || t.isType("nat") != null)
 		{
 			return "nat";
-		}else if (t instanceof NaturalOneType)
+		}else if (t instanceof NaturalOneType || t.isType("nat1") != null)
 		{
 			return "nat1";
-		}  else if (t instanceof BooleanType)
+		}  else if (t instanceof BooleanType || t.isType("bool") != null)
 		{
 			return "bool";
-		}else if (t instanceof CharacterType)
+		}else if (t instanceof CharacterType || t.isType("char") != null)
 		{
 			return "char";
 		}
@@ -315,6 +323,12 @@ public class VdmMetadataBuilder extends
 		{
 			return getTypeName(((OptionalType) t).type);
 		}
+		
+//		if(t.isNumeric()) //this is trying to fit the value in a real (if it is compatible with real it is ok)
+//		{
+//			return "real";
+//		}
+		
 		return UNKNOWN;
 	}
 
