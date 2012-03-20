@@ -567,7 +567,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			CtModelConfig model = new CtModelConfig(ctFile.getAbsolutePath());
 			model.logVariables.addAll(logVariables20Sim);
-			if (!model.logVariables.isEmpty())
+			if (model.logVariables.size() > 1)
 			{
 				model.logFile = new File(outputFolder, "20simVariables.csv").getAbsolutePath();
 			}
@@ -575,7 +575,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		}else{
 			CtModelConfig model = new CtModelConfig((remoteRelativeProjectPath+"\\"+ctFilePathRelative).replace("/","\\"));
 			model.logVariables.addAll(logVariables20Sim);
-			if (!model.logVariables.isEmpty())
+			if (model.logVariables.size() > 1)
 			{
 				model.logFile = (remoteRelativeProjectPath+"\\output\\"+resultFolderRelativePath+"\\"+"20simVariables.csv").replace("/","\\");
 			}
