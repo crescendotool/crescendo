@@ -497,7 +497,7 @@ public class CoSimImpl implements IDestecs
 	}
 
 	public Boolean setParameters(Map<String, List<Map<String, Object>>> data)
-			throws RemoteSimulationException
+			throws Exception
 	{
 		try
 		{
@@ -517,7 +517,7 @@ public class CoSimImpl implements IDestecs
 				return success;
 			}
 			return success;
-		} catch (RemoteSimulationException e)
+		} catch (Exception e)
 		{
 			ErrorLog.log(e);
 			throw e;
