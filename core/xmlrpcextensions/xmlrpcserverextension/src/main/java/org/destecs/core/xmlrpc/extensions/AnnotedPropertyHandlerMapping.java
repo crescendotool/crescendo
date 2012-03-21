@@ -68,8 +68,7 @@ public class AnnotedPropertyHandlerMapping extends PropertyHandlerMapping
 			 keyInterface =Thread.currentThread().getContextClassLoader().loadClass(pKey);
 		} catch (ClassNotFoundException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//ignore
 		}
 		
     	Map map = new HashMap();

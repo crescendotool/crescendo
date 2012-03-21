@@ -56,11 +56,6 @@ public class DestecsTypeCheckerUi
 		final DestecsModel model = project.getModel();
 
 		final CompletedStatus checkCompleted = new CompletedStatus();
-		// TODO we may be able to use the istypechecked and istypecorrect in a better way here
-//		if (!model.getRootElementList().isEmpty() && model.isTypeCorrect())
-//		{
-//			return true; // skip future checking to speed up the process
-//		}
 
 		try
 		{
@@ -72,7 +67,6 @@ public class DestecsTypeCheckerUi
 				{
 					try
 					{
-//						model.refresh(false, monitor);
 						model.setOk(false);
 						project.typeCheck(monitor);
 						checkCompleted.setCompledted();
@@ -115,13 +109,6 @@ public class DestecsTypeCheckerUi
 
 		IProgressMonitor monitor = new SubProgressMonitor(monitorParent, 20);
 		final CompletedStatus checkCompleted = new CompletedStatus();
-		// TODO we may be able to use the istypechecked and istypecorrect in a better way here
-//		if (!model.getRootElementList().isEmpty() && model.isTypeCorrect())
-//		{
-//			return true; // skip future checking to speed up the process
-//		}
-
-//		model.refresh(false, monitor);
 		model.setOk(false);
 		try
 		{

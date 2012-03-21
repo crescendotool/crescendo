@@ -31,6 +31,7 @@ import java.util.Vector;
 import org.destecs.core.contract.IVariable;
 import org.destecs.ide.core.resources.DestecsModel;
 import org.destecs.ide.core.resources.IDestecsProject;
+import org.destecs.ide.ui.DestecsUIPlugin;
 import org.destecs.ide.ui.editor.core.DestecsDocument;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -378,8 +379,7 @@ public class VdmLinkCompletionProcessor implements IContentAssistProcessor
 
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsUIPlugin.log("Error while loading VDM metadata", e);
 		}
 	}
 

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.destecs.ide.ui.DestecsUIPlugin;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
@@ -102,8 +103,7 @@ public class DestecsAnnotationHover extends DefaultAnnotationHover {
 					result.add(ann);
 				}
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsUIPlugin.log("Bad location in annotation hover", e);
 			}			
 		}
 		return result;
@@ -130,8 +130,7 @@ public class DestecsAnnotationHover extends DefaultAnnotationHover {
 					String a = (String) m.getAttribute(IMarker.MESSAGE);
 					hoverResult.add(a + "  ");					
 				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					DestecsUIPlugin.log("Error in annotation print", e);
 				}
 			}
 		}

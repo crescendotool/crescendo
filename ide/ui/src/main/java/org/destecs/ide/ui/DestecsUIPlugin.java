@@ -29,7 +29,6 @@ public class DestecsUIPlugin extends AbstractUIPlugin {
 	private static DestecsUIPlugin plugin;
 
 	public DestecsUIPlugin() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

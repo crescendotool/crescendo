@@ -117,7 +117,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 				//ignore it
 			}
 		}
-		return null;// TODO ignors return
+		return null;
 	}
 
 	private void sleep(int millis)

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.IAcaGeneratorPlugin;
 import org.eclipse.core.resources.IFile;
@@ -68,8 +69,7 @@ public class ScenarioAcaPlugin implements IAcaGeneratorPlugin {
 
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Error scenario ACA plugin", e);
 		}
 		return results;
 	}

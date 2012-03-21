@@ -126,7 +126,7 @@ public class ScenarioSelectionTab extends AbstractLaunchConfigurationTab
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		// TODO Auto-generated method stub
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_SCENARIOS, "");
 
 	}
 

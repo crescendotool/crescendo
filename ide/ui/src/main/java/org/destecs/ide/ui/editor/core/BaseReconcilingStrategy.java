@@ -24,6 +24,7 @@ import org.destecs.core.parsers.IError;
 import org.destecs.core.parsers.ParserWrapper;
 import org.destecs.ide.core.IDestecsCoreConstants;
 import org.destecs.ide.core.utility.FileUtility;
+import org.destecs.ide.ui.DestecsUIPlugin;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -50,15 +51,13 @@ public abstract class BaseReconcilingStrategy implements IReconcilingStrategy
 					for (Object err : parser.getErrors())
 					{
 						IError e = (IError) err;						
-//						FileUtility.addMarker(currentDocument.getFile(), e.getMessage(), e.getLine()+1, e.getCharPositionInLine(), IMarker.SEVERITY_ERROR, currentDocument.get());
 						FileUtility.addMarker(currentDocument.getFile(),  e.getMessage(), e.getLine()+1, IMarker.SEVERITY_ERROR);
 					}
 				}
 
 			} catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsUIPlugin.log("IO Error in base reconciler", e);
 			}
 		}
 	}

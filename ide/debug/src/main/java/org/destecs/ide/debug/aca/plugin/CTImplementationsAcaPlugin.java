@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.IAcaGeneratorPlugin;
 import org.eclipse.core.resources.IProject;
@@ -44,7 +45,7 @@ public class CTImplementationsAcaPlugin implements IAcaGeneratorPlugin {
 			
 		}
 		catch (Exception e) {
-			// TODO: handle exception
+			DestecsDebugPlugin.logError("Error in ct implementations ACA plugin generation", e);
 		}
 		
 		return null;

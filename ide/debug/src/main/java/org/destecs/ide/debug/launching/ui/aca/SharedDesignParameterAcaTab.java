@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.destecs.core.parsers.SdpParserWrapper;
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -549,8 +550,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 			
 		} catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Error in initialization of shared design parameter tab", e);
 		}
 		
 		
@@ -667,12 +667,10 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 						}
 					} catch (CoreException e)
 					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						DestecsDebugPlugin.logError("Error while populating shared design parameter tab", e);
 					} catch (IOException e)
 					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						DestecsDebugPlugin.logError("IO error while populating shared design parameter tab", e);
 					}
 				}
 			}

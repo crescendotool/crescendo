@@ -240,8 +240,7 @@ public class DseTab extends AbstractLaunchConfigurationTab
 				}
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsDebugPlugin.logError("Error while running subs parser to validate replace pattern", e);
 			}
 		}
 

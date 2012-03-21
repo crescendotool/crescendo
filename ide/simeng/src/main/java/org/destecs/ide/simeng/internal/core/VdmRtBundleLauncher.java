@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.core.simulationengine.launcher.ISimulatorLauncher;
+import org.destecs.ide.simeng.Activator;
 import org.destecs.ide.simeng.ISimengConstants;
 import org.eclipse.core.runtime.CoreException;
 
@@ -73,12 +74,10 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 			return p;
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.log("IO Error when running bundle launcher for VDM-RT", e);
 		} catch (CoreException e1)
 		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Activator.log("Unknown error in bundle luncher for VDM-RT", e1);
 		}
 		return null;
 	}

@@ -1,5 +1,6 @@
 package org.destecs.ide.debug.launching.ui;
 
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -56,8 +57,7 @@ public class PostProcessTab extends AbstractLaunchConfigurationTab {
 		try {
 			checkBoxOctavePlot.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.logError("Error initializing post process tab", e);
 		}
 		
 	}

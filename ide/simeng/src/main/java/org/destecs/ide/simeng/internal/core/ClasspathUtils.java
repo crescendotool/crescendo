@@ -148,35 +148,6 @@ public class ClasspathUtils {
 		throw new IOException("Unknown protocol"); //$NON-NLS-1$
 	}
 	
-//	public static String[] getClassPath(IJavaProject myJavaProject) throws IOException, URISyntaxException {
-//		final List<String> result = new ArrayList<String>();
-//		// TODO ClasspathUtils.collectClasspath(new String[] { GenericOvertureInstallType.EMBEDDED_VDMJ_BUNDLE_ID, GenericOvertureInstallType.DBGP_FOR_VDMJ_BUNDLE_ID }, result);
-//		ClasspathUtils.collectClasspath
-//				(
-//					new String[]
-//					      {
-//							"org.overture.ide.generated.vdmj" //TODO put in constant file
-//							//VDMToolsInstallType.DBGP_FOR_VDMTOOLS_BUNDLE_ID,
-//							//GenericOvertureInstalltype.DBGP_FOR_VDMTOOLS_BUNDLE_ID,
-//							//GenericOvertureInstalltype.DBGP_FOR_ABSTRACT_BUNDLE_ID
-//					      },
-//					result
-//				);
-//		try {
-//			final String[] classPath = computeBaseClassPath(myJavaProject);
-//			for (int i = 0; i < classPath.length; ++i) {
-//				result.add(classPath[i]);
-//			}
-//		} catch (CoreException e) {
-//		}
-//		return (String[]) result.toArray(new String[result.size()]);
-//	}
-//	
-//	protected static String[] computeBaseClassPath(IJavaProject myJavaProject) throws CoreException {
-//		if (!myJavaProject.exists())
-//			return CharOperation.NO_STRINGS;
-//		return JavaRuntime.computeDefaultRuntimeClassPath(myJavaProject);
-//	}
 
 	private static final String PLUGIN_LOCATION_ERROR = "Error determining classpath from bundle {0}"; //$NON-NLS-1$
 }

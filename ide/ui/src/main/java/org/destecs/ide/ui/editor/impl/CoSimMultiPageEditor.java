@@ -30,6 +30,7 @@ import org.destecs.core.vdmlink.LinkInfo;
 import org.destecs.core.vdmlink.Links;
 import org.destecs.ide.core.resources.IDestecsProject;
 import org.destecs.ide.core.utility.ParserUtil;
+import org.destecs.ide.ui.DestecsUIPlugin;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -275,8 +276,7 @@ public class CoSimMultiPageEditor extends MultiPageEditorPart implements
 				file.create(new ByteArrayInputStream("".getBytes()), true, null);
 			} catch (CoreException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsUIPlugin.log("Failed to create contract file in editor", e);
 			}
 		}
 		return new FileEditorInput(file);
