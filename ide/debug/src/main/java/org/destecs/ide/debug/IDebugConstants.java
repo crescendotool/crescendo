@@ -100,4 +100,6 @@ public interface IDebugConstants {
 	public static final String DESTECS_ACA_20SIM_IMPLEMENTATIONS = "DESTECS_ACA_20SIM_IMPLEMENTATIONS".toLowerCase();
 	
 	public static final String IMPLEMENTATION_PREFIX = "model.implementations.";
+
+	public static final String DESTECS_ACA_20SIM_SETTINGS = "DESTECS_ACA_20SIM_SETTINGS".toString();
 }

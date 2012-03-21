@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.progress.UIJob;
 
 public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab{
@@ -241,7 +242,6 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 			{
 				ctUrlFromConfig = IDebugConstants.DEFAULT_CT_ENDPOINT;
 			}
-			
 
 			String ctbase = null;
 			if (project == null)
@@ -347,15 +347,45 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 	
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(IDebugConstants.DESTECS_ACA_20SIM_IMPLEMENTATIONS, "");
-		
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_20SIM_SETTINGS, "");
+		resetOptionsGroup();
+	}
+
+	private void resetOptionsGroup()
+	{
+		for (Control control : optionsGroup.getChildren())
+		{
+			control.dispose();
+		}		
+		Label label = new Label(optionsGroup,SWT.NONE);
+		label = new Label(optionsGroup, SWT.WRAP);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		label.setText("No element selected");
+		optionsGroup.layout();
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
-			String acaImplementations = configuration.getAttribute(IDebugConstants.DESTECS_ACA_20SIM_IMPLEMENTATIONS,"");
-			
+			resetOptionsGroup();
+			//
 			HashSet<String[]> settingsSet = new HashSet<String[]>();
-			String[] splitSettings = acaImplementations.split(";");
+			
+			//Reading back the settings
+			String settingsString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_20SIM_SETTINGS,"");
+			String[] splitSettings = settingsString.split(";");
+			
+			for (String setting : splitSettings) {
+				String[] splitSetting = setting.split("=");
+				if(splitSetting.length == 2)
+				{					
+					settingsSet.add(splitSetting);
+				}
+			}
+			
+			
+			//Reading back the implementations 
+			settingsString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_20SIM_IMPLEMENTATIONS,"");
+			splitSettings = settingsString.split(";");
 			
 			for (String setting : splitSettings) {
 				String[] splitSetting = setting.split("=");
@@ -365,6 +395,9 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 					settingsSet.add(splitSetting);
 				}
 			}
+			
+			
+			
 			
 			settingsRootNode = SettingTreeNode.createAcaSettingsTreeFromConfiguration(settingsSet);
 			settingsTreeViewer.setInput(settingsRootNode);
@@ -377,6 +410,7 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(IDebugConstants.DESTECS_ACA_20SIM_IMPLEMENTATIONS, settingsRootNode.toImplementationAcaString());
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_20SIM_SETTINGS, settingsRootNode.toSettingsAcaString());
 		
 	}
 

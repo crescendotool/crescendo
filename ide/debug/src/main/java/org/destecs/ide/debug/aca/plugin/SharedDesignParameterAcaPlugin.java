@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.destecs.core.parsers.SdpParserWrapper;
+import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.IAcaGeneratorPlugin;
 import org.eclipse.core.resources.IProject;
@@ -141,12 +142,13 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 			}
 		}
 		
-		printPermutations(configs);
+		//printPermutations(configs);
 		return configs;
 	}
 
 	
 
+	@SuppressWarnings("unused")
 	private void printPermutations(Set<ILaunchConfiguration> configs)
 	{
 		System.out.println("Printing permutations");
@@ -157,8 +159,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 				System.out.println(iLaunchConfiguration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, ""));
 				
 			} catch (CoreException e)
-			{
-				// TODO Auto-generated catch block
+			{			
 				e.printStackTrace();
 			}
 		}
@@ -184,8 +185,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 					configs.add(copy);
 				} catch (CoreException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					DestecsDebugPlugin.log(e);					
 				}
 			}
 		}
@@ -219,8 +219,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DestecsDebugPlugin.log(e);	
 		}
 
 	}
@@ -247,8 +246,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 			}
 		} catch (CoreException e1)
 		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			DestecsDebugPlugin.log(e1);	
 		}
 		
 		return sdps;
@@ -274,8 +272,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 			}
 		} catch (CoreException e1)
 		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			DestecsDebugPlugin.log(e1);	
 		}
 		return sdps;
 	}

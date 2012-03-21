@@ -67,6 +67,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -602,11 +603,25 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_LOG_VARIABLES, "");
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
+		resetOptionsGroup();
+	}
+
+	private void resetOptionsGroup()
+	{
+		for (Control control : optionsGroup.getChildren())
+		{
+			control.dispose();
+		}		
+		Label label = new Label(optionsGroup,SWT.NONE);
+		label = new Label(optionsGroup, SWT.WRAP);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		label.setText("No element selected");
+		optionsGroup.layout();
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration)
 	{
-		
+		resetOptionsGroup();
 		/* 
 		 * Initializing the variables to log table
 		 */

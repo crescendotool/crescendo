@@ -29,6 +29,7 @@ import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.aca.AcaGenerator;
 import org.destecs.ide.debug.aca.plugin.ArchitecturesAcaPlugin;
+import org.destecs.ide.debug.aca.plugin.CTImplementationsAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.CTSettingsAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.IncludeBaseConfigAcaPlugin;
 import org.destecs.ide.debug.aca.plugin.ScenarioAcaPlugin;
@@ -82,6 +83,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		generator.addGenerator(new ArchitecturesAcaPlugin());
 		generator.addGenerator(new SharedDesignParameterAcaPlugin());
 		generator.addGenerator(new ScenarioAcaPlugin());
+		generator.addGenerator(new CTImplementationsAcaPlugin());
 		generator.addGenerator(new CTSettingsAcaPlugin());
 
 		monitor.worked(10);

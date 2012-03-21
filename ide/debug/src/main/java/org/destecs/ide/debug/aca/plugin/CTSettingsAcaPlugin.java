@@ -27,7 +27,7 @@ public class CTSettingsAcaPlugin implements IAcaGeneratorPlugin {
 		String unparsedString;
 		try
 		{
-			unparsedString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_20SIM_IMPLEMENTATIONS, "");
+			unparsedString = configuration.getAttribute(IDebugConstants.DESTECS_ACA_20SIM_SETTINGS, "");
 			if(unparsedString.trim().length() == 0)
 			{
 				return new HashSet<ILaunchConfiguration>(configurations);
@@ -60,7 +60,7 @@ public class CTSettingsAcaPlugin implements IAcaGeneratorPlugin {
 			
 			for (String setting : settingsPermutations) {
 				ILaunchConfigurationWorkingCopy workingCopy = configuration.getWorkingCopy();
-				workingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, setting);
+				workingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, setting);
 				workingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
 				results.add(workingCopy);
 			}

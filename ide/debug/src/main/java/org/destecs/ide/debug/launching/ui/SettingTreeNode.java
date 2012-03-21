@@ -148,11 +148,14 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 				SettingTreeNode newNode = convertToSettingTreeNode(settingItem);
 				if(oldSettingsNodeTree != null)
 				{
-					String oldValue = oldSettingsNodeTree.getValueForKey(newNode.getKey());
-					if(oldValue != null)
+					SettingTreeNode oldTreeNode = oldSettingsNodeTree.getValueForKey(newNode.getKey());
+					if(oldTreeNode != null)
 					{
-						newNode.value = oldValue;
+						newNode.value = oldTreeNode.value;
+						newNode.acaValues = oldTreeNode.acaValues;
 					}
+					
+					
 				}
 				
 				newNode.setTab(tab);
@@ -494,6 +497,34 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		return sb.toString();
 	}
 	
+	public String toSettingsAcaString()
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		if(!(this.isVirtual || this.implementation) && this.acaValues.size() > 0)
+		{
+			sb.append(key);
+			sb.append("=");
+			int acaValuesSize = acaValues.size();
+			for (int i=0; i<acaValuesSize-1;i++) 
+			{
+				sb.append(acaValues.get(i));
+				sb.append(",");
+			}
+			sb.append(acaValues.get(acaValuesSize-1));
+			
+			sb.append(";");
+		}
+		
+
+		for (SettingTreeNode child : children) {
+			sb.append(child.toSettingsAcaString());
+		}
+		
+		return sb.toString();
+	}
+
+	
 	public String toImplementationString()
 	{
 		StringBuffer sb = new StringBuffer();
@@ -542,16 +573,16 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 		return sb.toString();
 	}
 
-	public String getValueForKey(String key)
+	public SettingTreeNode getValueForKey(String key)
 	{
 		
 		if(this.key.equals(key))
 		{
-			return this.value;
+			return this;
 		}
 		
 		for (SettingTreeNode node : this.children) {
-			String result = node.getValueForKey(key);
+			SettingTreeNode result = node.getValueForKey(key);
 			if(result != null)
 			{
 				return result;
@@ -611,20 +642,25 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 
 	private void createOptionGUIforAca(Group optionsGroup) {
 		switch (type) {
-		case Bool:
-			//createBoolOptionGUIforAca(optionsGroup);			
-			break;
-		case Double:
-			//createDoubleGUI(optionsGroup);
-			break;
 		case String:
 			createStringGUIforAca(optionsGroup);
 			break;
 		case Unknown:
+		case Double:
+		case Bool:
 		default:
+			createNoOptionsGUIforACA(optionsGroup);
 			break;
 		}
 		
+	}
+
+	private void createNoOptionsGUIforACA(Group optionsGroup)
+	{
+		Label label = new Label(optionsGroup,SWT.NONE);
+		label = new Label(optionsGroup, SWT.WRAP);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		label.setText("This option is not available in ACA mode.");
 	}
 
 	private void createStringGUIforAca(Group optionsGroup) {
@@ -644,7 +680,7 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 			tableViewer.setSorter(new Clp20simLogViewerSorter());
 
 			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText("Variable Name");
+			column.setText("Name");
 			column.setWidth(200);
 
 			GridData gd = new GridData(GridData.FILL_BOTH);
@@ -691,6 +727,10 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 					}
 				}
 			});
+		}
+		else
+		{
+			createNoOptionsGUIforACA(optionsGroup);
 		}
 		
 	}
