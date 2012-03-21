@@ -67,8 +67,8 @@ public class CoSimulationThread extends Thread
 			engine.simulate(shareadDesignParameters, totalSimulationTime);
 		} catch (Throwable e)
 		{
-			// e.printStackTrace();
 			exceptions.add(e);
+			DestecsDebugPlugin.log(e);
 			if (log != null)
 			{
 				log.flush();
