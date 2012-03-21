@@ -308,10 +308,10 @@ FunctionEnd
 
 
 Function writeRegistryKey
-${If} ${RunningX64}
-    WriteRegDWORD HKCU "Software\Wow6432Node\20-sim\version 4.2\tools\general" "xmlrpc" 1
-${Else}
+;${If} ${RunningX64}
+;    WriteRegDWORD HKCU "Software\Wow6432Node\20-sim\version 4.2\tools\general" "xmlrpc" 1
+;${Else}
     WriteRegDWORD HKCU "Software\20-sim\version 4.2\tools\general" "xmlrpc" 1
-${EndIf}
+;${EndIf}
 FunctionEnd
 
