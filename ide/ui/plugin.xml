@@ -95,6 +95,7 @@
             <contentExtension
                   pattern="org.destecs.ide.ui.navigator.resources.filters.*">
             </contentExtension>
+            <contentExtension pattern="org.overture.resources.filters.coverageeditor.endsWithCovTbl"/>
             
          </includes>
       </viewerContentBinding>
