@@ -60,6 +60,11 @@ public class Links
 		}
 		return result;
 	}
+	
+	public List<String> getSharedDesignParametersList()
+	{
+		return designParameters;
+	}
 
 	public Map<String, LinkInfo> getOutputs()
 	{
@@ -72,6 +77,11 @@ public class Links
 		return result;
 	}
 
+	public List<String> getOutputsList()
+	{
+		return outputs;
+	}
+	
 	public Map<String, LinkInfo> getInputs()
 	{
 
@@ -82,6 +92,11 @@ public class Links
 			result.put(input, link.get(input));
 		}
 		return result;
+	}
+	
+	public List<String> getInputsList()
+	{
+		return inputs;
 	}
 	
 	public Map<String, LinkInfo> getModel()
@@ -107,6 +122,11 @@ public class Links
 		return result;
 	}
 
+	public List<String> getEventsList()
+	{
+		return events;
+	}
+	
 	@Deprecated
 	public StringPair getBoundVariable(String name)
 	{

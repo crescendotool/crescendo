@@ -40,7 +40,7 @@ public class Variable implements IVariable
 	
 	public enum VariableType
 	{
-		SharedDesignParameter("design_parameter"), Controlled("controlled"), Monitored("monitored");
+		SharedDesignParameter("design_parameter"), Controlled("controlled"), Monitored("monitored"), Event("event");
 		
 		public final String syntaxName;
 		private VariableType(String name)

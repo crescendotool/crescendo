@@ -18,6 +18,7 @@
  *******************************************************************************/
 package org.destecs.core.contract;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -29,12 +30,13 @@ public class Contract
 //	public final String name;
 	
 	private final List<IVariable> variables;
-	private final List<String> events;
+	//private final List<String> events;
 	
-	public Contract( List<IVariable> variables, List<String> events) {
+	public Contract( List<IVariable> variables)//, List<String> events) {
+	{
 //		this.name = name;
 		this.variables = variables;
-		this.events = events;
+		//this.events = events;
 	}
 	
 	private List<IVariable> filterVariables(VariableType... filter)
@@ -70,29 +72,35 @@ public class Contract
 		return filterVariables(VariableType.SharedDesignParameter);
 	}
 	
+	public List<IVariable> getEventsWithLineNumbers()
+	{
+		return filterVariables(VariableType.Event);
+	}
+	
 	public List<String> getEvents()
 	{
-		return events;
+		List<IVariable> events = getEventsWithLineNumbers();
+		List<String> result = new ArrayList<String>();
+		for (IVariable iVariable : events)
+		{
+			result.add(iVariable.getName());
+		}
+		
+		return result;
 	}
+	
+	
 	
 	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
 		
-//		sb.append("contract "+name+"\n");
-		
-		for (String event : events)
-		{
-			sb.append("event "+event+";\n");
-		}
-		
 		for (IVariable var : variables)
 		{
 			sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+ " := "+ var.getValue()+";\n");
 		}
 		
-//		sb.append("end "+name+"\n");
 		return sb.toString();
 	}
 }

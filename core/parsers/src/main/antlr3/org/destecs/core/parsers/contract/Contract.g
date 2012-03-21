@@ -24,6 +24,7 @@ package org.destecs.core.parsers.contract;
 
 import org.destecs.core.contract.Contract;
 import org.destecs.core.contract.Variable;
+import org.destecs.core.contract.Event;
 import org.destecs.core.contract.Variable.VariableType;
 import org.destecs.core.contract.Variable.DataType;
 import org.destecs.core.contract.ContractFactory;
@@ -319,7 +320,7 @@ arrayspec returns [List<Integer> sizes]
 events 
 
   : EVENT ID ';' 
-  {contract.addEvent($ID.text);}
+  {contract.addVariable(new Event($ID.text,$ID.getLine()));}
   
 	;	
 

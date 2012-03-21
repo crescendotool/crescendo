@@ -27,11 +27,11 @@ public class ContractFactory {
 
 //	private String name = null;
 	private List<IVariable> variables = null;
-	private List<String> events = null;
+	//private List<String> events = null;
 	
 	public ContractFactory() {
 		this.variables = new ArrayList<IVariable>();
-		this.events = new ArrayList<String>();
+	//	this.events = new ArrayList<String>();
 	}
 
 //	public void setName(String name) {
@@ -42,26 +42,24 @@ public class ContractFactory {
 		this.variables.add(var);
 	}
 	
-	public void addEvent(String event){
-		this.events.add(event);
-	}
+//	public void addEvent(String event){
+//		this.events.add(event);
+//	}
 	
 	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
 		
-//		sb.append("contract "+name+"\n");
-		
-		for (String event : events)
-		{
-			sb.append("event "+event+";\n");
-		}
-		
 		for (IVariable var : variables)
 		{
+			
 			if(var.getType() == VariableType.SharedDesignParameter){
 				sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName() + ";\n");
+			}
+			else if(var.getType() == VariableType.Event)
+			{
+				sb.append(var.getType().syntaxName+" "+ var.getName() + ";\n");
 			}
 			else{
 				sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+ " := "+ var.getValue()+";\n");	
@@ -69,12 +67,11 @@ public class ContractFactory {
 			
 		}
 		
-//		sb.append("end "+name+"\n");
 		return sb.toString();
 	}
 	
 	public Contract getContract(){
-		Contract contract = new Contract(this.variables,this.events);
+		Contract contract = new Contract(this.variables);
 		return contract;	
 	}
 
