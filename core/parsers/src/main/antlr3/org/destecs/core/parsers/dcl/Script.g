@@ -287,7 +287,7 @@ statementList returns [List<PStm> valueList]
     {
       $valueList = new Vector<PStm>();
     }
-  : (statement ';'{$valueList.add($statement.value);})*
+  : (statement ';'{if($statement.value != null ){$valueList.add($statement.value);}})*
   ;
   
   
@@ -296,7 +296,7 @@ revertStatementList returns [List<ARevertStm> valueList]
     {
       $valueList = new Vector<ARevertStm>();
     }
-  : (revertStatement ';' {$valueList.add($revertStatement.value);})*
+  : (revertStatement ';' {if($revertStatement.value != null) {$valueList.add($revertStatement.value);}})*
   ;  
   
   
