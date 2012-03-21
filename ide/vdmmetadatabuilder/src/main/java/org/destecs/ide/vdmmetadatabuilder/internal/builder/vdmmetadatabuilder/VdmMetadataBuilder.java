@@ -138,9 +138,6 @@ public class VdmMetadataBuilder extends
 								{
 									save(props, node.getName() + "."
 											+ def.getName(), typeName+ "," + "variable");
-								}else
-								{
-									System.out.println(def);
 								}
 							}
 							else
