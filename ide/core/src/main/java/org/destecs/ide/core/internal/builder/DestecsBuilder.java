@@ -1,6 +1,11 @@
 package org.destecs.ide.core.internal.builder;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.core.contract.Contract;
@@ -154,6 +159,7 @@ public class DestecsBuilder
 			try
 			{
 				model.setContract(ParserUtil.getContract(project, errorHandler));
+				
 			} catch (Exception e)
 			{
 				addError(project.getContractFile(), 0,
@@ -177,8 +183,13 @@ public class DestecsBuilder
 	private static boolean typeCheckLinks(IFile file, Links vdmlinks,
 			Contract contract)
 	{
-		boolean failed = false;
 
+		//check duplicates on all parts of the link
+		checkDuplicates(vdmlinks.getSharedDesignParametersList(),vdmlinks.getSharedDesignParameters(),file);
+		checkDuplicates(vdmlinks.getOutputsList(),vdmlinks.getOutputs(),file);
+		checkDuplicates(vdmlinks.getInputsList(),vdmlinks.getInputs(),file);
+		checkDuplicates(vdmlinks.getEventsList(),vdmlinks.getEvents(),file);
+		
 		// check outputs
 		for (LinkInfo var : vdmlinks.getSharedDesignParameters().values())// )
 		{
@@ -224,7 +235,37 @@ public class DestecsBuilder
 			}
 		}
 
-		return !failed;
+		return true;
+	}
+
+
+	private static void checkDuplicates(List<String> list, Map<String, LinkInfo> map, IFile file)
+	{
+		List<String> identifiersList = new ArrayList<String>();
+		
+		for (String id : list)
+		{
+			identifiersList.add(id);
+		}
+		
+		Set<String> identifiersSet = new HashSet<String>(identifiersList);
+		if(identifiersSet.size() < identifiersList.size())
+		{
+			for (String string : identifiersSet)
+			{
+				identifiersList.remove(string);
+			}
+			
+			for (String string : identifiersList)
+			{
+				LinkInfo linkInfo = map.get(string);
+				
+				addError(file, linkInfo.getLine()+1, "Duplicated identifier - " + linkInfo.getIdentifier());
+			}
+		}
+		
+		
+		
 	}
 
 	private static boolean hasVariable(String identifier,
@@ -254,6 +295,11 @@ public class DestecsBuilder
 	{
 		boolean failed = false;
 
+		
+		setDuplicationWarnings(contract,file);
+		
+		
+		
 		// check outputs
 		for (IVariable var : contract.getSharedDesignParameters())
 		{
@@ -320,6 +366,60 @@ public class DestecsBuilder
 		}
 
 		return !failed;
+	}
+
+
+	private static void setDuplicationWarnings(Contract contract, IFile file)
+	{
+		
+		List<String> allIdentifiersList = new ArrayList<String>();
+		
+		allIdentifiersList.addAll(getIdentifiers(contract.getControlledVariables()));
+		allIdentifiersList.addAll(getIdentifiers(contract.getMonitoredVariables()));
+		allIdentifiersList.addAll(getIdentifiers(contract.getSharedDesignParameters()));
+		allIdentifiersList.addAll(contract.getEvents());
+		
+		
+		Set<String> allIdentifiersSet = new HashSet<String>(allIdentifiersList);
+		if(allIdentifiersSet.size() < allIdentifiersList.size())
+		{
+			for (String string : allIdentifiersSet)
+			{
+				allIdentifiersList.remove(string);
+			}
+			
+			markDuplication(allIdentifiersList,contract.getControlledVariables(),file);
+			markDuplication(allIdentifiersList,contract.getMonitoredVariables(),file);
+			markDuplication(allIdentifiersList,contract.getSharedDesignParameters(),file);
+			markDuplication(allIdentifiersList,contract.getEventsWithLineNumbers(),file);
+			
+		}
+		
+	}
+
+	private static void markDuplication(List<String> allIdentifiersList,
+			List<IVariable> variables, IFile file)
+	{
+		for (IVariable iVariable : variables)
+		{
+			if(allIdentifiersList.contains(iVariable.getName()))
+			{
+				addError(file, iVariable.getLine()+1, "Duplicated identifier - " + iVariable.getName());
+			}
+		}
+		
+	}
+
+	private static Collection<? extends String> getIdentifiers(
+			List<IVariable> controlledVariables)
+	{
+		List<String> result = new ArrayList<String>();
+		for (IVariable iVariable : controlledVariables)
+		{
+			result.add(iVariable.getName());
+		}
+		
+		return result;
 	}
 
 	private static boolean typeCheck(IFile file, Contract contract)
