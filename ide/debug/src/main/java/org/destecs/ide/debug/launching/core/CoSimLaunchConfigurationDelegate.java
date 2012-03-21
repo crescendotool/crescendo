@@ -574,7 +574,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			logfile = (remoteRelativeProjectPath+"\\output\\"+resultFolderRelativePath+"\\"+"20simVariables.csv").replace("/","\\");
 		}
 
-		if (model.logVariables.size() > 1)
+		if (logVariables20Sim.size() > 1)
 		{
 			model.logVariables.addAll(logVariables20Sim);
 			model.logFile = logfile;
