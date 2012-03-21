@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.destecs.ide.libraries.DestecsLibraryPlugin;
 import org.destecs.ide.libraries.ILibrariesConstants;
 import org.destecs.ide.libraries.util.PluginFolderInclude;
 
@@ -72,22 +73,20 @@ public class LibStore
 						loadedLibs.add(Library.create(props,pathToLibFolder));
 					} catch (FileNotFoundException e)
 					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						DestecsLibraryPlugin.log("Library not found", e);
 					} catch (IOException e)
 					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						DestecsLibraryPlugin.log("Library could not be read", e);
 					}
 				}
 
 			}
 		} catch (FileNotFoundException e)
 		{
-			e.printStackTrace();
+			DestecsLibraryPlugin.log("Library not found", e);
 		} catch (IOException e)
 		{
-			e.printStackTrace();
+			DestecsLibraryPlugin.log("Library could not be read", e);
 		} finally
 		{
 			try
@@ -98,7 +97,7 @@ public class LibStore
 				}
 			} catch (IOException e)
 			{
-				e.printStackTrace();
+				DestecsLibraryPlugin.log("Library file could not be closed", e);
 			}
 		}
 

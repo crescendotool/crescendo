@@ -15,5 +15,19 @@
              project="false">
       </wizard>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.destecs.ide.libraries.upgradeLibraryCommand"
+            name="Upgrade Library Link">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.destecs.ide.libraries.handlers.UpgradeLibraryLinkHandler"
+            commandId="org.destecs.ide.libraries.upgradeLibraryCommand">
+      </handler>
+   </extension>
 
 </plugin>

@@ -44,14 +44,10 @@ public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 	{
 		try
 		{
-			LibraryUtil.createSelectedLibraries(project,
-					_pageTwo.getLibrarySelection());
+			LibraryUtil.createSelectedLibraries(project, _pageTwo.getLibrarySelection());
 		} catch (CoreException e)
 		{
-			// if (VdmUIPlugin.DEBUG)
-			{
-				e.printStackTrace();
-			}
+			DestecsLibraryPlugin.log(e);
 			return false;
 		}
 		return true;
@@ -62,8 +58,7 @@ public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 
 		if (selection.getFirstElement() instanceof IResource)
 		{
-			IProject project = (IProject) ((IResource) selection
-					.getFirstElement()).getProject();
+			IProject project = (IProject) ((IResource) selection.getFirstElement()).getProject();
 			this.project = project;
 		}
 
@@ -75,13 +70,5 @@ public class AddLibraryWizard extends Wizard implements IWorkbenchWizard
 		_pageTwo = new LibraryIncludePage("Add Library");
 		addPage(_pageTwo);
 	}
-
-	// @Override
-	// public boolean canFinish()
-	// {
-	//
-	// return
-	// super.canFinish()&&_pageTwo.getLibrarySelection().getSelectedLibs().size()>0;
-	// }
 
 }

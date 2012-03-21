@@ -21,6 +21,7 @@ package org.destecs.ide.libraries.util;
 import java.io.File;
 import java.io.IOException;
 
+import org.destecs.ide.libraries.DestecsLibraryPlugin;
 import org.destecs.ide.libraries.ILibrariesConstants;
 import org.destecs.ide.libraries.store.Library;
 import org.destecs.ide.libraries.wizard.LibrarySelection;
@@ -30,6 +31,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
@@ -81,13 +83,24 @@ public class LibraryUtil
 				}
 			} catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DestecsLibraryPlugin.log("Failed to create library: "+ lib.name, e);
 			}
 		}
 
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
+	}
+
+	public static void updateLink(IResource resource, Library lib, String file,
+			String outputFolder,boolean refresh) throws CoreException
+	{
+		resource.delete(true, new NullProgressMonitor());
+		IProject project = resource.getProject();
+		createLink(project, lib, file, outputFolder);
+		if(refresh)
+		{
+			project.refreshLocal(IResource.DEPTH_INFINITE, null);
+		}
 	}
 
 	@SuppressWarnings("deprecation")

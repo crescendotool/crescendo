@@ -21,5 +21,6 @@ package org.destecs.ide.ui;
 public interface IDestecsUiConstants {
 
 	public static final String PLUGIN_ID = "org.destecs.ide.ui";
+	public static final String UPGRADE_LIBRARY_COMMANDID = "org.destecs.ide.libraries.upgradeLibraryCommand";
 	
 }
