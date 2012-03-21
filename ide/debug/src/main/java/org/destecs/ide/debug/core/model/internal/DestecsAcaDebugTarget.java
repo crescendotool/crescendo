@@ -178,7 +178,7 @@ public class DestecsAcaDebugTarget extends PlatformObject implements
 		try
 		{
 			String content = OctaveFactory.createAcaResultScript(outputFolder.getName(), acaManager.getCompletedTargets(),launch.getLaunchConfiguration().getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
-			writeFile(outputFolder, "results.m", content);
+			writeFile(outputFolder, IDebugConstants.OCTAVE_PLOT_FILE, content);
 		} catch (IOException e)
 		{
 			DestecsDebugPlugin.logError("Failed to write Octave script file for ACA debug target.", e);

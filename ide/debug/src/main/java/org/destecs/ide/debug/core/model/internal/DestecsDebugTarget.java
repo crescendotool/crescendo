@@ -167,7 +167,7 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 			try
 			{
 				String content = OctaveFactory.createResultScript(outputFolder.getName(), deCsvFile, ctCsvFile,launch.getLaunchConfiguration().getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
-				writeFile(outputFolder, "results.m", content);
+				writeFile(outputFolder, IDebugConstants.OCTAVE_PLOT_FILE, content);
 				
 			} catch (IOException e)
 			{

@@ -326,7 +326,7 @@ public class DestecsDebugPlugin extends AbstractUIPlugin {
 	 */
 	@Override
 	protected void initializeDefaultPreferences(IPreferenceStore store) {
-//		store.setDefault(IDebugPreferenceConstants.PREF_DBGP_PORT, IDebugPreferenceConstants.DBGP_AVAILABLE_PORT);
+		store.setDefault(IDebugConstants.OCTAVE_PATH, IDebugConstants.DEFAULT_OCTAVE_PATH);
 //		store.setDefault(IDebugPreferenceConstants.PREF_DBGP_CONNECTION_TIMEOUT, IDebugPreferenceConstants.DBGP_DEFAULT_CONNECTION_TIMEOUT);
 	}
 

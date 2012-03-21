@@ -130,6 +130,10 @@
           id="org.destecs.ide.debug.relaunchCommand"
           name="Relaunch">
     </command>
+    <command
+          id="org.destecs.ide.debug.executeOctaveCommand"
+          name="Execute Octave">
+    </command>
  </extension>
  <extension
        point="org.eclipse.ui.handlers">
@@ -137,8 +141,22 @@
           class="org.destecs.ide.debug.launching.internal.RelaunchHandler"
           commandId="org.destecs.ide.debug.relaunchCommand">
     </handler>
+    <handler
+          class="org.destecs.ide.debug.octave.ExecuteOctaveHandler"
+          commandId="org.destecs.ide.debug.executeOctaveCommand">
+    </handler>
  </extension>
 
+
+<extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.destecs.ide.ui.page"
+            class="org.destecs.ide.debug.octave.internal.WorkbenchPreferencePageOctave"
+            id="org.destecs.ide.debug.octave"
+            name="Octave">
+      </page>
+   </extension>
 <!--
 For menu additions see: 
 org.eclipse.ui.ide
@@ -177,12 +195,46 @@ http://help.eclipse.org/helios/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2
      </menuContribution>
    </extension>
    
+   <extension
+         point="org.eclipse.ui.menus">
+         <menuContribution
+           locationURI="popup:org.destecs.ui?after=additions">
+       
+           <command
+                 commandId="org.destecs.ide.debug.executeOctaveCommand"
+                 icon="icons/ctool16/octave.gif"
+                 label="Run Octave"
+                 style="push">
+              <visibleWhen
+                    checkEnabled="false">
+                 <iterate>
+                 <with variable="activeMenuSelection">
+                     <reference definitionId="org.destecs.debug.octavescriptfile"/>
+                  </with>
+                 </iterate>
+              </visibleWhen>
+           </command>
+       
+     </menuContribution>
+   </extension>
+   
    <extension point="org.eclipse.core.expressions.definitions">
       <definition id="org.destecs.debug.relaunchfile">
          <iterate ifEmpty="false">
             <adapt type="org.eclipse.core.resources.IFile">
                <test property="org.eclipse.core.resources.name" 
                      value="*.dlaunch"/>
+            </adapt>
+         </iterate>
+      </definition>
+   </extension>
+   
+    <extension point="org.eclipse.core.expressions.definitions">
+      <definition id="org.destecs.debug.octavescriptfile">
+         <iterate ifEmpty="false">
+            <adapt type="org.eclipse.core.resources.IFile">
+               <test property="org.eclipse.core.resources.name" 
+                     value="*.m"/>
             </adapt>
          </iterate>
       </definition>
