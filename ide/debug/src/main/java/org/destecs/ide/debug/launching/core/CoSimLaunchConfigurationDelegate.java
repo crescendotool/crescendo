@@ -563,26 +563,23 @@ public class CoSimLaunchConfigurationDelegate extends
 
 	private ModelConfig getCtModelConfig(File ctFile)
 	{
+		String logfile = null;
+		CtModelConfig model = null;
 		if(!useRemoteCtSimulator)
 		{
-			CtModelConfig model = new CtModelConfig(ctFile.getAbsolutePath());
-			model.logVariables.addAll(logVariables20Sim);
-			if (model.logVariables.size() > 1)
-			{
-				model.logFile = new File(outputFolder, "20simVariables.csv").getAbsolutePath();
-			}
-			return model;
+			model = new CtModelConfig(ctFile.getAbsolutePath());
+			logfile = new File(outputFolder, "20simVariables.csv").getAbsolutePath();
 		}else{
-			CtModelConfig model = new CtModelConfig((remoteRelativeProjectPath+"\\"+ctFilePathRelative).replace("/","\\"));
-			model.logVariables.addAll(logVariables20Sim);
-			if (model.logVariables.size() > 1)
-			{
-				model.logFile = (remoteRelativeProjectPath+"\\output\\"+resultFolderRelativePath+"\\"+"20simVariables.csv").replace("/","\\");
-			}
-			return model;
+			model = new CtModelConfig((remoteRelativeProjectPath+"\\"+ctFilePathRelative).replace("/","\\"));
+			logfile = (remoteRelativeProjectPath+"\\output\\"+resultFolderRelativePath+"\\"+"20simVariables.csv").replace("/","\\");
 		}
 
-		
+		if (model.logVariables.size() > 1)
+		{
+			model.logVariables.addAll(logVariables20Sim);
+			model.logFile = logfile;
+		}
+		return model;
 	}
 
 	private ModelConfig getDeModelConfig(IProject project2, int port)
