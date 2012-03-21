@@ -501,23 +501,15 @@ public class CoSimImpl implements IDestecs
 	{
 		try
 		{
-			boolean success = false;
+			boolean success = true;
 
 			if (data.values().size() > 0)
 			{
-				System.out.println(data.values().getClass());
-				System.out.println(data.values());
-				for (Object parms : data.values())
+				Object t = data.get("parameters");
+				for (Object parms : (Object[])t)
 				{
-					System.out.println("parms: "+parms);
-					System.out.println(parms.getClass());
-					for (Object tmp2 : (Object[]) parms)
-					{
-						System.out.println("tmp2: " + tmp2);
-						System.out.println(tmp2.getClass());
-						Map<String, Object> s = (Map<String, Object>) tmp2;
-						success = setParameter(s);
-					}
+					Map<String, Object> s = (Map<String, Object>) parms;
+					success =success && setParameter(s);
 				}
 				return success;
 			}
