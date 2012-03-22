@@ -144,7 +144,7 @@ public class SimulationEngine
 	/**
 	 * Default step size in case of deadlocked de controller
 	 */
-	private static final double DEFAULT_MIN_TIME_STEP = 0.00001;
+	private static final double DEFAULT_MIN_TIME_STEP = 0.0001;
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
@@ -696,7 +696,7 @@ public class SimulationEngine
 				{
 					abort(Simulator.CT, "Simulator not able to progress to "
 							+ deResult.time + " could only do " + ctResult.time
-							+ " with not events detected. Simulation is stuck!");
+							+ " and no events were detected. Simulation is stuck!");
 				}
 
 				// Step DT - step
