@@ -608,6 +608,11 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 
 	private void resetOptionsGroup()
 	{
+		if(optionsGroup == null)
+		{
+			return;
+		}
+		
 		for (Control control : optionsGroup.getChildren())
 		{
 			control.dispose();

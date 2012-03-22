@@ -353,6 +353,11 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 
 	private void resetOptionsGroup()
 	{
+		if(optionsGroup == null)
+		{
+			return;
+		}
+		
 		for (Control control : optionsGroup.getChildren())
 		{
 			control.dispose();
@@ -367,7 +372,6 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
 			resetOptionsGroup();
-			//
 			HashSet<String[]> settingsSet = new HashSet<String[]>();
 			
 			//Reading back the settings
