@@ -82,7 +82,6 @@ public class CoSim
 		log.addAppender(new ConsoleAppender(new SimpleLayout()));
 		log.setLevel(Level.OFF);
 		
-		
 
 		if (!DEBUG)
 		{
