@@ -46,12 +46,13 @@ public abstract class BaseReconcilingStrategy implements IReconcilingStrategy
 			{
 				parser.parse(currentDocument.getFile().getLocation().toFile(), currentDocument.get());
 
+				
 				if (parser.hasErrors())
 				{
 					for (Object err : parser.getErrors())
 					{
 						IError e = (IError) err;						
-						FileUtility.addMarker(currentDocument.getFile(),  e.getMessage(), e.getLine()+1, IMarker.SEVERITY_ERROR);
+						FileUtility.addMarker(currentDocument.getFile(),  e.getMessage(), e.getLine() == 0 ? currentDocument.getNumberOfLines() : e.getLine()+1,  IMarker.SEVERITY_ERROR);
 					}
 				}
 
