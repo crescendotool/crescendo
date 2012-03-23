@@ -148,7 +148,7 @@ public class ArchitectureSelectionTab extends AbstractAcaTab
 		if(project == null)
 		{
 			//setErrorMessage("No project is selected");
-			System.out.println("[Architectures] No base config is selected");
+			//System.out.println("[Architectures] No base config is selected");
 		}
 		else
 		{
