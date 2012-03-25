@@ -192,7 +192,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		
 		
 		checkBoxShowOctavePlot = new Button(group, SWT.CHECK);
-		checkBoxShowOctavePlot.setText("Show plot automaticaly when script is run");
+		checkBoxShowOctavePlot.setText("Show plot automaticaly when the script runs");
 		checkBoxShowOctavePlot.setSelection(false);
 		checkBoxShowOctavePlot.addSelectionListener(fListener);
 
