@@ -609,7 +609,8 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
-		// table.clearAll();
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_INCREMENTAL_SDPS,"");
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_VALUESET_SDPS, "");
 	}
 
 	@Override

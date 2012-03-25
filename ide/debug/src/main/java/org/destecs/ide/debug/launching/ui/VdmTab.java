@@ -681,7 +681,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		else
 		{
 			warningLabel.setText("Folder present");
-			
+			createFolderButton.setEnabled(false);
 			
 		}
 		
