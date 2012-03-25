@@ -264,7 +264,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		createLogGroup(comp);
 
 		createFaultField(comp);
-		createArchitectureFolderGroup(comp);
+		
 		createArchitectureGroup(comp);
 	}
 	
@@ -283,11 +283,13 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		group.setLayoutData(gd);
 
+		
 		GridLayout layout = new GridLayout();
 		layout.makeColumnsEqualWidth = false;
 		layout.numColumns = 2;
 		group.setLayout(layout);
 
+		createArchitectureFolderGroup(group);
 		
 		
 		Label label = new Label(group, SWT.MIN);
@@ -369,6 +371,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		Group group = new Group(comp, comp.getStyle());
 		group.setText("Architectures folder (\"model_de/architectures\")");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.horizontalSpan =2 ;
 		group.setLayoutData(gd);
 		group.setLayout(new GridLayout(2, false));
 		
