@@ -64,8 +64,12 @@ public class AcaGenerator
 		{
 			monitor.worked(step);
 			Collection<? extends ILaunchConfiguration> temp = g.generate(configuration, baseConfig, configurations,project,outputPreFix);
-			configurations.clear();
-			configurations.addAll(temp);
+			if(!temp.isEmpty())
+			{
+				configurations.clear();
+				configurations.addAll(temp);
+			}
+			
 		}
 		monitor.worked(maxProgress);
 		return configurations;
