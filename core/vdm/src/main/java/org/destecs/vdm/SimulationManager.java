@@ -67,6 +67,7 @@ import org.overturetool.vdmj.definitions.ValueDefinition;
 import org.overturetool.vdmj.expressions.IntegerLiteralExpression;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
 import org.overturetool.vdmj.expressions.SeqExpression;
+import org.overturetool.vdmj.expressions.UnaryMinusExpression;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexNameToken;
@@ -732,9 +733,7 @@ public class SimulationManager extends BasicSimulationManager
 
 									valueField.setDouble(token, newValue);
 									found = true;
-								}
-
-								if (vDef.exp instanceof IntegerLiteralExpression)
+								} else if (vDef.exp instanceof IntegerLiteralExpression || vDef.exp instanceof UnaryMinusExpression)
 								{
 									RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.exp.location));
 									Field valDefField = ValueDefinition.class.getField("exp");
