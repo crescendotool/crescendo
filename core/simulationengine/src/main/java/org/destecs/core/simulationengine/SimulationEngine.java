@@ -1015,42 +1015,134 @@ public class SimulationEngine
 			}
 		}
 
-		// TODO validate shared design parameters
-		// validate shared design parameters
-		// if(contract.getSharedDesignParameters().size()!=
-		// dtInterface.sharedDesignParameters.size())
-		// {
-		// abort(Simulator.DT,
-		// "Count of shared design parameters do not match: Contract("+
-		// contract.getSharedDesignParameters()+") actual ("+dtInterface.sharedDesignParameters+")");
-		// }
-		//
-		// if(contract.getSharedDesignParameters().size()!=
-		// ctInterface.sharedDesignParameters.size())
-		// {
-		// abort(Simulator.CT,
-		// "Count of shared design parameters do not match: Contract("+
-		// contract.getSharedDesignParameters()+") actual ("+ctInterface.sharedDesignParameters+")");
-		// }
-		//
-		// for (Variable var : contract.getSharedDesignParameters())
-		// {
-		// if (!dtInterface.sharedDesignParameters.contains(var.name))
-		// {
-		// abort(Simulator.DT, "Missing-shared design parameter: " + var);
-		// return false;
-		//
-		// }
-		// if (!ctInterface.sharedDesignParameters.contains(var.name))
-		// {
-		// abort(Simulator.CT, "Missing-shared design parameter: " + var);
-		// return false;
-		// }
-		// }
+		//validate shared design parameters
+		if (contract.getSharedDesignParameters().size() != dtInterface.sharedDesignParameters.size())
+		{
+			abort(Simulator.DE, "Count of shared design parameters do not match: Contract("
+					+ printListOfIVariable(contract.getSharedDesignParameters())
+					+ ") actual ("
+					+ printQueryInterfaceSdps(dtInterface.sharedDesignParameters) + ")");
+		}
 
+		if (contract.getSharedDesignParameters().size() != ctInterface.sharedDesignParameters.size())
+		{
+			abort(Simulator.CT, "Count of shared design parameters do not match: Contract("
+					+ printListOfIVariable(contract.getSharedDesignParameters())
+					+ ") actual ("
+					+ printQueryInterfaceSdps(ctInterface.sharedDesignParameters) + ")");
+		}
+
+		for (IVariable var : contract.getSharedDesignParameters())
+		{
+			if (!interfaceContainsSdp(dtInterface.sharedDesignParameters, var.getName()))
+			{
+				abort(Simulator.DE, "Missing-shared design parameter: "
+						+ var.getName());
+				return false;
+
+			}
+			if (!interfaceContainsSdp(ctInterface.sharedDesignParameters, var.getName()))
+			{
+				abort(Simulator.CT, "Missing-shared design parameter: "
+						+ var.getName());
+				return false;
+			}
+		}
+		 
+		//checking if models have more sdps than declared on the contract
+//		 
+//		for (QueryInterfaceStructsharedDesignParametersStruct sdp : dtInterface.sharedDesignParameters)
+//		{
+//			if(!contractContainsVariable(contract.getSharedDesignParameters(),sdp.name))
+//			{
+//				engineInfo(Simulator.DE, "[WARNING] DE Model contains a shared design parameter that is not " +
+//						"in the contract");
+//			}
+//		}
+//		
+//		for (QueryInterfaceStructsharedDesignParametersStruct sdp : ctInterface.sharedDesignParameters)
+//		{
+//			if(!contractContainsVariable(contract.getSharedDesignParameters(),sdp.name))
+//			{
+//				engineInfo(Simulator.CT, "[WARNING] CT Model contains a shared design parameter (" + sdp.name + ") that is not " +
+//						"in the contract");
+//			}
+//		}
+		
+		
 		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
 		return true;
+	}
+
+	private String printQueryInterfaceSdps(
+			List<QueryInterfaceStructsharedDesignParametersStruct> sharedDesignParameters)
+	{
+		int sdpSize = sharedDesignParameters.size();
+		
+		if(sdpSize == 0)
+		{
+			return "no variables";
+		}
+		else
+		{			
+			StringBuilder sb = new StringBuilder();
+			for(int i=0; i < sdpSize-1;i++)
+			{
+				sb.append(sharedDesignParameters.get(i).name);
+				sb.append(";");
+			}
+			sb.append(sharedDesignParameters.get(sdpSize-1).name);
+			
+			return sb.toString();
+		}
+	}
+
+	private String printListOfIVariable(List<IVariable> sharedDesignParameters)
+	{
+		int sdpSize = sharedDesignParameters.size();
+		
+		if(sdpSize == 0)
+		{
+			return "no variables";
+		}
+		else
+		{			
+			StringBuilder sb = new StringBuilder();
+			
+			for(int i=0; i < sdpSize-1;i++)
+			{
+				sb.append(sharedDesignParameters.get(i).getName());
+				sb.append(";");
+			}
+			sb.append(sharedDesignParameters.get(sdpSize-1).getName());			
+			
+			return sb.toString();
+		}
+		
+	}
+
+//	private boolean contractContainsVariable(
+//			List<IVariable> sharedDesignParameters, String name)
+//	{
+//		for (IVariable iVariable : sharedDesignParameters)
+//		{
+//			if(iVariable.getName().equals(name))
+//				return true;
+//		}
+//		return false;
+//	}
+
+	private boolean interfaceContainsSdp(
+			List<QueryInterfaceStructsharedDesignParametersStruct> sharedDesignParameters,
+			String name)
+	{
+		for (QueryInterfaceStructsharedDesignParametersStruct sdp : sharedDesignParameters)
+		{
+			if(sdp.name.equals(name))
+				return true;
+		}
+		return false;
 	}
 
 	private boolean interfaceContainsInput(QueryInterfaceStruct interface_,
