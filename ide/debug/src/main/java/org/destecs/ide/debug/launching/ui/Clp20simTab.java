@@ -78,11 +78,14 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 			try
 			{
 				ProxyICoSimProtocol protocol = Launch20simUtility.launch20sim(ctFile, ctUrl,remote);
+				if(protocol == null)
+				{
+					return new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Populating the tables failed");
+				}
+				
 				
 				SettingItem.readSettingsFromProtocol(protocol,settingItems);
 				settingsControl.populateControl(settingItems,tab);
-
-				
 				LogItem.readLogItemsFromProtocol(protocol,logItems);
 
 				final UIJob refreshTables = new UIJob("Refresh Tables Job")

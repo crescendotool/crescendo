@@ -58,6 +58,10 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 			try
 			{
 				ProxyICoSimProtocol protocol = Launch20simUtility.launch20sim(ctFile, ctUrl,remote);
+				if(protocol == null)
+				{
+					return new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Populating the tables failed");
+				}
 				
 				SettingItem.readSettingsFromProtocol(protocol,settingItems);
 				settingsControl.populateControl(settingItems, tab);
