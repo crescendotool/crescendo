@@ -1,16 +1,16 @@
-package org.destecs.ide.debug.launching.ui;
+package org.destecs.ide.debug.launching.ui.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.ide.debug.IDebugConstants;
-import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem;
-import org.destecs.ide.debug.launching.ui.Clp20simTab.SettingItem.ValueType;
+import org.destecs.ide.debug.launching.ui.Clp20simLogViewerSorter;
+import org.destecs.ide.debug.launching.ui.IUpdatableTab;
+import org.destecs.ide.debug.launching.ui.internal.SettingItem.ValueType;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -736,12 +736,12 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 	}
 
 	public static SettingTreeNode createAcaSettingsTreeFromConfiguration(
-			HashSet<String[]> settingItems) {
+			Set<String[]> settingsSet) {
 		List<SettingTreeNode> in = new Vector<SettingTreeNode>();
 		SettingTreeNode root = new SettingTreeNode("root", "root",true);
 		
 		
-		for (String[] settingItem : settingItems) {
+		for (String[] settingItem : settingsSet) {
 			String[] splitValues = settingItem[1].split(",");
 			List<String> acaValues = new Vector<String>();
 			for (String acaValue : splitValues) {

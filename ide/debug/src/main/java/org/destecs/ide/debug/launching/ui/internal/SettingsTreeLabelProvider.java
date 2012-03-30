@@ -1,4 +1,4 @@
-package org.destecs.ide.debug.launching.ui;
+package org.destecs.ide.debug.launching.ui.internal;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
