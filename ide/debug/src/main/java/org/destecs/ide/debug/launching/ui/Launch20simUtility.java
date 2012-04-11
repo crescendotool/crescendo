@@ -37,7 +37,10 @@ public class Launch20simUtility {
 		try
 		{
 			protocol = Clp20SimUtility.connect(new URL(ctUrl));
-		} catch (MalformedURLException | SimulationException e1)
+		} catch (MalformedURLException e1)
+		{
+			
+		}catch(SimulationException e1s)
 		{
 			
 		}
