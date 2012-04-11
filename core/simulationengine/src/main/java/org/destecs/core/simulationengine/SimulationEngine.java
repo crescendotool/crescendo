@@ -23,7 +23,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.RoundingMode;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -144,7 +146,7 @@ public class SimulationEngine
 	/**
 	 * Default step size in case of deadlocked de controller
 	 */
-	private static final double DEFAULT_MIN_TIME_STEP = 0.0001;
+	private static final double DEFAULT_MIN_TIME_STEP = 0.000001;
 
 	/**
 	 * Indicated that the class is used in the Eclipse Runtime environment. Used to change loading of SAX Parser for
@@ -716,8 +718,16 @@ public class SimulationEngine
 				if(deResult.time<=time)
 				{
 					//We have a deadlocked model, but the world must go on
+					//System.out.println("Time before default step apply: " + deResult.time);
 					deResult.time = deResult.time+DEFAULT_MIN_TIME_STEP;
+					//System.out.println("Time after default step apply: " + deResult.time);
 					engineInfo(Simulator.ALL, "No progress in DE simulator auto stepping by: "+DEFAULT_MIN_TIME_STEP);
+					DecimalFormat df = new DecimalFormat("#.####");
+					df.setRoundingMode(RoundingMode.CEILING);
+					String s = df.format(deResult.time);
+					//System.out.println("Time of rounded up step apply: " + s);
+					deResult.time = Double.parseDouble(s);
+					
 				}
 				time = deResult.time;
 				
