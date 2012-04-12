@@ -722,7 +722,7 @@ public class SimulationEngine
 					deResult.time = deResult.time+DEFAULT_MIN_TIME_STEP;
 					//System.out.println("Time after default step apply: " + deResult.time);
 					engineInfo(Simulator.ALL, "No progress in DE simulator auto stepping by: "+DEFAULT_MIN_TIME_STEP);
-					DecimalFormat df = new DecimalFormat("#.####");
+					DecimalFormat df = new DecimalFormat("#.#######");
 					df.setRoundingMode(RoundingMode.CEILING);
 					String s = df.format(deResult.time);
 					//System.out.println("Time of rounded up step apply: " + s);
