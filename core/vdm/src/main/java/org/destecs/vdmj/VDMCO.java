@@ -213,7 +213,11 @@ public class VDMCO extends VDMRT
 
 	public void setLogFile(File file)
 	{
-		logfile = file.getAbsolutePath();
+		if(file != null)
+		{
+			logfile = file.getAbsolutePath();
+		}
+		
 
 	}
 

@@ -674,7 +674,7 @@ public class SimulationEngine
 			if (pctNow != percentCompleted)
 			{
 				percentCompleted = pctNow;
-				engineInfo(Simulator.ALL, String.format("Simulation:  %2d %%", percentCompleted));
+				engineInfo(Simulator.ALL, String.format("Simulation time: %f seconds / Completed:  %2d %%", time,percentCompleted));
 			}
 			lock.check();
 			if (forceStopSimulation)

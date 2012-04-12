@@ -316,9 +316,13 @@ public class SimulationManager extends BasicSimulationManager
 			if (disableRtLog)
 			{
 				RTLogger.enable(false);
+				controller.setLogFile(null);
 			} else
 			{
-				controller.setLogFile(new File(outputDir, "ExecutionTrace.logrt"));
+				File logFile = new File(outputDir, "ExecutionTrace.logrt");
+				controller.setLogFile(logFile);
+				RTLogger.enable(true);
+				RTLogger.setLogfile(new PrintWriter(logFile));
 			}
 			
 			if(Settings.timingInvChecks)
