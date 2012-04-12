@@ -680,7 +680,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			}
 			if (!configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true))// vdmProject.hasMeasurechecks())
 			{
-				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_RT_LOG, "true");
+				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_COVERAGE, "true");
 			}
 
 			project2.accept(new IResourceVisitor()
