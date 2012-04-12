@@ -259,17 +259,17 @@ public class CoSimLaunchConfigurationDelegate extends
 			remoteDebug = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG, false);
 		} catch (CoreException e)
 		{
-			DestecsDebugPlugin.logError("Faild to load launch configuration attributes", e);
+			DestecsDebugPlugin.logError("Failed to load launch configuration attributes", e);
 		} catch (MalformedURLException e)
 		{
-			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
+			DestecsDebugPlugin.logError("Failed to load launch configuration attributes (URL's)", e);
 		} catch (IOException e)
 		{
-			DestecsDebugPlugin.logError("Faild to find file", e);
+			DestecsDebugPlugin.logError("Failed to find file", e);
 			throw e;
 		} catch (Exception e)
 		{
-			DestecsDebugPlugin.logError("Faild to load launch configuration attributes (URL's)", e);
+			DestecsDebugPlugin.logError("Failed to load launch configuration attributes (URL's)", e);
 		}
 
 		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
