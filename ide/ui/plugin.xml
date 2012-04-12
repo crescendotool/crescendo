@@ -53,6 +53,12 @@
             id="org.destecs.ide.ui.newContract"
             name="DESTECS New Contract">
       </wizard>
+      <wizard
+            category="org.destecs.ide.ui.category"
+            class="org.destecs.ide.ui.wizards.ArchitectureNewWizard"
+            id="org.destecs.ide.ui.newArchitecture"
+            name="DESTECS New Architecure">
+      </wizard>
    </extension>
    
 <!-- 
@@ -204,6 +210,16 @@
          <commonWizard
                type="new"
                wizardId="org.destecs.ide.ui.newScenario">
+            <enablement>
+               <or>
+                  <adapt
+                        type="org.destecs.ide.core.resources.IDestecsProject">
+                  </adapt>
+               </or></enablement>
+         </commonWizard>
+          <commonWizard
+               type="new"
+               wizardId="org.destecs.ide.ui.newArchitecture">
             <enablement>
                <or>
                   <adapt

@@ -19,7 +19,6 @@
 package org.destecs.ide.ui.wizards;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -79,13 +78,13 @@ public abstract class AbstractNewFileWizard extends Wizard implements
 		String pName = _pageOne.getProjectName();
 		IWorkspaceRoot ws = ResourcesPlugin.getWorkspace().getRoot();
 		IProject p = ws.getProject(pName);
-		File root = p.getLocation().toFile();
-		File dfile = new File(root, getLocation());
+//		File root = p.getLocation().toFile();
+//		File dfile = new File(root, getLocation());
 
-		if (!dfile.exists())
-		{
-			dfile.mkdirs();
-		}
+//		if (!dfile.exists())
+//		{
+//			dfile.mkdirs();
+//		}
 
 		IPath path = p.getFullPath().append("/" + getLocation());
 		path = path.append("/" + _pageOne.getFileName());
