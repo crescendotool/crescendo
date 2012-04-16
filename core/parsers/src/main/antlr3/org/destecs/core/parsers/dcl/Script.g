@@ -430,7 +430,7 @@ booleanliteral returns [Boolean value]
   ;
   
 numericliteral
-  : numeral ('.' numeral )?  (exponent)?
+  : ('-')? numeral ('.' numeral )?  (exponent)?
   ;
 
 timeliteral returns [ATimeSingleExp value]
