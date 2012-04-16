@@ -237,8 +237,16 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
-		settingsControl.setDefaults(configuration);
-		logTableControl.setDefaults(configuration);
+		if(settingsControl != null)
+		{
+			settingsControl.setDefaults(configuration);	
+		}
+		if(logTableControl != null)
+		{
+			logTableControl.setDefaults(configuration);	
+		}
+		
+		
 	}
 	
 

@@ -220,7 +220,10 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 	}
 	
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		settingsControl.setDefaults(configuration);		
+		if(settingsControl != null)
+		{
+			settingsControl.setDefaults(configuration);		
+		}
 	}
 	
 
