@@ -32,6 +32,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -48,6 +49,7 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 
 	private ILaunch launch;
 	private boolean isTerminated;
+	private boolean isSuspended = false;
 	final private IProject project;
 	private CoSimulationThread simulationThread;
 	private File outputFolder;
@@ -60,6 +62,7 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 		this.launch = launch;
 		this.project = project;
 		this.outputFolder = outputFolder;
+		DebugEventHelper.fireCreateEvent(this);
 	}
 
 	public String getName() throws DebugException
@@ -79,6 +82,7 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 
 	public boolean hasThreads() throws DebugException
 	{
+		
 		return false;
 	}
 
@@ -197,27 +201,41 @@ public class DestecsDebugTarget extends PlatformObject implements IDebugTarget
 
 	public boolean canResume()
 	{
-		return false;
+		return isSuspended && !isTerminated;
+//		return simulationThread.canResume();
 	}
 
 	public boolean canSuspend()
 	{
-		return false;
+		return !isSuspended && !isTerminated;
+//		return simulationThread.canSuspend();
 	}
 
 	public boolean isSuspended()
 	{
-		return false;
+		return isSuspended;
+		//return simulationThread.isSuspended();
 	}
 
 	public void resume() throws DebugException
-	{
-
+	{		
+		for (IDebugTarget target : this.launch.getDebugTargets())
+		{
+			if(target != this)
+			{
+				target.resume();
+			}
+		}
+		simulationThread.resumeSimulation();
+		isSuspended = false;
+		DebugEventHelper.fireResumeEvent(this, DebugEvent.CLIENT_REQUEST);
 	}
 
 	public void suspend() throws DebugException
 	{
-
+		simulationThread.pauseSimulation();
+		isSuspended = true;
+		DebugEventHelper.fireSuspendEvent(this, DebugEvent.CLIENT_REQUEST);
 	}
 
 	public void breakpointAdded(IBreakpoint breakpoint)

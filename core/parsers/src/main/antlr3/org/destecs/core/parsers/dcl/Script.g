@@ -48,6 +48,7 @@ tokens{
   IMPLIES = '=>' ;
   EQUIV= '<=>' ;
   FOR= 'for'; 
+  UNDERSCORE = '_';
 }
  
 @header {
@@ -430,7 +431,7 @@ booleanliteral returns [Boolean value]
   ;
   
 numericliteral
-  : ('-')? numeral ('.' numeral )?  (exponent)?
+  : (MINUS)? numeral ('.' numeral )?  (exponent)?
   ;
 
 timeliteral returns [ATimeSingleExp value]
@@ -478,7 +479,7 @@ STRING : '"' .* '"';
 fragment LETTER : ('a'..'z' | 'A'..'Z') ;
 fragment DIGIT : '0'..'9';
 INTEGER : DIGIT+ ;
-IDENT: LETTER (LETTER | DIGIT)*;
+IDENT: LETTER (LETTER | DIGIT | UNDERSCORE)*;
 WS : (' ' | '\t' | '\n' | '\r' | '\f')+ {$channel = HIDDEN;};
 COMMENT
     :   '--' ~('\n'|'\r')* '\r'? '\n'? {$channel=HIDDEN;}

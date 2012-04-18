@@ -125,8 +125,8 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		this.resumeAction = new ResumeAction();
 		this.resumeAction.setEnabled(false);
 		
-		this.pauseAction.setResume(this.resumeAction);
-		this.resumeAction.setPause(this.pauseAction);
+//		this.pauseAction.setResume(this.resumeAction);
+//		this.resumeAction.setPause(this.pauseAction);
 	}
 
 	

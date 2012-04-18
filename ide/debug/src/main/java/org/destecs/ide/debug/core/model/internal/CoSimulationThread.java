@@ -41,7 +41,10 @@ public class CoSimulationThread extends Thread
 
 	final List<Throwable> exceptions = new Vector<Throwable>();
 	final List<InfoTableView> views;
-
+	boolean isRunning = false;
+	boolean isTerminated = false;
+	
+	
 	public CoSimulationThread(
 			SimulationEngine engine,
 			ListenerToLog log,
@@ -61,12 +64,12 @@ public class CoSimulationThread extends Thread
 
 	@Override
 	public void run()
-	{
+	{		
 		try
-		{
+		{	isRunning = true;
 			engine.simulate(shareadDesignParameters, totalSimulationTime);
 		} catch (Throwable e)
-		{
+		{			
 			exceptions.add(e);
 			DestecsDebugPlugin.log(e);
 			if (log != null)
@@ -74,7 +77,7 @@ public class CoSimulationThread extends Thread
 				log.flush();
 			}
 		}
-
+		
 		for (InfoTableView view : views)
 		{
 			view.refreshPackTable();
@@ -87,6 +90,7 @@ public class CoSimulationThread extends Thread
 
 		try
 		{
+			isTerminated = true;
 			target.terminate();
 		} catch (DebugException e)
 		{
@@ -120,5 +124,37 @@ public class CoSimulationThread extends Thread
 	public List<Throwable> getExceptions()
 	{
 		return this.exceptions;
+	}
+	
+	public boolean isRunning()
+	{
+		return isRunning;
+	}
+	
+	public void pauseSimulation()
+	{
+		isRunning = false;
+		engine.pause();
+	}
+	
+	public void resumeSimulation()
+	{
+		engine.resume();
+		isRunning = true;
+	}
+
+	public boolean canResume()
+	{
+		return !isTerminated && !isRunning;
+	}
+
+	public boolean canSuspend()
+	{
+		return !isTerminated && isRunning;
+	}
+
+	public boolean isSuspended()
+	{
+		return !isTerminated && !isRunning;
 	}
 }

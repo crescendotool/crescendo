@@ -317,50 +317,53 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 					final InfoTableView engineView = getInfoTableView(engineViewId);
-					ISimulationControlProxy simulationControl = new ISimulationControlProxy()
-					{
-
-						public void terminate()
-						{
-							try
-							{
-								launch.terminate();
-							} catch (DebugException e)
-							{
-								DestecsDebugPlugin.logError("Failed to terminate launch", e);
-							}
-						}
-
-						public void pause()
-						{
-							engine.pause();
-						}
-
-						public void resume()
-						{
-							ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-
-							ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType(VDM_LAUNCH_CONFIG_TYPE);
-							for (IDebugTarget target : launch.getDebugTargets())
-							{
-								try
-								{
-									if (target.getLaunch().getLaunchConfiguration().getType() == configType)
-									{
-										target.resume();
-									}
-								} catch (CoreException e)
-								{
-									DestecsDebugPlugin.logWarning("Failed to resume simulator", e);
-								}
-							}
-							engine.resume();
-						}
-					};
-
-					engineView.getTerminationAction().addSimulationControlProxy(simulationControl);
-					engineView.getPauseAction().addSimulationControlProxy(simulationControl);
-					engineView.getResumeAction().addSimulationControlProxy(simulationControl);
+//					ISimulationControlProxy simulationControl = new ISimulationControlProxy()
+//					{
+//
+//						public void terminate()
+//						{
+//							try
+//							{
+//								launch.terminate();
+//							} catch (DebugException e)
+//							{
+//								DestecsDebugPlugin.logError("Failed to terminate launch", e);
+//							}
+//						}
+//
+//						public void pause()
+//						{
+//							engine.pause();
+//						}
+//
+//						public void resume()
+//						{
+//							ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+//
+//							ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType(VDM_LAUNCH_CONFIG_TYPE);
+//							for (IDebugTarget target : launch.getDebugTargets())
+//							{
+//								try
+//								{
+//									if (target.getLaunch().getLaunchConfiguration().getType() == configType)
+//									{
+//										target.resume();
+//									}
+//								} catch (CoreException e)
+//								{
+//									DestecsDebugPlugin.logWarning("Failed to resume simulator", e);
+//								}
+//							}
+//							engine.resume();
+//						}
+//					};
+//
+//					engineView.getTerminationAction().addSimulationControlProxy(simulationControl);
+//					engineView.getPauseAction().addSimulationControlProxy(simulationControl);
+//					engineView.getResumeAction().addSimulationControlProxy(simulationControl);
+//					DebugPlugin.getDefault().addDebugEventListener(engineView.getResumeAction());
+//					DebugPlugin.getDefault().addDebugEventListener(engineView.getPauseAction());
+//					DebugPlugin.getDefault().addDebugEventListener(engineView.getTerminationAction());
 
 					views.add(engineView);
 					engine.engineListeners.add(new EngineListener(engineView));

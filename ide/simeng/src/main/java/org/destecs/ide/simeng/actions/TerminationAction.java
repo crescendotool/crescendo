@@ -1,11 +1,11 @@
 package org.destecs.ide.simeng.actions;
 
-import java.util.List;
-import java.util.Vector;
-
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-public class TerminationAction extends BaseSimulationControlAction
+public class TerminationAction extends BaseSimulationControlAction 
 {
 	@Override
 	public String getText()
@@ -21,20 +21,47 @@ public class TerminationAction extends BaseSimulationControlAction
 	@Override
 	public void run()
 	{
-		List<ISimulationControlProxy> proxies = new Vector<ISimulationControlProxy>(proxy);
-		for (ISimulationControlProxy p : proxies)
+		try
 		{
-			if (p != null)
+			IDebugTarget target = getRunningTarget();
+
+			if (target != null)
 			{
-				try
-				{
-					p.terminate();
-				} catch (Exception e)
-				{
-					// Ignore
-				}
-				removeSimulationControlProxy(p);
+
+				target.terminate();
+
 			}
+		} catch (DebugException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		catch (CoreException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void doTerminate()
+	{
+		setEnabled(false);
+		System.out.println("DISenabling Terminate Button");
+		
+	}
+
+	@Override
+	protected void doResume()
+	{
+		setEnabled(true);
+		System.out.println("Enabling Terminate Button");
+	}
+
+	@Override
+	protected void doSuspend()
+	{
+		setEnabled(true);
+		System.out.println("Enabling Terminate Button");
 	}
 }

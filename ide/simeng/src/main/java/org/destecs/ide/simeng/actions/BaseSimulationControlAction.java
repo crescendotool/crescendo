@@ -22,17 +22,27 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.ide.simeng.ISimengConstants;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.debug.core.DebugEvent;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.IDebugEventSetListener;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-public abstract class BaseSimulationControlAction extends Action
+public abstract class BaseSimulationControlAction extends Action implements IDebugEventSetListener
 {
-
+	public final String DESTECS_LAUNCH_ID = "org.destecs.ide.debug.launchConfigurationType";
 	public BaseSimulationControlAction()
 	{
+		DebugPlugin.getDefault().addDebugEventListener(this);
+		setEnabled(false);
 	}
 
 	public BaseSimulationControlAction(ISimulationControlProxy proxy)
@@ -65,4 +75,73 @@ public abstract class BaseSimulationControlAction extends Action
 		this.proxy.remove(proxy);
 	}
 
+	protected IDebugTarget getRunningTarget() throws CoreException
+	{
+		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+		ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType(DESTECS_LAUNCH_ID);
+		IDebugTarget target = null;
+		for (ILaunch iLaunch : launchManager.getLaunches())
+		{
+			
+				if(iLaunch.getLaunchConfiguration().getType() == configType)
+				{
+					target = iLaunch.getDebugTarget();
+					
+				}
+					
+		}
+		return target;
+	}
+	
+	
+	public void handleDebugEvents(DebugEvent[] events)
+	{
+		for (DebugEvent debugEvent : events)
+		{
+			if(debugEvent.getSource() instanceof IDebugTarget)
+			{
+				ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+				ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType(DESTECS_LAUNCH_ID);
+				IDebugTarget target = (IDebugTarget) debugEvent.getSource();
+				try
+				{
+					if(target.getLaunch().getLaunchConfiguration().getType() == configType)
+					{
+						switch(debugEvent.getKind())
+						{
+							case(DebugEvent.CREATE):
+								doResume();
+								break;
+							case(DebugEvent.SUSPEND):
+								doSuspend();								
+								break;
+							case(DebugEvent.RESUME):
+								doResume();								
+								break;
+							case(DebugEvent.TERMINATE):
+								doTerminate();
+								break;
+							default:
+								break;
+						}
+						
+						
+					}
+				} catch (CoreException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	}
+	
+	
+	abstract protected void doTerminate();
+
+	abstract protected void doResume();
+	
+	abstract protected void doSuspend();
+	
 }

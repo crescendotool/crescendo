@@ -1,13 +1,12 @@
 package org.destecs.ide.simeng.actions;
 
-import java.util.List;
-import java.util.Vector;
-
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 public class PauseAction extends BaseSimulationControlAction
 {
-	private ResumeAction reumeAction;
 
 	@Override
 	public String getText()
@@ -23,29 +22,47 @@ public class PauseAction extends BaseSimulationControlAction
 	@Override
 	public void run()
 	{
-		List<ISimulationControlProxy> proxies = new Vector<ISimulationControlProxy>(proxy);
-		for (ISimulationControlProxy p : proxies)
+		try
 		{
-			if (p != null)
+			IDebugTarget target = getRunningTarget();
+
+			if (target != null)
 			{
-				try
-				{
-					p.pause();
-				} catch (Exception e)
-				{
-					// Ignore
-				}
+
+				target.suspend();
+
 			}
-		}
-		if(reumeAction!=null)
+		} catch (DebugException e)
 		{
-			reumeAction.setEnabled(true);
-			setEnabled(false);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (CoreException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
-	public void setResume(ResumeAction resumeAction)
+
+	@Override
+	protected void doTerminate()
 	{
-		this.reumeAction = resumeAction;
+		setEnabled(false);
+		System.out.println("DISenabling Pause Button");
+	}
+
+	@Override
+	protected void doResume()
+	{
+		setEnabled(true);
+		System.out.println("Enabling Pause Button");
+	}
+
+	@Override
+	protected void doSuspend()
+	{
+		setEnabled(false);
+		System.out.println("DISenabling Pause Button");
 	}
 }
