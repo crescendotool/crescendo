@@ -46,7 +46,6 @@ public class TerminationAction extends BaseSimulationControlAction
 	protected void doTerminate()
 	{
 		setEnabled(false);
-		System.out.println("DISenabling Terminate Button");
 		
 	}
 
@@ -54,13 +53,11 @@ public class TerminationAction extends BaseSimulationControlAction
 	protected void doResume()
 	{
 		setEnabled(true);
-		System.out.println("Enabling Terminate Button");
 	}
 
 	@Override
 	protected void doSuspend()
 	{
 		setEnabled(true);
-		System.out.println("Enabling Terminate Button");
 	}
 }

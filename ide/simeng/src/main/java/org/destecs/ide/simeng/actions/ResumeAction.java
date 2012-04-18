@@ -50,7 +50,6 @@ public class ResumeAction extends BaseSimulationControlAction
 	protected void doTerminate()
 	{
 		setEnabled(false);
-		System.out.println("DISenabling Resume Button");
 		
 	}
 
@@ -58,14 +57,12 @@ public class ResumeAction extends BaseSimulationControlAction
 	protected void doResume()
 	{
 		setEnabled(false);
-		System.out.println("DISenabling Resume Button");
 		
 	}
 
 	@Override
 	protected void doSuspend()
 	{
-		System.out.println("Enabling Resume Button");
 		setEnabled(true);
 		
 	}

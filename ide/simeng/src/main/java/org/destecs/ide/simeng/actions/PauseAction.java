@@ -48,20 +48,17 @@ public class PauseAction extends BaseSimulationControlAction
 	protected void doTerminate()
 	{
 		setEnabled(false);
-		System.out.println("DISenabling Pause Button");
 	}
 
 	@Override
 	protected void doResume()
 	{
 		setEnabled(true);
-		System.out.println("Enabling Pause Button");
 	}
 
 	@Override
 	protected void doSuspend()
 	{
 		setEnabled(false);
-		System.out.println("DISenabling Pause Button");
 	}
 }
