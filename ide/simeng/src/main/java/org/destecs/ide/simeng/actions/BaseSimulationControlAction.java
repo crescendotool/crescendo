@@ -21,6 +21,7 @@ package org.destecs.ide.simeng.actions;
 import java.util.List;
 import java.util.Vector;
 
+import org.destecs.ide.simeng.Activator;
 import org.destecs.ide.simeng.ISimengConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -129,8 +130,7 @@ public abstract class BaseSimulationControlAction extends Action implements IDeb
 					}
 				} catch (CoreException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Activator.log(e);
 				}
 			}
 			

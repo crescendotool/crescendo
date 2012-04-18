@@ -1,5 +1,6 @@
 package org.destecs.ide.simeng.actions;
 
+import org.destecs.ide.simeng.Activator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
@@ -34,13 +35,11 @@ public class PauseAction extends BaseSimulationControlAction
 			}
 		} catch (DebugException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.log(e);
 		}
 		catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.log(e);
 		}
 	}
 
