@@ -15,7 +15,7 @@ public interface ISimulatorControl
 
 	void showMessage(String type, String message);
 
-	void quite();
+	void quit();
 
 	void scriptError(String string);
 

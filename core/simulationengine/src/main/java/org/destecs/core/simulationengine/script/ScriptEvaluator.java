@@ -235,6 +235,6 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	@Override
 	public void caseAQuitStm(AQuitStm node)
 	{
-		interpreter.quite();
+		interpreter.quit();
 	}
 }

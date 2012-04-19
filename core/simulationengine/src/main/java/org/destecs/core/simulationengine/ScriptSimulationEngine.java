@@ -32,6 +32,7 @@ import org.destecs.core.simulationengine.model.ModelConfig;
 import org.destecs.core.simulationengine.script.ISimulatorControl;
 import org.destecs.core.simulationengine.script.ScriptEvaluator;
 import org.destecs.protocol.ProxyICoSimProtocol;
+import org.destecs.protocol.structs.GetParametersStruct;
 import org.destecs.protocol.structs.GetVariablesStruct;
 import org.destecs.protocol.structs.GetVariablesStructvariablesStruct;
 import org.destecs.protocol.structs.SetParametersparametersStructParam;
@@ -145,9 +146,9 @@ public class ScriptSimulationEngine extends SimulationEngine
 			messageInfo(Simulator.ALL, getSystemTime(), type + " " + message);
 		}
 
-		public void quite()
+		public void quit()
 		{
-			engineInfo(Simulator.ALL, "Quite by script");
+			engineInfo(Simulator.ALL, "Terminating simulation from script");
 			forceSimulationStop();
 		}
 
@@ -187,6 +188,15 @@ public class ScriptSimulationEngine extends SimulationEngine
 						{
 							return data.variables.get(0).value.get(0);
 						}
+						
+						//If data is empty maybe the variable is a parameter
+						GetParametersStruct parameterData = ctProxy.getParameters(Arrays.asList(new String[] { name }));
+						
+						if (!parameterData.parameters.isEmpty())
+						{
+							return parameterData.parameters.get(0).value.get(0);
+						}
+						
 					}
 						break;
 					case DE:
@@ -218,13 +228,13 @@ public class ScriptSimulationEngine extends SimulationEngine
 		public void scriptError(String string)
 		{
 			engineInfo(Simulator.ALL, "Error in script: " + string);
-			quite();
+			quit();
 		}
 		
 		public void scriptError(String string, Exception e)
 		{
 			engineInfo(Simulator.ALL, "Error in script: " + string+" Exception: "+getStackTrace(e));
-			quite();
+			quit();
 		}
 		
 		private String getStackTrace(Throwable aThrowable) {
