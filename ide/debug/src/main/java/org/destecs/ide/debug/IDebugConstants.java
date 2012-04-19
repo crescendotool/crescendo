@@ -108,4 +108,6 @@ public interface IDebugConstants {
 	public static final String DEFAULT_OCTAVE_PATH = "c:\\Octave\\3.2.4_gcc-4.4.0\\bin\\octave.exe";
 
 	public static final String OCTAVE_PLOT_FILE = "results.m";
+
+	public static final String DESTECS_DIRECTORY_LAUNCH_FOLDER = "DESTECS_DIRECTORY_LAUNCH_FOLDER".toLowerCase();
 }
