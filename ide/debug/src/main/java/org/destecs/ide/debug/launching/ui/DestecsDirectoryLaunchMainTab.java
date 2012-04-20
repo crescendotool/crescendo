@@ -184,7 +184,7 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 	private void createPathToConfigsGroup(Composite comp)
 	{
 		Group group = new Group(comp, comp.getStyle());
-		group.setText("Directory selection");
+		group.setText("Folder selection");
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		group.setLayoutData(gd);
 
@@ -194,7 +194,7 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 		group.setLayout(layout);
 
 		Label label = new Label(group, SWT.MIN);
-		label.setText("Directory:");
+		label.setText("Folder:");
 		gd = new GridData(GridData.BEGINNING);
 		label.setLayoutData(gd);
 
@@ -213,8 +213,8 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 			public void widgetSelected(SelectionEvent e)
 			{
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
-				dialog.setTitle("Directory Selection");
-				dialog.setMessage("Select an Directory:");
+				dialog.setTitle("Folder Selection");
+				dialog.setMessage("Select a Folder:");
 				dialog.setComparator(new ViewerComparator());
 				dialog.addFilter(new FolderFilter());
 				dialog.setValidator(new ISelectionStatusValidator()

@@ -23,7 +23,7 @@
             delegate="org.destecs.ide.debug.launching.core.DestecsDirectoryLaunchDelegate"
             id="org.destecs.ide.debug.directoryLaunch"
             modes="debug"
-            name="Directory Launch"
+            name="Folder Launch"
             public="true">
       </launchConfigurationType>
    </extension>
