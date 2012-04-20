@@ -77,7 +77,6 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 	private Text fPathToConfigsText;
 	private Button selectPathToConfigsButton;
 	
-	@Override
 	public void createControl(Composite parent)
 	{
 		Composite comp = new Composite(parent, SWT.NONE);
