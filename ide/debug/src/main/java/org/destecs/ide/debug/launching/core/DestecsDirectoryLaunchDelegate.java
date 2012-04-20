@@ -46,7 +46,6 @@ public class DestecsDirectoryLaunchDelegate implements ILaunchConfigurationDeleg
 
 	private static final Object LAUNCH = "launch";
 
-	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			final ILaunch launch, IProgressMonitor monitor) throws CoreException
 	{

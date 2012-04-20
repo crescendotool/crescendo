@@ -253,7 +253,6 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 		
 	}
 	
-	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
@@ -271,7 +270,6 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 		
 	}
 
-	@Override
 	public void initializeFrom(ILaunchConfiguration configuration)
 	{
 		try
@@ -296,7 +294,6 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 		
 	}
 
-	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, fProjectText.getText());
@@ -304,7 +301,6 @@ public class DestecsDirectoryLaunchMainTab extends AbstractLaunchConfigurationTa
 		
 	}
 
-	@Override
 	public String getName()
 	{
 		return "Main";

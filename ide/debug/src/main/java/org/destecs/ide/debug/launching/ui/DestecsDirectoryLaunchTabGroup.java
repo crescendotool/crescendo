@@ -14,7 +14,6 @@ public class DestecsDirectoryLaunchTabGroup extends
 		super();
 	}
 
-	@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode)
 	{
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
