@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.destecs.protocol.ProxyICoSimProtocol;
 
-public class LogItem
+public class LogItem implements Comparable<LogItem>
 {
 	public String name;
 	public List<Integer> size;
@@ -34,5 +34,11 @@ public class LogItem
 			logItems.add(item);
 		}
 		
+	}
+
+	@Override
+	public int compareTo(LogItem o)
+	{
+		return name.compareTo(o.name);
 	}
 }

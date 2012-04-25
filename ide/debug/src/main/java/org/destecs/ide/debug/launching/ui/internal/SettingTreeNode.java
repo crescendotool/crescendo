@@ -242,7 +242,6 @@ public class SettingTreeNode implements Comparable<SettingTreeNode> {
 
 	private SettingTreeNode getChildByName(String string) {
 		
-		
 		for (SettingTreeNode child : this.children) {
 			if(child.getName().equals(string))
 				return child;

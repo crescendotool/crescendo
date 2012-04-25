@@ -87,7 +87,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 				SettingItem.readSettingsFromProtocol(protocol,settingItems);
 				settingsControl.populateControl(settingItems,tab);
 				LogItem.readLogItemsFromProtocol(protocol,logItems);
-
+				logTableControl.populateControl(logItems, tab);
 				final UIJob refreshTables = new UIJob("Refresh Tables Job")
 				{
 
@@ -95,7 +95,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 					public IStatus runInUIThread(IProgressMonitor monitor)
 					{												
 						settingsControl.refreshInputAndExpand();
-						logTableControl.refreshAndReselectInput();
+						logTableControl.refresh();
 						
 						return new Status(IStatus.OK, DestecsDebugPlugin.PLUGIN_ID, "Refreshed Tables Job");
 					}
@@ -132,6 +132,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 	private Clp20simSettingsControl settingsControl = null;
 	private Clp20simLogTable logTableControl = null;
 
+	
 	public void createControl(Composite parent)
 	{
 		tab = this;
@@ -159,7 +160,8 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 	private void createLogTable(Composite comp)
 	{
 		logTableControl = new Clp20simLogTable(logItems);
-		logTableControl.createLogTable(comp,tab);
+		//logTableControl.createLogTable(comp,tab);
+		logTableControl.createLogTree(comp, tab);		
 	}
 
 	

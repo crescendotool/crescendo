@@ -177,7 +177,7 @@ public class DestecsDirectoryLaunchDelegate implements ILaunchConfigurationDeleg
                 insertNodeInConfig(node,wc);             
             }
 			wc.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
-			config = wc.doSave();
+			config = wc;
 		} catch (CoreException e)
 		{
 			DestecsDebugPlugin.logError("Failed to recreate LaunchConfig", e);			

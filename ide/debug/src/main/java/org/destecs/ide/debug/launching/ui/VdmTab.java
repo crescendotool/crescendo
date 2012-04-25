@@ -21,14 +21,20 @@ package org.destecs.ide.debug.launching.ui;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.core.parsers.IError;
 import org.destecs.core.parsers.SubsParserWrapper;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.destecs.ide.debug.IDebugConstants;
+import org.destecs.ide.debug.launching.ui.internal.LogItemTree;
+import org.destecs.ide.debug.launching.ui.internal.TreeNodeContainer;
+import org.destecs.ide.debug.launching.ui.internal.VdmLogTreeContentProvider;
+import org.destecs.ide.debug.launching.ui.internal.VdmLogTreeLabelProvider;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -41,6 +47,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -75,8 +84,9 @@ import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.OptionalType;
+import org.overturetool.vdmj.types.Type;
 
-public class VdmTab extends AbstractLaunchConfigurationTab
+public class VdmTab extends AbstractLaunchConfigurationTab implements ICheckStateProvider
 {
 
 	class WidgetListener implements ModifyListener, SelectionListener
@@ -96,149 +106,149 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		}
 	}
 
-	public static class LogVariableSelectionManager
-	{
-		final List<List<String>> variables = new Vector<List<String>>();
-
-		public boolean isChecked(TreeItem item)
-		{
-			for (List<String> variable : variables)
-			{
-				if (!isRootItem(item) && checkName(item, variable))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-
-		public void selectionChanged(TreeItem item)
-		{
-			boolean found = false;
-			List<String> mustBeRemoved = null;
-			for (List<String> variable : variables)
-			{
-				if (checkName(item, variable))
-				{
-					// ok this is the variable for this item
-					found = true;
-					if (!item.getChecked())
-					{
-						// mark for removal
-						mustBeRemoved = variable;
-					}
-				}
-			}
-
-			if (found && mustBeRemoved != null)
-			{
-				variables.remove(mustBeRemoved);
-			}
-			if (!found && item.getChecked())
-			{
-				List<String> newVariable = createVariable(item);
-				if (!newVariable.isEmpty())
-				{
-					variables.add(newVariable);
-				}
-			}
-		}
-
-		private List<String> createVariable(TreeItem item)
-		{
-			List<TreeItem> roots = Arrays.asList(item.getParent().getItems());
-			List<String> variable = new Vector<String>();
-			TreeItem tmp = item;
-			while (!roots.contains(tmp))
-			{
-				variable.add(tmp.getText());
-				tmp = tmp.getParentItem();
-			}
-			Collections.reverse(variable);
-			return variable;
-		}
-
-		private boolean isRootItem(TreeItem item)
-		{
-			
-			return Arrays.asList(item.getParent().getItems()).contains(item);
-		}
-
-		private boolean checkName(TreeItem item, List<String> names)
-		{			
-			
-			if (isRootItem(item) && names.isEmpty())
-			{
-				return true;
-			}
-
-			return item.getText().endsWith(names.get(names.size() - 1))
-					&& checkName(item.getParentItem(), names.subList(0, names.size() - 1));
-		}
-
-		@Override
-		public String toString()
-		{
-			return toString("\n");
-		};
-
-		public String getConfigValue()
-		{
-			String tmp = toString(",");
-			if (tmp.endsWith(","))
-			{
-				tmp = tmp.substring(0, tmp.length() - 1);
-			}
-			return tmp;
-		}
-
-		public void parseConfigValue(String config)
-		{
-			this.variables.clear();
-			if (config.isEmpty())
-			{
-				return;
-			}
-
-			String[] tmps = config.split(",");
-			for (String string : tmps)
-			{
-				String[] names = string.split("\\.");
-				if (names.length > 0)
-				{
-					boolean okToAdd = true;
-					for (String string2 : names)
-					{
-						okToAdd = okToAdd && !string2.trim().isEmpty();
-					}
-
-					if (okToAdd)
-					{
-						this.variables.add(Arrays.asList(names));
-					}
-				}
-			}
-		}
-
-		public String toString(String splitter)
-		{
-			StringBuffer sb = new StringBuffer();
-			for (List<String> var : variables)
-			{
-				Iterator<String> itr = var.iterator();
-				while (itr.hasNext())
-				{
-					sb.append(itr.next());
-					if (itr.hasNext())
-					{
-						sb.append(".");
-					}
-				}
-				sb.append(splitter);
-			}
-			return sb.toString();
-		}
-	}
+//	public static class LogVariableSelectionManager
+//	{
+//		final List<List<String>> variables = new Vector<List<String>>();
+//
+//		public boolean isChecked(TreeItem item)
+//		{
+//			for (List<String> variable : variables)
+//			{
+//				if (!isRootItem(item) && checkName(item, variable))
+//				{
+//					return true;
+//				}
+//			}
+//			return false;
+//		}
+//
+//		public void selectionChanged(TreeItem item)
+//		{
+//			boolean found = false;
+//			List<String> mustBeRemoved = null;
+//			for (List<String> variable : variables)
+//			{
+//				if (checkName(item, variable))
+//				{
+//					// ok this is the variable for this item
+//					found = true;
+//					if (!item.getChecked())
+//					{
+//						// mark for removal
+//						mustBeRemoved = variable;
+//					}
+//				}
+//			}
+//
+//			if (found && mustBeRemoved != null)
+//			{
+//				variables.remove(mustBeRemoved);
+//			}
+//			if (!found && item.getChecked())
+//			{
+//				List<String> newVariable = createVariable(item);
+//				if (!newVariable.isEmpty())
+//				{
+//					variables.add(newVariable);
+//				}
+//			}
+//		}
+//
+//		private List<String> createVariable(TreeItem item)
+//		{
+//			List<TreeItem> roots = Arrays.asList(item.getParent().getItems());
+//			List<String> variable = new Vector<String>();
+//			TreeItem tmp = item;
+//			while (!roots.contains(tmp))
+//			{
+//				variable.add(tmp.getText());
+//				tmp = tmp.getParentItem();
+//			}
+//			Collections.reverse(variable);
+//			return variable;
+//		}
+//
+//		private boolean isRootItem(TreeItem item)
+//		{
+//			
+//			return Arrays.asList(item.getParent().getItems()).contains(item);
+//		}
+//
+//		private boolean checkName(TreeItem item, List<String> names)
+//		{			
+//			
+//			if (isRootItem(item) && names.isEmpty())
+//			{
+//				return true;
+//			}
+//
+//			return item.getText().endsWith(names.get(names.size() - 1))
+//					&& checkName(item.getParentItem(), names.subList(0, names.size() - 1));
+//		}
+//
+//		@Override
+//		public String toString()
+//		{
+//			return toString("\n");
+//		};
+//
+//		public String getConfigValue()
+//		{
+//			String tmp = toString(",");
+//			if (tmp.endsWith(","))
+//			{
+//				tmp = tmp.substring(0, tmp.length() - 1);
+//			}
+//			return tmp;
+//		}
+//
+//		public void parseConfigValue(String config)
+//		{
+//			this.variables.clear();
+//			if (config.isEmpty())
+//			{
+//				return;
+//			}
+//
+//			String[] tmps = config.split(",");
+//			for (String string : tmps)
+//			{
+//				String[] names = string.split("\\.");
+//				if (names.length > 0)
+//				{
+//					boolean okToAdd = true;
+//					for (String string2 : names)
+//					{
+//						okToAdd = okToAdd && !string2.trim().isEmpty();
+//					}
+//
+//					if (okToAdd)
+//					{
+//						this.variables.add(Arrays.asList(names));
+//					}
+//				}
+//			}
+//		}
+//
+//		public String toString(String splitter)
+//		{
+//			StringBuffer sb = new StringBuffer();
+//			for (List<String> var : variables)
+//			{
+//				Iterator<String> itr = var.iterator();
+//				while (itr.hasNext())
+//				{
+//					sb.append(itr.next());
+//					if (itr.hasNext())
+//					{
+//						sb.append(".");
+//					}
+//				}
+//				sb.append(splitter);
+//			}
+//			return sb.toString();
+//		}
+//	}
 
 	protected WidgetListener fListener = new WidgetListener();
 	private Button checkBoxUsePostChecks = null;
@@ -250,8 +260,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 	private Button checkBoxUseLogRt = null;
 	private Button checkBoxTimingInvariants = null;
 
-	private Tree logTree = null;
-	private LogVariableSelectionManager logManager = new LogVariableSelectionManager();
+//	private Tree logTree = null;
+//	private LogVariableSelectionManager logManager = new LogVariableSelectionManager();
 
 	public void createControl(Composite parent)
 	{
@@ -261,7 +271,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
 		createInterperterGroupCheckGroup(comp);
-		createLogGroup(comp);
+		createLogTreeGroup(comp);
 
 		createFaultField(comp);
 		
@@ -424,6 +434,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 	}
 	
 	private Text replacePattern = null;
+	private CheckboxTreeViewer logTreeViewer;
+	private List<String> selectedLogVariables;
 	
 	public void createFaultField(Composite comp)
 	{
@@ -453,7 +465,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 
 	}
 	
-	private void createLogGroup(Composite comp)
+	private void createLogTreeGroup(Composite comp)
 	{
 		Group group = new Group(comp, SWT.NONE);
 		group.setText("Log");
@@ -461,109 +473,136 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 
 		group.setLayoutData(gd);
 		group.setLayout(new GridLayout(1, true));
-		logTree = new Tree(group, SWT.CHECK | SWT.BORDER);
+		
+		logTreeViewer = new CheckboxTreeViewer(group, SWT.BORDER);
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data = new GridData(GridData.FILL_BOTH);
-		logTree.setLayoutData(data);
-		logTree.addListener(SWT.Selection, new Listener()
-		{
-			public void handleEvent(Event event)
-			{
-				if (event.detail == SWT.CHECK)
-				{
-					if(!Arrays.asList(logTree.getChildren()).contains((TreeItem)event.item))
-					{
-						checkAndExpand((TreeItem) event.item);
-					}
-					
-					logManager.selectionChanged(((TreeItem) event.item));
-					updateLaunchConfigurationDialog();
-				}
-			}
-
-			
-		});
-		logTree.addListener(SWT.Expand, new Listener()
-		{
-			public void handleEvent(final Event event)
-			{
-				final TreeItem root = (TreeItem) event.item;
-				TreeItem[] items = root.getItems();
-				for (int i = 0; i < items.length; i++)
-				{
-					if (items[i].getData() != null)
-					{
-						return;
-					} else
-					{
-						items[i].dispose();
-					}
-				}
-				IAstNode node = (IAstNode) root.getData();
-
-				if (node instanceof ClassDefinition)
-				{
-					ClassDefinition c = (ClassDefinition) node;
-					expandClassDefinition(c, root);
-
-				} else if (node instanceof InstanceVariableDefinition)
-				{
-					InstanceVariableDefinition instance = (InstanceVariableDefinition) node;
-					if (instance.type instanceof ClassType)
-					{
-						expandClassDefinition(((ClassType) instance.type).classdef, root);
-					}
-				}
-			}
-		});
-	}
-
-	private void checkAndExpand(TreeItem root) {
+		logTreeViewer.getControl().setLayoutData(data);
 		
-		boolean isChecked = root.getChecked();
-		
-		TreeItem[] items = root.getItems();
-		for (TreeItem treeItem : items) {
-			treeItem.setChecked(isChecked);			
-			logManager.selectionChanged(treeItem);			
-			checkAndExpand(treeItem);
-		}
+		logTreeViewer.setContentProvider(new VdmLogTreeContentProvider());
+		logTreeViewer.setLabelProvider(new VdmLogTreeLabelProvider());
+		logTreeViewer.setCheckStateProvider(this);
 		
 	}
 	
-	private void expandClassDefinition(ClassDefinition c, TreeItem root)
-	{
-		for (Definition def : c.getDefinitions())
-		{
-			if (def instanceof InstanceVariableDefinition)
-			{
-				InstanceVariableDefinition instance = (InstanceVariableDefinition) def;
-				if (instance.type instanceof ClassType)
-				{
-					ClassDefinition internalType = ((ClassType) instance.type).classdef;
-					if (internalType instanceof CPUClassDefinition
-							|| internalType instanceof BUSClassDefinition)
-					{
-						continue;
-					}
-				}
+//	private void createLogGroup(Composite comp)
+//	{
+//		Group group = new Group(comp, SWT.NONE);
+//		group.setText("Log");
+//		GridData gd = new GridData(GridData.FILL_BOTH);
+//
+//		group.setLayoutData(gd);
+//		group.setLayout(new GridLayout(1, true));
+//		logTree = new Tree(group, SWT.CHECK | SWT.BORDER);
+//		GridData data = new GridData(GridData.FILL_BOTH);
+//		data = new GridData(GridData.FILL_BOTH);
+//		logTree.setLayoutData(data);
+//		logTree.addListener(SWT.Selection, new Listener()
+//		{
+//			public void handleEvent(Event event)
+//			{
+//				if (event.detail == SWT.CHECK)
+//				{
+//					if(!Arrays.asList(logTree.getChildren()).contains((TreeItem)event.item))
+//					{
+//						checkAndExpand((TreeItem) event.item);
+//					}
+//					
+//					logManager.selectionChanged(((TreeItem) event.item));
+//					updateLaunchConfigurationDialog();
+//				}
+//			}
+//
+//			
+//		});
+//		logTree.addListener(SWT.Expand, new Listener()
+//		{
+//			public void handleEvent(final Event event)
+//			{
+//				final TreeItem root = (TreeItem) event.item;
+//				TreeItem[] items = root.getItems();
+//				for (int i = 0; i < items.length; i++)
+//				{
+//					if (items[i].getData() != null)
+//					{
+//						return;
+//					} else
+//					{
+//						items[i].dispose();
+//					}
+//				}
+//				IAstNode node = (IAstNode) root.getData();
+//
+//				if (node instanceof ClassDefinition)
+//				{
+//					ClassDefinition c = (ClassDefinition) node;
+//					expandClassDefinition(c, root);
+//
+//				} else if (node instanceof InstanceVariableDefinition)
+//				{
+//					InstanceVariableDefinition instance = (InstanceVariableDefinition) node;
+//					if (instance.type instanceof ClassType)
+//					{
+//						expandClassDefinition(((ClassType) instance.type).classdef, root);
+//					}
+//				}
+//			}
+//		});
+//	}
 
-				TreeItem item = new TreeItem(root, SWT.NONE);
-				item.setText(def.getName());
-				item.setData(def);
-
-				if (logManager.isChecked(item))
-				{
-					item.setChecked(true);
-				}
-
-				if (instance.type instanceof ClassType || (instance.type instanceof OptionalType&& ((OptionalType)instance.type).type instanceof ClassType))
-				{
-					new TreeItem(item, SWT.NONE);
-				}
-			}
-		}
-	}
+//	private void checkAndExpand(TreeItem root) {
+//		
+//		boolean isChecked = root.getChecked();
+//		
+//		TreeItem[] items = root.getItems();
+//		for (TreeItem treeItem : items) {
+//			treeItem.setChecked(isChecked);			
+//			logManager.selectionChanged(treeItem);			
+//			checkAndExpand(treeItem);
+//		}
+//		
+//	}
+	
+//	private void expandClassDefinition(ClassDefinition c, TreeItem root)
+//	{
+//		for (Definition def : c.getDefinitions())
+//		{
+//			if (def instanceof InstanceVariableDefinition)
+//			{
+//				InstanceVariableDefinition instance = (InstanceVariableDefinition) def;
+//				Type instanceType = instance.type;
+//				
+//				if(instanceType instanceof OptionalType)
+//				{
+//					instanceType = ((OptionalType) instanceType).type;
+//				}
+//				
+//				if (instanceType instanceof ClassType)
+//				{
+//					ClassDefinition internalType = ((ClassType) instanceType).classdef;
+//					if (internalType instanceof CPUClassDefinition
+//							|| internalType instanceof BUSClassDefinition)
+//					{
+//						continue;
+//					}
+//				}
+//
+//				TreeItem item = new TreeItem(root, SWT.NONE);
+//				item.setText(def.getName());
+//				item.setData(def);
+//
+//				if (logManager.isChecked(item))
+//				{
+//					item.setChecked(true);
+//				}
+//
+//				if (instanceType instanceof ClassType)// || (instance.type instanceof OptionalType&& ((OptionalType)instance.type).type instanceof ClassType))
+//				{
+//					new TreeItem(item, SWT.NONE);
+//				}
+//			}
+//		}
+//	}
 
 	
 
@@ -631,7 +670,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 			checkBoxUseCoverage.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, true));
 			checkBoxUseLogRt.setSelection(configuration.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, true));
 			checkBoxTimingInvariants.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, false));
-			logManager.parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, ""));
+//			logManager.parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, ""));
+			parseConfigValue(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, ""));
 			fArchitecturePathText.setText(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
 			removeArchitectureButton.setEnabled(!fArchitecturePathText.getText().isEmpty());
 			String url = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
@@ -650,26 +690,30 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 			return;
 		}
 		IVdmProject p = (IVdmProject) project.getAdapter(IVdmProject.class);
-		for (TreeItem c : logTree.getItems())
-		{
-			c.dispose();
-
-		}
-		logTree.removeAll();
+//		for (TreeItem c : logTree.getItems())
+//		{
+//			c.dispose();
+//
+//		}
+//		logTree.removeAll();
 
 		if (p != null)
 		{
 			IVdmModel model = p.getModel();
-			for (IAstNode elem : model.getRootElementList())
-			{
-				if (elem instanceof SystemDefinition)
-				{
-					TreeItem root = new TreeItem(logTree, 0);
-					root.setText(elem.getName());
-					root.setData(elem);
-					new TreeItem(root, 0);
-				}
-			}
+			logTreeViewer.setInput(model);
+			logTreeViewer.expandAll();
+			logTreeViewer.collapseAll();
+			
+//			for (IAstNode elem : model.getRootElementList())
+//			{
+//				if (elem instanceof SystemDefinition)
+//				{
+//					TreeItem root = new TreeItem(logTree, 0);
+//					root.setText(elem.getName());
+//					root.setData(elem);
+//					new TreeItem(root, 0);
+//				}
+//			}
 		}
 		
 		IResource architecturesDirectory = project.findMember("model_de/architectures");
@@ -685,6 +729,19 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 			
 		}
 		
+	}
+
+	private void parseConfigValue(String attribute)
+	{
+		List<String> result = new Vector<String>();
+		String[] splitAttribute = attribute.split(",");
+		
+		for (String string : splitAttribute)
+		{
+			result.add(string);
+		}
+		
+		this.selectedLogVariables = result;
 	}
 
 	public IProject getProject()
@@ -709,9 +766,42 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_GENERATE_COVERAGE, checkBoxUseCoverage.getSelection());
 		configuration.setAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_LOG_RT, checkBoxUseLogRt.getSelection());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, checkBoxTimingInvariants.getSelection());
-		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, logManager.getConfigValue());
+		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, getConfigString(getConfigValues()));
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, fArchitecturePathText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, replacePattern.getText());
+	}
+
+	private List<String> getConfigValues()
+	{
+		
+		Object[] checkedElements = logTreeViewer.getCheckedElements();
+		Object[] grayedElements = logTreeViewer.getGrayedElements();
+		
+		Set<Object> elements = new HashSet<Object>(Arrays.asList(checkedElements));
+		elements.removeAll(Arrays.asList(grayedElements));
+		
+		List<String> result = new Vector<String>();
+
+		for (Object object : elements)
+		{
+			result.add(object.toString());
+		}
+		return result;
+	}
+	
+	private String getConfigString(List<String> values)
+	{
+		StringBuilder sb = new StringBuilder();
+		if (values.size() > 0)
+		{
+			for (Object object : values)
+			{
+				sb.append(object.toString());
+				sb.append(",");
+			}
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		return sb.toString();
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
@@ -750,5 +840,27 @@ public class VdmTab extends AbstractLaunchConfigurationTab
 		}
 
 		return super.isValid(launchConfig);
+	}
+
+	@Override
+	public boolean isChecked(Object element)
+	{
+		if(element instanceof TreeNodeContainer)
+		{
+			TreeNodeContainer tNode = (TreeNodeContainer) element;
+			return selectedLogVariables.contains(tNode.toString()) || tNode.isVirtual;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isGrayed(Object element)
+	{
+		if(element instanceof TreeNodeContainer)
+		{
+			TreeNodeContainer tNode = (TreeNodeContainer) element;
+			return tNode.isVirtual;
+		}
+		return false;
 	}
 }
