@@ -64,7 +64,11 @@ public class DestecsDirectoryLaunchDelegate implements ILaunchConfigurationDeleg
 		
 				
 		final Set<ILaunchConfiguration> configurations = getConfingsFromFolder(project,folderPath,outputPreFix);
-
+		if(configurations.size() == 0)
+		{
+			return;
+		}
+		
 		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 		File base = dProject.getOutputFolder().getLocation().toFile();
 
