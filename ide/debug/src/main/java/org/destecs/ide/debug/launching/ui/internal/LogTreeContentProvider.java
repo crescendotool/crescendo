@@ -6,17 +6,13 @@ import org.eclipse.jface.viewers.Viewer;
 public class LogTreeContentProvider implements ITreeContentProvider
 {
 
-	@Override
 	public void dispose()
 	{
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
@@ -30,7 +26,6 @@ public class LogTreeContentProvider implements ITreeContentProvider
 		return null;
 	}
 
-	@Override
 	public Object[] getChildren(Object parentElement)
 	{
 		if(parentElement instanceof LogItemTree)
@@ -41,13 +36,11 @@ public class LogTreeContentProvider implements ITreeContentProvider
 		return new Object[0];
 	}
 
-	@Override
 	public Object getParent(Object element)
 	{
 		return null;
 	}
 
-	@Override
 	public boolean hasChildren(Object element)
 	{
 		if(element instanceof LogItemTree)

@@ -20,17 +20,15 @@ import org.overturetool.vdmj.types.Type;
 public class VdmLogTreeContentProvider implements ITreeContentProvider
 {
 
-	@Override
+	
 	public void dispose()
 	{
 	}
 
-	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
 	{
 	}
 
-	@Override
 	public Object[] getElements(Object inputElement)
 	{
 		if (inputElement instanceof IVdmModel)
@@ -47,7 +45,6 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		return new Object[] {};
 	}
 
-	@Override
 	public Object[] getChildren(Object parentElement)
 	{
 		if(parentElement instanceof TreeNodeContainer)
@@ -175,13 +172,11 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		return false;
 	}
 
-	@Override
 	public Object getParent(Object element)
 	{
 		return null;
 	}
 
-	@Override
 	public boolean hasChildren(Object element)
 	{
 		return getChildren(element).length > 0;
