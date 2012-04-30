@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.CellEditor;
-
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.launching.ui.IUpdatableTab;
 import org.eclipse.core.runtime.CoreException;
@@ -23,13 +21,7 @@ import org.eclipse.swt.widgets.Group;
 
 public class Clp20simLogTable implements ICheckStateProvider, ICheckStateListener
 {
-
-	
-	
-	
-//	private TableViewer logViewer;
 	private IUpdatableTab tab;
-//	private LogVariablesSelectionManager logManager = new LogVariablesSelectionManager();
 	private Set<LogItem> logItems = null;
 	private CheckboxTreeViewer logTreeViewer;
 	private LogItemTree logItemTree = null;
@@ -60,81 +52,6 @@ public class Clp20simLogTable implements ICheckStateProvider, ICheckStateListene
 		logTreeViewer.addCheckStateListener(this);		
 	}
 
-//	public void createLogTable(Composite comp, IUpdatableTab argTab)
-//	{
-//		this.tab = argTab;
-//		Group group = new Group(comp, SWT.NONE);
-//		group.setText("Log");
-//		group.setLayout(new GridLayout());
-//		GridData gd = new GridData(GridData.FILL_BOTH);
-//		gd.heightHint = 100;
-//		gd.minimumHeight = 100;
-//		group.setLayoutData(gd);
-//
-//		logViewer = new TableViewer(group, SWT.FULL_SELECTION | SWT.FILL
-//				| SWT.CHECK);
-//
-//		logViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
-//
-//		final Table table = logViewer.getTable();
-//
-//		table.setHeaderVisible(true);
-//		logViewer.setSorter(new Clp20simLogViewerSorter());
-//
-//		TableColumn column = new TableColumn(table, SWT.NONE);
-//		column.setText("Variable Name");
-//		column.setWidth(500);
-//
-//		GridData data = new GridData(GridData.FILL_BOTH);
-//		// data.heightHint = 10;
-//		table.setLayoutData(data);
-//		logViewer.setContentProvider(new ArrayContentProvider());
-//		logViewer.setLabelProvider(new LabelProvider());
-//
-//		logViewer.getTable().addListener(SWT.Selection, new Listener()
-//		{
-//
-//			public void handleEvent(Event event)
-//			{
-//				try
-//				{
-//					if (event.detail == SWT.CHECK)
-//					{
-//						if (event.item.getData() instanceof LogItem)
-//						{
-//							LogItem item = (LogItem) event.item.getData();
-//							logManager.selectionChanged(item.name); 
-//							tab.updateTab();
-//						}
-//
-//					}
-//				} catch (Exception e)
-//				{
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//
-//		logViewer.addFilter(new ViewerFilter() {
-//			
-//			@Override
-//			public boolean select(Viewer viewer, Object parentElement, Object element) {
-//				if(element instanceof LogItem)
-//				{
-//					LogItem logItem = (LogItem) element;
-//					if(logItem.name.equals("time"))
-//					{
-//						return false;
-//					}
-//				}
-//				return true;
-//			}
-//		});
-//		
-//		logViewer.setInput(logItems);
-//		
-//	}
-
 
 	public void initializeFrom(ILaunchConfiguration configuration)
 	{
@@ -152,12 +69,9 @@ public class Clp20simLogTable implements ICheckStateProvider, ICheckStateListene
 				if (!name.equals(""))
 				{
 					logItems.add(new LogItem(name));
-//					logManager.addSelectedVariable(name);
 				}
 
 			}
-//			logViewer.refresh();
-//			reSelectVariables();
 			logItemTree = LogItemTree.buildTreeFromItems(logItems, null, tab,true);
 			refresh();
 			
@@ -173,13 +87,6 @@ public class Clp20simLogTable implements ICheckStateProvider, ICheckStateListene
 	
 	public void refresh()
 	{
-//		if (logViewer != null)
-//		{
-//			logViewer.refresh();
-//		}
-//
-//		reSelectVariables();
-		
 		if (logTreeViewer != null)
 		{
 			logTreeViewer.setInput(logItemTree);
@@ -232,7 +139,6 @@ public class Clp20simLogTable implements ICheckStateProvider, ICheckStateListene
 		logItemTree = LogItemTree.buildTreeFromItems(logItems,logItemTree,tab,false);		
 	}
 
-	@Override
 	public boolean isChecked(Object element)
 	{
 		if(element instanceof LogItemTree)
@@ -244,7 +150,6 @@ public class Clp20simLogTable implements ICheckStateProvider, ICheckStateListene
 		return false;
 	}
 
-	@Override
 	public boolean isGrayed(Object element)
 	{
 		if(element instanceof LogItemTree)
