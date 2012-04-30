@@ -161,7 +161,7 @@ public class Clp20simLogTable implements ICheckStateProvider, ICheckStateListene
 		return false;
 	}
 
-	@Override
+	
 	public void checkStateChanged(CheckStateChangedEvent event)
 	{
 		tab.updateTab();

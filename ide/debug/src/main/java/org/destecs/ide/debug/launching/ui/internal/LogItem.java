@@ -36,7 +36,6 @@ public class LogItem implements Comparable<LogItem>
 		
 	}
 
-	@Override
 	public int compareTo(LogItem o)
 	{
 		return name.compareTo(o.name);

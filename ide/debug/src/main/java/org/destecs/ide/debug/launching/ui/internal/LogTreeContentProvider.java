@@ -16,7 +16,6 @@ public class LogTreeContentProvider implements ITreeContentProvider
 
 	}
 
-	@Override
 	public Object[] getElements(Object inputElement)
 	{
 		if(inputElement instanceof LogItemTree)
