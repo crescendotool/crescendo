@@ -46,8 +46,6 @@ public class LogItemTree implements Comparable<LogItemTree>
 						newNode.isChecked = oldTreeNode.isChecked;
 					}
 				}
-				
-//				newNode.setTab(tab);
 				in.add(newNode);
 			}
 		}
@@ -135,7 +133,6 @@ public class LogItemTree implements Comparable<LogItemTree>
 	}
 
 
-	@Override
 	public int compareTo(LogItemTree o)
 	{
 		return this.key.compareTo(o.key);
