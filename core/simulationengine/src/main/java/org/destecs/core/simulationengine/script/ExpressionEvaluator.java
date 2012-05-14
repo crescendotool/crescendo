@@ -86,6 +86,11 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 		}
 		Object val = interpreter.getVariableValue(simulator, node.getName());
 
+		if(val == null)
+		{
+			return null;
+		}
+		
 		Value newValue = Value.valueOf(val);
 		if (newValue == null)
 		{

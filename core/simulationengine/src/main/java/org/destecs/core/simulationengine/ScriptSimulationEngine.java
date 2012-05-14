@@ -266,6 +266,9 @@ public class ScriptSimulationEngine extends SimulationEngine
 	@Override
 	protected StepStruct afterStep(Simulator simulator, StepStruct result)
 	{
+		if(simulator == Simulator.CT)
+			return result;
+		
 		super.afterStep(simulator, result);
 		this.resultAfter = result;
 		this.inAfter = true;
@@ -282,11 +285,16 @@ public class ScriptSimulationEngine extends SimulationEngine
 			List<StepinputsStructParam> inputs, Boolean singleStep,
 			List<String> events) throws SimulationException
 	{
+		
 		super.beforeStep(nextStepEngine, nextTime, dtProxy, ctProxy, inputs, singleStep, events);
 		this.inAfter = false;
 		this.ctProxy = ctProxy;
 		this.deProxy = dtProxy;
 		this.inputsBefore = inputs;
+		if(nextStepEngine == Simulator.CT || nextStepEngine == Simulator.DE || nextStepEngine == Simulator.ALL)
+		{
+			return ;
+		}
 		for (INode stm : script)
 		{
 			stm.apply(eval);

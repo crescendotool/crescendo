@@ -107,6 +107,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 				{
 					stm.apply(this);
 				}
+				variableCache.remove(node);
 			}
 		}
 	}
