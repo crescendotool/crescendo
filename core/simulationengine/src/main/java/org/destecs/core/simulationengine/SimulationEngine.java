@@ -996,39 +996,80 @@ public class SimulationEngine
 		engineInfo(Simulator.ALL, "Validating interfaces...");
 		for (IVariable var : contract.getControlledVariables())
 		{
-			if (!interfaceContainsOuput(dtInterface, var.getName()))
+			QueryInterfaceStructoutputsStruct varOut = interfaceContainsOuput(dtInterface, var.getName());
+			if (varOut == null)
 			{
 				abort(Simulator.DE, "Missing-output controlled variable: "
 						+ var);
 				return false;
 
 			}
-			if (!interfaceContainsInput(ctInterface, var.getName()))
+			else
+			{
+//				Cannot check in VDM
+//				if(!checkIfSameDimensions(var,varOut.size))
+//				{
+//					abort(Simulator.DE, "Dimensions of variable \"" + var + "\" do not match with contract");
+//					return false;
+//				}
+			}
+			
+			QueryInterfaceStructinputsStruct varIn = interfaceContainsInput(ctInterface, var.getName());
+			if (varIn == null)
 			{
 				abort(Simulator.CT, "Missing-input controlled variable: " + var);
 				return false;
+			}
+			else
+			{
+				if(!checkIfSameDimensions(var,varIn.size))
+				{
+					abort(Simulator.CT, "Dimensions of variable \"" + var + "\" does not match with contract");
+					return false;
+				}
 			}
 		}
 
 		for (IVariable var : contract.getMonitoredVariables())
 		{
-			if (!interfaceContainsInput(dtInterface, var.getName()))
+			
+			QueryInterfaceStructinputsStruct varIn = interfaceContainsInput(dtInterface, var.getName());
+			if (varIn == null)
 			{
 				abort(Simulator.DE, "Missing-input monitored variable: " + var);
 				return false;
 
 			}
-			if (!interfaceContainsOuput(ctInterface, var.getName()))
+			else
+			{
+//				Cannot check in VDM
+//				if(!checkIfSameDimensions(var,varIn.size))
+//				{
+//					abort(Simulator.DE, "Dimensions of variable \"" + var + "\" do not match with contract");
+//					return false;
+//				}
+			}
+			
+			QueryInterfaceStructoutputsStruct varOut = interfaceContainsOuput(ctInterface, var.getName());
+			if (varOut == null)
 			{
 				abort(Simulator.CT, "Missing-output monitored variable: " + var);
 				return false;
+			}
+			else
+			{
+				if(!checkIfSameDimensions(var,varOut.size))
+				{
+					abort(Simulator.CT, "Dimensions of variable \"" + var + "\" does not match with contract");
+					return false;
+				}
 			}
 		}
 
 		//validate shared design parameters
 		if (contract.getSharedDesignParameters().size() != dtInterface.sharedDesignParameters.size())
 		{
-			abort(Simulator.DE, "Count of shared design parameters do not match: Contract("
+			abort(Simulator.DE, "Count of shared design parameters does not match: Contract("
 					+ printListOfIVariable(contract.getSharedDesignParameters())
 					+ ") actual ("
 					+ printQueryInterfaceSdps(dtInterface.sharedDesignParameters) + ")");
@@ -1036,7 +1077,7 @@ public class SimulationEngine
 
 		if (contract.getSharedDesignParameters().size() != ctInterface.sharedDesignParameters.size())
 		{
-			abort(Simulator.CT, "Count of shared design parameters do not match: Contract("
+			abort(Simulator.CT, "Count of shared design parameters does not match: Contract("
 					+ printListOfIVariable(contract.getSharedDesignParameters())
 					+ ") actual ("
 					+ printQueryInterfaceSdps(ctInterface.sharedDesignParameters) + ")");
@@ -1044,45 +1085,61 @@ public class SimulationEngine
 
 		for (IVariable var : contract.getSharedDesignParameters())
 		{
-			if (!interfaceContainsSdp(dtInterface.sharedDesignParameters, var.getName()))
+			QueryInterfaceStructsharedDesignParametersStruct deSDP = interfaceContainsSdp(dtInterface.sharedDesignParameters, var.getName());
+			if (deSDP == null)
 			{
 				abort(Simulator.DE, "Missing-shared design parameter: "
 						+ var.getName());
 				return false;
 
 			}
-			if (!interfaceContainsSdp(ctInterface.sharedDesignParameters, var.getName()))
+			else
+			{
+				//Cannot check sizes in DE
+			}
+			
+			
+			QueryInterfaceStructsharedDesignParametersStruct ctSDP = interfaceContainsSdp(ctInterface.sharedDesignParameters, var.getName());
+			if (ctSDP == null)
 			{
 				abort(Simulator.CT, "Missing-shared design parameter: "
 						+ var.getName());
 				return false;
 			}
+			else
+			{
+				if(!checkIfSameDimensions(var, ctSDP.size))
+				{
+					abort(Simulator.CT, "Dimensions of SDP \"" + var.getName() + "\" does not match the contract");
+					return false;
+				}
+			}
 		}
-		 
-		//checking if models have more sdps than declared on the contract
-//		 
-//		for (QueryInterfaceStructsharedDesignParametersStruct sdp : dtInterface.sharedDesignParameters)
-//		{
-//			if(!contractContainsVariable(contract.getSharedDesignParameters(),sdp.name))
-//			{
-//				engineInfo(Simulator.DE, "[WARNING] DE Model contains a shared design parameter that is not " +
-//						"in the contract");
-//			}
-//		}
-//		
-//		for (QueryInterfaceStructsharedDesignParametersStruct sdp : ctInterface.sharedDesignParameters)
-//		{
-//			if(!contractContainsVariable(contract.getSharedDesignParameters(),sdp.name))
-//			{
-//				engineInfo(Simulator.CT, "[WARNING] CT Model contains a shared design parameter (" + sdp.name + ") that is not " +
-//						"in the contract");
-//			}
-//		}
 		
 		
 		engineInfo(Simulator.ALL, "Validating interfaces...completed");
 
 		return true;
+	}
+
+	private boolean checkIfSameDimensions(IVariable var,
+			List<Integer> varOut)
+	{
+		if(var.getDimensions().size() != varOut.size())
+		{
+			return false;
+		}
+		
+		for(int i = 0; i < var.getDimensions().size(); i++)
+		{
+			if(!var.getDimensions().get(i).equals(varOut.get(i)))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+		
 	}
 
 	private String printQueryInterfaceSdps(
@@ -1143,38 +1200,38 @@ public class SimulationEngine
 //		return false;
 //	}
 
-	private boolean interfaceContainsSdp(
+	private QueryInterfaceStructsharedDesignParametersStruct interfaceContainsSdp(
 			List<QueryInterfaceStructsharedDesignParametersStruct> sharedDesignParameters,
 			String name)
 	{
 		for (QueryInterfaceStructsharedDesignParametersStruct sdp : sharedDesignParameters)
 		{
 			if(sdp.name.equals(name))
-				return true;
+				return sdp;
 		}
-		return false;
+		return null;
 	}
 
-	private boolean interfaceContainsInput(QueryInterfaceStruct interface_,
+	private QueryInterfaceStructinputsStruct interfaceContainsInput(QueryInterfaceStruct interface_,
 			String name)
 	{
 		for (QueryInterfaceStructinputsStruct input : interface_.inputs)
 		{
 			if (input.name.equals(name))
-				return true;
+				return input;
 		}
-		return false;
+		return null;
 	}
 
-	private boolean interfaceContainsOuput(QueryInterfaceStruct interface_,
+	private QueryInterfaceStructoutputsStruct interfaceContainsOuput(QueryInterfaceStruct interface_,
 			String name)
 	{
 		for (QueryInterfaceStructoutputsStruct output : interface_.outputs)
 		{
 			if (output.name.equals(name))
-				return true;
+				return output;
 		}
-		return false;
+		return null;
 	}
 
 	private QueryInterfaceStruct queryInterface(Simulator simulator,

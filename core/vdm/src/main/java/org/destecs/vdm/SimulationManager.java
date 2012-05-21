@@ -44,6 +44,7 @@ import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStr
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
+import org.destecs.vdm.utility.SeqValueInfo;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdm.utility.ValueInfo;
 import org.destecs.vdmj.VDMCO;
@@ -64,8 +65,10 @@ import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
 import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
+import org.overturetool.vdmj.expressions.Expression;
 import org.overturetool.vdmj.expressions.IntegerLiteralExpression;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
+import org.overturetool.vdmj.expressions.SeqEnumExpression;
 import org.overturetool.vdmj.expressions.SeqExpression;
 import org.overturetool.vdmj.expressions.UnaryMinusExpression;
 import org.overturetool.vdmj.lex.Dialect;
@@ -87,6 +90,7 @@ import org.overturetool.vdmj.statements.StateDesignator;
 import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.RealType;
+import org.overturetool.vdmj.types.SeqType;
 import org.overturetool.vdmj.types.Type;
 import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.NameValuePair;
@@ -708,8 +712,9 @@ public class SimulationManager extends BasicSimulationManager
 				@SuppressWarnings("deprecation")
 				StringPair vName = links.getBoundVariable(parameterName);
 				Object[] objValue = (Object[]) parameter.get("value");
-
-				Double newValue = (Double) objValue[0];
+				Object[] dimension = (Object[]) parameter.get("size");
+				
+				
 				for (ClassDefinition cd : controller.getInterpreter().getClasses())
 				{
 					if (!cd.getName().equals(vName.instanceName))
@@ -723,31 +728,27 @@ public class SimulationManager extends BasicSimulationManager
 						{
 							ValueDefinition vDef = (ValueDefinition) def;
 							if (vDef.pattern.toString().equals(vName.variableName)
-									&& vDef.isValueDefinition()
-									&& vDef.getType() instanceof RealType)
+									&& vDef.isValueDefinition())
 							{
-
-								if (vDef.exp instanceof RealLiteralExpression)
+								if(dimension.length == 1 && ((Integer) dimension[0] == 1))
 								{
-									RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
-									LexRealToken token = exp.value;
-
-									Field valueField = LexRealToken.class.getField("value");
-									valueField.setAccessible(true);
-
-									valueField.setDouble(token, newValue);
-									found = true;
-								} else if (vDef.exp instanceof IntegerLiteralExpression || vDef.exp instanceof UnaryMinusExpression)
-								{
-									RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.exp.location));
-									Field valDefField = ValueDefinition.class.getField("exp");
-									valDefField.setAccessible(true);
-									valDefField.set(vDef, newReal);
-									found = true;
+									Double newValue = (Double) objValue[0];
+									found = setValueForSDP(newValue, vDef.exp);
 								}
-								break;
+								else
+								{
+									//dealing with a sequence				
+									if(vDef.exp instanceof SeqEnumExpression)
+									{
+										SeqEnumExpression seqEnum = (SeqEnumExpression) vDef.exp;
+										found = createSeqEnum(vName.variableName,seqEnum,objValue,dimension);										
+									}
+																		
+								}
 							}
 						}
+						
+						
 					}
 				}
 				if (!found)
@@ -772,6 +773,103 @@ public class SimulationManager extends BasicSimulationManager
 		}
 
 		return true;
+	}
+
+	private boolean createSeqEnum(String variableName, SeqEnumExpression seqEnum, Object[] objValue,
+			Object[] objDimensions) throws NoSuchFieldException, IllegalAccessException, RemoteSimulationException
+	{
+		List<Integer> dimensions = new Vector<Integer>();
+		int index = 0;
+		boolean found = true;
+		for (Object o : objDimensions)
+		{
+			if(o instanceof Integer)
+			{
+				dimensions.add((Integer) o);
+			}
+		}
+		
+		if(dimensions.size() == 1) //it's an array
+		{
+			for (Expression exp : seqEnum.members)
+			{
+				if(exp instanceof SeqEnumExpression)
+				{
+					found = found && setValueForSDP((Double) objValue[index++], exp);
+				}
+			}
+		}
+		else //it's a matrix
+		{
+			boolean match = checkDimentionsOfSeqEnum(seqEnum,dimensions);
+			if(!match)
+			{
+				throw new RemoteSimulationException("Dimension of \""+ variableName + "\" does not match the SDP ");
+			}
+			for (Expression exp : seqEnum.members)
+			{
+				if(exp instanceof SeqEnumExpression)
+				{
+					SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
+					for (Expression expInner : seqEnumInner.members)
+					{
+						found = found && setValueForSDP((Double) objValue[index++], expInner);
+					}				
+				}
+			}
+		}
+		
+		
+		return found;
+	}
+
+	private boolean checkDimentionsOfSeqEnum(SeqEnumExpression seqEnum,
+			List<Integer> dimensions)
+	{
+		if(seqEnum.members.size() != dimensions.get(0))
+			return false;
+		
+		for (Expression exp : seqEnum.members)
+		{
+			if(exp instanceof SeqEnumExpression)
+			{
+				SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
+				if(seqEnumInner.members.size() != dimensions.get(1))
+					return false;
+			}
+		}
+		
+		return true;
+		
+	}
+
+	private boolean setValueForSDP( 
+			Double newValue, Expression exp) throws NoSuchFieldException,
+			IllegalAccessException
+	{
+		boolean found = false;
+
+				if (exp instanceof RealLiteralExpression)
+				{
+					RealLiteralExpression rExp = ((RealLiteralExpression) exp);
+					LexRealToken token = rExp.value;
+
+					Field valueField = LexRealToken.class.getField("value");
+					valueField.setAccessible(true);
+
+					valueField.setDouble(token, newValue);
+					found = true;
+				} else if (exp instanceof IntegerLiteralExpression || exp instanceof UnaryMinusExpression)
+				{
+					RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, exp.location));
+					Field valDefField = ValueDefinition.class.getField("exp");
+					valDefField.setAccessible(true);
+					valDefField.set(exp, newReal);
+					found = true;
+				}
+				
+	
+		return found;
 	}
 
 	public GetDesignParametersStructdesignParametersStruct getDesignParameter(
