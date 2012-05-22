@@ -411,8 +411,8 @@ public class VdmTab extends AbstractLaunchConfigurationTab implements ICheckStat
 		{
 			IVdmModel model = p.getModel();
 			logTreeViewer.setInput(model);
-			logTreeViewer.expandAll();
-			logTreeViewer.collapseAll();
+			//logTreeViewer.expandAll();
+			//logTreeViewer.collapseAll();
 		}
 		
 		IResource architecturesDirectory = project.findMember("model_de/architectures");

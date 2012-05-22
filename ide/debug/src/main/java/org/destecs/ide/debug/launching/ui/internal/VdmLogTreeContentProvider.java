@@ -1,6 +1,8 @@
 package org.destecs.ide.debug.launching.ui.internal;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -20,6 +22,8 @@ import org.overturetool.vdmj.types.Type;
 public class VdmLogTreeContentProvider implements ITreeContentProvider
 {
 
+	private Set<Definition> visitedCount = new HashSet<Definition>();
+	private Set<Definition> visited = new HashSet<Definition>();
 	
 	public void dispose()
 	{
@@ -27,6 +31,9 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
 	{
+		System.out.println("input changed");
+		visited.clear();
+		visitedCount.clear();
 	}
 
 	public Object[] getElements(Object inputElement)
@@ -44,16 +51,41 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		}
 		return new Object[] {};
 	}
-
-	public Object[] getChildren(Object parentElement)
+	
+	private Object[] getChildren(Object parentElement, boolean addToVisited)
 	{
+		
 		if(parentElement instanceof TreeNodeContainer)
 		{
 			TreeNodeContainer parentNode = ((TreeNodeContainer) parentElement);
 			Definition def = parentNode.data;
+			
+			if(addToVisited && visited.contains(def))
+			{
+				return new Object[] {};
+			}
+			
+			if(addToVisited)
+			{
+				System.out.println("Visiting def: " + def.getName());
+				visited.add(def);
+			}
+			
+			if(!addToVisited && visitedCount.contains(def))
+			{
+				return new Object[] {};
+			}
+			
+			if(!addToVisited)
+			{
+				System.out.println("VisitingCount def: " + def.getName());
+				visitedCount.add(def);
+			}
+			
 			if (def instanceof ClassDefinition)
 			{
 				List<Definition> defs =  getChildrenOf((ClassDefinition) def);
+				
 				return encapsulateDefs(parentNode,defs);
 			}
 			if (def instanceof InstanceVariableDefinition)
@@ -61,8 +93,14 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 				List<Definition> defs =  getChildrenOf((InstanceVariableDefinition) def);
 				return encapsulateDefs(parentNode,defs);
 			}
+			
 		}
 		return new Object[] {};
+	}
+
+	public Object[] getChildren(Object parentElement)
+	{
+		return getChildren(parentElement,true);
 	}
 
 	private Object[] encapsulateDefs(TreeNodeContainer parentNode, List<Definition> defs)
@@ -179,7 +217,9 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 
 	public boolean hasChildren(Object element)
 	{
-		return getChildren(element).length > 0;
+		return getChildren(element,false).length > 0;
 	}
+
+	
 
 }
