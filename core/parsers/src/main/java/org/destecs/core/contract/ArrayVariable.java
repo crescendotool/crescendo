@@ -29,7 +29,7 @@ public class ArrayVariable extends Variable{
 			Object value, List<Integer> sizes,int line) {
 		super(name, vType, DataType.array, value,line);
 		this.dimensions.clear();
-		this.dimensions.add(1);
+		//this.dimensions.add(1);
 		this.dimensions.addAll(sizes);
 	
 	}
