@@ -184,7 +184,7 @@ public class VdmMetadataBuilder extends
 			if (file.exists())
 			{
 				file.setContents(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
-			} else
+			} else if( dp.getVdmModelFolder().isAccessible() &&  dp.getVdmModelFolder().exists())
 			{
 				file.create(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
 			}
