@@ -113,7 +113,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 		data.heightHint = 200;
 		valueSetTable.setLayoutData(data);
 
-		String[] titles = { "Name", "Values" };
+		String[] titles = { "Name", "Values","Clear" };
 		for (int i = 0; i < titles.length; i++)
 		{
 			TableColumn column = new TableColumn(valueSetTable, SWT.NONE);
@@ -160,7 +160,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 		data.heightHint = 200;
 		incrementTable.setLayoutData(data);
 
-		String[] titles = { "Name", "From", "To", "Increment by" };
+		String[] titles = { "Name", "From", "To", "Increment by", "Clear" };
 		for (int i = 0; i < titles.length; i++)
 		{
 			TableColumn column = new TableColumn(incrementTable, SWT.NONE);
@@ -230,7 +230,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 								combo.add(key);
 							}
 						}
-
+						
 						// Select the previously selected item from the cell
 						combo.select(combo.indexOf(item.getText(column)));
 
@@ -254,13 +254,36 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 							public void widgetSelected(SelectionEvent event)
 							{
 								item.setText(col, combo.getText());
-								// setDirty(true);
+								Button a = new Button(incrementTable, SWT.PUSH);
+								TableEditor editor = new TableEditor(incrementTable);
+								a.setText("Delete");
+								a.computeSize(SWT.DEFAULT, incrementTable.getItemHeight());
+
+								editor.grabHorizontal = true;
+								editor.minimumHeight = a.getSize().y;
+								editor.minimumWidth = a.getSize().x;
+
+								editor.setEditor(a, item, 4);
+								a.addSelectionListener(new SelectionListener() {
+									
+									public void widgetSelected(SelectionEvent e) {
+										removeItem(incrementTable, col, e);
+										
+									}
+									
+									public void widgetDefaultSelected(SelectionEvent e) {
+										
+									}
+								});							// setDirty(true);
 								// updateLaunchConfigurationDialog();
 
 								// They selected an item; end the editing session
 								combo.dispose();
 							}
 						});
+						
+					
+						
 					} else if (column > 0)
 					{
 						// Create the Text object for our editor
@@ -309,8 +332,10 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 					}
 				} else if (incrementTable.getItemCount() < sdps.size())
 				{
+					TableItem newItem = new TableItem(incrementTable, SWT.NONE);
+					
 					// allow new items to be created until we reach the total sdp count
-					new TableItem(incrementTable, SWT.NONE);
+					
 
 				}
 				{
@@ -405,6 +430,27 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 								updateLaunchConfigurationDialog();
 								// They selected an item; end the editing session
 								combo.dispose();
+								
+								Button a = new Button(valueSetTable, SWT.PUSH);
+								TableEditor editor = new TableEditor(valueSetTable);
+								a.setText("Delete");
+								a.computeSize(SWT.DEFAULT, valueSetTable.getItemHeight());
+
+								editor.grabHorizontal = true;
+								editor.minimumHeight = a.getSize().y;
+								editor.minimumWidth = a.getSize().x;
+
+								editor.setEditor(a, item, 2);
+								a.addSelectionListener(new SelectionListener() {
+									
+									public void widgetSelected(SelectionEvent e) {
+										removeItem(valueSetTable, col, e);
+									}
+									
+									public void widgetDefaultSelected(SelectionEvent e) {
+										
+									}
+								});					
 							}
 						});
 					} else if (column > 0)
@@ -497,9 +543,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 					new TableItem(valueSetTable, SWT.NONE);
 
 				}
-				{
-
-				}
+				
 			}
 		});
 
@@ -522,13 +566,37 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 			if (data != null && !data.isEmpty())
 			{
 				String[] items = data.split(",");
+				int collumn = 0;
 				for (String item : items)
 				{
 					String[] colls = item.split("\\|");
-					if (colls.length == incrementTable.getColumnCount())
+					if (colls.length == incrementTable.getColumnCount() - 1)
 					{
 						TableItem tableItem = new TableItem(incrementTable, SWT.NONE);
 						tableItem.setText(colls);
+						Button a = new Button(incrementTable, SWT.PUSH);
+						TableEditor editor = new TableEditor(incrementTable);
+						a.setText("Delete");
+						a.computeSize(SWT.DEFAULT, incrementTable.getItemHeight());
+
+						editor.grabHorizontal = true;
+						editor.minimumHeight = a.getSize().y;
+						editor.minimumWidth = a.getSize().x;
+
+						editor.setEditor(a, tableItem, 4);
+						final int col = collumn;
+						
+						a.addSelectionListener(new SelectionListener() {
+							
+							public void widgetSelected(SelectionEvent e) {
+								removeItem(incrementTable, col, e);
+							}
+							
+							public void widgetDefaultSelected(SelectionEvent e) {
+								
+							}
+						});	
+						collumn++;
 					}
 				}
 			}
@@ -537,13 +605,38 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 			if (data != null && !data.isEmpty())
 			{
 				String[] items = data.split(",");
+				int collumn = 0;
 				for (String item : items)
 				{
 					String[] colls = item.split("\\|");
-					if (colls.length == valueSetTable.getColumnCount())
+					if (colls.length == valueSetTable.getColumnCount() -1 )
 					{
 						TableItem tableItem = new TableItem(valueSetTable, SWT.NONE);
 						tableItem.setText(colls);
+												
+						Button a = new Button(valueSetTable, SWT.PUSH);
+						TableEditor editor = new TableEditor(valueSetTable);
+						a.setText("Delete");
+						a.computeSize(SWT.DEFAULT, valueSetTable.getItemHeight());
+
+						editor.grabHorizontal = true;
+						editor.minimumHeight = a.getSize().y;
+						editor.minimumWidth = a.getSize().x;
+
+						editor.setEditor(a, tableItem, 2);
+						final int col = collumn;
+						
+						a.addSelectionListener(new SelectionListener() {
+							
+							public void widgetSelected(SelectionEvent e) {
+								removeItem(valueSetTable, col, e);
+							}
+							
+							public void widgetDefaultSelected(SelectionEvent e) {
+								
+							}
+						});	
+						collumn++;
 					}
 				}
 			}
@@ -552,8 +645,16 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 		{
 			DestecsDebugPlugin.logError("Error in initialization of shared design parameter tab", e);
 		}
-		
-		
+	}
+	
+	private void removeItem(Table table, int col, SelectionEvent e)
+	{
+		String sdp = table.getItem(col).getText(0);
+		System.out.println("Removing from sdps: " + sdp);
+		table.remove(col);			
+		e.widget.dispose();
+		table.layout();
+		updateLaunchConfigurationDialog();
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration)
@@ -568,6 +669,10 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 		
 		for (TableItem  item : valueSetTable.getItems()) 
 		{
+			if(item.getText(0).isEmpty())
+			{
+				continue;
+			}
 			sb.append(item.getText(0));
 			sb.append("|");
 			sb.append(item.getText(1));
@@ -589,7 +694,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 		StringBuilder sb = new StringBuilder();
 		for (TableItem item : incrementTable.getItems())
 		{
-			for (int i = 0; i < incrementTable.getColumnCount(); i++)
+			for (int i = 0; i < incrementTable.getColumnCount()-1; i++)
 			{
 				sb.append(item.getText(i));
 				if (i < incrementTable.getColumnCount())
@@ -616,20 +721,26 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig)
 	{
+		setMessage(null);
 		setErrorMessage(null);
 		for (TableItem item : incrementTable.getItems())
 		{
 			for (int i = 0; i < incrementTable.getColumnCount(); i++)
 			{
-				if (i > 0 && !item.getText(0).isEmpty())
+				if (i > 0 && i <4 && !item.getText(0).isEmpty())
 				{
 					try
 					{
-						Double.parseDouble(item.getText(i));
+						Double d = Double.parseDouble(item.getText(i));
+						if(i == 3 && d == 0)
+						{
+							setErrorMessage("Increment of " + item.getText(0) + " cannot be 0");
+							return false;
+						}
 					} catch (Exception e)
 					{
-						setErrorMessage("Value is not a double: "
-								+ item.getText(i));
+						setErrorMessage("One value is not a double in variable: "
+								+ item.getText(0));
 						return false;
 
 					}

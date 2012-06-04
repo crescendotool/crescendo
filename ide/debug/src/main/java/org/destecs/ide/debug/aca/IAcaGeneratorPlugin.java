@@ -28,6 +28,6 @@ public interface IAcaGeneratorPlugin
 {
 
 	Collection<? extends ILaunchConfiguration> generate(
-			ILaunchConfiguration configuration, ILaunchConfiguration baseConfig, Set<ILaunchConfiguration> configurations, IProject project, String outputPreFix);
+			ILaunchConfiguration configuration, ILaunchConfiguration baseConfig, Set<ILaunchConfiguration> configurations, IProject project, String outputPreFix) throws Exception;
 
 }

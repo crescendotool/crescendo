@@ -145,7 +145,7 @@ public class DestecsDebugPlugin extends AbstractUIPlugin {
 			}
 		}
 		log(new Status(IStatus.ERROR, PLUGIN_ID, INTERNAL_ERROR,
-				"internalErrorLoggedFromVdmDebugPlugin" + top.getMessage(), top));
+				"Internal Error in DebugPlugin - " + top.getMessage(), top));
 	}
 
 	public static void log(IStatus status) {

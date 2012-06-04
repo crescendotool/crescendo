@@ -87,7 +87,12 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		generator.addGenerator(new CTSettingsAcaPlugin());
 
 		monitor.worked(10);
-		final Set<ILaunchConfiguration> configurations = generator.generate();
+		Set<ILaunchConfiguration> configurations;
+		try {
+			configurations = generator.generate();
+		} catch (Exception e1) {
+			throw new CoreException(new Status(IStatus.ERROR, "DESTECS Debug", e1.getMessage()));
+		}
 
 		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 		File base = dProject.getOutputFolder().getLocation().toFile();

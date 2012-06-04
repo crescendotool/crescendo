@@ -86,9 +86,13 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 			this.by = by;
 		}
 
-		public SdpIncConfig(String[] values)
+		public SdpIncConfig(String[] values) throws Exception
 		{
 			this(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3]));
+			if(this.by == 0)
+			{
+				throw new Exception("Increment cannot be 0 in incremental SDP name: " + this.name);
+			}
 		}
 
 		public Set<Double> getValues()
@@ -117,7 +121,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 			ILaunchConfiguration configuration,
 			ILaunchConfiguration baseConfig,
 			Set<ILaunchConfiguration> configurations, IProject project,
-			String outputPreFix)
+			String outputPreFix) throws Exception
 	{
 		final Set<ILaunchConfiguration> configs = new HashSet<ILaunchConfiguration>();
 
@@ -252,7 +256,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 		return sdps;
 	}
 	
-	public Set<ISdpContainer> getIncrementalSdps(ILaunchConfiguration baseConfig)
+	public Set<ISdpContainer> getIncrementalSdps(ILaunchConfiguration baseConfig) throws Exception
 	{
 		Set<ISdpContainer> sdps = new HashSet<ISdpContainer>();
 		try
@@ -266,7 +270,17 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 					String[] colls = item.split("\\|");
 					if (colls.length == 4)
 					{
-						sdps.add(new SdpIncConfig(colls));
+//						try
+//						{
+							SdpIncConfig s = new SdpIncConfig(colls);
+							sdps.add(s);
+//						}
+//						catch(Exception e)
+//						{							
+//							DestecsDebugPlugin.log(e);	
+//						}
+						
+						
 					}
 				}
 			}

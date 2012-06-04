@@ -53,7 +53,7 @@ public class AcaGenerator
 		this.generators.add(generator);
 	}
 
-	public Set<ILaunchConfiguration> generate()
+	public Set<ILaunchConfiguration> generate() throws Exception
 	{
 		monitor.subTask("Generating ACA permutations");
 		final Set<ILaunchConfiguration> configurations = new HashSet<ILaunchConfiguration>();

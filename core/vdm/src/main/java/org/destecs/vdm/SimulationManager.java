@@ -733,7 +733,7 @@ public class SimulationManager extends BasicSimulationManager
 								if(dimension.length == 1 && ((Integer) dimension[0] == 1))
 								{
 									Double newValue = (Double) objValue[0];
-									found = setValueForSDP(newValue, vDef.exp);
+									found = setValueForSDP(newValue, vDef);
 								}
 								else
 								{
@@ -844,27 +844,47 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	private boolean setValueForSDP( 
-			Double newValue, Expression exp) throws NoSuchFieldException,
+			Double newValue, Expression exp) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException
+	{
+		boolean found = false;
+		
+		if (exp != null && exp instanceof RealLiteralExpression)
+		{
+			RealLiteralExpression rExp = ((RealLiteralExpression) exp);
+			LexRealToken token = rExp.value;
+
+			Field valueField = LexRealToken.class.getField("value");
+			valueField.setAccessible(true);
+
+			valueField.setDouble(token, newValue);
+			found = true;
+		}
+		return found;
+	}
+	
+	private boolean setValueForSDP( 
+			Double newValue, ValueDefinition vDef) throws NoSuchFieldException,
 			IllegalAccessException
 	{
 		boolean found = false;
-
-				if (exp instanceof RealLiteralExpression)
+		
+				if (vDef.exp != null && vDef.exp instanceof RealLiteralExpression)
 				{
-					RealLiteralExpression rExp = ((RealLiteralExpression) exp);
-					LexRealToken token = rExp.value;
-
-					Field valueField = LexRealToken.class.getField("value");
-					valueField.setAccessible(true);
-
-					valueField.setDouble(token, newValue);
-					found = true;
-				} else if (exp instanceof IntegerLiteralExpression || exp instanceof UnaryMinusExpression)
+					found = setValueForSDP(newValue, vDef.exp);
+//					RealLiteralExpression rExp = ((RealLiteralExpression) vDef.exp);
+//					LexRealToken token = rExp.value;
+//
+//					Field valueField = LexRealToken.class.getField("value");
+//					valueField.setAccessible(true);
+//
+//					valueField.setDouble(token, newValue);
+//					found = true;
+				} else if (vDef.exp != null && vDef.exp instanceof IntegerLiteralExpression || vDef.exp instanceof UnaryMinusExpression)
 				{
-					RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, exp.location));
+					RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.location));
 					Field valDefField = ValueDefinition.class.getField("exp");
 					valDefField.setAccessible(true);
-					valDefField.set(exp, newReal);
+					valDefField.set(vDef, newReal);
 					found = true;
 				}
 				
