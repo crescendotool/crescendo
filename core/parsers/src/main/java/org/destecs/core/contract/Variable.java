@@ -25,14 +25,24 @@ import java.util.Vector;
 
 public class Variable implements IVariable
 {
+	
+	public enum DataType
+	{
+		real, bool, array, matrix
+	}
+	
 	protected List<Integer> dimensions = new Vector<Integer>();
 	protected int line;
+	private String name;
+	//private Object value;
+	private VariableType type;
+	private DataType dataType;
 	
-	public Variable(String name, VariableType vType, DataType dType, Object value, int line) {
+	public Variable(String name, VariableType vType, DataType dType, int line) {
 		this.setName(name);
 		this.setType(vType);
 		this.setDataType(dType);
-		this.value = value;
+		//this.value = value;
 		this.dimensions.add(1);
 		this.line = line;
 	}
@@ -52,23 +62,13 @@ public class Variable implements IVariable
 		
 	}
 
-	public enum DataType
-	{
-		real, bool, array, matrix
-	}
-
 	
-	
-	private String name;
-	private Object value;
-	private VariableType type;
-	private DataType dataType;
 	
 	@Override
 	public String toString()
 	{
 		
-		return getType() + " "+getDataType()+ " "+getName()+" := "+value;
+		return getType() + " "+getDataType()+ " "+getName();
 	}
 
 	public void setName(String name) {
@@ -93,16 +93,7 @@ public class Variable implements IVariable
 		return type;
 	}
 	
-	public void setValue(Object value) {
-		this.value = value;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.destecs.core.contract.IVariable#getValue()
-	 */
-	public Object getValue() {
-		return value;
-	}
+	
 
 	public void setDataType(DataType dataType) {
 		this.dataType = dataType;

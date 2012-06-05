@@ -436,45 +436,45 @@ public class DestecsBuilder
 			} else
 			{
 				names.add(var.getName());
-				failed = failed || !typeCheck(file, var);
+				//failed = failed || !typeCheck(file, var);
 			}
 		}
 		return !failed;
 	}
 
-	private static boolean typeCheck(IFile file, IVariable variable)
-	{
-		switch (variable.getDataType())
-		{
-		case bool:
-			try
-			{
-				Boolean.parseBoolean(variable.getValue().toString());
-			} catch (Exception e)
-			{
-				FileUtility.addMarker(file,
-						"Type error in variable expected 'true' or 'false' in: "
-								+ variable, 0, IMarker.SEVERITY_ERROR);
-				return false;
-			}
-			break;
-		case real:
-			try
-			{
-				Double.parseDouble(variable.getValue().toString());
-			} catch (Exception e)
-			{
-				FileUtility.addMarker(file,
-						"Type error in variable expected 'true' or 'false' in: "
-								+ variable, 0, IMarker.SEVERITY_ERROR);
-				return false;
-			}
-			break;
-
-		}
-		return true;
-
-	}
+//	private static boolean typeCheck(IFile file, IVariable variable)
+//	{
+//		switch (variable.getDataType())
+//		{
+//		case bool:
+//			try
+//			{
+//				Boolean.parseBoolean(variable.getValue().toString());
+//			} catch (Exception e)
+//			{
+//				FileUtility.addMarker(file,
+//						"Type error in variable expected 'true' or 'false' in: "
+//								+ variable, 0, IMarker.SEVERITY_ERROR);
+//				return false;
+//			}
+//			break;
+//		case real:
+//			try
+//			{
+//				Double.parseDouble(variable.getValue().toString());
+//			} catch (Exception e)
+//			{
+//				FileUtility.addMarker(file,
+//						"Type error in variable expected 'true' or 'false' in: "
+//								+ variable, 0, IMarker.SEVERITY_ERROR);
+//				return false;
+//			}
+//			break;
+//
+//		}
+//		return true;
+//
+//	}
 
 	protected static void addWarning(IFile file, int line, String message)
 	{

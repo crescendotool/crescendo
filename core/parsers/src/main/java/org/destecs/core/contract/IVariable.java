@@ -31,8 +31,6 @@ public interface IVariable {
 
 	public abstract VariableType getType();
 
-	public abstract Object getValue();
-
 	public abstract DataType getDataType();
 	
 	public abstract SharedVariableType getSharedVariableType();

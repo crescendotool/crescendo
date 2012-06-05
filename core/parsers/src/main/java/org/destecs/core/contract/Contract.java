@@ -98,7 +98,7 @@ public class Contract
 		
 		for (IVariable var : variables)
 		{
-			sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+ " := "+ var.getValue()+";\n");
+			sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+ ";\n");
 		}
 		
 		return sb.toString();

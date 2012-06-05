@@ -97,6 +97,7 @@ import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
 import org.overturetool.vdmj.values.RealValue;
 import org.overturetool.vdmj.values.SeqValue;
+import org.overturetool.vdmj.values.UndefinedValue;
 import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
@@ -287,6 +288,11 @@ public class SimulationManager extends BasicSimulationManager
 
 			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()), list).value;
 
+			if(value.deref() instanceof UndefinedValue)
+			{
+				throw new RemoteSimulationException("Value: " + name + " not initialized");
+			}
+			
 			return new ValueContents(VDMClassHelper.getDoubleListFromValue(value), VDMClassHelper.getValueDimensions(value));
 
 		}

@@ -293,14 +293,14 @@ sharedDesignParamater
   ;
   
 variables 
-	: k=kind t=type ID ASSIGN v=value ';' 
-	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),v,$ID.getLine()));}
+	: k=kind t=type ID  ';' 
+	 {contract.addVariable(new Variable($ID.text,k,DataType.valueOf(t),$ID.getLine()));}
 	| sdp_kind t=type ID ';' 
-	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),null,$ID.getLine())); }
+	 { contract.addVariable(new Variable($ID.text,VariableType.SharedDesignParameter,DataType.valueOf(t),$ID.getLine())); }
 	| k=twokinds MATRIX ID sizes=arrayspec ';'
-	 {contract.addVariable(new MatrixVariable($ID.text,k,null,sizes,$ID.getLine()));}
+	 {contract.addVariable(new MatrixVariable($ID.text,k,sizes,$ID.getLine()));}
 	| k=twokinds ARRAY ID sizes=oneDimArrayspec ';'
-   {contract.addVariable(new ArrayVariable($ID.text,k,null,sizes,$ID.getLine()));}
+   {contract.addVariable(new ArrayVariable($ID.text,k,sizes,$ID.getLine()));}
 	;
 
 oneDimArrayspec returns [List<Integer> sizes]

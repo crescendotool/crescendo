@@ -48,10 +48,10 @@ public class ContractNewWizard extends AbstractNewFileWizard implements INewWiza
 		sb.append("-- sdp real MAXLEVEL;");
 		sb.append("\n\n");
 		sb.append("-- Monitored variables\n");
-		sb.append("-- monitored real level := 0.0;");
+		sb.append("-- monitored real level;");
 		sb.append("\n\n");
 		sb.append("-- Controlled variables\n");
-		sb.append("-- controlled real valve := 0.0;");
+		sb.append("-- controlled real valve;");
 		sb.append("\n\n");
 		sb.append("-- Events\n");
 		sb.append("-- event HIGH;");

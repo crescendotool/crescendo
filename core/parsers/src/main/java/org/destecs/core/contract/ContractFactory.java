@@ -62,7 +62,7 @@ public class ContractFactory {
 				sb.append(var.getType().syntaxName+" "+ var.getName() + ";\n");
 			}
 			else{
-				sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+ " := "+ var.getValue()+";\n");	
+				sb.append(var.getType().syntaxName+" "+ var.getDataType()+ " "+ var.getName()+";\n");	
 			}
 			
 		}
