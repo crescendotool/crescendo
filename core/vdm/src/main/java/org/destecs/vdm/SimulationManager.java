@@ -44,7 +44,6 @@ import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStr
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
-import org.destecs.vdm.utility.SeqValueInfo;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdm.utility.ValueInfo;
 import org.destecs.vdmj.VDMCO;
@@ -90,7 +89,6 @@ import org.overturetool.vdmj.statements.StateDesignator;
 import org.overturetool.vdmj.typechecker.TypeChecker;
 import org.overturetool.vdmj.types.ClassType;
 import org.overturetool.vdmj.types.RealType;
-import org.overturetool.vdmj.types.SeqType;
 import org.overturetool.vdmj.types.Type;
 import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.NameValuePair;
@@ -871,14 +869,7 @@ public class SimulationManager extends BasicSimulationManager
 				if (vDef.exp != null && vDef.exp instanceof RealLiteralExpression)
 				{
 					found = setValueForSDP(newValue, vDef.exp);
-//					RealLiteralExpression rExp = ((RealLiteralExpression) vDef.exp);
-//					LexRealToken token = rExp.value;
-//
-//					Field valueField = LexRealToken.class.getField("value");
-//					valueField.setAccessible(true);
-//
-//					valueField.setDouble(token, newValue);
-//					found = true;
+
 				} else if (vDef.exp != null && vDef.exp instanceof IntegerLiteralExpression || vDef.exp instanceof UnaryMinusExpression)
 				{
 					RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.location));

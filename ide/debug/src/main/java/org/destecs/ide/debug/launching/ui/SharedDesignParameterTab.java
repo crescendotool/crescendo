@@ -107,10 +107,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		comp.setLayout(new GridLayout(1, true));
 		comp.setFont(parent.getFont());
 
-		table = new Table(comp, SWT.FULL_SELECTION | SWT.VIRTUAL);// SWT.MULTI |
-																	// SWT.BORDER
-																	// |
-																	// SWT.FULL_SELECTION);
+		table = new Table(comp, SWT.FULL_SELECTION | SWT.VIRTUAL);
 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -160,11 +157,6 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 						Text text = (Text) editor.getEditor();
 						String s = text.getText();
 						editor.getItem().setText(EDITABLECOLUMN, s);
-						if (!isParseCorrect(s))
-						{
-
-						}
-
 						setDirty(true);
 						updateLaunchConfigurationDialog();
 					}
@@ -180,10 +172,6 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		});
 	}
 
-	private boolean isParseCorrect(String s)
-	{
-		return true;
-	}
 
 	public String getName()
 	{
@@ -369,34 +357,25 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 		{
 			ArrayVariable arrayVariable = (ArrayVariable) v;
 			List<Integer> dimensions = arrayVariable.getDimensions();
-			if (dimensions.size() > 0)
+			if (dimensions.size() == 1)
 			{
-				if (dimensions.get(0) == 1)
-				{
-					if (dimensions.size() > 1)
-					{
-						for (int j = 1; j < dimensions.size(); j++)
-						{
-							for (int k = 0; k < dimensions.get(j); k++)
-							{
-								TableItem item = new TableItem(table, SWT.NONE);
-								String itemName = arrayVariable.getName() + "["
-										+ (k + 1) + "]";
-								item.setText(0, itemName);
-								String existing = getValueIfPresent(itemName);
+				
+				for (int k = 0; k < dimensions.get(0); k++) {
+					TableItem item = new TableItem(table, SWT.NONE);
+					String itemName = arrayVariable.getName() + "[" + (k + 1)
+							+ "]";
+					item.setText(0, itemName);
+					String existing = getValueIfPresent(itemName);
 
-								if (existing == null)
-								{
-									item.setText(1, "0.0");
-								} else
-								{
-									item.setText(1, existing);
-								}
-								item.setData(arrayVariable);
-							}
-						}
+					if (existing == null) {
+						item.setText(1, "0.0");
+					} else {
+						item.setText(1, existing);
 					}
+					item.setData(arrayVariable);
 				}
+						
+				
 			}
 		} else if (v instanceof MatrixVariable)
 		{
