@@ -39,32 +39,36 @@
 	<!--
 		Help documents, The language manual and user guide pdf must be copied
 	-->
-<get
-	src="https://overture.svn.sourceforge.net/svnroot/overture/trunk/documentation/VDM10LangMan/VDM10_lang_man.pdf"
-	dest="${buildDirectory}/plugins/overture.help/html/VDM10_lang_man.pdf" />
+	<copy file="${includeFileLangMan}"
+	toFile="${buildDirectory}/plugins/overture.help/html/VDM10_lang_man.pdf"
+	overwrite="true" filtering="true">
+</copy>
 
-<get
-	src="https://overture.svn.sourceforge.net/svnroot/overture/trunk/documentation/UserGuideOvertureIDE/OvertureIDEUserGuide.pdf"
-	dest="${buildDirectory}/plugins/overture.help/html/OvertureIDEUserGuide.pdf" />
+<copy
+	file="${includeFileUserGuide}"
+	toFile="${buildDirectory}/plugins/overture.help/html/OvertureIDEUserGuide.pdf"
+	overwrite="true" filtering="true">
+</copy>
 
-<get
-    src="https://overture.svn.sourceforge.net/svnroot/overture/trunk/documentation/QuickOverviewVDMPPOperators/QuickOverviewofVDMOperators.pdf"
-    dest="${buildDirectory}/plugins/overture.help/html/QuickOverviewofVDMOperators.pdf" />
-
+<copy
+    file="${includeFileQuickOverviewOperator}"
+    toFile="${buildDirectory}/plugins/overture.help/html/QuickOverviewofVDMOperators.pdf"
+    overwrite="true" filtering="true">
+</copy>
 
 	<!-- Download examples from SF to embed in help -->
 <get
-	src="http://sourceforge.net/projects/overture/files/Examples/examplesSL.zip"
+	src="${includeFileExamplesSL}"
 	dest="${buildDirectory}/plugins/overture.help/html/Example_package_vdmsl.zip" />
-
+	
 <get
-	src="http://sourceforge.net/projects/overture/files/Examples/examplesPP.zip"
+	src="${includeFileExamplesPP}"
 	dest="${buildDirectory}/plugins/overture.help/html/Example_package_vdmpp.zip" />
-
+	
 <get
-	src="http://sourceforge.net/projects/overture/files/Examples/examplesRT.zip"
+	src="${includeFileExamplesRT}"
 	dest="${buildDirectory}/plugins/overture.help/html/Example_package_vdmrt.zip" />
-
+	
 
 	<!-- 
 Plugins
