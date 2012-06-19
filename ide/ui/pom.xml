@@ -1,38 +1,67 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.destecs</groupId>
-    <artifactId>ide</artifactId>
-    <version>1.2.0</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.destecs.ide</groupId>
-  <artifactId>org.destecs.ide.ui</artifactId>
-  <name>org.destecs.ide.ui</name>
-  <version>1.2.0</version>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.destecs.ide</groupId>
-  		<artifactId>org.destecs.ide.core</artifactId>
-  		<version>1.2.0</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.overture.ide.vdmrt</groupId>
-  		<artifactId>org.overture.ide.vdmrt.core</artifactId>
-  		<version>2.1.1</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.overture.ide</groupId>
-  		<artifactId>org.overture.ide.ui</artifactId>
-  		<version>2.1.1</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.destecs.ide</groupId>
-  		<artifactId>org.destecs.ide.simeng</artifactId>
-  		<version>1.2.0</version>
-  	</dependency>
-  </dependencies>
- 
- 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.destecs</groupId>
+		<artifactId>ide</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.destecs.ide</groupId>
+	<artifactId>org.destecs.ide.ui</artifactId>
+	<name>org.destecs.ide.ui</name>
+	<version>1.2.0</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.destecs.ide</groupId>
+			<artifactId>org.destecs.ide.core</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.overture.ide.vdmrt</groupId>
+			<artifactId>org.overture.ide.vdmrt.core</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.overture.ide</groupId>
+			<artifactId>org.overture.ide.ui</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.destecs.ide</groupId>
+			<artifactId>org.destecs.ide.simeng</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>org.eclipse.ui.ide</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>org.eclipse.ui.navigator</artifactId>
+			<version>3.5.101</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>org.eclipse.ui.navigator.resources</artifactId>
+			<version>3.4.300</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>org.eclipse.ui.editors</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>org.eclipse.ui.views</artifactId>
+			<version>3.6.0</version>
+		</dependency>
+	</dependencies>
+
+
 
 
 </project>
