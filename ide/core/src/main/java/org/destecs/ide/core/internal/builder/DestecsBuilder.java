@@ -297,7 +297,7 @@ public class DestecsBuilder
 
 		
 		setDuplicationWarnings(contract,file);
-		
+		setMatrixDimensionWarnings(contract,file);
 		
 		
 		// check outputs
@@ -368,6 +368,36 @@ public class DestecsBuilder
 		return !failed;
 	}
 
+
+	private static void setMatrixDimensionWarnings(Contract contract, IFile file) {
+		for (IVariable var : contract.getVariables()) {
+			checkNotAllowedDimentions(var,file);
+		}
+		
+		for (IVariable var  : contract.getSharedDesignParameters()) {
+			checkNotAllowedDimentions(var,file);
+		}
+		
+	}
+
+	private static void checkNotAllowedDimentions(IVariable var, IFile file) {
+		List<Integer> dimensions  = var.getDimensions();
+		for (int i = 0; i < dimensions.size(); i++) {
+			if(dimensions.get(i) <= 0)
+			{
+				addError(file, var.getLine()+1, "Cannot have zero or negative dimentions in array/matrix \"" + var.getName() + "\"");
+			}			
+		}
+		
+		if(dimensions.size() > 1)
+		{
+			if(dimensions.get(dimensions.size()-1) == 1)
+			{
+				addError(file, var.getLine()+1, "Last dimension of matrix \"" +  var.getName() +"\" should not be 1.");
+			}
+		}
+		
+	}
 
 	private static void setDuplicationWarnings(Contract contract, IFile file)
 	{
