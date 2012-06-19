@@ -107,6 +107,14 @@
 
 <!-- This section contains repositories for DESTECS and the depended project Overture -->
    <repositories>
+   
+    <repository>
+      <id>OvertureMT4Em2Repo</id>
+      <name>Overture Project's MT4E-generated Maven Repository of Eclipse 3.7.2 files</name>
+      <url>http://build.overturetool.org/builds/mt4e-m2repo-eclipse3.7.2/</url>
+      <layout>default</layout>
+    </repository>
+	
         <!--
         overture.sf.net repos
         -->

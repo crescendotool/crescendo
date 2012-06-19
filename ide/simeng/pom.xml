@@ -1,44 +1,78 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.destecs</groupId>
-    <artifactId>ide</artifactId>
-    <version>1.2.0</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.destecs.ide</groupId>
-  <artifactId>org.destecs.ide.simeng</artifactId>
-  <name>DESTECS Simulation Engine</name>
-  <version>1.2.0</version>
- 
- 
-  <dependencies>
-  	
-  	<dependency>
-  		<groupId>org.destecs.core</groupId>
-  		<artifactId>vdm</artifactId>
-  		<version>1.2.0</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.destecs.ide</groupId>
-  		<artifactId>org.destecs.ide.core</artifactId>
-  		<version>1.2.0</version>
-  	</dependency>
-  	<dependency>
-        <groupId>org.destecs.core.xmlrpcextensions</groupId>
-        <artifactId>xmlrpcbaseextension</artifactId>
-        <version>1.2.0</version>
-    </dependency>
-    <dependency>
-        <groupId>org.destecs.core.xmlrpcextensions</groupId>
-        <artifactId>xmlrpcserverextension</artifactId>
-        <version>1.2.0</version>
-    </dependency>
-  </dependencies>
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.destecs</groupId>
+		<artifactId>ide</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.destecs.ide</groupId>
+	<artifactId>org.destecs.ide.simeng</artifactId>
+	<name>DESTECS Simulation Engine</name>
+	<version>1.2.0</version>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.destecs.core</groupId>
+			<artifactId>vdm</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.destecs.ide</groupId>
+			<artifactId>org.destecs.ide.core</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.destecs.core.xmlrpcextensions</groupId>
+			<artifactId>xmlrpcbaseextension</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.destecs.core.xmlrpcextensions</groupId>
+			<artifactId>xmlrpcserverextension</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.eclipse.jface</groupId>
+			<artifactId>org.eclipse.jface.text</artifactId>
+			<version>3.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.swt</groupId>
+			<artifactId>org.eclipse.swt</artifactId>
+			<version>3.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.swt</groupId>
+			<artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+			<version>3.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>org.eclipse.ui</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.debug</groupId>
+			<artifactId>org.eclipse.debug.core</artifactId>
+			<version>3.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.debug</groupId>
+			<artifactId>org.eclipse.debug.ui</artifactId>
+			<version>3.7.102</version>
+		</dependency>
+	</dependencies>
 
 
 
-<build>
+
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

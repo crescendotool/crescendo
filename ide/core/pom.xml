@@ -24,19 +24,28 @@
 			<version>1.2.0</version>
 		</dependency>
 
-        <dependency>
-            <groupId>org.destecs.core</groupId>
-            <artifactId>parsers</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-        
-          <dependency>
-            <groupId>org.destecs.core</groupId>
-            <artifactId>protocol</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-		
+		<dependency>
+			<groupId>org.destecs.core</groupId>
+			<artifactId>parsers</artifactId>
+			<version>1.2.0</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.destecs.core</groupId>
+			<artifactId>protocol</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>org.eclipse.core.resources</artifactId>
+			<version>3.7.101</version>
+		</dependency>
 
 		<!-- dependency> <groupId>javax.xml</groupId> <artifactId>jaxp-api</artifactId> 
 			<version>1.4.2</version> </dependency -->
