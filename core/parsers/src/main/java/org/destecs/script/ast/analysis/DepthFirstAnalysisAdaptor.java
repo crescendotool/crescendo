@@ -46,6 +46,7 @@ import org.destecs.script.ast.expressions.AHTimeunit;
 import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.types.ATimeType;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
+import org.destecs.script.ast.statement.AOnceStm;
 import java.util.List;
 import org.destecs.script.ast.expressions.binop.AEqualBinop;
 import java.lang.Integer;
@@ -66,14 +67,15 @@ import org.destecs.script.ast.expressions.unop.ACeilUnop;
 import org.destecs.script.ast.ADeDomain;
 import org.destecs.script.ast.expressions.binop.AOrBinop;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
-import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.expressions.unop.AMinusUnop;
+import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.expressions.binop.ADivBinop;
 import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.statement.AWhenStm;
 import org.destecs.script.ast.expressions.unop.PUnop;
 import org.destecs.script.ast.expressions.binop.AAndBinop;
 import org.destecs.script.ast.types.ARealType;
+import java.util.Set;
 import org.destecs.script.ast.expressions.unop.AFloorUnop;
 import org.destecs.script.ast.expressions.ASystemTimeSingleExp;
 import java.util.ArrayList;
@@ -90,7 +92,6 @@ import org.destecs.script.ast.types.ABoolType;
 import org.destecs.script.ast.expressions.binop.AImpliesBinop;
 import org.destecs.script.ast.expressions.unop.AAddUnop;
 import org.destecs.script.ast.node.IToken;
-import java.util.Queue;
 
 
 /**
@@ -98,18 +99,20 @@ import java.util.Queue;
 * @author Kenneth Lausdahl
 *
 */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class DepthFirstAnalysisAdaptor implements IAnalysis
 {
 	private static final long serialVersionUID = 1L;
 
-	protected Queue _queue = new java.util.LinkedList<INode>();
+	protected Set _queue = new java.util.HashSet<INode>();
 
 	/**
 	* Creates a new {@code DepthFirstAnalysisAdaptor} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
-	* @param queue_ the {@link Queue} node for the {@code queue} child of this {@link DepthFirstAnalysisAdaptor} node
+	* @param queue_ the {@link Set} node for the {@code queue} child of this {@link DepthFirstAnalysisAdaptor} node
 	*/
-	public DepthFirstAnalysisAdaptor(Queue queue_)
+	public DepthFirstAnalysisAdaptor(Set queue_)
 	{
 		super();
 		this.setQueue(queue_);
@@ -126,22 +129,11 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	}
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof DepthFirstAnalysisAdaptor)
-	 return toString().equals(o.toString());
-	return false; }
-	
 	/**
 	 * Sets the {@code _queue} child of this {@link DepthFirstAnalysisAdaptor} node.
 	 * @param value the new {@code _queue} child of this {@link DepthFirstAnalysisAdaptor} node
 	*/
-	public void setQueue(Queue value)
+	public void setQueue(Set value)
 	{
 
 	}
@@ -151,7 +143,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseTInt(TInt node)
+	public void caseTInt(TInt node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -171,7 +163,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void inTInt(TInt node)
+	public void inTInt(TInt node) throws Throwable
 	{
 		defaultInIToken(node);
 	}
@@ -181,7 +173,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void outTInt(TInt node)
+	public void outTInt(TInt node) throws Throwable
 	{
 		defaultOutIToken(node);
 	}
@@ -191,7 +183,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseDouble(Double node)
+	public void caseDouble(Double node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -211,7 +203,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void inDouble(Double node)
+	public void inDouble(Double node) throws Throwable
 	{
 
 	}
@@ -221,7 +213,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void outDouble(Double node)
+	public void outDouble(Double node) throws Throwable
 	{
 
 	}
@@ -231,7 +223,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseBoolean(Boolean node)
+	public void caseBoolean(Boolean node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -251,7 +243,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void inBoolean(Boolean node)
+	public void inBoolean(Boolean node) throws Throwable
 	{
 
 	}
@@ -261,7 +253,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void outBoolean(Boolean node)
+	public void outBoolean(Boolean node) throws Throwable
 	{
 
 	}
@@ -271,7 +263,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseInteger(Integer node)
+	public void caseInteger(Integer node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -291,7 +283,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void inInteger(Integer node)
+	public void inInteger(Integer node) throws Throwable
 	{
 
 	}
@@ -301,7 +293,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void outInteger(Integer node)
+	public void outInteger(Integer node) throws Throwable
 	{
 
 	}
@@ -311,7 +303,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseString(String node)
+	public void caseString(String node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -331,7 +323,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void inString(String node)
+	public void inString(String node) throws Throwable
 	{
 
 	}
@@ -341,7 +333,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void outString(String node)
+	public void outString(String node) throws Throwable
 	{
 
 	}
@@ -351,7 +343,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseLong(Long node)
+	public void caseLong(Long node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -371,7 +363,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void inLong(Long node)
+	public void inLong(Long node) throws Throwable
 	{
 
 	}
@@ -381,7 +373,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void outLong(Long node)
+	public void outLong(Long node) throws Throwable
 	{
 
 	}
@@ -391,7 +383,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PUnop} node from {@link PUnop#apply(IAnalysis)}.
 	* @param node the calling {@link PUnop} node
 	*/
-	public void defaultInPUnop(PUnop node)
+	public void defaultInPUnop(PUnop node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -401,7 +393,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PUnop} node from {@link PUnop#apply(IAnalysis)}.
 	* @param node the calling {@link PUnop} node
 	*/
-	public void defaultOutPUnop(PUnop node)
+	public void defaultOutPUnop(PUnop node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -411,7 +403,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PUnop} node from {@link PUnop#apply(IAnalysis)}.
 	* @param node the calling {@link PUnop} node
 	*/
-	public void inPUnop(PUnop node)
+	public void inPUnop(PUnop node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -421,7 +413,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PUnop} node from {@link PUnop#apply(IAnalysis)}.
 	* @param node the calling {@link PUnop} node
 	*/
-	public void outPUnop(PUnop node)
+	public void outPUnop(PUnop node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -431,7 +423,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAddUnop} node from {@link AAddUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAddUnop} node
 	*/
-	public void caseAAddUnop(AAddUnop node)
+	public void caseAAddUnop(AAddUnop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -451,7 +443,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAddUnop} node from {@link AAddUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAddUnop} node
 	*/
-	public void inAAddUnop(AAddUnop node)
+	public void inAAddUnop(AAddUnop node) throws Throwable
 	{
 		defaultInPUnop(node);
 	}
@@ -461,7 +453,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAddUnop} node from {@link AAddUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAddUnop} node
 	*/
-	public void outAAddUnop(AAddUnop node)
+	public void outAAddUnop(AAddUnop node) throws Throwable
 	{
 		defaultOutPUnop(node);
 	}
@@ -471,7 +463,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMinusUnop} node from {@link AMinusUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusUnop} node
 	*/
-	public void caseAMinusUnop(AMinusUnop node)
+	public void caseAMinusUnop(AMinusUnop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -491,7 +483,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMinusUnop} node from {@link AMinusUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusUnop} node
 	*/
-	public void inAMinusUnop(AMinusUnop node)
+	public void inAMinusUnop(AMinusUnop node) throws Throwable
 	{
 		defaultInPUnop(node);
 	}
@@ -501,7 +493,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMinusUnop} node from {@link AMinusUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusUnop} node
 	*/
-	public void outAMinusUnop(AMinusUnop node)
+	public void outAMinusUnop(AMinusUnop node) throws Throwable
 	{
 		defaultOutPUnop(node);
 	}
@@ -511,7 +503,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAbsUnop} node from {@link AAbsUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAbsUnop} node
 	*/
-	public void caseAAbsUnop(AAbsUnop node)
+	public void caseAAbsUnop(AAbsUnop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -531,7 +523,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAbsUnop} node from {@link AAbsUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAbsUnop} node
 	*/
-	public void inAAbsUnop(AAbsUnop node)
+	public void inAAbsUnop(AAbsUnop node) throws Throwable
 	{
 		defaultInPUnop(node);
 	}
@@ -541,7 +533,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAbsUnop} node from {@link AAbsUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAbsUnop} node
 	*/
-	public void outAAbsUnop(AAbsUnop node)
+	public void outAAbsUnop(AAbsUnop node) throws Throwable
 	{
 		defaultOutPUnop(node);
 	}
@@ -551,7 +543,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AFloorUnop} node from {@link AFloorUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AFloorUnop} node
 	*/
-	public void caseAFloorUnop(AFloorUnop node)
+	public void caseAFloorUnop(AFloorUnop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -571,7 +563,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AFloorUnop} node from {@link AFloorUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AFloorUnop} node
 	*/
-	public void inAFloorUnop(AFloorUnop node)
+	public void inAFloorUnop(AFloorUnop node) throws Throwable
 	{
 		defaultInPUnop(node);
 	}
@@ -581,7 +573,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AFloorUnop} node from {@link AFloorUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AFloorUnop} node
 	*/
-	public void outAFloorUnop(AFloorUnop node)
+	public void outAFloorUnop(AFloorUnop node) throws Throwable
 	{
 		defaultOutPUnop(node);
 	}
@@ -591,7 +583,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ACeilUnop} node from {@link ACeilUnop#apply(IAnalysis)}.
 	* @param node the calling {@link ACeilUnop} node
 	*/
-	public void caseACeilUnop(ACeilUnop node)
+	public void caseACeilUnop(ACeilUnop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -611,7 +603,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ACeilUnop} node from {@link ACeilUnop#apply(IAnalysis)}.
 	* @param node the calling {@link ACeilUnop} node
 	*/
-	public void inACeilUnop(ACeilUnop node)
+	public void inACeilUnop(ACeilUnop node) throws Throwable
 	{
 		defaultInPUnop(node);
 	}
@@ -621,7 +613,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ACeilUnop} node from {@link ACeilUnop#apply(IAnalysis)}.
 	* @param node the calling {@link ACeilUnop} node
 	*/
-	public void outACeilUnop(ACeilUnop node)
+	public void outACeilUnop(ACeilUnop node) throws Throwable
 	{
 		defaultOutPUnop(node);
 	}
@@ -631,7 +623,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PBinop} node from {@link PBinop#apply(IAnalysis)}.
 	* @param node the calling {@link PBinop} node
 	*/
-	public void defaultInPBinop(PBinop node)
+	public void defaultInPBinop(PBinop node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -641,7 +633,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PBinop} node from {@link PBinop#apply(IAnalysis)}.
 	* @param node the calling {@link PBinop} node
 	*/
-	public void defaultOutPBinop(PBinop node)
+	public void defaultOutPBinop(PBinop node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -651,7 +643,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PBinop} node from {@link PBinop#apply(IAnalysis)}.
 	* @param node the calling {@link PBinop} node
 	*/
-	public void inPBinop(PBinop node)
+	public void inPBinop(PBinop node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -661,7 +653,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PBinop} node from {@link PBinop#apply(IAnalysis)}.
 	* @param node the calling {@link PBinop} node
 	*/
-	public void outPBinop(PBinop node)
+	public void outPBinop(PBinop node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -671,7 +663,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link APlusBinop} node from {@link APlusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link APlusBinop} node
 	*/
-	public void caseAPlusBinop(APlusBinop node)
+	public void caseAPlusBinop(APlusBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -691,7 +683,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link APlusBinop} node from {@link APlusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link APlusBinop} node
 	*/
-	public void inAPlusBinop(APlusBinop node)
+	public void inAPlusBinop(APlusBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -701,7 +693,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link APlusBinop} node from {@link APlusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link APlusBinop} node
 	*/
-	public void outAPlusBinop(APlusBinop node)
+	public void outAPlusBinop(APlusBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -711,7 +703,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMinusBinop} node from {@link AMinusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusBinop} node
 	*/
-	public void caseAMinusBinop(AMinusBinop node)
+	public void caseAMinusBinop(AMinusBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -731,7 +723,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMinusBinop} node from {@link AMinusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusBinop} node
 	*/
-	public void inAMinusBinop(AMinusBinop node)
+	public void inAMinusBinop(AMinusBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -741,7 +733,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMinusBinop} node from {@link AMinusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusBinop} node
 	*/
-	public void outAMinusBinop(AMinusBinop node)
+	public void outAMinusBinop(AMinusBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -751,7 +743,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMultiplyBinop} node from {@link AMultiplyBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMultiplyBinop} node
 	*/
-	public void caseAMultiplyBinop(AMultiplyBinop node)
+	public void caseAMultiplyBinop(AMultiplyBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -771,7 +763,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMultiplyBinop} node from {@link AMultiplyBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMultiplyBinop} node
 	*/
-	public void inAMultiplyBinop(AMultiplyBinop node)
+	public void inAMultiplyBinop(AMultiplyBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -781,7 +773,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMultiplyBinop} node from {@link AMultiplyBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMultiplyBinop} node
 	*/
-	public void outAMultiplyBinop(AMultiplyBinop node)
+	public void outAMultiplyBinop(AMultiplyBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -791,7 +783,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADivideBinop} node from {@link ADivideBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivideBinop} node
 	*/
-	public void caseADivideBinop(ADivideBinop node)
+	public void caseADivideBinop(ADivideBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -811,7 +803,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADivideBinop} node from {@link ADivideBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivideBinop} node
 	*/
-	public void inADivideBinop(ADivideBinop node)
+	public void inADivideBinop(ADivideBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -821,7 +813,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADivideBinop} node from {@link ADivideBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivideBinop} node
 	*/
-	public void outADivideBinop(ADivideBinop node)
+	public void outADivideBinop(ADivideBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -831,7 +823,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADivBinop} node from {@link ADivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivBinop} node
 	*/
-	public void caseADivBinop(ADivBinop node)
+	public void caseADivBinop(ADivBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -851,7 +843,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADivBinop} node from {@link ADivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivBinop} node
 	*/
-	public void inADivBinop(ADivBinop node)
+	public void inADivBinop(ADivBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -861,7 +853,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADivBinop} node from {@link ADivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivBinop} node
 	*/
-	public void outADivBinop(ADivBinop node)
+	public void outADivBinop(ADivBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -871,7 +863,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AModBinop} node from {@link AModBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AModBinop} node
 	*/
-	public void caseAModBinop(AModBinop node)
+	public void caseAModBinop(AModBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -891,7 +883,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AModBinop} node from {@link AModBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AModBinop} node
 	*/
-	public void inAModBinop(AModBinop node)
+	public void inAModBinop(AModBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -901,7 +893,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AModBinop} node from {@link AModBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AModBinop} node
 	*/
-	public void outAModBinop(AModBinop node)
+	public void outAModBinop(AModBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -911,7 +903,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ALessThanBinop} node from {@link ALessThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessThanBinop} node
 	*/
-	public void caseALessThanBinop(ALessThanBinop node)
+	public void caseALessThanBinop(ALessThanBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -931,7 +923,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ALessThanBinop} node from {@link ALessThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessThanBinop} node
 	*/
-	public void inALessThanBinop(ALessThanBinop node)
+	public void inALessThanBinop(ALessThanBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -941,7 +933,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ALessThanBinop} node from {@link ALessThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessThanBinop} node
 	*/
-	public void outALessThanBinop(ALessThanBinop node)
+	public void outALessThanBinop(ALessThanBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -951,7 +943,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ALessEqualBinop} node from {@link ALessEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessEqualBinop} node
 	*/
-	public void caseALessEqualBinop(ALessEqualBinop node)
+	public void caseALessEqualBinop(ALessEqualBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -971,7 +963,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ALessEqualBinop} node from {@link ALessEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessEqualBinop} node
 	*/
-	public void inALessEqualBinop(ALessEqualBinop node)
+	public void inALessEqualBinop(ALessEqualBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -981,7 +973,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ALessEqualBinop} node from {@link ALessEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessEqualBinop} node
 	*/
-	public void outALessEqualBinop(ALessEqualBinop node)
+	public void outALessEqualBinop(ALessEqualBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -991,7 +983,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void caseAGreaterThanBinop(AGreaterThanBinop node)
+	public void caseAGreaterThanBinop(AGreaterThanBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1011,7 +1003,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void inAGreaterThanBinop(AGreaterThanBinop node)
+	public void inAGreaterThanBinop(AGreaterThanBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1021,7 +1013,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void outAGreaterThanBinop(AGreaterThanBinop node)
+	public void outAGreaterThanBinop(AGreaterThanBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1031,7 +1023,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void caseAGreaterEqualBinop(AGreaterEqualBinop node)
+	public void caseAGreaterEqualBinop(AGreaterEqualBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1051,7 +1043,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void inAGreaterEqualBinop(AGreaterEqualBinop node)
+	public void inAGreaterEqualBinop(AGreaterEqualBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1061,7 +1053,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void outAGreaterEqualBinop(AGreaterEqualBinop node)
+	public void outAGreaterEqualBinop(AGreaterEqualBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1071,7 +1063,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AEqualBinop} node from {@link AEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEqualBinop} node
 	*/
-	public void caseAEqualBinop(AEqualBinop node)
+	public void caseAEqualBinop(AEqualBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1091,7 +1083,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AEqualBinop} node from {@link AEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEqualBinop} node
 	*/
-	public void inAEqualBinop(AEqualBinop node)
+	public void inAEqualBinop(AEqualBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1101,7 +1093,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AEqualBinop} node from {@link AEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEqualBinop} node
 	*/
-	public void outAEqualBinop(AEqualBinop node)
+	public void outAEqualBinop(AEqualBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1111,7 +1103,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADifferentBinop} node from {@link ADifferentBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADifferentBinop} node
 	*/
-	public void caseADifferentBinop(ADifferentBinop node)
+	public void caseADifferentBinop(ADifferentBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1131,7 +1123,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADifferentBinop} node from {@link ADifferentBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADifferentBinop} node
 	*/
-	public void inADifferentBinop(ADifferentBinop node)
+	public void inADifferentBinop(ADifferentBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1141,7 +1133,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADifferentBinop} node from {@link ADifferentBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADifferentBinop} node
 	*/
-	public void outADifferentBinop(ADifferentBinop node)
+	public void outADifferentBinop(ADifferentBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1151,7 +1143,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AOrBinop} node from {@link AOrBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AOrBinop} node
 	*/
-	public void caseAOrBinop(AOrBinop node)
+	public void caseAOrBinop(AOrBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1171,7 +1163,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AOrBinop} node from {@link AOrBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AOrBinop} node
 	*/
-	public void inAOrBinop(AOrBinop node)
+	public void inAOrBinop(AOrBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1181,7 +1173,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AOrBinop} node from {@link AOrBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AOrBinop} node
 	*/
-	public void outAOrBinop(AOrBinop node)
+	public void outAOrBinop(AOrBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1191,7 +1183,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAndBinop} node from {@link AAndBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AAndBinop} node
 	*/
-	public void caseAAndBinop(AAndBinop node)
+	public void caseAAndBinop(AAndBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1211,7 +1203,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAndBinop} node from {@link AAndBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AAndBinop} node
 	*/
-	public void inAAndBinop(AAndBinop node)
+	public void inAAndBinop(AAndBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1221,7 +1213,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAndBinop} node from {@link AAndBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AAndBinop} node
 	*/
-	public void outAAndBinop(AAndBinop node)
+	public void outAAndBinop(AAndBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1231,7 +1223,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AImpliesBinop} node from {@link AImpliesBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AImpliesBinop} node
 	*/
-	public void caseAImpliesBinop(AImpliesBinop node)
+	public void caseAImpliesBinop(AImpliesBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1251,7 +1243,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AImpliesBinop} node from {@link AImpliesBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AImpliesBinop} node
 	*/
-	public void inAImpliesBinop(AImpliesBinop node)
+	public void inAImpliesBinop(AImpliesBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1261,7 +1253,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AImpliesBinop} node from {@link AImpliesBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AImpliesBinop} node
 	*/
-	public void outAImpliesBinop(AImpliesBinop node)
+	public void outAImpliesBinop(AImpliesBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1271,7 +1263,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AEquivBinop} node from {@link AEquivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEquivBinop} node
 	*/
-	public void caseAEquivBinop(AEquivBinop node)
+	public void caseAEquivBinop(AEquivBinop node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1291,7 +1283,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AEquivBinop} node from {@link AEquivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEquivBinop} node
 	*/
-	public void inAEquivBinop(AEquivBinop node)
+	public void inAEquivBinop(AEquivBinop node) throws Throwable
 	{
 		defaultInPBinop(node);
 	}
@@ -1301,7 +1293,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AEquivBinop} node from {@link AEquivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEquivBinop} node
 	*/
-	public void outAEquivBinop(AEquivBinop node)
+	public void outAEquivBinop(AEquivBinop node) throws Throwable
 	{
 		defaultOutPBinop(node);
 	}
@@ -1311,7 +1303,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PDomain} node from {@link PDomain#apply(IAnalysis)}.
 	* @param node the calling {@link PDomain} node
 	*/
-	public void defaultInPDomain(PDomain node)
+	public void defaultInPDomain(PDomain node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -1321,7 +1313,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PDomain} node from {@link PDomain#apply(IAnalysis)}.
 	* @param node the calling {@link PDomain} node
 	*/
-	public void defaultOutPDomain(PDomain node)
+	public void defaultOutPDomain(PDomain node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -1331,7 +1323,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PDomain} node from {@link PDomain#apply(IAnalysis)}.
 	* @param node the calling {@link PDomain} node
 	*/
-	public void inPDomain(PDomain node)
+	public void inPDomain(PDomain node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -1341,7 +1333,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PDomain} node from {@link PDomain#apply(IAnalysis)}.
 	* @param node the calling {@link PDomain} node
 	*/
-	public void outPDomain(PDomain node)
+	public void outPDomain(PDomain node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -1351,7 +1343,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADeDomain} node from {@link ADeDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ADeDomain} node
 	*/
-	public void caseADeDomain(ADeDomain node)
+	public void caseADeDomain(ADeDomain node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1371,7 +1363,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADeDomain} node from {@link ADeDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ADeDomain} node
 	*/
-	public void inADeDomain(ADeDomain node)
+	public void inADeDomain(ADeDomain node) throws Throwable
 	{
 		defaultInPDomain(node);
 	}
@@ -1381,7 +1373,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ADeDomain} node from {@link ADeDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ADeDomain} node
 	*/
-	public void outADeDomain(ADeDomain node)
+	public void outADeDomain(ADeDomain node) throws Throwable
 	{
 		defaultOutPDomain(node);
 	}
@@ -1391,7 +1383,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ACtDomain} node from {@link ACtDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ACtDomain} node
 	*/
-	public void caseACtDomain(ACtDomain node)
+	public void caseACtDomain(ACtDomain node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1411,7 +1403,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ACtDomain} node from {@link ACtDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ACtDomain} node
 	*/
-	public void inACtDomain(ACtDomain node)
+	public void inACtDomain(ACtDomain node) throws Throwable
 	{
 		defaultInPDomain(node);
 	}
@@ -1421,7 +1413,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ACtDomain} node from {@link ACtDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ACtDomain} node
 	*/
-	public void outACtDomain(ACtDomain node)
+	public void outACtDomain(ACtDomain node) throws Throwable
 	{
 		defaultOutPDomain(node);
 	}
@@ -1431,7 +1423,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PExp} node from {@link PExp#apply(IAnalysis)}.
 	* @param node the calling {@link PExp} node
 	*/
-	public void defaultInPExp(PExp node)
+	public void defaultInPExp(PExp node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -1441,7 +1433,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PExp} node from {@link PExp#apply(IAnalysis)}.
 	* @param node the calling {@link PExp} node
 	*/
-	public void defaultOutPExp(PExp node)
+	public void defaultOutPExp(PExp node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -1451,7 +1443,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PExp} node from {@link PExp#apply(IAnalysis)}.
 	* @param node the calling {@link PExp} node
 	*/
-	public void inPExp(PExp node)
+	public void inPExp(PExp node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -1461,7 +1453,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PExp} node from {@link PExp#apply(IAnalysis)}.
 	* @param node the calling {@link PExp} node
 	*/
-	public void outPExp(PExp node)
+	public void outPExp(PExp node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -1471,7 +1463,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SSingleExp} node from {@link SSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link SSingleExp} node
 	*/
-	public void defaultInSSingleExp(SSingleExp node)
+	public void defaultInSSingleExp(SSingleExp node) throws Throwable
 	{
 		defaultInPExp(node);
 	}
@@ -1481,7 +1473,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SSingleExp} node from {@link SSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link SSingleExp} node
 	*/
-	public void defaultOutSSingleExp(SSingleExp node)
+	public void defaultOutSSingleExp(SSingleExp node) throws Throwable
 	{
 		defaultOutPExp(node);
 	}
@@ -1491,7 +1483,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SSingleExp} node from {@link SSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link SSingleExp} node
 	*/
-	public void inSSingleExp(SSingleExp node)
+	public void inSSingleExp(SSingleExp node) throws Throwable
 	{
 		defaultInPExp(node);
 	}
@@ -1501,7 +1493,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SSingleExp} node from {@link SSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link SSingleExp} node
 	*/
-	public void outSSingleExp(SSingleExp node)
+	public void outSSingleExp(SSingleExp node) throws Throwable
 	{
 		defaultOutPExp(node);
 	}
@@ -1511,7 +1503,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AUnaryExp} node from {@link AUnaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link AUnaryExp} node
 	*/
-	public void caseAUnaryExp(AUnaryExp node)
+	public void caseAUnaryExp(AUnaryExp node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1537,7 +1529,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AUnaryExp} node from {@link AUnaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link AUnaryExp} node
 	*/
-	public void inAUnaryExp(AUnaryExp node)
+	public void inAUnaryExp(AUnaryExp node) throws Throwable
 	{
 		defaultInPExp(node);
 	}
@@ -1547,7 +1539,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AUnaryExp} node from {@link AUnaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link AUnaryExp} node
 	*/
-	public void outAUnaryExp(AUnaryExp node)
+	public void outAUnaryExp(AUnaryExp node) throws Throwable
 	{
 		defaultOutPExp(node);
 	}
@@ -1557,7 +1549,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABinaryExp} node from {@link ABinaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABinaryExp} node
 	*/
-	public void caseABinaryExp(ABinaryExp node)
+	public void caseABinaryExp(ABinaryExp node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1586,7 +1578,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABinaryExp} node from {@link ABinaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABinaryExp} node
 	*/
-	public void inABinaryExp(ABinaryExp node)
+	public void inABinaryExp(ABinaryExp node) throws Throwable
 	{
 		defaultInPExp(node);
 	}
@@ -1596,7 +1588,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABinaryExp} node from {@link ABinaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABinaryExp} node
 	*/
-	public void outABinaryExp(ABinaryExp node)
+	public void outABinaryExp(ABinaryExp node) throws Throwable
 	{
 		defaultOutPExp(node);
 	}
@@ -1606,7 +1598,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABoolSingleExp} node from {@link ABoolSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolSingleExp} node
 	*/
-	public void caseABoolSingleExp(ABoolSingleExp node)
+	public void caseABoolSingleExp(ABoolSingleExp node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1626,7 +1618,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABoolSingleExp} node from {@link ABoolSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolSingleExp} node
 	*/
-	public void inABoolSingleExp(ABoolSingleExp node)
+	public void inABoolSingleExp(ABoolSingleExp node) throws Throwable
 	{
 		defaultInSSingleExp(node);
 	}
@@ -1636,7 +1628,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABoolSingleExp} node from {@link ABoolSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolSingleExp} node
 	*/
-	public void outABoolSingleExp(ABoolSingleExp node)
+	public void outABoolSingleExp(ABoolSingleExp node) throws Throwable
 	{
 		defaultOutSSingleExp(node);
 	}
@@ -1646,7 +1638,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ANumericalSingleExp} node from {@link ANumericalSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ANumericalSingleExp} node
 	*/
-	public void caseANumericalSingleExp(ANumericalSingleExp node)
+	public void caseANumericalSingleExp(ANumericalSingleExp node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1666,7 +1658,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ANumericalSingleExp} node from {@link ANumericalSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ANumericalSingleExp} node
 	*/
-	public void inANumericalSingleExp(ANumericalSingleExp node)
+	public void inANumericalSingleExp(ANumericalSingleExp node) throws Throwable
 	{
 		defaultInSSingleExp(node);
 	}
@@ -1676,7 +1668,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ANumericalSingleExp} node from {@link ANumericalSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ANumericalSingleExp} node
 	*/
-	public void outANumericalSingleExp(ANumericalSingleExp node)
+	public void outANumericalSingleExp(ANumericalSingleExp node) throws Throwable
 	{
 		defaultOutSSingleExp(node);
 	}
@@ -1686,7 +1678,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ATimeSingleExp} node from {@link ATimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeSingleExp} node
 	*/
-	public void caseATimeSingleExp(ATimeSingleExp node)
+	public void caseATimeSingleExp(ATimeSingleExp node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1709,7 +1701,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ATimeSingleExp} node from {@link ATimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeSingleExp} node
 	*/
-	public void inATimeSingleExp(ATimeSingleExp node)
+	public void inATimeSingleExp(ATimeSingleExp node) throws Throwable
 	{
 		defaultInSSingleExp(node);
 	}
@@ -1719,7 +1711,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ATimeSingleExp} node from {@link ATimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeSingleExp} node
 	*/
-	public void outATimeSingleExp(ATimeSingleExp node)
+	public void outATimeSingleExp(ATimeSingleExp node) throws Throwable
 	{
 		defaultOutSSingleExp(node);
 	}
@@ -1729,7 +1721,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AIdentifierSingleExp} node from {@link AIdentifierSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link AIdentifierSingleExp} node
 	*/
-	public void caseAIdentifierSingleExp(AIdentifierSingleExp node)
+	public void caseAIdentifierSingleExp(AIdentifierSingleExp node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1755,7 +1747,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AIdentifierSingleExp} node from {@link AIdentifierSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link AIdentifierSingleExp} node
 	*/
-	public void inAIdentifierSingleExp(AIdentifierSingleExp node)
+	public void inAIdentifierSingleExp(AIdentifierSingleExp node) throws Throwable
 	{
 		defaultInSSingleExp(node);
 	}
@@ -1765,7 +1757,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AIdentifierSingleExp} node from {@link AIdentifierSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link AIdentifierSingleExp} node
 	*/
-	public void outAIdentifierSingleExp(AIdentifierSingleExp node)
+	public void outAIdentifierSingleExp(AIdentifierSingleExp node) throws Throwable
 	{
 		defaultOutSSingleExp(node);
 	}
@@ -1775,7 +1767,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ASystemTimeSingleExp} node from {@link ASystemTimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ASystemTimeSingleExp} node
 	*/
-	public void caseASystemTimeSingleExp(ASystemTimeSingleExp node)
+	public void caseASystemTimeSingleExp(ASystemTimeSingleExp node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1795,7 +1787,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ASystemTimeSingleExp} node from {@link ASystemTimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ASystemTimeSingleExp} node
 	*/
-	public void inASystemTimeSingleExp(ASystemTimeSingleExp node)
+	public void inASystemTimeSingleExp(ASystemTimeSingleExp node) throws Throwable
 	{
 		defaultInSSingleExp(node);
 	}
@@ -1805,7 +1797,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ASystemTimeSingleExp} node from {@link ASystemTimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ASystemTimeSingleExp} node
 	*/
-	public void outASystemTimeSingleExp(ASystemTimeSingleExp node)
+	public void outASystemTimeSingleExp(ASystemTimeSingleExp node) throws Throwable
 	{
 		defaultOutSSingleExp(node);
 	}
@@ -1815,7 +1807,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PTimeunit} node from {@link PTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link PTimeunit} node
 	*/
-	public void defaultInPTimeunit(PTimeunit node)
+	public void defaultInPTimeunit(PTimeunit node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -1825,7 +1817,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PTimeunit} node from {@link PTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link PTimeunit} node
 	*/
-	public void defaultOutPTimeunit(PTimeunit node)
+	public void defaultOutPTimeunit(PTimeunit node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -1835,7 +1827,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PTimeunit} node from {@link PTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link PTimeunit} node
 	*/
-	public void inPTimeunit(PTimeunit node)
+	public void inPTimeunit(PTimeunit node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -1845,7 +1837,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PTimeunit} node from {@link PTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link PTimeunit} node
 	*/
-	public void outPTimeunit(PTimeunit node)
+	public void outPTimeunit(PTimeunit node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -1855,7 +1847,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AUsTimeunit} node from {@link AUsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AUsTimeunit} node
 	*/
-	public void caseAUsTimeunit(AUsTimeunit node)
+	public void caseAUsTimeunit(AUsTimeunit node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1875,7 +1867,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AUsTimeunit} node from {@link AUsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AUsTimeunit} node
 	*/
-	public void inAUsTimeunit(AUsTimeunit node)
+	public void inAUsTimeunit(AUsTimeunit node) throws Throwable
 	{
 		defaultInPTimeunit(node);
 	}
@@ -1885,7 +1877,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AUsTimeunit} node from {@link AUsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AUsTimeunit} node
 	*/
-	public void outAUsTimeunit(AUsTimeunit node)
+	public void outAUsTimeunit(AUsTimeunit node) throws Throwable
 	{
 		defaultOutPTimeunit(node);
 	}
@@ -1895,7 +1887,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMsTimeunit} node from {@link AMsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMsTimeunit} node
 	*/
-	public void caseAMsTimeunit(AMsTimeunit node)
+	public void caseAMsTimeunit(AMsTimeunit node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1915,7 +1907,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMsTimeunit} node from {@link AMsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMsTimeunit} node
 	*/
-	public void inAMsTimeunit(AMsTimeunit node)
+	public void inAMsTimeunit(AMsTimeunit node) throws Throwable
 	{
 		defaultInPTimeunit(node);
 	}
@@ -1925,7 +1917,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMsTimeunit} node from {@link AMsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMsTimeunit} node
 	*/
-	public void outAMsTimeunit(AMsTimeunit node)
+	public void outAMsTimeunit(AMsTimeunit node) throws Throwable
 	{
 		defaultOutPTimeunit(node);
 	}
@@ -1935,7 +1927,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ASTimeunit} node from {@link ASTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link ASTimeunit} node
 	*/
-	public void caseASTimeunit(ASTimeunit node)
+	public void caseASTimeunit(ASTimeunit node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1955,7 +1947,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ASTimeunit} node from {@link ASTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link ASTimeunit} node
 	*/
-	public void inASTimeunit(ASTimeunit node)
+	public void inASTimeunit(ASTimeunit node) throws Throwable
 	{
 		defaultInPTimeunit(node);
 	}
@@ -1965,7 +1957,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ASTimeunit} node from {@link ASTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link ASTimeunit} node
 	*/
-	public void outASTimeunit(ASTimeunit node)
+	public void outASTimeunit(ASTimeunit node) throws Throwable
 	{
 		defaultOutPTimeunit(node);
 	}
@@ -1975,7 +1967,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMTimeunit} node from {@link AMTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMTimeunit} node
 	*/
-	public void caseAMTimeunit(AMTimeunit node)
+	public void caseAMTimeunit(AMTimeunit node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -1995,7 +1987,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMTimeunit} node from {@link AMTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMTimeunit} node
 	*/
-	public void inAMTimeunit(AMTimeunit node)
+	public void inAMTimeunit(AMTimeunit node) throws Throwable
 	{
 		defaultInPTimeunit(node);
 	}
@@ -2005,7 +1997,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AMTimeunit} node from {@link AMTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMTimeunit} node
 	*/
-	public void outAMTimeunit(AMTimeunit node)
+	public void outAMTimeunit(AMTimeunit node) throws Throwable
 	{
 		defaultOutPTimeunit(node);
 	}
@@ -2015,7 +2007,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AHTimeunit} node from {@link AHTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AHTimeunit} node
 	*/
-	public void caseAHTimeunit(AHTimeunit node)
+	public void caseAHTimeunit(AHTimeunit node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2035,7 +2027,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AHTimeunit} node from {@link AHTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AHTimeunit} node
 	*/
-	public void inAHTimeunit(AHTimeunit node)
+	public void inAHTimeunit(AHTimeunit node) throws Throwable
 	{
 		defaultInPTimeunit(node);
 	}
@@ -2045,7 +2037,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AHTimeunit} node from {@link AHTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AHTimeunit} node
 	*/
-	public void outAHTimeunit(AHTimeunit node)
+	public void outAHTimeunit(AHTimeunit node) throws Throwable
 	{
 		defaultOutPTimeunit(node);
 	}
@@ -2055,7 +2047,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PStm} node from {@link PStm#apply(IAnalysis)}.
 	* @param node the calling {@link PStm} node
 	*/
-	public void defaultInPStm(PStm node)
+	public void defaultInPStm(PStm node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -2065,7 +2057,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PStm} node from {@link PStm#apply(IAnalysis)}.
 	* @param node the calling {@link PStm} node
 	*/
-	public void defaultOutPStm(PStm node)
+	public void defaultOutPStm(PStm node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -2075,7 +2067,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PStm} node from {@link PStm#apply(IAnalysis)}.
 	* @param node the calling {@link PStm} node
 	*/
-	public void inPStm(PStm node)
+	public void inPStm(PStm node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -2085,7 +2077,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PStm} node from {@link PStm#apply(IAnalysis)}.
 	* @param node the calling {@link PStm} node
 	*/
-	public void outPStm(PStm node)
+	public void outPStm(PStm node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -2095,7 +2087,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AWhenStm} node from {@link AWhenStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWhenStm} node
 	*/
-	public void caseAWhenStm(AWhenStm node)
+	public void caseAWhenStm(AWhenStm node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2133,7 +2125,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AWhenStm} node from {@link AWhenStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWhenStm} node
 	*/
-	public void inAWhenStm(AWhenStm node)
+	public void inAWhenStm(AWhenStm node) throws Throwable
 	{
 		defaultInPStm(node);
 	}
@@ -2143,7 +2135,65 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AWhenStm} node from {@link AWhenStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWhenStm} node
 	*/
-	public void outAWhenStm(AWhenStm node)
+	public void outAWhenStm(AWhenStm node) throws Throwable
+	{
+		defaultOutPStm(node);
+	}
+
+
+	/**
+	* Called by the {@link AOnceStm} node from {@link AOnceStm#apply(IAnalysis)}.
+	* @param node the calling {@link AOnceStm} node
+	*/
+	public void caseAOnceStm(AOnceStm node) throws Throwable
+	{
+		if(_queue.contains(node))
+		{ //already visiting this node from other path
+			return;
+		}
+		_queue.add(node);
+		inAOnceStm(node);
+
+		if(node.getTest() != null) {
+			node.getTest().apply(this);
+		}
+		{
+			List<PStm> copy = new ArrayList<PStm>(node.getThen());
+			for( PStm e : copy) {
+				e.apply(this);
+			}
+		}
+		{
+			List<ARevertStm> copy = new ArrayList<ARevertStm>(node.getAfter());
+			for( ARevertStm e : copy) {
+				e.apply(this);
+			}
+		}
+		if(node.getFor() != null) {
+			node.getFor().apply(this);
+		}
+
+		outAOnceStm(node);
+		_queue.remove(node);
+
+	}
+
+
+	/**
+	* Called by the {@link AOnceStm} node from {@link AOnceStm#apply(IAnalysis)}.
+	* @param node the calling {@link AOnceStm} node
+	*/
+	public void inAOnceStm(AOnceStm node) throws Throwable
+	{
+		defaultInPStm(node);
+	}
+
+
+	/**
+	* Called by the {@link AOnceStm} node from {@link AOnceStm#apply(IAnalysis)}.
+	* @param node the calling {@link AOnceStm} node
+	*/
+	public void outAOnceStm(AOnceStm node) throws Throwable
 	{
 		defaultOutPStm(node);
 	}
@@ -2153,7 +2203,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAssignStm} node from {@link AAssignStm#apply(IAnalysis)}.
 	* @param node the calling {@link AAssignStm} node
 	*/
-	public void caseAAssignStm(AAssignStm node)
+	public void caseAAssignStm(AAssignStm node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2179,7 +2229,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAssignStm} node from {@link AAssignStm#apply(IAnalysis)}.
 	* @param node the calling {@link AAssignStm} node
 	*/
-	public void inAAssignStm(AAssignStm node)
+	public void inAAssignStm(AAssignStm node) throws Throwable
 	{
 		defaultInPStm(node);
 	}
@@ -2189,7 +2239,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AAssignStm} node from {@link AAssignStm#apply(IAnalysis)}.
 	* @param node the calling {@link AAssignStm} node
 	*/
-	public void outAAssignStm(AAssignStm node)
+	public void outAAssignStm(AAssignStm node) throws Throwable
 	{
 		defaultOutPStm(node);
 	}
@@ -2199,7 +2249,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ARevertStm} node from {@link ARevertStm#apply(IAnalysis)}.
 	* @param node the calling {@link ARevertStm} node
 	*/
-	public void caseARevertStm(ARevertStm node)
+	public void caseARevertStm(ARevertStm node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2208,6 +2258,9 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 		_queue.add(node);
 		inARevertStm(node);
 
+		if(node.getIdentifier() != null) {
+			node.getIdentifier().apply(this);
+		}
 
 		outARevertStm(node);
 		_queue.remove(node);
@@ -2219,7 +2272,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ARevertStm} node from {@link ARevertStm#apply(IAnalysis)}.
 	* @param node the calling {@link ARevertStm} node
 	*/
-	public void inARevertStm(ARevertStm node)
+	public void inARevertStm(ARevertStm node) throws Throwable
 	{
 		defaultInPStm(node);
 	}
@@ -2229,7 +2282,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ARevertStm} node from {@link ARevertStm#apply(IAnalysis)}.
 	* @param node the calling {@link ARevertStm} node
 	*/
-	public void outARevertStm(ARevertStm node)
+	public void outARevertStm(ARevertStm node) throws Throwable
 	{
 		defaultOutPStm(node);
 	}
@@ -2239,7 +2292,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SMessageStm} node from {@link SMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link SMessageStm} node
 	*/
-	public void defaultInSMessageStm(SMessageStm node)
+	public void defaultInSMessageStm(SMessageStm node) throws Throwable
 	{
 		defaultInPStm(node);
 	}
@@ -2249,7 +2302,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SMessageStm} node from {@link SMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link SMessageStm} node
 	*/
-	public void defaultOutSMessageStm(SMessageStm node)
+	public void defaultOutSMessageStm(SMessageStm node) throws Throwable
 	{
 		defaultOutPStm(node);
 	}
@@ -2259,7 +2312,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SMessageStm} node from {@link SMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link SMessageStm} node
 	*/
-	public void inSMessageStm(SMessageStm node)
+	public void inSMessageStm(SMessageStm node) throws Throwable
 	{
 		defaultInPStm(node);
 	}
@@ -2269,7 +2322,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link SMessageStm} node from {@link SMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link SMessageStm} node
 	*/
-	public void outSMessageStm(SMessageStm node)
+	public void outSMessageStm(SMessageStm node) throws Throwable
 	{
 		defaultOutPStm(node);
 	}
@@ -2279,7 +2332,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AQuitStm} node from {@link AQuitStm#apply(IAnalysis)}.
 	* @param node the calling {@link AQuitStm} node
 	*/
-	public void caseAQuitStm(AQuitStm node)
+	public void caseAQuitStm(AQuitStm node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2299,7 +2352,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AQuitStm} node from {@link AQuitStm#apply(IAnalysis)}.
 	* @param node the calling {@link AQuitStm} node
 	*/
-	public void inAQuitStm(AQuitStm node)
+	public void inAQuitStm(AQuitStm node) throws Throwable
 	{
 		defaultInPStm(node);
 	}
@@ -2309,7 +2362,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AQuitStm} node from {@link AQuitStm#apply(IAnalysis)}.
 	* @param node the calling {@link AQuitStm} node
 	*/
-	public void outAQuitStm(AQuitStm node)
+	public void outAQuitStm(AQuitStm node) throws Throwable
 	{
 		defaultOutPStm(node);
 	}
@@ -2319,7 +2372,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link APrintMessageStm} node from {@link APrintMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link APrintMessageStm} node
 	*/
-	public void caseAPrintMessageStm(APrintMessageStm node)
+	public void caseAPrintMessageStm(APrintMessageStm node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2339,7 +2392,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link APrintMessageStm} node from {@link APrintMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link APrintMessageStm} node
 	*/
-	public void inAPrintMessageStm(APrintMessageStm node)
+	public void inAPrintMessageStm(APrintMessageStm node) throws Throwable
 	{
 		defaultInSMessageStm(node);
 	}
@@ -2349,7 +2402,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link APrintMessageStm} node from {@link APrintMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link APrintMessageStm} node
 	*/
-	public void outAPrintMessageStm(APrintMessageStm node)
+	public void outAPrintMessageStm(APrintMessageStm node) throws Throwable
 	{
 		defaultOutSMessageStm(node);
 	}
@@ -2359,7 +2412,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AErrorMessageStm} node from {@link AErrorMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AErrorMessageStm} node
 	*/
-	public void caseAErrorMessageStm(AErrorMessageStm node)
+	public void caseAErrorMessageStm(AErrorMessageStm node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2379,7 +2432,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AErrorMessageStm} node from {@link AErrorMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AErrorMessageStm} node
 	*/
-	public void inAErrorMessageStm(AErrorMessageStm node)
+	public void inAErrorMessageStm(AErrorMessageStm node) throws Throwable
 	{
 		defaultInSMessageStm(node);
 	}
@@ -2389,7 +2442,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AErrorMessageStm} node from {@link AErrorMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AErrorMessageStm} node
 	*/
-	public void outAErrorMessageStm(AErrorMessageStm node)
+	public void outAErrorMessageStm(AErrorMessageStm node) throws Throwable
 	{
 		defaultOutSMessageStm(node);
 	}
@@ -2399,7 +2452,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AWarnMessageStm} node from {@link AWarnMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWarnMessageStm} node
 	*/
-	public void caseAWarnMessageStm(AWarnMessageStm node)
+	public void caseAWarnMessageStm(AWarnMessageStm node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2419,7 +2472,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AWarnMessageStm} node from {@link AWarnMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWarnMessageStm} node
 	*/
-	public void inAWarnMessageStm(AWarnMessageStm node)
+	public void inAWarnMessageStm(AWarnMessageStm node) throws Throwable
 	{
 		defaultInSMessageStm(node);
 	}
@@ -2429,7 +2482,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AWarnMessageStm} node from {@link AWarnMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWarnMessageStm} node
 	*/
-	public void outAWarnMessageStm(AWarnMessageStm node)
+	public void outAWarnMessageStm(AWarnMessageStm node) throws Throwable
 	{
 		defaultOutSMessageStm(node);
 	}
@@ -2439,7 +2492,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PType} node from {@link PType#apply(IAnalysis)}.
 	* @param node the calling {@link PType} node
 	*/
-	public void defaultInPType(PType node)
+	public void defaultInPType(PType node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -2449,7 +2502,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PType} node from {@link PType#apply(IAnalysis)}.
 	* @param node the calling {@link PType} node
 	*/
-	public void defaultOutPType(PType node)
+	public void defaultOutPType(PType node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -2459,7 +2512,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PType} node from {@link PType#apply(IAnalysis)}.
 	* @param node the calling {@link PType} node
 	*/
-	public void inPType(PType node)
+	public void inPType(PType node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -2469,7 +2522,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PType} node from {@link PType#apply(IAnalysis)}.
 	* @param node the calling {@link PType} node
 	*/
-	public void outPType(PType node)
+	public void outPType(PType node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -2479,7 +2532,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ARealType} node from {@link ARealType#apply(IAnalysis)}.
 	* @param node the calling {@link ARealType} node
 	*/
-	public void caseARealType(ARealType node)
+	public void caseARealType(ARealType node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2499,7 +2552,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ARealType} node from {@link ARealType#apply(IAnalysis)}.
 	* @param node the calling {@link ARealType} node
 	*/
-	public void inARealType(ARealType node)
+	public void inARealType(ARealType node) throws Throwable
 	{
 		defaultInPType(node);
 	}
@@ -2509,7 +2562,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ARealType} node from {@link ARealType#apply(IAnalysis)}.
 	* @param node the calling {@link ARealType} node
 	*/
-	public void outARealType(ARealType node)
+	public void outARealType(ARealType node) throws Throwable
 	{
 		defaultOutPType(node);
 	}
@@ -2519,7 +2572,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AIntType} node from {@link AIntType#apply(IAnalysis)}.
 	* @param node the calling {@link AIntType} node
 	*/
-	public void caseAIntType(AIntType node)
+	public void caseAIntType(AIntType node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2539,7 +2592,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AIntType} node from {@link AIntType#apply(IAnalysis)}.
 	* @param node the calling {@link AIntType} node
 	*/
-	public void inAIntType(AIntType node)
+	public void inAIntType(AIntType node) throws Throwable
 	{
 		defaultInPType(node);
 	}
@@ -2549,7 +2602,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AIntType} node from {@link AIntType#apply(IAnalysis)}.
 	* @param node the calling {@link AIntType} node
 	*/
-	public void outAIntType(AIntType node)
+	public void outAIntType(AIntType node) throws Throwable
 	{
 		defaultOutPType(node);
 	}
@@ -2559,7 +2612,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABoolType} node from {@link ABoolType#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolType} node
 	*/
-	public void caseABoolType(ABoolType node)
+	public void caseABoolType(ABoolType node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2579,7 +2632,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABoolType} node from {@link ABoolType#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolType} node
 	*/
-	public void inABoolType(ABoolType node)
+	public void inABoolType(ABoolType node) throws Throwable
 	{
 		defaultInPType(node);
 	}
@@ -2589,7 +2642,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ABoolType} node from {@link ABoolType#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolType} node
 	*/
-	public void outABoolType(ABoolType node)
+	public void outABoolType(ABoolType node) throws Throwable
 	{
 		defaultOutPType(node);
 	}
@@ -2599,7 +2652,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ATimeType} node from {@link ATimeType#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeType} node
 	*/
-	public void caseATimeType(ATimeType node)
+	public void caseATimeType(ATimeType node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2619,7 +2672,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ATimeType} node from {@link ATimeType#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeType} node
 	*/
-	public void inATimeType(ATimeType node)
+	public void inATimeType(ATimeType node) throws Throwable
 	{
 		defaultInPType(node);
 	}
@@ -2629,7 +2682,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link ATimeType} node from {@link ATimeType#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeType} node
 	*/
-	public void outATimeType(ATimeType node)
+	public void outATimeType(ATimeType node) throws Throwable
 	{
 		defaultOutPType(node);
 	}
@@ -2639,7 +2692,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PInclude} node from {@link PInclude#apply(IAnalysis)}.
 	* @param node the calling {@link PInclude} node
 	*/
-	public void defaultInPInclude(PInclude node)
+	public void defaultInPInclude(PInclude node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -2649,7 +2702,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PInclude} node from {@link PInclude#apply(IAnalysis)}.
 	* @param node the calling {@link PInclude} node
 	*/
-	public void defaultOutPInclude(PInclude node)
+	public void defaultOutPInclude(PInclude node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -2659,7 +2712,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PInclude} node from {@link PInclude#apply(IAnalysis)}.
 	* @param node the calling {@link PInclude} node
 	*/
-	public void inPInclude(PInclude node)
+	public void inPInclude(PInclude node) throws Throwable
 	{
 		defaultInINode(node);
 	}
@@ -2669,7 +2722,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link PInclude} node from {@link PInclude#apply(IAnalysis)}.
 	* @param node the calling {@link PInclude} node
 	*/
-	public void outPInclude(PInclude node)
+	public void outPInclude(PInclude node) throws Throwable
 	{
 		defaultOutINode(node);
 	}
@@ -2679,7 +2732,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AScriptInclude} node from {@link AScriptInclude#apply(IAnalysis)}.
 	* @param node the calling {@link AScriptInclude} node
 	*/
-	public void caseAScriptInclude(AScriptInclude node)
+	public void caseAScriptInclude(AScriptInclude node) throws Throwable
 	{
 		if(_queue.contains(node))
 		{ //already visiting this node from other path
@@ -2699,7 +2752,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AScriptInclude} node from {@link AScriptInclude#apply(IAnalysis)}.
 	* @param node the calling {@link AScriptInclude} node
 	*/
-	public void inAScriptInclude(AScriptInclude node)
+	public void inAScriptInclude(AScriptInclude node) throws Throwable
 	{
 		defaultInPInclude(node);
 	}
@@ -2709,7 +2762,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link AScriptInclude} node from {@link AScriptInclude#apply(IAnalysis)}.
 	* @param node the calling {@link AScriptInclude} node
 	*/
-	public void outAScriptInclude(AScriptInclude node)
+	public void outAScriptInclude(AScriptInclude node) throws Throwable
 	{
 		defaultOutPInclude(node);
 	}
@@ -2719,7 +2772,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link INode} node from {@link INode#apply(IAnalysis)}.
 	* @param node the calling {@link INode} node
 	*/
-	public void defaultOutINode(INode node)
+	public void defaultOutINode(INode node) throws Throwable
 	{
 		//nothing to do
 	}
@@ -2729,7 +2782,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link INode} node from {@link INode#apply(IAnalysis)}.
 	* @param node the calling {@link INode} node
 	*/
-	public void defaultInINode(INode node)
+	public void defaultInINode(INode node) throws Throwable
 	{
 		//nothing to do
 	}
@@ -2739,7 +2792,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void defaultOutIToken(IToken node)
+	public void defaultOutIToken(IToken node) throws Throwable
 	{
 		//nothing to do
 	}
@@ -2749,7 +2802,7 @@ public class DepthFirstAnalysisAdaptor implements IAnalysis
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void defaultInIToken(IToken node)
+	public void defaultInIToken(IToken node) throws Throwable
 	{
 		//nothing to do
 	}

@@ -25,18 +25,18 @@ package org.destecs.script.ast.statement;
 import java.util.LinkedList;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import org.destecs.script.ast.statement.AOnceStm;
 import java.lang.Boolean;
 import java.util.List;
 import org.destecs.script.ast.statement.PStmBase;
+import java.lang.String;
 import org.destecs.script.ast.expressions.ATimeSingleExp;
 import org.destecs.script.ast.statement.EStm;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeList;
 import org.destecs.script.ast.analysis.intf.IAnswer;
-import org.destecs.script.ast.statement.PStm;
 import java.util.HashMap;
+import org.destecs.script.ast.statement.PStm;
 import org.destecs.script.ast.expressions.PExp;
-import org.destecs.script.ast.statement.AWhenStm;
 import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
@@ -48,7 +48,7 @@ import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 * @author Kenneth Lausdahl
 *
 */
-public class AWhenStm extends PStmBase
+public class AOnceStm extends PStmBase
 {
 	private static final long serialVersionUID = 1L;
 
@@ -58,15 +58,24 @@ public class AWhenStm extends PStmBase
 	private ATimeSingleExp _for;
 
 	/**
-	* Creates a new {@code AWhenStm} node with the given nodes as children.
+	 * Creates a new {@link AOnceStm} node with no children.
+	 */
+	public AOnceStm()
+	{
+
+	}
+
+
+	/**
+	* Creates a new {@code AOnceStm} node with the given nodes as children.
 	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
-	* @param test_ the {@link PExp} node for the {@code test} child of this {@link AWhenStm} node
-	* @param then_ the {@link NodeList} node for the {@code then} child of this {@link AWhenStm} node
-	* @param after_ the {@link NodeList} node for the {@code after} child of this {@link AWhenStm} node
-	* @param for_ the {@link ATimeSingleExp} node for the {@code for} child of this {@link AWhenStm} node
+	* @param test_ the {@link PExp} node for the {@code test} child of this {@link AOnceStm} node
+	* @param then_ the {@link NodeList} node for the {@code then} child of this {@link AOnceStm} node
+	* @param after_ the {@link NodeList} node for the {@code after} child of this {@link AOnceStm} node
+	* @param for_ the {@link ATimeSingleExp} node for the {@code for} child of this {@link AOnceStm} node
 	*/
-	public AWhenStm(PExp test_, List<? extends PStm> then_, List<? extends ARevertStm> after_, ATimeSingleExp for_)
+	public AOnceStm(PExp test_, List<? extends PStm> then_, List<? extends ARevertStm> after_, ATimeSingleExp for_)
 	{
 		super();
 		this.setTest(test_);
@@ -79,23 +88,14 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * Creates a new {@link AWhenStm} node with no children.
-	 */
-	public AWhenStm()
-	{
-
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AWhenStm} node while putting all
+	 * Creates a deep clone of this {@link AOnceStm} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AWhenStm} node
+	 * @return a deep clone of this {@link AOnceStm} node
 	 */
-	public AWhenStm clone(Map<INode,INode> oldToNewMap)
+	public AOnceStm clone(Map<INode,INode> oldToNewMap)
 	{
-		AWhenStm node = new AWhenStm(
+		AOnceStm node = new AOnceStm(
 			cloneNode(_test, oldToNewMap),
 			cloneList(_then, oldToNewMap),
 			cloneList(_after, oldToNewMap),
@@ -103,60 +103,6 @@ public class AWhenStm extends PStmBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
-	{
-		return EStm.WHEN;
-	}
-
-
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AWhenStm} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AWhenStm} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AWhenStm} node
-	 */
-	public void removeChild(INode child)
-	{
-		if (this._test == child) {
-			this._test = null;
-			return;
-		}
-
-		if (this._then.remove(child)) {
-				return;
-		}
-		if (this._after.remove(child)) {
-				return;
-		}
-		if (this._for == child) {
-			this._for = null;
-			return;
-		}
-
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	* Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o)
-	{
-		if (o != null && o instanceof AWhenStm)		{
-			 return toString().equals(o.toString());
-		}
-		return false;
 	}
 
 
@@ -182,17 +128,15 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AWhenStm} node.
-	 * @return a deep clone of this {@link AWhenStm} node
-	 */
-	public AWhenStm clone()
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
 	{
-		return new AWhenStm(
-			cloneNode(_test),
-			cloneList(_then),
-			cloneList(_after),
-			cloneNode(_for)
-		);
+		if (o != null && o instanceof AOnceStm)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -204,8 +148,64 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * Sets the {@code _test} child of this {@link AWhenStm} node.
-	 * @param value the new {@code _test} child of this {@link AWhenStm} node
+	 * Removes the {@link INode} {@code child} as a child of this {@link AOnceStm} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AOnceStm} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AOnceStm} node
+	 */
+	public void removeChild(INode child)
+	{
+		if (this._test == child) {
+			this._test = null;
+			return;
+		}
+
+		if (this._then.remove(child)) {
+				return;
+		}
+		if (this._after.remove(child)) {
+				return;
+		}
+		if (this._for == child) {
+			this._for = null;
+			return;
+		}
+
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
+	{
+		return EStm.ONCE;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AOnceStm} node.
+	 * @return a deep clone of this {@link AOnceStm} node
+	 */
+	public AOnceStm clone()
+	{
+		return new AOnceStm(
+			cloneNode(_test),
+			cloneList(_then),
+			cloneList(_after),
+			cloneNode(_for)
+		);
+	}
+
+
+	/**
+	 * Sets the {@code _test} child of this {@link AOnceStm} node.
+	 * @param value the new {@code _test} child of this {@link AOnceStm} node
 	*/
 	public void setTest(PExp value)
 	{
@@ -224,7 +224,7 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * @return the {@link PExp} node which is the {@code _test} child of this {@link AWhenStm} node
+	 * @return the {@link PExp} node which is the {@code _test} child of this {@link AOnceStm} node
 	*/
 	public PExp getTest()
 	{
@@ -233,8 +233,8 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * Sets the {@code _then} child of this {@link AWhenStm} node.
-	 * @param value the new {@code _then} child of this {@link AWhenStm} node
+	 * Sets the {@code _then} child of this {@link AOnceStm} node.
+	 * @param value the new {@code _then} child of this {@link AOnceStm} node
 	*/
 	public void setThen(List<? extends PStm> value)
 	{
@@ -250,7 +250,7 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * @return the {@link LinkedList} node which is the {@code _then} child of this {@link AWhenStm} node
+	 * @return the {@link LinkedList} node which is the {@code _then} child of this {@link AOnceStm} node
 	*/
 	public LinkedList<PStm> getThen()
 	{
@@ -259,8 +259,8 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * Sets the {@code _after} child of this {@link AWhenStm} node.
-	 * @param value the new {@code _after} child of this {@link AWhenStm} node
+	 * Sets the {@code _after} child of this {@link AOnceStm} node.
+	 * @param value the new {@code _after} child of this {@link AOnceStm} node
 	*/
 	public void setAfter(List<? extends ARevertStm> value)
 	{
@@ -276,7 +276,7 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * @return the {@link LinkedList} node which is the {@code _after} child of this {@link AWhenStm} node
+	 * @return the {@link LinkedList} node which is the {@code _after} child of this {@link AOnceStm} node
 	*/
 	public LinkedList<ARevertStm> getAfter()
 	{
@@ -285,8 +285,8 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * Sets the {@code _for} child of this {@link AWhenStm} node.
-	 * @param value the new {@code _for} child of this {@link AWhenStm} node
+	 * Sets the {@code _for} child of this {@link AOnceStm} node.
+	 * @param value the new {@code _for} child of this {@link AOnceStm} node
 	*/
 	public void setFor(ATimeSingleExp value)
 	{
@@ -305,7 +305,7 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	 * @return the {@link ATimeSingleExp} node which is the {@code _for} child of this {@link AWhenStm} node
+	 * @return the {@link ATimeSingleExp} node which is the {@code _for} child of this {@link AOnceStm} node
 	*/
 	public ATimeSingleExp getFor()
 	{
@@ -314,48 +314,48 @@ public class AWhenStm extends PStmBase
 
 
 	/**
-	* Calls the {@link IAnalysis#caseAWhenStm(AWhenStm)} of the {@link IAnalysis} {@code analysis}.
-	* @param analysis the {@link IAnalysis} to which this {@link AWhenStm} node is applied
+	* Calls the {@link IAnalysis#caseAOnceStm(AOnceStm)} of the {@link IAnalysis} {@code analysis}.
+	* @param analysis the {@link IAnalysis} to which this {@link AOnceStm} node is applied
 	*/
 	@Override
 	public void apply(IAnalysis analysis) throws Throwable
 	{
-		analysis.caseAWhenStm(this);
+		analysis.caseAOnceStm(this);
 	}
 
 
 	/**
-	* Calls the {@link IAnswer#caseAWhenStm(AWhenStm)} of the {@link IAnswer} {@code caller}.
-	* @param caller the {@link IAnswer} to which this {@link AWhenStm} node is applied
+	* Calls the {@link IAnswer#caseAOnceStm(AOnceStm)} of the {@link IAnswer} {@code caller}.
+	* @param caller the {@link IAnswer} to which this {@link AOnceStm} node is applied
 	*/
 	@Override
 	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
-		return caller.caseAWhenStm(this);
+		return caller.caseAOnceStm(this);
 	}
 
 
 	/**
-	* Calls the {@link IQuestion#caseAWhenStm(AWhenStm, Object)} of the {@link IQuestion} {@code caller}.
-	* @param caller the {@link IQuestion} to which this {@link AWhenStm} node is applied
+	* Calls the {@link IQuestion#caseAOnceStm(AOnceStm, Object)} of the {@link IQuestion} {@code caller}.
+	* @param caller the {@link IQuestion} to which this {@link AOnceStm} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
 	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
-		caller.caseAWhenStm(this, question);
+		caller.caseAOnceStm(this, question);
 	}
 
 
 	/**
-	* Calls the {@link IQuestionAnswer#caseAWhenStm(AWhenStm, Object)} of the {@link IQuestionAnswer} {@code caller}.
-	* @param caller the {@link IQuestionAnswer} to which this {@link AWhenStm} node is applied
+	* Calls the {@link IQuestionAnswer#caseAOnceStm(AOnceStm, Object)} of the {@link IQuestionAnswer} {@code caller}.
+	* @param caller the {@link IQuestionAnswer} to which this {@link AOnceStm} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
 	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
-		return caller.caseAWhenStm(this, question);
+		return caller.caseAOnceStm(this, question);
 	}
 
 

@@ -25,12 +25,14 @@ package org.destecs.script.ast.node.tokens;
 import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.node.Token;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -47,6 +49,7 @@ public final class TInt extends Token
 
 	/**
 	* Creates a new {@code TInt} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param text_ the {@link String} node for the {@code text} child of this {@link TInt} node
 	*/
@@ -62,27 +65,6 @@ public final class TInt extends Token
 	public TInt()
 	{
 		_text = "int";
-	}
-
-
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof TInt)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns a deep clone of this {@link TInt} node.
-	 * @return a deep clone of this {@link TInt} node
-	 */
-	public TInt clone()
-	{
-		return new TInt( getText());
 	}
 
 
@@ -108,6 +90,47 @@ public final class TInt extends Token
 
 
 	/**
+	 * Returns a deep clone of this {@link TInt} node.
+	 * @return a deep clone of this {@link TInt} node
+	 */
+	public TInt clone()
+	{
+		return new TInt( getText());
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_text",this._text);
+		return fields;
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof TInt)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
 	 * Sets the {@code _text} child of this {@link TInt} node.
 	 * @param value the new {@code _text} child of this {@link TInt} node
 	*/
@@ -127,46 +150,46 @@ public final class TInt extends Token
 
 
 	/**
-	* Calls the {@link IAnalysis#caseIToken(TInt)} of the {@link IAnalysis} {@code analysis}.
+	* Calls the {@link IAnalysis#caseTInt(TInt)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link TInt} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseTInt(this);
 	}
 
 
 	/**
-	* Calls the {@link IAnswer#caseIToken(IToken)} of the {@link IAnswer} {@code caller}.
-	* @param caller the {@link IAnswer} to which this {@link IToken} node is applied
+	* Calls the {@link IAnswer#caseTInt(TInt)} of the {@link IAnswer} {@code caller}.
+	* @param caller the {@link IAnswer} to which this {@link TInt} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseTInt(this);
 	}
 
 
 	/**
-	* Calls the {@link IQuestion#caseIToken(TInt, Object)} of the {@link IQuestion} {@code caller}.
+	* Calls the {@link IQuestion#caseTInt(TInt, Object)} of the {@link IQuestion} {@code caller}.
 	* @param caller the {@link IQuestion} to which this {@link TInt} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseTInt(this, question);
 	}
 
 
 	/**
-	* Calls the {@link IQuestionAnswer#caseIToken(IToken, Object)} of the {@link IQuestionAnswer} {@code caller}.
-	* @param caller the {@link IQuestionAnswer} to which this {@link IToken} node is applied
+	* Calls the {@link IQuestionAnswer#caseTInt(TInt, Object)} of the {@link IQuestionAnswer} {@code caller}.
+	* @param caller the {@link IQuestionAnswer} to which this {@link TInt} node is applied
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseTInt(this, question);
 	}

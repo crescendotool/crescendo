@@ -25,6 +25,7 @@ package org.destecs.script.ast.expressions;
 import org.destecs.script.ast.expressions.PExp;
 import org.destecs.script.ast.expressions.SSingleExp;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.ESingleExp;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -38,13 +39,11 @@ import org.destecs.script.ast.expressions.EExp;
 */
 public interface SSingleExp extends PExp
 {	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link SSingleExpBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link SSingleExpBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link SSingleExpBase} node
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
 	 */
-	public void removeChild(INode child);
+	public EExp kindPExp();
 	/**
 	 * Creates a deep clone of this {@link SSingleExpBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -53,23 +52,35 @@ public interface SSingleExp extends PExp
 	 */
 	public abstract SSingleExp clone(Map<INode,INode> oldToNewMap);
 	/**
-	 * Returns a deep clone of this {@link SSingleExpBase} node.
-	 * @return a deep clone of this {@link SSingleExpBase} node
-	 */
-	public abstract SSingleExp clone();
-
-	public String toString();
-	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
 	 * @return the {@link ESingleExp} for this node
 	 */
 	public abstract ESingleExp kindSSingleExp();
 	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
+	 * Returns a deep clone of this {@link SSingleExpBase} node.
+	 * @return a deep clone of this {@link SSingleExpBase} node
 	 */
-	public EExp kindPExp();
+	public abstract SSingleExp clone();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link SSingleExpBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link SSingleExpBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link SSingleExpBase} node
+	 */
+	public void removeChild(INode child);
+
+	public String toString();
 
 }

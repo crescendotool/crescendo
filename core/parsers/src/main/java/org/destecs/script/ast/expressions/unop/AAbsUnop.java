@@ -25,6 +25,7 @@ package org.destecs.script.ast.expressions.unop;
 import org.destecs.script.ast.expressions.unop.EUnop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.unop.PUnopBase;
 import org.destecs.script.ast.node.INode;
@@ -32,6 +33,7 @@ import java.lang.String;
 import org.destecs.script.ast.expressions.unop.AAbsUnop;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -42,7 +44,6 @@ import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 public class AAbsUnop extends PUnopBase
 {
 	private static final long serialVersionUID = 1L;
-
 
 
 	/**
@@ -56,16 +57,6 @@ public class AAbsUnop extends PUnopBase
 
 
 
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AAbsUnop)
-	 return toString().equals(o.toString());
-	return false; }
-	
 	/**
 	 * Returns the {@link EUnop} corresponding to the
 	 * type of this {@link EUnop} node.
@@ -79,24 +70,6 @@ public class AAbsUnop extends PUnopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AAbsUnop} node.
-	 * @return a deep clone of this {@link AAbsUnop} node
-	 */
-	public AAbsUnop clone()
-	{
-		return new AAbsUnop(
-		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AAbsUnop} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -106,6 +79,19 @@ public class AAbsUnop extends PUnopBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AAbsUnop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -124,12 +110,47 @@ public class AAbsUnop extends PUnopBase
 	}
 
 
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AAbsUnop} node.
+	 * @return a deep clone of this {@link AAbsUnop} node
+	 */
+	public AAbsUnop clone()
+	{
+		return new AAbsUnop(
+		);
+	}
+
+
 	/**
 	* Calls the {@link IAnalysis#caseAAbsUnop(AAbsUnop)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link AAbsUnop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAAbsUnop(this);
 	}
@@ -140,7 +161,7 @@ public class AAbsUnop extends PUnopBase
 	* @param caller the {@link IAnswer} to which this {@link AAbsUnop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAAbsUnop(this);
 	}
@@ -152,7 +173,7 @@ public class AAbsUnop extends PUnopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAAbsUnop(this, question);
 	}
@@ -164,7 +185,7 @@ public class AAbsUnop extends PUnopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAAbsUnop(this, question);
 	}

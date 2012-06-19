@@ -23,11 +23,12 @@ package org.destecs.script.ast.statement;
 
 
 import org.destecs.script.ast.statement.SMessageStm;
-import org.destecs.script.ast.statement.EMessageStm;
 import java.util.Map;
+import org.destecs.script.ast.statement.EMessageStm;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.statement.EStm;
 import java.lang.String;
+import org.destecs.script.ast.statement.EStm;
 import org.destecs.script.ast.statement.PStm;
 
 
@@ -37,15 +38,15 @@ import org.destecs.script.ast.statement.PStm;
 *
 */
 public interface SMessageStm extends PStm
-{
-	public String toString();
-	/**
-	 * Creates a deep clone of this {@link SMessageStmBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+{	/**
+	 * Returns a deep clone of this {@link SMessageStmBase} node.
 	 * @return a deep clone of this {@link SMessageStmBase} node
 	 */
-	public abstract SMessageStm clone(Map<INode,INode> oldToNewMap);
+	public abstract SMessageStm clone();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
 	/**
 	 * Returns the {@link EMessageStm} corresponding to the
 	 * type of this {@link EMessageStm} node.
@@ -59,10 +60,20 @@ public interface SMessageStm extends PStm
 	 */
 	public EStm kindPStm();
 	/**
-	 * Returns a deep clone of this {@link SMessageStmBase} node.
+	 * Creates a deep clone of this {@link SMessageStmBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link SMessageStmBase} node
 	 */
-	public abstract SMessageStm clone();
+	public abstract SMessageStm clone(Map<INode,INode> oldToNewMap);
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
+
+	public String toString();
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link SMessageStmBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's

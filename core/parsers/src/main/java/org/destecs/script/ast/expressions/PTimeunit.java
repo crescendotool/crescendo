@@ -23,8 +23,9 @@ package org.destecs.script.ast.expressions;
 
 
 import java.util.Map;
-import org.destecs.script.ast.node.INode;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.ETimeunit;
+import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
 import org.destecs.script.ast.expressions.PTimeunit;
@@ -37,13 +38,12 @@ import org.destecs.script.ast.expressions.PTimeunit;
 */
 public interface PTimeunit extends INode
 {	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
+	 * Creates a deep clone of this {@link PTimeunitBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PTimeunitBase} node
 	 */
-	public abstract ETimeunit kindPTimeunit();
-
-	public String toString();
+	public abstract PTimeunit clone(Map<INode,INode> oldToNewMap);
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PTimeunitBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -53,18 +53,29 @@ public interface PTimeunit extends INode
 	 */
 	public void removeChild(INode child);
 	/**
-	 * Creates a deep clone of this {@link PTimeunitBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PTimeunitBase} node
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
 	 */
-	public abstract PTimeunit clone(Map<INode,INode> oldToNewMap);
+	public abstract ETimeunit kindPTimeunit();
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
+
+	public String toString();
 	/**
 	 * Returns a deep clone of this {@link PTimeunitBase} node.
 	 * @return a deep clone of this {@link PTimeunitBase} node

@@ -23,11 +23,12 @@ package org.destecs.script.ast.expressions.binop;
 
 
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
-import org.destecs.script.ast.expressions.binop.PBinop;
 import org.destecs.script.ast.expressions.binop.EBinop;
+import org.destecs.script.ast.expressions.binop.PBinop;
 
 
 /**
@@ -37,12 +38,6 @@ import org.destecs.script.ast.expressions.binop.EBinop;
 */
 public interface PBinop extends INode
 {	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	public abstract EBinop kindPBinop();
-	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PBinopBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -51,18 +46,11 @@ public interface PBinop extends INode
 	 */
 	public void removeChild(INode child);
 	/**
-	 * Returns a deep clone of this {@link PBinopBase} node.
-	 * @return a deep clone of this {@link PBinopBase} node
-	 */
-	public abstract PBinop clone();
-	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
-
-	public String toString();
 	/**
 	 * Creates a deep clone of this {@link PBinopBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -70,5 +58,28 @@ public interface PBinop extends INode
 	 * @return a deep clone of this {@link PBinopBase} node
 	 */
 	public abstract PBinop clone(Map<INode,INode> oldToNewMap);
+
+	public String toString();
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	public abstract EBinop kindPBinop();
+	/**
+	 * Returns a deep clone of this {@link PBinopBase} node.
+	 * @return a deep clone of this {@link PBinopBase} node
+	 */
+	public abstract PBinop clone();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
 
 }

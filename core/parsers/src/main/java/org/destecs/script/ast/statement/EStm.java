@@ -30,6 +30,7 @@ package org.destecs.script.ast.statement;
 public enum EStm
 {
 	WHEN,
+	ONCE,
 	ASSIGN,
 	REVERT,
 	MESSAGE,

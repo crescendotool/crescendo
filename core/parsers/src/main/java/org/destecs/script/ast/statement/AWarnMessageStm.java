@@ -25,6 +25,7 @@ package org.destecs.script.ast.statement;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import org.destecs.script.ast.statement.EMessageStm;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -32,6 +33,7 @@ import org.destecs.script.ast.statement.AWarnMessageStm;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.statement.SMessageStmBase;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -44,6 +46,19 @@ public class AWarnMessageStm extends SMessageStmBase
 	private static final long serialVersionUID = 1L;
 
 
+
+	/**
+	* Creates a new {@code AWarnMessageStm} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
+	* The basic child nodes are removed from their previous parents.
+	*/
+	public AWarnMessageStm(String message_)
+	{
+		super(message_);
+
+	}
+
+
 	/**
 	 * Creates a new {@link AWarnMessageStm} node with no children.
 	 */
@@ -54,28 +69,12 @@ public class AWarnMessageStm extends SMessageStmBase
 
 
 
-	/**
-	* Creates a new {@code AWarnMessageStm} node with the given nodes as children.
-	* The basic child nodes are removed from their previous parents.
-	*/
-	public AWarnMessageStm(String message_)
+	public String toString()
 	{
-		super(message_);
-
+		return super.toString();
 	}
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AWarnMessageStm)
-	 return toString().equals(o.toString());
-	return false; }
-	
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AWarnMessageStm} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -89,10 +88,44 @@ public class AWarnMessageStm extends SMessageStmBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Returns a deep clone of this {@link AWarnMessageStm} node.
+	 * @return a deep clone of this {@link AWarnMessageStm} node
+	 */
+	public AWarnMessageStm clone()
 	{
-		return super.toString();
+		return new AWarnMessageStm(
+			_message
+		);
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns the {@link EMessageStm} corresponding to the
+	 * type of this {@link EMessageStm} node.
+	 * @return the {@link EMessageStm} for this node
+	 */
+	@Override
+	public EMessageStm kindSMessageStm()
+	{
+		return EMessageStm.WARN;
 	}
 
 
@@ -113,26 +146,15 @@ public class AWarnMessageStm extends SMessageStmBase
 
 
 	/**
-	 * Returns the {@link EMessageStm} corresponding to the
-	 * type of this {@link EMessageStm} node.
-	 * @return the {@link EMessageStm} for this node
-	 */
+	* Essentially this.toString().equals(o.toString()).
+	**/
 	@Override
-	public EMessageStm kindSMessageStm()
+	public boolean equals(Object o)
 	{
-		return EMessageStm.WARN;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AWarnMessageStm} node.
-	 * @return a deep clone of this {@link AWarnMessageStm} node
-	 */
-	public AWarnMessageStm clone()
-	{
-		return new AWarnMessageStm(
-			_message
-		);
+		if (o != null && o instanceof AWarnMessageStm)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -141,7 +163,7 @@ public class AWarnMessageStm extends SMessageStmBase
 	* @param analysis the {@link IAnalysis} to which this {@link AWarnMessageStm} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAWarnMessageStm(this);
 	}
@@ -152,7 +174,7 @@ public class AWarnMessageStm extends SMessageStmBase
 	* @param caller the {@link IAnswer} to which this {@link AWarnMessageStm} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAWarnMessageStm(this);
 	}
@@ -164,7 +186,7 @@ public class AWarnMessageStm extends SMessageStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAWarnMessageStm(this, question);
 	}
@@ -176,7 +198,7 @@ public class AWarnMessageStm extends SMessageStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAWarnMessageStm(this, question);
 	}

@@ -25,10 +25,12 @@ package org.destecs.script.ast;
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
 import org.destecs.script.ast.PDomain;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.EDomain;
+import java.util.HashMap;
 
 
 /**
@@ -52,33 +54,33 @@ public abstract class PDomainBase extends Node implements PDomain
 
 
 
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof PDomainBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns a deep clone of this {@link PDomainBase} node.
-	 * @return a deep clone of this {@link PDomainBase} node
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
 	 */
 	@Override
-	public abstract PDomain clone();
-
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	@Override
-	public NodeEnum kindNode()
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
 	{
-		return NodeEnum.DOMAIN;
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PDomainBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PDomainBase} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
 	}
 
 
@@ -91,6 +93,20 @@ public abstract class PDomainBase extends Node implements PDomain
 	@Override
 	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
 
+	/**
+	 * Returns a deep clone of this {@link PDomainBase} node.
+	 * @return a deep clone of this {@link PDomainBase} node
+	 */
+	@Override
+	public abstract PDomain clone();
+
+	/**
+	 * Returns the {@link EDomain} corresponding to the
+	 * type of this {@link EDomain} node.
+	 * @return the {@link EDomain} for this node
+	 */
+	public abstract EDomain kindPDomain();
+
 
 	public String toString()
 	{
@@ -100,22 +116,27 @@ public abstract class PDomainBase extends Node implements PDomain
 
 
 	/**
-	 * Returns the {@link EDomain} corresponding to the
-	 * type of this {@link EDomain} node.
-	 * @return the {@link EDomain} for this node
-	 */
-	public abstract EDomain kindPDomain();
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof PDomainBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PDomainBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PDomainBase} node
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public NodeEnum kindNode()
 	{
-		throw new RuntimeException("Not a child.");
+		return NodeEnum.DOMAIN;
 	}
 
 

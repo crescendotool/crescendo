@@ -264,7 +264,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 	}
 
 	@Override
-	protected StepStruct afterStep(Simulator simulator, StepStruct result)
+	protected StepStruct afterStep(Simulator simulator, StepStruct result) throws SimulationException
 	{
 		if(simulator == Simulator.CT)
 			return result;
@@ -274,7 +274,11 @@ public class ScriptSimulationEngine extends SimulationEngine
 		this.inAfter = true;
 		for (INode stm : script)
 		{
-			stm.apply(eval);
+			try {
+				stm.apply(eval);
+			} catch (Throwable e) {
+				abort(simulator, "Internal Evaluation Error", e);
+			}
 		}
 		return result;
 	}
@@ -297,7 +301,11 @@ public class ScriptSimulationEngine extends SimulationEngine
 		}
 		for (INode stm : script)
 		{
-			stm.apply(eval);
+			try {
+				stm.apply(eval);
+			} catch (Throwable e) {
+				abort(nextStepEngine, "Internal Evaluation Error", e);
+			}
 		}
 	}
 	

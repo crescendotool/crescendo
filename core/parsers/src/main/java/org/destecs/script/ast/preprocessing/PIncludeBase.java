@@ -24,11 +24,13 @@ package org.destecs.script.ast.preprocessing;
 
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.preprocessing.PInclude;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.preprocessing.EInclude;
+import java.util.HashMap;
 
 
 /**
@@ -42,7 +44,6 @@ public abstract class PIncludeBase extends Node implements PInclude
 
 
 
-
 	/**
 	 * Creates a new {@link PIncludeBase} node with no children.
 	 */
@@ -53,44 +54,12 @@ public abstract class PIncludeBase extends Node implements PInclude
 
 
 
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof PIncludeBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PIncludeBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PIncludeBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PIncludeBase} node
+	 * Returns the {@link EInclude} corresponding to the
+	 * type of this {@link EInclude} node.
+	 * @return the {@link EInclude} for this node
 	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link PIncludeBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PIncludeBase} node
-	 */
-	@Override
-	public abstract PInclude clone(Map<INode,INode> oldToNewMap);
-
-	/**
-	 * Returns a deep clone of this {@link PIncludeBase} node.
-	 * @return a deep clone of this {@link PIncludeBase} node
-	 */
-	@Override
-	public abstract PInclude clone();
+	public abstract EInclude kindPInclude();
 
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
@@ -105,17 +74,69 @@ public abstract class PIncludeBase extends Node implements PInclude
 
 
 	/**
-	 * Returns the {@link EInclude} corresponding to the
-	 * type of this {@link EInclude} node.
-	 * @return the {@link EInclude} for this node
+	 * Creates a deep clone of this {@link PIncludeBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PIncludeBase} node
 	 */
-	public abstract EInclude kindPInclude();
+	@Override
+	public abstract PInclude clone(Map<INode,INode> oldToNewMap);
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PIncludeBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PIncludeBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PIncludeBase} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link PIncludeBase} node.
+	 * @return a deep clone of this {@link PIncludeBase} node
+	 */
+	@Override
+	public abstract PInclude clone();
 
 
 	public String toString()
 	{
 		return super.toString();
 
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof PIncludeBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 

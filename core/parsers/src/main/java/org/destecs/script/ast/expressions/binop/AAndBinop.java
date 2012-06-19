@@ -24,6 +24,7 @@ package org.destecs.script.ast.expressions.binop;
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.binop.AAndBinop;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
@@ -31,6 +32,7 @@ import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 
 
@@ -55,38 +57,18 @@ public class AAndBinop extends PBinopBase
 
 
 
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AAndBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AAndBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AAndBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AAndBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AAndBinop} node.
+	 * Creates a deep clone of this {@link AAndBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link AAndBinop} node
 	 */
-	public AAndBinop clone()
+	public AAndBinop clone(Map<INode,INode> oldToNewMap)
 	{
-		return new AAndBinop(
+		AAndBinop node = new AAndBinop(
 		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -110,17 +92,56 @@ public class AAndBinop extends PBinopBase
 
 
 	/**
-	 * Creates a deep clone of this {@link AAndBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link AAndBinop} node.
 	 * @return a deep clone of this {@link AAndBinop} node
 	 */
-	public AAndBinop clone(Map<INode,INode> oldToNewMap)
+	public AAndBinop clone()
 	{
-		AAndBinop node = new AAndBinop(
+		return new AAndBinop(
 		);
-		oldToNewMap.put(this, node);
-		return node;
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AAndBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AAndBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AAndBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AAndBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
 	}
 
 
@@ -129,7 +150,7 @@ public class AAndBinop extends PBinopBase
 	* @param analysis the {@link IAnalysis} to which this {@link AAndBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAAndBinop(this);
 	}
@@ -140,7 +161,7 @@ public class AAndBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link AAndBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAAndBinop(this);
 	}
@@ -152,7 +173,7 @@ public class AAndBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAAndBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class AAndBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAAndBinop(this, question);
 	}

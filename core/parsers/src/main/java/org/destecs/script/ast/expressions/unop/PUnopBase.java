@@ -25,10 +25,12 @@ package org.destecs.script.ast.expressions.unop;
 import org.destecs.script.ast.expressions.unop.EUnop;
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.unop.PUnop;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import java.util.HashMap;
 
 
 /**
@@ -52,17 +54,6 @@ public abstract class PUnopBase extends Node implements PUnop
 
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof PUnopBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
 
 	public String toString()
 	{
@@ -92,6 +83,23 @@ public abstract class PUnopBase extends Node implements PUnop
 
 
 	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
@@ -109,6 +117,19 @@ public abstract class PUnopBase extends Node implements PUnop
 	 * @return the {@link EUnop} for this node
 	 */
 	public abstract EUnop kindPUnop();
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof PUnopBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
 
 	/**
 	 * Creates a deep clone of this {@link PUnopBase} node while putting all

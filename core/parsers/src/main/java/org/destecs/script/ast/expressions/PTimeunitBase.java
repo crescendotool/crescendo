@@ -24,11 +24,13 @@ package org.destecs.script.ast.expressions;
 
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
-import org.destecs.script.ast.node.INode;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.ETimeunit;
+import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
 import org.destecs.script.ast.expressions.PTimeunit;
+import java.util.HashMap;
 
 
 /**
@@ -52,31 +54,14 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 
 
 
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof PTimeunitBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
+	 * Creates a deep clone of this {@link PTimeunitBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PTimeunitBase} node
 	 */
-	public abstract ETimeunit kindPTimeunit();
-
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
+	@Override
+	public abstract PTimeunit clone(Map<INode,INode> oldToNewMap);
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PTimeunitBase} node.
@@ -92,13 +77,28 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 
 
 	/**
-	 * Creates a deep clone of this {@link PTimeunitBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PTimeunitBase} node
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
+	 */
+	public abstract ETimeunit kindPTimeunit();
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
 	 */
 	@Override
-	public abstract PTimeunit clone(Map<INode,INode> oldToNewMap);
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
 
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
@@ -109,6 +109,27 @@ public abstract class PTimeunitBase extends Node implements PTimeunit
 	public NodeEnum kindNode()
 	{
 		return NodeEnum.TIMEUNIT;
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof PTimeunitBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+
 	}
 
 

@@ -25,6 +25,7 @@ package org.destecs.script.ast.statement;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.statement.EMessageStm;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.statement.APrintMessageStm;
 import org.destecs.script.ast.node.INode;
@@ -32,6 +33,7 @@ import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.statement.SMessageStmBase;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -45,17 +47,8 @@ public class APrintMessageStm extends SMessageStmBase
 
 
 	/**
-	 * Creates a new {@link APrintMessageStm} node with no children.
-	 */
-	public APrintMessageStm()
-	{
-
-	}
-
-
-
-	/**
 	* Creates a new {@code APrintMessageStm} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	*/
 	public APrintMessageStm(String message_)
@@ -66,16 +59,15 @@ public class APrintMessageStm extends SMessageStmBase
 
 
 
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof APrintMessageStm)
-	 return toString().equals(o.toString());
-	return false; }
-	
+	 * Creates a new {@link APrintMessageStm} node with no children.
+	 */
+	public APrintMessageStm()
+	{
+
+	}
+
+
 	/**
 	 * Returns the {@link EMessageStm} corresponding to the
 	 * type of this {@link EMessageStm} node.
@@ -101,6 +93,13 @@ public class APrintMessageStm extends SMessageStmBase
 	}
 
 
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link APrintMessageStm} node.
 	 * @return a deep clone of this {@link APrintMessageStm} node
@@ -110,13 +109,6 @@ public class APrintMessageStm extends SMessageStmBase
 		return new APrintMessageStm(
 			_message
 		);
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 
@@ -137,11 +129,41 @@ public class APrintMessageStm extends SMessageStmBase
 
 
 	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof APrintMessageStm)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
 	* Calls the {@link IAnalysis#caseAPrintMessageStm(APrintMessageStm)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link APrintMessageStm} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAPrintMessageStm(this);
 	}
@@ -152,7 +174,7 @@ public class APrintMessageStm extends SMessageStmBase
 	* @param caller the {@link IAnswer} to which this {@link APrintMessageStm} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAPrintMessageStm(this);
 	}
@@ -164,7 +186,7 @@ public class APrintMessageStm extends SMessageStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAPrintMessageStm(this, question);
 	}
@@ -176,7 +198,7 @@ public class APrintMessageStm extends SMessageStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAPrintMessageStm(this, question);
 	}

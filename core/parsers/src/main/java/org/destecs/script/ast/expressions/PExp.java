@@ -24,6 +24,7 @@ package org.destecs.script.ast.expressions;
 
 import org.destecs.script.ast.expressions.PExp;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
@@ -36,16 +37,7 @@ import org.destecs.script.ast.expressions.EExp;
 *
 */
 public interface PExp extends INode
-{
-	public String toString();
-	/**
-	 * Creates a deep clone of this {@link PExpBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PExpBase} node
-	 */
-	public abstract PExp clone(Map<INode,INode> oldToNewMap);
-	/**
+{	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PExpBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -54,10 +46,30 @@ public interface PExp extends INode
 	 */
 	public void removeChild(INode child);
 	/**
-	 * Returns a deep clone of this {@link PExpBase} node.
+	 * Creates a deep clone of this {@link PExpBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link PExpBase} node
 	 */
-	public abstract PExp clone();
+	public abstract PExp clone(Map<INode,INode> oldToNewMap);
+
+	public String toString();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
+	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
+	 */
+	public NodeEnum kindNode();
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
 	/**
 	 * Returns the {@link EExp} corresponding to the
 	 * type of this {@link EExp} node.
@@ -65,10 +77,9 @@ public interface PExp extends INode
 	 */
 	public abstract EExp kindPExp();
 	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
+	 * Returns a deep clone of this {@link PExpBase} node.
+	 * @return a deep clone of this {@link PExpBase} node
 	 */
-	public NodeEnum kindNode();
+	public abstract PExp clone();
 
 }

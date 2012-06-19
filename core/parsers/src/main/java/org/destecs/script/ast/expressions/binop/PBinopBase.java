@@ -24,11 +24,13 @@ package org.destecs.script.ast.expressions.binop;
 
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.expressions.binop.PBinop;
+import java.util.HashMap;
 
 
 /**
@@ -42,7 +44,6 @@ public abstract class PBinopBase extends Node implements PBinop
 
 
 
-
 	/**
 	 * Creates a new {@link PBinopBase} node with no children.
 	 */
@@ -52,23 +53,6 @@ public abstract class PBinopBase extends Node implements PBinop
 	}
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof PBinopBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	public abstract EBinop kindPBinop();
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PBinopBase} node.
@@ -84,13 +68,6 @@ public abstract class PBinopBase extends Node implements PBinop
 
 
 	/**
-	 * Returns a deep clone of this {@link PBinopBase} node.
-	 * @return a deep clone of this {@link PBinopBase} node
-	 */
-	@Override
-	public abstract PBinop clone();
-
-	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
@@ -102,6 +79,15 @@ public abstract class PBinopBase extends Node implements PBinop
 	}
 
 
+	/**
+	 * Creates a deep clone of this {@link PBinopBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PBinopBase} node
+	 */
+	@Override
+	public abstract PBinop clone(Map<INode,INode> oldToNewMap);
+
 
 	public String toString()
 	{
@@ -111,13 +97,48 @@ public abstract class PBinopBase extends Node implements PBinop
 
 
 	/**
-	 * Creates a deep clone of this {@link PBinopBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	public abstract EBinop kindPBinop();
+
+	/**
+	 * Returns a deep clone of this {@link PBinopBase} node.
 	 * @return a deep clone of this {@link PBinopBase} node
 	 */
 	@Override
-	public abstract PBinop clone(Map<INode,INode> oldToNewMap);
+	public abstract PBinop clone();
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof PBinopBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
 
 
 }

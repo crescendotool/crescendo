@@ -25,12 +25,14 @@ package org.destecs.script.ast.expressions.binop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.expressions.binop.ALessThanBinop;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 
 
@@ -56,16 +58,12 @@ public class ALessThanBinop extends PBinopBase
 
 
 
+	public String toString()
+	{
+		return super.toString();
+	}
 
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ALessThanBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
+
 	/**
 	 * Creates a deep clone of this {@link ALessThanBinop} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -78,25 +76,6 @@ public class ALessThanBinop extends PBinopBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
-	{
-		return EBinop.LESSTHAN;
 	}
 
 
@@ -114,6 +93,35 @@ public class ALessThanBinop extends PBinopBase
 
 
 	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.LESSTHAN;
+	}
+
+
+	/**
 	 * Returns a deep clone of this {@link ALessThanBinop} node.
 	 * @return a deep clone of this {@link ALessThanBinop} node
 	 */
@@ -125,11 +133,24 @@ public class ALessThanBinop extends PBinopBase
 
 
 	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof ALessThanBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
 	* Calls the {@link IAnalysis#caseALessThanBinop(ALessThanBinop)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link ALessThanBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseALessThanBinop(this);
 	}
@@ -140,7 +161,7 @@ public class ALessThanBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link ALessThanBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseALessThanBinop(this);
 	}
@@ -152,7 +173,7 @@ public class ALessThanBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseALessThanBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class ALessThanBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseALessThanBinop(this, question);
 	}

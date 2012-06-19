@@ -908,7 +908,7 @@ public class SimulationEngine
 		return afterStep(simulator, result);
 	}
 
-	protected StepStruct afterStep(Simulator simulator, StepStruct result)
+	protected StepStruct afterStep(Simulator simulator, StepStruct result) throws SimulationException
 	{
 		return result;
 	}

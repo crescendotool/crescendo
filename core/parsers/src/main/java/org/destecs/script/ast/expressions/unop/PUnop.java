@@ -24,6 +24,7 @@ package org.destecs.script.ast.expressions.unop;
 
 import org.destecs.script.ast.expressions.unop.EUnop;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.unop.PUnop;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.node.NodeEnum;
@@ -52,6 +53,12 @@ public interface PUnop extends INode
 	 */
 	public void removeChild(INode child);
 	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
+	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
@@ -63,6 +70,10 @@ public interface PUnop extends INode
 	 * @return the {@link EUnop} for this node
 	 */
 	public abstract EUnop kindPUnop();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
 	/**
 	 * Creates a deep clone of this {@link PUnopBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.

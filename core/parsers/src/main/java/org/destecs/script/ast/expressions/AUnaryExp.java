@@ -22,17 +22,19 @@
 package org.destecs.script.ast.expressions;
 
 
-import org.destecs.script.ast.expressions.PExp;
-import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import java.lang.Boolean;
+import org.destecs.script.ast.expressions.AUnaryExp;
+import java.lang.String;
+import org.destecs.script.ast.analysis.intf.IAnswer;
+import java.util.HashMap;
+import org.destecs.script.ast.expressions.PExp;
 import org.destecs.script.ast.expressions.unop.PUnop;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.expressions.AUnaryExp;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.expressions.PExpBase;
 import org.destecs.script.ast.expressions.EExp;
-import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
 
@@ -48,6 +50,7 @@ public class AUnaryExp extends PExpBase
 	private PUnop _operator;
 	private PExp _exp;
 
+
 	/**
 	 * Creates a new {@link AUnaryExp} node with no children.
 	 */
@@ -57,9 +60,9 @@ public class AUnaryExp extends PExpBase
 	}
 
 
-
 	/**
 	* Creates a new {@code AUnaryExp} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param operator_ the {@link PUnop} node for the {@code operator} child of this {@link AUnaryExp} node
 	* @param exp_ the {@link PExp} node for the {@code exp} child of this {@link AUnaryExp} node
@@ -73,17 +76,18 @@ public class AUnaryExp extends PExpBase
 	}
 
 
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
+	 */
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AUnaryExp)
-	 return toString().equals(o.toString());
-	return false; }
-	
+	public EExp kindPExp()
+	{
+		return EExp.UNARY;
+	}
+
+
 	/**
 	 * Returns a deep clone of this {@link AUnaryExp} node.
 	 * @return a deep clone of this {@link AUnaryExp} node
@@ -94,6 +98,25 @@ public class AUnaryExp extends PExpBase
 			cloneNode(_operator),
 			cloneNode(_exp)
 		);
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_operator",this._operator);
+		fields.put("_exp",this._exp);
+		return fields;
 	}
 
 
@@ -121,6 +144,19 @@ public class AUnaryExp extends PExpBase
 
 
 	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AUnaryExp)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
 	 * Creates a deep clone of this {@link AUnaryExp} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -134,18 +170,6 @@ public class AUnaryExp extends PExpBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
-	}
-
-
-	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	@Override
-	public EExp kindPExp()
-	{
-		return EExp.UNARY;
 	}
 
 
@@ -219,7 +243,7 @@ public class AUnaryExp extends PExpBase
 	* @param analysis the {@link IAnalysis} to which this {@link AUnaryExp} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAUnaryExp(this);
 	}
@@ -230,7 +254,7 @@ public class AUnaryExp extends PExpBase
 	* @param caller the {@link IAnswer} to which this {@link AUnaryExp} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAUnaryExp(this);
 	}
@@ -242,7 +266,7 @@ public class AUnaryExp extends PExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAUnaryExp(this, question);
 	}
@@ -254,7 +278,7 @@ public class AUnaryExp extends PExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAUnaryExp(this, question);
 	}

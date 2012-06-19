@@ -25,12 +25,14 @@ package org.destecs.script.ast.expressions.binop;
 import org.destecs.script.ast.expressions.binop.AEquivBinop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 
 
@@ -45,7 +47,6 @@ public class AEquivBinop extends PBinopBase
 
 
 
-
 	/**
 	 * Creates a new {@link AEquivBinop} node with no children.
 	 */
@@ -56,16 +57,6 @@ public class AEquivBinop extends PBinopBase
 
 
 
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AEquivBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
 	/**
 	 * Returns a deep clone of this {@link AEquivBinop} node.
 	 * @return a deep clone of this {@link AEquivBinop} node
@@ -90,21 +81,6 @@ public class AEquivBinop extends PBinopBase
 	}
 
 
-	/**
-	 * Creates a deep clone of this {@link AEquivBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AEquivBinop} node
-	 */
-	public AEquivBinop clone(Map<INode,INode> oldToNewMap)
-	{
-		AEquivBinop node = new AEquivBinop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
 
 	public String toString()
 	{
@@ -125,11 +101,56 @@ public class AEquivBinop extends PBinopBase
 
 
 	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AEquivBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AEquivBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AEquivBinop} node
+	 */
+	public AEquivBinop clone(Map<INode,INode> oldToNewMap)
+	{
+		AEquivBinop node = new AEquivBinop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+	/**
 	* Calls the {@link IAnalysis#caseAEquivBinop(AEquivBinop)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link AEquivBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAEquivBinop(this);
 	}
@@ -140,7 +161,7 @@ public class AEquivBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link AEquivBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAEquivBinop(this);
 	}
@@ -152,7 +173,7 @@ public class AEquivBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAEquivBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class AEquivBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAEquivBinop(this, question);
 	}

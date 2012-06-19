@@ -24,6 +24,7 @@ package org.destecs.script.ast.expressions.binop;
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -31,6 +32,7 @@ import org.destecs.script.ast.expressions.binop.AMinusBinop;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 
 
@@ -44,7 +46,6 @@ public class AMinusBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
 	/**
 	 * Creates a new {@link AMinusBinop} node with no children.
 	 */
@@ -56,16 +57,21 @@ public class AMinusBinop extends PBinopBase
 
 
 
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AMinusBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
+	 * Creates a deep clone of this {@link AMinusBinop} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AMinusBinop} node
+	 */
+	public AMinusBinop clone(Map<INode,INode> oldToNewMap)
+	{
+		AMinusBinop node = new AMinusBinop(
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
 
 	public String toString()
 	{
@@ -87,32 +93,6 @@ public class AMinusBinop extends PBinopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AMinusBinop} node.
-	 * @return a deep clone of this {@link AMinusBinop} node
-	 */
-	public AMinusBinop clone()
-	{
-		return new AMinusBinop(
-		);
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AMinusBinop} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AMinusBinop} node
-	 */
-	public AMinusBinop clone(Map<INode,INode> oldToNewMap)
-	{
-		AMinusBinop node = new AMinusBinop(
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
 	 * Returns the {@link EBinop} corresponding to the
 	 * type of this {@link EBinop} node.
 	 * @return the {@link EBinop} for this node
@@ -125,11 +105,52 @@ public class AMinusBinop extends PBinopBase
 
 
 	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AMinusBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AMinusBinop} node.
+	 * @return a deep clone of this {@link AMinusBinop} node
+	 */
+	public AMinusBinop clone()
+	{
+		return new AMinusBinop(
+		);
+	}
+
+
+	/**
 	* Calls the {@link IAnalysis#caseAMinusBinop(AMinusBinop)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link AMinusBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAMinusBinop(this);
 	}
@@ -140,7 +161,7 @@ public class AMinusBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link AMinusBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAMinusBinop(this);
 	}
@@ -152,7 +173,7 @@ public class AMinusBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAMinusBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class AMinusBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAMinusBinop(this, question);
 	}

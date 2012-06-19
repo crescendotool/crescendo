@@ -22,16 +22,18 @@
 package org.destecs.script.ast.expressions;
 
 
-import org.destecs.script.ast.analysis.intf.IAnalysis;
-import java.lang.Double;
 import java.util.Map;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.ESingleExp;
-import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.SSingleExpBase;
-import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.expressions.ATimeSingleExp;
 import org.destecs.script.ast.analysis.intf.IAnswer;
+import java.util.HashMap;
+import java.lang.Double;
+import org.destecs.script.ast.analysis.intf.IQuestion;
+import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.expressions.PTimeunit;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
@@ -51,6 +53,7 @@ public class ATimeSingleExp extends SSingleExpBase
 
 	/**
 	* Creates a new {@code ATimeSingleExp} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param value_ the {@link Double} node for the {@code value} child of this {@link ATimeSingleExp} node
 	* @param unit_ the {@link PTimeunit} node for the {@code unit} child of this {@link ATimeSingleExp} node
@@ -73,17 +76,50 @@ public class ATimeSingleExp extends SSingleExpBase
 	}
 
 
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link ATimeSingleExp} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ATimeSingleExp} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ATimeSingleExp} node
+	 */
+	public void removeChild(INode child)
+	{
+		if (this._unit == child) {
+			this._unit = null;
+			return;
+		}
+
+		throw new RuntimeException("Not a child.");
+	}
 
 
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ATimeSingleExp)
-	 return toString().equals(o.toString());
-	return false; }
-	
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_value",this._value);
+		fields.put("_unit",this._unit);
+		return fields;
+	}
+
+
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName())+ (_unit!=null?_unit.toString():this.getClass().getSimpleName());
+	}
+
+
 	/**
 	 * Creates a deep clone of this {@link ATimeSingleExp} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -102,18 +138,6 @@ public class ATimeSingleExp extends SSingleExpBase
 
 
 	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
-	{
-		return ESingleExp.TIME;
-	}
-
-
-	/**
 	 * Returns a deep clone of this {@link ATimeSingleExp} node.
 	 * @return a deep clone of this {@link ATimeSingleExp} node
 	 */
@@ -126,28 +150,28 @@ public class ATimeSingleExp extends SSingleExpBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
 	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName())+ (_unit!=null?_unit.toString():this.getClass().getSimpleName());
+		return ESingleExp.TIME;
 	}
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ATimeSingleExp} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ATimeSingleExp} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ATimeSingleExp} node
-	 */
-	public void removeChild(INode child)
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
 	{
-		if (this._unit == child) {
-			this._unit = null;
-			return;
+		if (o != null && o instanceof ATimeSingleExp)		{
+			 return toString().equals(o.toString());
 		}
-
-		throw new RuntimeException("Not a child.");
+		return false;
 	}
 
 
@@ -204,7 +228,7 @@ public class ATimeSingleExp extends SSingleExpBase
 	* @param analysis the {@link IAnalysis} to which this {@link ATimeSingleExp} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseATimeSingleExp(this);
 	}
@@ -215,7 +239,7 @@ public class ATimeSingleExp extends SSingleExpBase
 	* @param caller the {@link IAnswer} to which this {@link ATimeSingleExp} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseATimeSingleExp(this);
 	}
@@ -227,7 +251,7 @@ public class ATimeSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseATimeSingleExp(this, question);
 	}
@@ -239,7 +263,7 @@ public class ATimeSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseATimeSingleExp(this, question);
 	}

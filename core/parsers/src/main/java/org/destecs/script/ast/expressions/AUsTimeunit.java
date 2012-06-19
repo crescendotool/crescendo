@@ -25,13 +25,15 @@ package org.destecs.script.ast.expressions;
 import org.destecs.script.ast.expressions.PTimeunitBase;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.AUsTimeunit;
-import org.destecs.script.ast.expressions.ETimeunit;
 import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.expressions.ETimeunit;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -44,6 +46,7 @@ public class AUsTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link AUsTimeunit} node with no children.
 	 */
@@ -54,28 +57,16 @@ public class AUsTimeunit extends PTimeunitBase
 
 
 
-
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
+	* Essentially this.toString().equals(o.toString()).
 	**/
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AUsTimeunit)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AUsTimeunit} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AUsTimeunit} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AUsTimeunit} node
-	 */
-	public void removeChild(INode child)
+	public boolean equals(Object o)
 	{
-		throw new RuntimeException("Not a child.");
+		if (o != null && o instanceof AUsTimeunit)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -88,24 +79,6 @@ public class AUsTimeunit extends PTimeunitBase
 	public ETimeunit kindPTimeunit()
 	{
 		return ETimeunit.US;
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AUsTimeunit} node.
-	 * @return a deep clone of this {@link AUsTimeunit} node
-	 */
-	public AUsTimeunit clone()
-	{
-		return new AUsTimeunit(
-		);
 	}
 
 
@@ -125,11 +98,59 @@ public class AUsTimeunit extends PTimeunitBase
 
 
 	/**
+	 * Returns a deep clone of this {@link AUsTimeunit} node.
+	 * @return a deep clone of this {@link AUsTimeunit} node
+	 */
+	public AUsTimeunit clone()
+	{
+		return new AUsTimeunit(
+		);
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link AUsTimeunit} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AUsTimeunit} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AUsTimeunit} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
 	* Calls the {@link IAnalysis#caseAUsTimeunit(AUsTimeunit)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link AUsTimeunit} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAUsTimeunit(this);
 	}
@@ -140,7 +161,7 @@ public class AUsTimeunit extends PTimeunitBase
 	* @param caller the {@link IAnswer} to which this {@link AUsTimeunit} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAUsTimeunit(this);
 	}
@@ -152,7 +173,7 @@ public class AUsTimeunit extends PTimeunitBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAUsTimeunit(this, question);
 	}
@@ -164,7 +185,7 @@ public class AUsTimeunit extends PTimeunitBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAUsTimeunit(this, question);
 	}

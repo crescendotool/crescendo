@@ -25,13 +25,15 @@ package org.destecs.script.ast.expressions;
 import org.destecs.script.ast.expressions.PTimeunitBase;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.expressions.ETimeunit;
+import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.expressions.ASTimeunit;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -45,7 +47,6 @@ public class ASTimeunit extends PTimeunitBase
 
 
 
-
 	/**
 	 * Creates a new {@link ASTimeunit} node with no children.
 	 */
@@ -56,25 +57,21 @@ public class ASTimeunit extends PTimeunitBase
 
 
 
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ASTimeunit)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link ETimeunit} corresponding to the
-	 * type of this {@link ETimeunit} node.
-	 * @return the {@link ETimeunit} for this node
+	 * Returns a deep clone of this {@link ASTimeunit} node.
+	 * @return a deep clone of this {@link ASTimeunit} node
 	 */
-	@Override
-	public ETimeunit kindPTimeunit()
+	public ASTimeunit clone()
 	{
-		return ETimeunit.S;
+		return new ASTimeunit(
+		);
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 
@@ -88,13 +85,6 @@ public class ASTimeunit extends PTimeunitBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
 	}
 
 
@@ -114,13 +104,44 @@ public class ASTimeunit extends PTimeunitBase
 
 
 	/**
-	 * Returns a deep clone of this {@link ASTimeunit} node.
-	 * @return a deep clone of this {@link ASTimeunit} node
-	 */
-	public ASTimeunit clone()
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
 	{
-		return new ASTimeunit(
-		);
+		if (o != null && o instanceof ASTimeunit)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns the {@link ETimeunit} corresponding to the
+	 * type of this {@link ETimeunit} node.
+	 * @return the {@link ETimeunit} for this node
+	 */
+	@Override
+	public ETimeunit kindPTimeunit()
+	{
+		return ETimeunit.S;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
 	}
 
 
@@ -129,7 +150,7 @@ public class ASTimeunit extends PTimeunitBase
 	* @param analysis the {@link IAnalysis} to which this {@link ASTimeunit} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseASTimeunit(this);
 	}
@@ -140,7 +161,7 @@ public class ASTimeunit extends PTimeunitBase
 	* @param caller the {@link IAnswer} to which this {@link ASTimeunit} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseASTimeunit(this);
 	}
@@ -152,7 +173,7 @@ public class ASTimeunit extends PTimeunitBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseASTimeunit(this, question);
 	}
@@ -164,7 +185,7 @@ public class ASTimeunit extends PTimeunitBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseASTimeunit(this, question);
 	}

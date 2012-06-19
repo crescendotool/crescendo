@@ -23,6 +23,7 @@ package org.destecs.script.ast.types;
 
 
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.types.EType;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -37,20 +38,29 @@ import org.destecs.script.ast.types.PType;
 */
 public interface PType extends INode
 {	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
+	/**
+	 * Returns the {@link EType} corresponding to the
+	 * type of this {@link EType} node.
+	 * @return the {@link EType} for this node
+	 */
+	public abstract EType kindPType();
+	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
-	/**
-	 * Creates a deep clone of this {@link PTypeBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PTypeBase} node
-	 */
-	public abstract PType clone(Map<INode,INode> oldToNewMap);
 
 	public String toString();
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PTypeBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -60,11 +70,12 @@ public interface PType extends INode
 	 */
 	public void removeChild(INode child);
 	/**
-	 * Returns the {@link EType} corresponding to the
-	 * type of this {@link EType} node.
-	 * @return the {@link EType} for this node
+	 * Creates a deep clone of this {@link PTypeBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PTypeBase} node
 	 */
-	public abstract EType kindPType();
+	public abstract PType clone(Map<INode,INode> oldToNewMap);
 	/**
 	 * Returns a deep clone of this {@link PTypeBase} node.
 	 * @return a deep clone of this {@link PTypeBase} node

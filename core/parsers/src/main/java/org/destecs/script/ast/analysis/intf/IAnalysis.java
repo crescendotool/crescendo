@@ -42,6 +42,8 @@ import org.destecs.script.ast.expressions.binop.ADifferentBinop;
 import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.expressions.AHTimeunit;
 import org.destecs.script.ast.types.ATimeType;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import org.destecs.script.ast.statement.AOnceStm;
 import org.destecs.script.ast.expressions.binop.AEqualBinop;
 import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import java.lang.Integer;
@@ -76,6 +78,7 @@ import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.types.ABoolType;
 import org.destecs.script.ast.expressions.binop.AImpliesBinop;
 import org.destecs.script.ast.expressions.unop.AAddUnop;
+import org.destecs.script.ast.node.IToken;
 
 
 /**
@@ -88,266 +91,271 @@ public interface IAnalysis extends Serializable
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseTInt(TInt node);
+	public void caseTInt(TInt node) throws Throwable;
 	/**
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseDouble(Double node);
+	public void caseDouble(Double node) throws Throwable;
 	/**
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseBoolean(Boolean node);
+	public void caseBoolean(Boolean node) throws Throwable;
 	/**
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseInteger(Integer node);
+	public void caseInteger(Integer node) throws Throwable;
 	/**
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseString(String node);
+	public void caseString(String node) throws Throwable;
 	/**
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseLong(Long node);
+	public void caseLong(Long node) throws Throwable;
 	/**
 	* Called by the {@link AAddUnop} node from {@link AAddUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAddUnop} node
 	*/
-	public void caseAAddUnop(AAddUnop node);
+	public void caseAAddUnop(AAddUnop node) throws Throwable;
 	/**
 	* Called by the {@link AMinusUnop} node from {@link AMinusUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusUnop} node
 	*/
-	public void caseAMinusUnop(AMinusUnop node);
+	public void caseAMinusUnop(AMinusUnop node) throws Throwable;
 	/**
 	* Called by the {@link AAbsUnop} node from {@link AAbsUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAbsUnop} node
 	*/
-	public void caseAAbsUnop(AAbsUnop node);
+	public void caseAAbsUnop(AAbsUnop node) throws Throwable;
 	/**
 	* Called by the {@link AFloorUnop} node from {@link AFloorUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AFloorUnop} node
 	*/
-	public void caseAFloorUnop(AFloorUnop node);
+	public void caseAFloorUnop(AFloorUnop node) throws Throwable;
 	/**
 	* Called by the {@link ACeilUnop} node from {@link ACeilUnop#apply(IAnalysis)}.
 	* @param node the calling {@link ACeilUnop} node
 	*/
-	public void caseACeilUnop(ACeilUnop node);
+	public void caseACeilUnop(ACeilUnop node) throws Throwable;
 	/**
 	* Called by the {@link APlusBinop} node from {@link APlusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link APlusBinop} node
 	*/
-	public void caseAPlusBinop(APlusBinop node);
+	public void caseAPlusBinop(APlusBinop node) throws Throwable;
 	/**
 	* Called by the {@link AMinusBinop} node from {@link AMinusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusBinop} node
 	*/
-	public void caseAMinusBinop(AMinusBinop node);
+	public void caseAMinusBinop(AMinusBinop node) throws Throwable;
 	/**
 	* Called by the {@link AMultiplyBinop} node from {@link AMultiplyBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMultiplyBinop} node
 	*/
-	public void caseAMultiplyBinop(AMultiplyBinop node);
+	public void caseAMultiplyBinop(AMultiplyBinop node) throws Throwable;
 	/**
 	* Called by the {@link ADivideBinop} node from {@link ADivideBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivideBinop} node
 	*/
-	public void caseADivideBinop(ADivideBinop node);
+	public void caseADivideBinop(ADivideBinop node) throws Throwable;
 	/**
 	* Called by the {@link ADivBinop} node from {@link ADivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivBinop} node
 	*/
-	public void caseADivBinop(ADivBinop node);
+	public void caseADivBinop(ADivBinop node) throws Throwable;
 	/**
 	* Called by the {@link AModBinop} node from {@link AModBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AModBinop} node
 	*/
-	public void caseAModBinop(AModBinop node);
+	public void caseAModBinop(AModBinop node) throws Throwable;
 	/**
 	* Called by the {@link ALessThanBinop} node from {@link ALessThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessThanBinop} node
 	*/
-	public void caseALessThanBinop(ALessThanBinop node);
+	public void caseALessThanBinop(ALessThanBinop node) throws Throwable;
 	/**
 	* Called by the {@link ALessEqualBinop} node from {@link ALessEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessEqualBinop} node
 	*/
-	public void caseALessEqualBinop(ALessEqualBinop node);
+	public void caseALessEqualBinop(ALessEqualBinop node) throws Throwable;
 	/**
 	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void caseAGreaterThanBinop(AGreaterThanBinop node);
+	public void caseAGreaterThanBinop(AGreaterThanBinop node) throws Throwable;
 	/**
 	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void caseAGreaterEqualBinop(AGreaterEqualBinop node);
+	public void caseAGreaterEqualBinop(AGreaterEqualBinop node) throws Throwable;
 	/**
 	* Called by the {@link AEqualBinop} node from {@link AEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEqualBinop} node
 	*/
-	public void caseAEqualBinop(AEqualBinop node);
+	public void caseAEqualBinop(AEqualBinop node) throws Throwable;
 	/**
 	* Called by the {@link ADifferentBinop} node from {@link ADifferentBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADifferentBinop} node
 	*/
-	public void caseADifferentBinop(ADifferentBinop node);
+	public void caseADifferentBinop(ADifferentBinop node) throws Throwable;
 	/**
 	* Called by the {@link AOrBinop} node from {@link AOrBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AOrBinop} node
 	*/
-	public void caseAOrBinop(AOrBinop node);
+	public void caseAOrBinop(AOrBinop node) throws Throwable;
 	/**
 	* Called by the {@link AAndBinop} node from {@link AAndBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AAndBinop} node
 	*/
-	public void caseAAndBinop(AAndBinop node);
+	public void caseAAndBinop(AAndBinop node) throws Throwable;
 	/**
 	* Called by the {@link AImpliesBinop} node from {@link AImpliesBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AImpliesBinop} node
 	*/
-	public void caseAImpliesBinop(AImpliesBinop node);
+	public void caseAImpliesBinop(AImpliesBinop node) throws Throwable;
 	/**
 	* Called by the {@link AEquivBinop} node from {@link AEquivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEquivBinop} node
 	*/
-	public void caseAEquivBinop(AEquivBinop node);
+	public void caseAEquivBinop(AEquivBinop node) throws Throwable;
 	/**
 	* Called by the {@link ADeDomain} node from {@link ADeDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ADeDomain} node
 	*/
-	public void caseADeDomain(ADeDomain node);
+	public void caseADeDomain(ADeDomain node) throws Throwable;
 	/**
 	* Called by the {@link ACtDomain} node from {@link ACtDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ACtDomain} node
 	*/
-	public void caseACtDomain(ACtDomain node);
+	public void caseACtDomain(ACtDomain node) throws Throwable;
 	/**
 	* Called by the {@link AUnaryExp} node from {@link AUnaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link AUnaryExp} node
 	*/
-	public void caseAUnaryExp(AUnaryExp node);
+	public void caseAUnaryExp(AUnaryExp node) throws Throwable;
 	/**
 	* Called by the {@link ABinaryExp} node from {@link ABinaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABinaryExp} node
 	*/
-	public void caseABinaryExp(ABinaryExp node);
+	public void caseABinaryExp(ABinaryExp node) throws Throwable;
 	/**
 	* Called by the {@link ABoolSingleExp} node from {@link ABoolSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolSingleExp} node
 	*/
-	public void caseABoolSingleExp(ABoolSingleExp node);
+	public void caseABoolSingleExp(ABoolSingleExp node) throws Throwable;
 	/**
 	* Called by the {@link ANumericalSingleExp} node from {@link ANumericalSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ANumericalSingleExp} node
 	*/
-	public void caseANumericalSingleExp(ANumericalSingleExp node);
+	public void caseANumericalSingleExp(ANumericalSingleExp node) throws Throwable;
 	/**
 	* Called by the {@link ATimeSingleExp} node from {@link ATimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeSingleExp} node
 	*/
-	public void caseATimeSingleExp(ATimeSingleExp node);
+	public void caseATimeSingleExp(ATimeSingleExp node) throws Throwable;
 	/**
 	* Called by the {@link AIdentifierSingleExp} node from {@link AIdentifierSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link AIdentifierSingleExp} node
 	*/
-	public void caseAIdentifierSingleExp(AIdentifierSingleExp node);
+	public void caseAIdentifierSingleExp(AIdentifierSingleExp node) throws Throwable;
 	/**
 	* Called by the {@link ASystemTimeSingleExp} node from {@link ASystemTimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ASystemTimeSingleExp} node
 	*/
-	public void caseASystemTimeSingleExp(ASystemTimeSingleExp node);
+	public void caseASystemTimeSingleExp(ASystemTimeSingleExp node) throws Throwable;
 	/**
 	* Called by the {@link AUsTimeunit} node from {@link AUsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AUsTimeunit} node
 	*/
-	public void caseAUsTimeunit(AUsTimeunit node);
+	public void caseAUsTimeunit(AUsTimeunit node) throws Throwable;
 	/**
 	* Called by the {@link AMsTimeunit} node from {@link AMsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMsTimeunit} node
 	*/
-	public void caseAMsTimeunit(AMsTimeunit node);
+	public void caseAMsTimeunit(AMsTimeunit node) throws Throwable;
 	/**
 	* Called by the {@link ASTimeunit} node from {@link ASTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link ASTimeunit} node
 	*/
-	public void caseASTimeunit(ASTimeunit node);
+	public void caseASTimeunit(ASTimeunit node) throws Throwable;
 	/**
 	* Called by the {@link AMTimeunit} node from {@link AMTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMTimeunit} node
 	*/
-	public void caseAMTimeunit(AMTimeunit node);
+	public void caseAMTimeunit(AMTimeunit node) throws Throwable;
 	/**
 	* Called by the {@link AHTimeunit} node from {@link AHTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AHTimeunit} node
 	*/
-	public void caseAHTimeunit(AHTimeunit node);
+	public void caseAHTimeunit(AHTimeunit node) throws Throwable;
 	/**
 	* Called by the {@link AWhenStm} node from {@link AWhenStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWhenStm} node
 	*/
-	public void caseAWhenStm(AWhenStm node);
+	public void caseAWhenStm(AWhenStm node) throws Throwable;
+	/**
+	* Called by the {@link AOnceStm} node from {@link AOnceStm#apply(IAnalysis)}.
+	* @param node the calling {@link AOnceStm} node
+	*/
+	public void caseAOnceStm(AOnceStm node) throws Throwable;
 	/**
 	* Called by the {@link AAssignStm} node from {@link AAssignStm#apply(IAnalysis)}.
 	* @param node the calling {@link AAssignStm} node
 	*/
-	public void caseAAssignStm(AAssignStm node);
+	public void caseAAssignStm(AAssignStm node) throws Throwable;
 	/**
 	* Called by the {@link ARevertStm} node from {@link ARevertStm#apply(IAnalysis)}.
 	* @param node the calling {@link ARevertStm} node
 	*/
-	public void caseARevertStm(ARevertStm node);
+	public void caseARevertStm(ARevertStm node) throws Throwable;
 	/**
 	* Called by the {@link AQuitStm} node from {@link AQuitStm#apply(IAnalysis)}.
 	* @param node the calling {@link AQuitStm} node
 	*/
-	public void caseAQuitStm(AQuitStm node);
+	public void caseAQuitStm(AQuitStm node) throws Throwable;
 	/**
 	* Called by the {@link APrintMessageStm} node from {@link APrintMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link APrintMessageStm} node
 	*/
-	public void caseAPrintMessageStm(APrintMessageStm node);
+	public void caseAPrintMessageStm(APrintMessageStm node) throws Throwable;
 	/**
 	* Called by the {@link AErrorMessageStm} node from {@link AErrorMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AErrorMessageStm} node
 	*/
-	public void caseAErrorMessageStm(AErrorMessageStm node);
+	public void caseAErrorMessageStm(AErrorMessageStm node) throws Throwable;
 	/**
 	* Called by the {@link AWarnMessageStm} node from {@link AWarnMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWarnMessageStm} node
 	*/
-	public void caseAWarnMessageStm(AWarnMessageStm node);
+	public void caseAWarnMessageStm(AWarnMessageStm node) throws Throwable;
 	/**
 	* Called by the {@link ARealType} node from {@link ARealType#apply(IAnalysis)}.
 	* @param node the calling {@link ARealType} node
 	*/
-	public void caseARealType(ARealType node);
+	public void caseARealType(ARealType node) throws Throwable;
 	/**
 	* Called by the {@link AIntType} node from {@link AIntType#apply(IAnalysis)}.
 	* @param node the calling {@link AIntType} node
 	*/
-	public void caseAIntType(AIntType node);
+	public void caseAIntType(AIntType node) throws Throwable;
 	/**
 	* Called by the {@link ABoolType} node from {@link ABoolType#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolType} node
 	*/
-	public void caseABoolType(ABoolType node);
+	public void caseABoolType(ABoolType node) throws Throwable;
 	/**
 	* Called by the {@link ATimeType} node from {@link ATimeType#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeType} node
 	*/
-	public void caseATimeType(ATimeType node);
+	public void caseATimeType(ATimeType node) throws Throwable;
 	/**
 	* Called by the {@link AScriptInclude} node from {@link AScriptInclude#apply(IAnalysis)}.
 	* @param node the calling {@link AScriptInclude} node
 	*/
-	public void caseAScriptInclude(AScriptInclude node);
+	public void caseAScriptInclude(AScriptInclude node) throws Throwable;
 
 }

@@ -23,12 +23,14 @@ package org.destecs.script.ast.statement;
 
 
 import org.destecs.script.ast.statement.SMessageStm;
-import org.destecs.script.ast.statement.EMessageStm;
 import java.util.Map;
+import org.destecs.script.ast.statement.EMessageStm;
+import java.lang.Boolean;
 import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.statement.EStm;
 import java.lang.String;
+import java.util.HashMap;
 
 
 /**
@@ -44,6 +46,7 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 
 	/**
 	* Creates a new {@code SMessageStmBase} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param message_ the {@link String} node for the {@code message} child of this {@link SMessageStmBase} node
 	*/
@@ -65,33 +68,25 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 	}
 
 
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof SMessageStmBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link SMessageStmBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * Returns a deep clone of this {@link SMessageStmBase} node.
 	 * @return a deep clone of this {@link SMessageStmBase} node
 	 */
 	@Override
-	public abstract SMessageStm clone(Map<INode,INode> oldToNewMap);
+	public abstract SMessageStm clone();
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof SMessageStmBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
 
 	/**
 	 * Returns the {@link EMessageStm} corresponding to the
@@ -113,11 +108,39 @@ public abstract class SMessageStmBase extends PStmBase implements SMessageStm
 
 
 	/**
-	 * Returns a deep clone of this {@link SMessageStmBase} node.
+	 * Creates a deep clone of this {@link SMessageStmBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link SMessageStmBase} node
 	 */
 	@Override
-	public abstract SMessageStm clone();
+	public abstract SMessageStm clone(Map<INode,INode> oldToNewMap);
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_message",this._message);
+		return fields;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link SMessageStmBase} node.

@@ -25,12 +25,14 @@ package org.destecs.script.ast.expressions.binop;
 import org.destecs.script.ast.expressions.binop.ADifferentBinop;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 
 
@@ -45,7 +47,6 @@ public class ADifferentBinop extends PBinopBase
 
 
 
-
 	/**
 	 * Creates a new {@link ADifferentBinop} node with no children.
 	 */
@@ -56,33 +57,15 @@ public class ADifferentBinop extends PBinopBase
 
 
 
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ADifferentBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link ADifferentBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link ADifferentBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link ADifferentBinop} node
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public EBinop kindPBinop()
 	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-
-	public String toString()
-	{
-		return super.toString();
+		return EBinop.DIFFERENT;
 	}
 
 
@@ -98,14 +81,15 @@ public class ADifferentBinop extends PBinopBase
 
 
 	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
+	* Essentially this.toString().equals(o.toString()).
+	**/
 	@Override
-	public EBinop kindPBinop()
+	public boolean equals(Object o)
 	{
-		return EBinop.DIFFERENT;
+		if (o != null && o instanceof ADifferentBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -125,11 +109,48 @@ public class ADifferentBinop extends PBinopBase
 
 
 	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link ADifferentBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link ADifferentBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link ADifferentBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
 	* Calls the {@link IAnalysis#caseADifferentBinop(ADifferentBinop)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link ADifferentBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseADifferentBinop(this);
 	}
@@ -140,7 +161,7 @@ public class ADifferentBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link ADifferentBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseADifferentBinop(this);
 	}
@@ -152,7 +173,7 @@ public class ADifferentBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseADifferentBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class ADifferentBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseADifferentBinop(this, question);
 	}

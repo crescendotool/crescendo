@@ -25,10 +25,12 @@ package org.destecs.script.ast.expressions;
 import org.destecs.script.ast.expressions.PExp;
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
 import org.destecs.script.ast.expressions.EExp;
+import java.util.HashMap;
 
 
 /**
@@ -52,34 +54,6 @@ public abstract class PExpBase extends Node implements PExp
 
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof PExpBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link PExpBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PExpBase} node
-	 */
-	@Override
-	public abstract PExp clone(Map<INode,INode> oldToNewMap);
-
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PExpBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -94,18 +68,34 @@ public abstract class PExpBase extends Node implements PExp
 
 
 	/**
-	 * Returns a deep clone of this {@link PExpBase} node.
+	 * Creates a deep clone of this {@link PExpBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link PExpBase} node
 	 */
 	@Override
-	public abstract PExp clone();
+	public abstract PExp clone(Map<INode,INode> oldToNewMap);
+
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
 
 	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
-	 */
-	public abstract EExp kindPExp();
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof PExpBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
 
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
@@ -118,6 +108,37 @@ public abstract class PExpBase extends Node implements PExp
 		return NodeEnum.EXP;
 	}
 
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
+	 */
+	public abstract EExp kindPExp();
+
+	/**
+	 * Returns a deep clone of this {@link PExpBase} node.
+	 * @return a deep clone of this {@link PExpBase} node
+	 */
+	@Override
+	public abstract PExp clone();
 
 
 }

@@ -24,6 +24,7 @@ package org.destecs.script.ast.expressions.binop;
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -31,6 +32,7 @@ import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 
 
@@ -55,26 +57,40 @@ public class AGreaterThanBinop extends PBinopBase
 
 
 
+	/**
+	 * Returns a deep clone of this {@link AGreaterThanBinop} node.
+	 * @return a deep clone of this {@link AGreaterThanBinop} node
+	 */
+	public AGreaterThanBinop clone()
+	{
+		return new AGreaterThanBinop(
+		);
+	}
 
 
 	/**
-	 * Essentially this.toString().equals(o.toString()).
+	 * Removes the {@link INode} {@code child} as a child of this {@link AGreaterThanBinop} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link AGreaterThanBinop} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link AGreaterThanBinop} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
 	**/
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AGreaterThanBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
+	public boolean equals(Object o)
 	{
-		return EBinop.GREATERTHAN;
+		if (o != null && o instanceof AGreaterThanBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -94,13 +110,31 @@ public class AGreaterThanBinop extends PBinopBase
 
 
 	/**
-	 * Returns a deep clone of this {@link AGreaterThanBinop} node.
-	 * @return a deep clone of this {@link AGreaterThanBinop} node
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
 	 */
-	public AGreaterThanBinop clone()
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
 	{
-		return new AGreaterThanBinop(
-		);
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.GREATERTHAN;
 	}
 
 
@@ -112,24 +146,11 @@ public class AGreaterThanBinop extends PBinopBase
 
 
 	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link AGreaterThanBinop} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link AGreaterThanBinop} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link AGreaterThanBinop} node
-	 */
-	public void removeChild(INode child)
-	{
-		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
 	* Calls the {@link IAnalysis#caseAGreaterThanBinop(AGreaterThanBinop)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link AGreaterThanBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAGreaterThanBinop(this);
 	}
@@ -140,7 +161,7 @@ public class AGreaterThanBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link AGreaterThanBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAGreaterThanBinop(this);
 	}
@@ -152,7 +173,7 @@ public class AGreaterThanBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAGreaterThanBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class AGreaterThanBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAGreaterThanBinop(this, question);
 	}

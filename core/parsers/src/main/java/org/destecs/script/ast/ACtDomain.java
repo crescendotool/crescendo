@@ -26,12 +26,14 @@ import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.PDomainBase;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.EDomain;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -55,17 +57,18 @@ public class ACtDomain extends PDomainBase
 
 
 
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
+	 * Returns the {@link EDomain} corresponding to the
+	 * type of this {@link EDomain} node.
+	 * @return the {@link EDomain} for this node
+	 */
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ACtDomain)
-	 return toString().equals(o.toString());
-	return false; }
-	
+	public EDomain kindPDomain()
+	{
+		return EDomain.CT;
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link ACtDomain} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -76,6 +79,30 @@ public class ACtDomain extends PDomainBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
 	}
 
 
@@ -95,14 +122,15 @@ public class ACtDomain extends PDomainBase
 
 
 	/**
-	 * Returns the {@link EDomain} corresponding to the
-	 * type of this {@link EDomain} node.
-	 * @return the {@link EDomain} for this node
-	 */
+	* Essentially this.toString().equals(o.toString()).
+	**/
 	@Override
-	public EDomain kindPDomain()
+	public boolean equals(Object o)
 	{
-		return EDomain.CT;
+		if (o != null && o instanceof ACtDomain)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -117,19 +145,12 @@ public class ACtDomain extends PDomainBase
 	}
 
 
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
 	* Calls the {@link IAnalysis#caseACtDomain(ACtDomain)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link ACtDomain} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseACtDomain(this);
 	}
@@ -140,7 +161,7 @@ public class ACtDomain extends PDomainBase
 	* @param caller the {@link IAnswer} to which this {@link ACtDomain} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseACtDomain(this);
 	}
@@ -152,7 +173,7 @@ public class ACtDomain extends PDomainBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseACtDomain(this, question);
 	}
@@ -164,7 +185,7 @@ public class ACtDomain extends PDomainBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseACtDomain(this, question);
 	}

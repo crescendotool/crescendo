@@ -101,7 +101,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 	}
 
 	@Override
-	public Value caseABinaryExp(ABinaryExp node)
+	public Value caseABinaryExp(ABinaryExp node) throws Throwable
 	{
 		Value left = node.getLeft().apply(this);
 		Value right = node.getRight().apply(this);
@@ -260,7 +260,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 	}
 
 	@Override
-	public Value caseAUnaryExp(AUnaryExp node)
+	public Value caseAUnaryExp(AUnaryExp node) throws Throwable
 	{
 		Value val = node.getExp().apply(this);
 		switch (node.getOperator().kindPUnop())

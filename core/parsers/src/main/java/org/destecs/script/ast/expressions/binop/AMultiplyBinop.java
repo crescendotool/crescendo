@@ -24,6 +24,7 @@ package org.destecs.script.ast.expressions.binop;
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.binop.AMultiplyBinop;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
@@ -31,6 +32,7 @@ import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 
 
@@ -42,8 +44,6 @@ import org.destecs.script.ast.expressions.binop.PBinopBase;
 public class AMultiplyBinop extends PBinopBase
 {
 	private static final long serialVersionUID = 1L;
-
-
 
 
 	/**
@@ -58,23 +58,33 @@ public class AMultiplyBinop extends PBinopBase
 
 
 	/**
-	 * Essentially this.toString().equals(o.toString()).
+	 * Returns a deep clone of this {@link AMultiplyBinop} node.
+	 * @return a deep clone of this {@link AMultiplyBinop} node
+	 */
+	public AMultiplyBinop clone()
+	{
+		return new AMultiplyBinop(
+		);
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
 	**/
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AMultiplyBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
-	 */
-	@Override
-	public EBinop kindPBinop()
+	public boolean equals(Object o)
 	{
-		return EBinop.MULTIPLY;
+		if (o != null && o instanceof AMultiplyBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -88,6 +98,18 @@ public class AMultiplyBinop extends PBinopBase
 	public void removeChild(INode child)
 	{
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
+	 */
+	@Override
+	public EBinop kindPBinop()
+	{
+		return EBinop.MULTIPLY;
 	}
 
 
@@ -106,21 +128,20 @@ public class AMultiplyBinop extends PBinopBase
 	}
 
 
-
-	public String toString()
-	{
-		return super.toString();
-	}
-
-
 	/**
-	 * Returns a deep clone of this {@link AMultiplyBinop} node.
-	 * @return a deep clone of this {@link AMultiplyBinop} node
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
 	 */
-	public AMultiplyBinop clone()
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
 	{
-		return new AMultiplyBinop(
-		);
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
 	}
 
 
@@ -129,7 +150,7 @@ public class AMultiplyBinop extends PBinopBase
 	* @param analysis the {@link IAnalysis} to which this {@link AMultiplyBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAMultiplyBinop(this);
 	}
@@ -140,7 +161,7 @@ public class AMultiplyBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link AMultiplyBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAMultiplyBinop(this);
 	}
@@ -152,7 +173,7 @@ public class AMultiplyBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAMultiplyBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class AMultiplyBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAMultiplyBinop(this, question);
 	}

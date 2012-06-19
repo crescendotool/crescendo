@@ -22,16 +22,18 @@
 package org.destecs.script.ast.statement;
 
 
-import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import java.lang.Boolean;
+import org.destecs.script.ast.statement.PStmBase;
+import java.lang.String;
+import org.destecs.script.ast.statement.EStm;
+import org.destecs.script.ast.analysis.intf.IAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.statement.ARevertStm;
 import org.destecs.script.ast.analysis.intf.IQuestion;
-import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.node.INode;
-import org.destecs.script.ast.statement.EStm;
-import java.lang.String;
 import org.destecs.script.ast.expressions.AIdentifierSingleExp;
-import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
 
@@ -48,7 +50,17 @@ public class ARevertStm extends PStmBase
 
 
 	/**
+	 * Creates a new {@link ARevertStm} node with no children.
+	 */
+	public ARevertStm()
+	{
+
+	}
+
+
+	/**
 	* Creates a new {@code ARevertStm} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param identifier_ the {@link AIdentifierSingleExp} node for the {@code identifier} child of this {@link ARevertStm} node
 	*/
@@ -61,41 +73,31 @@ public class ARevertStm extends PStmBase
 
 
 	/**
-	 * Creates a new {@link ARevertStm} node with no children.
-	 */
-	public ARevertStm()
-	{
-
-	}
-
-
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
+	* Essentially this.toString().equals(o.toString()).
 	**/
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ARevertStm)
-	 return toString().equals(o.toString());
-	return false; }
-	
-
-	public String toString()
+	public boolean equals(Object o)
 	{
-		return (_identifier!=null?_identifier.toString():this.getClass().getSimpleName());
+		if (o != null && o instanceof ARevertStm)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
 	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
+	 * Creates a deep clone of this {@link ARevertStm} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link ARevertStm} node
 	 */
-	@Override
-	public EStm kindPStm()
+	public ARevertStm clone(Map<INode,INode> oldToNewMap)
 	{
-		return EStm.REVERT;
+		ARevertStm node = new ARevertStm(
+			cloneNode(_identifier, oldToNewMap)
+		);
+		oldToNewMap.put(this, node);
+		return node;
 	}
 
 
@@ -108,6 +110,31 @@ public class ARevertStm extends PStmBase
 		return new ARevertStm(
 			cloneNode(_identifier)
 		);
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_identifier",this._identifier);
+		return fields;
+	}
+
+
+
+	public String toString()
+	{
+		return (_identifier!=null?_identifier.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -130,18 +157,14 @@ public class ARevertStm extends PStmBase
 
 
 	/**
-	 * Creates a deep clone of this {@link ARevertStm} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link ARevertStm} node
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
 	 */
-	public ARevertStm clone(Map<INode,INode> oldToNewMap)
+	@Override
+	public EStm kindPStm()
 	{
-		ARevertStm node = new ARevertStm(
-			cloneNode(_identifier, oldToNewMap)
-		);
-		oldToNewMap.put(this, node);
-		return node;
+		return EStm.REVERT;
 	}
 
 
@@ -179,7 +202,7 @@ public class ARevertStm extends PStmBase
 	* @param analysis the {@link IAnalysis} to which this {@link ARevertStm} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseARevertStm(this);
 	}
@@ -190,7 +213,7 @@ public class ARevertStm extends PStmBase
 	* @param caller the {@link IAnswer} to which this {@link ARevertStm} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseARevertStm(this);
 	}
@@ -202,7 +225,7 @@ public class ARevertStm extends PStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseARevertStm(this, question);
 	}
@@ -214,7 +237,7 @@ public class ARevertStm extends PStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseARevertStm(this, question);
 	}

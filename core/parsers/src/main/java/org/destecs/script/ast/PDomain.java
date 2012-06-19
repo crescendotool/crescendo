@@ -22,11 +22,12 @@
 package org.destecs.script.ast;
 
 
-import java.util.Map;
 import org.destecs.script.ast.PDomain;
+import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.node.NodeEnum;
+import java.lang.String;
 import org.destecs.script.ast.EDomain;
 
 
@@ -37,31 +38,11 @@ import org.destecs.script.ast.EDomain;
 */
 public interface PDomain extends INode
 {	/**
-	 * Returns a deep clone of this {@link PDomainBase} node.
-	 * @return a deep clone of this {@link PDomainBase} node
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
 	 */
-	public abstract PDomain clone();
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	public NodeEnum kindNode();
-	/**
-	 * Creates a deep clone of this {@link PDomainBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PDomainBase} node
-	 */
-	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
-
-	public String toString();
-	/**
-	 * Returns the {@link EDomain} corresponding to the
-	 * type of this {@link EDomain} node.
-	 * @return the {@link EDomain} for this node
-	 */
-	public abstract EDomain kindPDomain();
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PDomainBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -70,5 +51,35 @@ public interface PDomain extends INode
 	 * @throws RuntimeException if {@code child} is not a child of this {@link PDomainBase} node
 	 */
 	public void removeChild(INode child);
+	/**
+	 * Creates a deep clone of this {@link PDomainBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link PDomainBase} node
+	 */
+	public abstract PDomain clone(Map<INode,INode> oldToNewMap);
+	/**
+	 * Returns a deep clone of this {@link PDomainBase} node.
+	 * @return a deep clone of this {@link PDomainBase} node
+	 */
+	public abstract PDomain clone();
+	/**
+	 * Returns the {@link EDomain} corresponding to the
+	 * type of this {@link EDomain} node.
+	 * @return the {@link EDomain} for this node
+	 */
+	public abstract EDomain kindPDomain();
+
+	public String toString();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
+	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
+	 */
+	public NodeEnum kindNode();
 
 }

@@ -42,9 +42,11 @@ import org.destecs.script.ast.types.PType;
 import org.destecs.script.ast.expressions.binop.PBinop;
 import org.destecs.script.ast.expressions.binop.APlusBinop;
 import org.destecs.script.ast.expressions.binop.ADifferentBinop;
-import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.expressions.AHTimeunit;
+import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.types.ATimeType;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import org.destecs.script.ast.statement.AOnceStm;
 import org.destecs.script.ast.expressions.binop.AEqualBinop;
 import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import java.lang.Integer;
@@ -66,8 +68,8 @@ import org.destecs.script.ast.expressions.binop.AOrBinop;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.expressions.unop.AMinusUnop;
-import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.expressions.binop.ADivBinop;
+import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.statement.AWhenStm;
 import org.destecs.script.ast.expressions.unop.PUnop;
 import org.destecs.script.ast.expressions.binop.AAndBinop;
@@ -110,22 +112,11 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	}
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof QuestionAdaptor)
-	 return toString().equals(o.toString());
-	return false; }
-	
 	/**
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseTInt(TInt node, Q question)
+	public void caseTInt(TInt node, Q question) throws Throwable
 	{
 		defaultIToken(node, question);
 	}
@@ -135,7 +126,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseDouble(Double node, Q question)
+	public void caseDouble(Double node, Q question) throws Throwable
 	{
 
 	}
@@ -145,7 +136,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseBoolean(Boolean node, Q question)
+	public void caseBoolean(Boolean node, Q question) throws Throwable
 	{
 
 	}
@@ -155,7 +146,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseInteger(Integer node, Q question)
+	public void caseInteger(Integer node, Q question) throws Throwable
 	{
 
 	}
@@ -165,7 +156,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseString(String node, Q question)
+	public void caseString(String node, Q question) throws Throwable
 	{
 
 	}
@@ -175,7 +166,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void caseLong(Long node, Q question)
+	public void caseLong(Long node, Q question) throws Throwable
 	{
 
 	}
@@ -185,7 +176,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PUnop} node from {@link PUnop#apply(IAnalysis)}.
 	* @param node the calling {@link PUnop} node
 	*/
-	public void defaultPUnop(PUnop node, Q question)
+	public void defaultPUnop(PUnop node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -195,7 +186,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AAddUnop} node from {@link AAddUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAddUnop} node
 	*/
-	public void caseAAddUnop(AAddUnop node, Q question)
+	public void caseAAddUnop(AAddUnop node, Q question) throws Throwable
 	{
 		defaultPUnop(node, question);
 	}
@@ -205,7 +196,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AMinusUnop} node from {@link AMinusUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusUnop} node
 	*/
-	public void caseAMinusUnop(AMinusUnop node, Q question)
+	public void caseAMinusUnop(AMinusUnop node, Q question) throws Throwable
 	{
 		defaultPUnop(node, question);
 	}
@@ -215,7 +206,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AAbsUnop} node from {@link AAbsUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAbsUnop} node
 	*/
-	public void caseAAbsUnop(AAbsUnop node, Q question)
+	public void caseAAbsUnop(AAbsUnop node, Q question) throws Throwable
 	{
 		defaultPUnop(node, question);
 	}
@@ -225,7 +216,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AFloorUnop} node from {@link AFloorUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AFloorUnop} node
 	*/
-	public void caseAFloorUnop(AFloorUnop node, Q question)
+	public void caseAFloorUnop(AFloorUnop node, Q question) throws Throwable
 	{
 		defaultPUnop(node, question);
 	}
@@ -235,7 +226,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ACeilUnop} node from {@link ACeilUnop#apply(IAnalysis)}.
 	* @param node the calling {@link ACeilUnop} node
 	*/
-	public void caseACeilUnop(ACeilUnop node, Q question)
+	public void caseACeilUnop(ACeilUnop node, Q question) throws Throwable
 	{
 		defaultPUnop(node, question);
 	}
@@ -245,7 +236,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PBinop} node from {@link PBinop#apply(IAnalysis)}.
 	* @param node the calling {@link PBinop} node
 	*/
-	public void defaultPBinop(PBinop node, Q question)
+	public void defaultPBinop(PBinop node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -255,7 +246,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link APlusBinop} node from {@link APlusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link APlusBinop} node
 	*/
-	public void caseAPlusBinop(APlusBinop node, Q question)
+	public void caseAPlusBinop(APlusBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -265,7 +256,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AMinusBinop} node from {@link AMinusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusBinop} node
 	*/
-	public void caseAMinusBinop(AMinusBinop node, Q question)
+	public void caseAMinusBinop(AMinusBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -275,7 +266,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AMultiplyBinop} node from {@link AMultiplyBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMultiplyBinop} node
 	*/
-	public void caseAMultiplyBinop(AMultiplyBinop node, Q question)
+	public void caseAMultiplyBinop(AMultiplyBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -285,7 +276,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ADivideBinop} node from {@link ADivideBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivideBinop} node
 	*/
-	public void caseADivideBinop(ADivideBinop node, Q question)
+	public void caseADivideBinop(ADivideBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -295,7 +286,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ADivBinop} node from {@link ADivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivBinop} node
 	*/
-	public void caseADivBinop(ADivBinop node, Q question)
+	public void caseADivBinop(ADivBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -305,7 +296,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AModBinop} node from {@link AModBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AModBinop} node
 	*/
-	public void caseAModBinop(AModBinop node, Q question)
+	public void caseAModBinop(AModBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -315,7 +306,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ALessThanBinop} node from {@link ALessThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessThanBinop} node
 	*/
-	public void caseALessThanBinop(ALessThanBinop node, Q question)
+	public void caseALessThanBinop(ALessThanBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -325,7 +316,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ALessEqualBinop} node from {@link ALessEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessEqualBinop} node
 	*/
-	public void caseALessEqualBinop(ALessEqualBinop node, Q question)
+	public void caseALessEqualBinop(ALessEqualBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -335,7 +326,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public void caseAGreaterThanBinop(AGreaterThanBinop node, Q question)
+	public void caseAGreaterThanBinop(AGreaterThanBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -345,7 +336,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public void caseAGreaterEqualBinop(AGreaterEqualBinop node, Q question)
+	public void caseAGreaterEqualBinop(AGreaterEqualBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -355,7 +346,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AEqualBinop} node from {@link AEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEqualBinop} node
 	*/
-	public void caseAEqualBinop(AEqualBinop node, Q question)
+	public void caseAEqualBinop(AEqualBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -365,7 +356,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ADifferentBinop} node from {@link ADifferentBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADifferentBinop} node
 	*/
-	public void caseADifferentBinop(ADifferentBinop node, Q question)
+	public void caseADifferentBinop(ADifferentBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -375,7 +366,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AOrBinop} node from {@link AOrBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AOrBinop} node
 	*/
-	public void caseAOrBinop(AOrBinop node, Q question)
+	public void caseAOrBinop(AOrBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -385,7 +376,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AAndBinop} node from {@link AAndBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AAndBinop} node
 	*/
-	public void caseAAndBinop(AAndBinop node, Q question)
+	public void caseAAndBinop(AAndBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -395,7 +386,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AImpliesBinop} node from {@link AImpliesBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AImpliesBinop} node
 	*/
-	public void caseAImpliesBinop(AImpliesBinop node, Q question)
+	public void caseAImpliesBinop(AImpliesBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -405,7 +396,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AEquivBinop} node from {@link AEquivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEquivBinop} node
 	*/
-	public void caseAEquivBinop(AEquivBinop node, Q question)
+	public void caseAEquivBinop(AEquivBinop node, Q question) throws Throwable
 	{
 		defaultPBinop(node, question);
 	}
@@ -415,7 +406,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PDomain} node from {@link PDomain#apply(IAnalysis)}.
 	* @param node the calling {@link PDomain} node
 	*/
-	public void defaultPDomain(PDomain node, Q question)
+	public void defaultPDomain(PDomain node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -425,7 +416,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ADeDomain} node from {@link ADeDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ADeDomain} node
 	*/
-	public void caseADeDomain(ADeDomain node, Q question)
+	public void caseADeDomain(ADeDomain node, Q question) throws Throwable
 	{
 		defaultPDomain(node, question);
 	}
@@ -435,7 +426,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ACtDomain} node from {@link ACtDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ACtDomain} node
 	*/
-	public void caseACtDomain(ACtDomain node, Q question)
+	public void caseACtDomain(ACtDomain node, Q question) throws Throwable
 	{
 		defaultPDomain(node, question);
 	}
@@ -445,7 +436,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PExp} node from {@link PExp#apply(IAnalysis)}.
 	* @param node the calling {@link PExp} node
 	*/
-	public void defaultPExp(PExp node, Q question)
+	public void defaultPExp(PExp node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -455,7 +446,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link SSingleExp} node from {@link SSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link SSingleExp} node
 	*/
-	public void defaultSSingleExp(SSingleExp node, Q question)
+	public void defaultSSingleExp(SSingleExp node, Q question) throws Throwable
 	{
 		defaultPExp(node, question);
 	}
@@ -465,7 +456,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AUnaryExp} node from {@link AUnaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link AUnaryExp} node
 	*/
-	public void caseAUnaryExp(AUnaryExp node, Q question)
+	public void caseAUnaryExp(AUnaryExp node, Q question) throws Throwable
 	{
 		defaultPExp(node, question);
 	}
@@ -475,7 +466,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ABinaryExp} node from {@link ABinaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABinaryExp} node
 	*/
-	public void caseABinaryExp(ABinaryExp node, Q question)
+	public void caseABinaryExp(ABinaryExp node, Q question) throws Throwable
 	{
 		defaultPExp(node, question);
 	}
@@ -485,7 +476,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ABoolSingleExp} node from {@link ABoolSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolSingleExp} node
 	*/
-	public void caseABoolSingleExp(ABoolSingleExp node, Q question)
+	public void caseABoolSingleExp(ABoolSingleExp node, Q question) throws Throwable
 	{
 		defaultSSingleExp(node, question);
 	}
@@ -495,7 +486,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ANumericalSingleExp} node from {@link ANumericalSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ANumericalSingleExp} node
 	*/
-	public void caseANumericalSingleExp(ANumericalSingleExp node, Q question)
+	public void caseANumericalSingleExp(ANumericalSingleExp node, Q question) throws Throwable
 	{
 		defaultSSingleExp(node, question);
 	}
@@ -505,7 +496,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ATimeSingleExp} node from {@link ATimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeSingleExp} node
 	*/
-	public void caseATimeSingleExp(ATimeSingleExp node, Q question)
+	public void caseATimeSingleExp(ATimeSingleExp node, Q question) throws Throwable
 	{
 		defaultSSingleExp(node, question);
 	}
@@ -515,7 +506,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AIdentifierSingleExp} node from {@link AIdentifierSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link AIdentifierSingleExp} node
 	*/
-	public void caseAIdentifierSingleExp(AIdentifierSingleExp node, Q question)
+	public void caseAIdentifierSingleExp(AIdentifierSingleExp node, Q question) throws Throwable
 	{
 		defaultSSingleExp(node, question);
 	}
@@ -525,7 +516,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ASystemTimeSingleExp} node from {@link ASystemTimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ASystemTimeSingleExp} node
 	*/
-	public void caseASystemTimeSingleExp(ASystemTimeSingleExp node, Q question)
+	public void caseASystemTimeSingleExp(ASystemTimeSingleExp node, Q question) throws Throwable
 	{
 		defaultSSingleExp(node, question);
 	}
@@ -535,7 +526,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PTimeunit} node from {@link PTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link PTimeunit} node
 	*/
-	public void defaultPTimeunit(PTimeunit node, Q question)
+	public void defaultPTimeunit(PTimeunit node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -545,7 +536,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AUsTimeunit} node from {@link AUsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AUsTimeunit} node
 	*/
-	public void caseAUsTimeunit(AUsTimeunit node, Q question)
+	public void caseAUsTimeunit(AUsTimeunit node, Q question) throws Throwable
 	{
 		defaultPTimeunit(node, question);
 	}
@@ -555,7 +546,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AMsTimeunit} node from {@link AMsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMsTimeunit} node
 	*/
-	public void caseAMsTimeunit(AMsTimeunit node, Q question)
+	public void caseAMsTimeunit(AMsTimeunit node, Q question) throws Throwable
 	{
 		defaultPTimeunit(node, question);
 	}
@@ -565,7 +556,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ASTimeunit} node from {@link ASTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link ASTimeunit} node
 	*/
-	public void caseASTimeunit(ASTimeunit node, Q question)
+	public void caseASTimeunit(ASTimeunit node, Q question) throws Throwable
 	{
 		defaultPTimeunit(node, question);
 	}
@@ -575,7 +566,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AMTimeunit} node from {@link AMTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMTimeunit} node
 	*/
-	public void caseAMTimeunit(AMTimeunit node, Q question)
+	public void caseAMTimeunit(AMTimeunit node, Q question) throws Throwable
 	{
 		defaultPTimeunit(node, question);
 	}
@@ -585,7 +576,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AHTimeunit} node from {@link AHTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AHTimeunit} node
 	*/
-	public void caseAHTimeunit(AHTimeunit node, Q question)
+	public void caseAHTimeunit(AHTimeunit node, Q question) throws Throwable
 	{
 		defaultPTimeunit(node, question);
 	}
@@ -595,7 +586,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PStm} node from {@link PStm#apply(IAnalysis)}.
 	* @param node the calling {@link PStm} node
 	*/
-	public void defaultPStm(PStm node, Q question)
+	public void defaultPStm(PStm node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -605,7 +596,17 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AWhenStm} node from {@link AWhenStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWhenStm} node
 	*/
-	public void caseAWhenStm(AWhenStm node, Q question)
+	public void caseAWhenStm(AWhenStm node, Q question) throws Throwable
+	{
+		defaultPStm(node, question);
+	}
+
+
+	/**
+	* Called by the {@link AOnceStm} node from {@link AOnceStm#apply(IAnalysis)}.
+	* @param node the calling {@link AOnceStm} node
+	*/
+	public void caseAOnceStm(AOnceStm node, Q question) throws Throwable
 	{
 		defaultPStm(node, question);
 	}
@@ -615,7 +616,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AAssignStm} node from {@link AAssignStm#apply(IAnalysis)}.
 	* @param node the calling {@link AAssignStm} node
 	*/
-	public void caseAAssignStm(AAssignStm node, Q question)
+	public void caseAAssignStm(AAssignStm node, Q question) throws Throwable
 	{
 		defaultPStm(node, question);
 	}
@@ -625,7 +626,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ARevertStm} node from {@link ARevertStm#apply(IAnalysis)}.
 	* @param node the calling {@link ARevertStm} node
 	*/
-	public void caseARevertStm(ARevertStm node, Q question)
+	public void caseARevertStm(ARevertStm node, Q question) throws Throwable
 	{
 		defaultPStm(node, question);
 	}
@@ -635,7 +636,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link SMessageStm} node from {@link SMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link SMessageStm} node
 	*/
-	public void defaultSMessageStm(SMessageStm node, Q question)
+	public void defaultSMessageStm(SMessageStm node, Q question) throws Throwable
 	{
 		defaultPStm(node, question);
 	}
@@ -645,7 +646,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AQuitStm} node from {@link AQuitStm#apply(IAnalysis)}.
 	* @param node the calling {@link AQuitStm} node
 	*/
-	public void caseAQuitStm(AQuitStm node, Q question)
+	public void caseAQuitStm(AQuitStm node, Q question) throws Throwable
 	{
 		defaultPStm(node, question);
 	}
@@ -655,7 +656,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link APrintMessageStm} node from {@link APrintMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link APrintMessageStm} node
 	*/
-	public void caseAPrintMessageStm(APrintMessageStm node, Q question)
+	public void caseAPrintMessageStm(APrintMessageStm node, Q question) throws Throwable
 	{
 		defaultSMessageStm(node, question);
 	}
@@ -665,7 +666,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AErrorMessageStm} node from {@link AErrorMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AErrorMessageStm} node
 	*/
-	public void caseAErrorMessageStm(AErrorMessageStm node, Q question)
+	public void caseAErrorMessageStm(AErrorMessageStm node, Q question) throws Throwable
 	{
 		defaultSMessageStm(node, question);
 	}
@@ -675,7 +676,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AWarnMessageStm} node from {@link AWarnMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWarnMessageStm} node
 	*/
-	public void caseAWarnMessageStm(AWarnMessageStm node, Q question)
+	public void caseAWarnMessageStm(AWarnMessageStm node, Q question) throws Throwable
 	{
 		defaultSMessageStm(node, question);
 	}
@@ -685,7 +686,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PType} node from {@link PType#apply(IAnalysis)}.
 	* @param node the calling {@link PType} node
 	*/
-	public void defaultPType(PType node, Q question)
+	public void defaultPType(PType node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -695,7 +696,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ARealType} node from {@link ARealType#apply(IAnalysis)}.
 	* @param node the calling {@link ARealType} node
 	*/
-	public void caseARealType(ARealType node, Q question)
+	public void caseARealType(ARealType node, Q question) throws Throwable
 	{
 		defaultPType(node, question);
 	}
@@ -705,7 +706,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AIntType} node from {@link AIntType#apply(IAnalysis)}.
 	* @param node the calling {@link AIntType} node
 	*/
-	public void caseAIntType(AIntType node, Q question)
+	public void caseAIntType(AIntType node, Q question) throws Throwable
 	{
 		defaultPType(node, question);
 	}
@@ -715,7 +716,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ABoolType} node from {@link ABoolType#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolType} node
 	*/
-	public void caseABoolType(ABoolType node, Q question)
+	public void caseABoolType(ABoolType node, Q question) throws Throwable
 	{
 		defaultPType(node, question);
 	}
@@ -725,7 +726,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link ATimeType} node from {@link ATimeType#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeType} node
 	*/
-	public void caseATimeType(ATimeType node, Q question)
+	public void caseATimeType(ATimeType node, Q question) throws Throwable
 	{
 		defaultPType(node, question);
 	}
@@ -735,7 +736,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link PInclude} node from {@link PInclude#apply(IAnalysis)}.
 	* @param node the calling {@link PInclude} node
 	*/
-	public void defaultPInclude(PInclude node, Q question)
+	public void defaultPInclude(PInclude node, Q question) throws Throwable
 	{
 		defaultINode(node, question);
 	}
@@ -745,7 +746,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link AScriptInclude} node from {@link AScriptInclude#apply(IAnalysis)}.
 	* @param node the calling {@link AScriptInclude} node
 	*/
-	public void caseAScriptInclude(AScriptInclude node, Q question)
+	public void caseAScriptInclude(AScriptInclude node, Q question) throws Throwable
 	{
 		defaultPInclude(node, question);
 	}
@@ -755,7 +756,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link INode} node from {@link INode#apply(IAnalysis)}.
 	* @param node the calling {@link INode} node
 	*/
-	public void defaultINode(INode node, Q question)
+	public void defaultINode(INode node, Q question) throws Throwable
 	{
 		//nothing to do
 	}
@@ -765,7 +766,7 @@ public class QuestionAdaptor<Q> implements IQuestion<Q>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public void defaultIToken(IToken node, Q question)
+	public void defaultIToken(IToken node, Q question) throws Throwable
 	{
 		//nothing to do
 	}

@@ -9,7 +9,8 @@ options {
 }
 
 tokens{
-  WHEN = 'when';  
+  WHEN = 'when';
+  ONCE = 'once';   
 //  FOR = 'for';
   INCLUDE = 'include';
   TIME = 'time';
@@ -266,6 +267,7 @@ root returns [List<INode> nodes]
 toplevelStatement returns [INode value]
   : includeStatement ';' {$value = $includeStatement.value;}
   | whenStatement ';' {$value = $whenStatement.value;}
+  | onceStatement ';' {$value = $onceStatement.value;}
   ;
 
 includeStatement returns [AScriptInclude value]
@@ -283,6 +285,16 @@ whenStatement returns [AWhenStm value]
       $value = new AWhenStm($expression.value,$statementList.valueList,$revertStatementList.valueList, $timeliteral.value);
     }       
   ;
+  
+onceStatement returns [AOnceStm value]
+  :ONCE expression (FOR timeliteral)? DO
+    '('  statementList ')'
+   (AFTER '(' revertStatementList ')')?  
+    {
+      $value = new AOnceStm($expression.value,$statementList.valueList,$revertStatementList.valueList, $timeliteral.value);
+    }       
+  ;
+
 statementList returns [List<PStm> valueList]
  @init
     {

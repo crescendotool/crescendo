@@ -25,6 +25,7 @@ package org.destecs.script.ast.types;
 import org.destecs.script.ast.types.ATimeType;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.types.PTypeBase;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.types.EType;
@@ -32,6 +33,7 @@ import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -55,17 +57,6 @@ public class ATimeType extends PTypeBase
 	}
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ATimeType)
-	 return toString().equals(o.toString());
-	return false; }
-	
 	/**
 	 * Creates a deep clone of this {@link ATimeType} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -78,6 +69,59 @@ public class ATimeType extends PTypeBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link ATimeType} node.
+	 * @return a deep clone of this {@link ATimeType} node
+	 */
+	public ATimeType clone()
+	{
+		return new ATimeType(
+		);
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof ATimeType)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns the {@link EType} corresponding to the
+	 * type of this {@link EType} node.
+	 * @return the {@link EType} for this node
+	 */
+	@Override
+	public EType kindPType()
+	{
+		return EType.TIME;
 	}
 
 
@@ -102,34 +146,11 @@ public class ATimeType extends PTypeBase
 
 
 	/**
-	 * Returns the {@link EType} corresponding to the
-	 * type of this {@link EType} node.
-	 * @return the {@link EType} for this node
-	 */
-	@Override
-	public EType kindPType()
-	{
-		return EType.TIME;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link ATimeType} node.
-	 * @return a deep clone of this {@link ATimeType} node
-	 */
-	public ATimeType clone()
-	{
-		return new ATimeType(
-		);
-	}
-
-
-	/**
 	* Calls the {@link IAnalysis#caseATimeType(ATimeType)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link ATimeType} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseATimeType(this);
 	}
@@ -140,7 +161,7 @@ public class ATimeType extends PTypeBase
 	* @param caller the {@link IAnswer} to which this {@link ATimeType} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseATimeType(this);
 	}
@@ -152,7 +173,7 @@ public class ATimeType extends PTypeBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseATimeType(this, question);
 	}
@@ -164,7 +185,7 @@ public class ATimeType extends PTypeBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseATimeType(this, question);
 	}

@@ -24,11 +24,13 @@ package org.destecs.script.ast.expressions;
 
 import org.destecs.script.ast.expressions.SSingleExp;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.ESingleExp;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.expressions.PExpBase;
 import org.destecs.script.ast.expressions.EExp;
+import java.util.HashMap;
 
 
 /**
@@ -42,6 +44,7 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 
 
 
+
 	/**
 	 * Creates a new {@link SSingleExpBase} node with no children.
 	 */
@@ -51,28 +54,15 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	}
 
 
-
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof SSingleExpBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link SSingleExpBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link SSingleExpBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link SSingleExpBase} node
+	 * Returns the {@link EExp} corresponding to the
+	 * type of this {@link EExp} node.
+	 * @return the {@link EExp} for this node
 	 */
-	public void removeChild(INode child)
+	@Override
+	public EExp kindPExp()
 	{
-		throw new RuntimeException("Not a child.");
+		return EExp.SINGLE;
 	}
 
 
@@ -86,21 +76,6 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	public abstract SSingleExp clone(Map<INode,INode> oldToNewMap);
 
 	/**
-	 * Returns a deep clone of this {@link SSingleExpBase} node.
-	 * @return a deep clone of this {@link SSingleExpBase} node
-	 */
-	@Override
-	public abstract SSingleExp clone();
-
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
-
-	/**
 	 * Returns the {@link ESingleExp} corresponding to the
 	 * type of this {@link ESingleExp} node.
 	 * @return the {@link ESingleExp} for this node
@@ -108,14 +83,60 @@ public abstract class SSingleExpBase extends PExpBase implements SSingleExp
 	public abstract ESingleExp kindSSingleExp();
 
 	/**
-	 * Returns the {@link EExp} corresponding to the
-	 * type of this {@link EExp} node.
-	 * @return the {@link EExp} for this node
+	 * Returns a deep clone of this {@link SSingleExpBase} node.
+	 * @return a deep clone of this {@link SSingleExpBase} node
 	 */
 	@Override
-	public EExp kindPExp()
+	public abstract SSingleExp clone();
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
 	{
-		return EExp.SINGLE;
+		if (o != null && o instanceof SSingleExpBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link SSingleExpBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link SSingleExpBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link SSingleExpBase} node
+	 */
+	public void removeChild(INode child)
+	{
+		throw new RuntimeException("Not a child.");
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString();
+
 	}
 
 

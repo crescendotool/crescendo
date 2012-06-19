@@ -22,16 +22,18 @@
 package org.destecs.script.ast.expressions;
 
 
-import org.destecs.script.ast.expressions.PExp;
-import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
 import org.destecs.script.ast.expressions.ABinaryExp;
+import java.lang.Boolean;
+import java.lang.String;
+import org.destecs.script.ast.analysis.intf.IAnswer;
+import java.util.HashMap;
+import org.destecs.script.ast.expressions.PExp;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.expressions.PExpBase;
 import org.destecs.script.ast.expressions.EExp;
-import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.PBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
@@ -51,7 +53,17 @@ public class ABinaryExp extends PExpBase
 
 
 	/**
+	 * Creates a new {@link ABinaryExp} node with no children.
+	 */
+	public ABinaryExp()
+	{
+
+	}
+
+
+	/**
 	* Creates a new {@code ABinaryExp} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param left_ the {@link PExp} node for the {@code left} child of this {@link ABinaryExp} node
 	* @param operator_ the {@link PBinop} node for the {@code operator} child of this {@link ABinaryExp} node
@@ -68,26 +80,6 @@ public class ABinaryExp extends PExpBase
 
 
 	/**
-	 * Creates a new {@link ABinaryExp} node with no children.
-	 */
-	public ABinaryExp()
-	{
-
-	}
-
-
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ABinaryExp)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
 	 * Returns the {@link EExp} corresponding to the
 	 * type of this {@link EExp} node.
 	 * @return the {@link EExp} for this node
@@ -99,10 +91,37 @@ public class ABinaryExp extends PExpBase
 	}
 
 
+	/**
+	 * Returns a deep clone of this {@link ABinaryExp} node.
+	 * @return a deep clone of this {@link ABinaryExp} node
+	 */
+	public ABinaryExp clone()
+	{
+		return new ABinaryExp(
+			cloneNode(_left),
+			cloneNode(_operator),
+			cloneNode(_right)
+		);
+	}
+
+
 
 	public String toString()
 	{
 		return (_left!=null?_left.toString():this.getClass().getSimpleName())+ (_operator!=null?_operator.toString():this.getClass().getSimpleName())+ (_right!=null?_right.toString():this.getClass().getSimpleName());
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof ABinaryExp)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -121,6 +140,26 @@ public class ABinaryExp extends PExpBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_left",this._left);
+		fields.put("_operator",this._operator);
+		fields.put("_right",this._right);
+		return fields;
 	}
 
 
@@ -149,20 +188,6 @@ public class ABinaryExp extends PExpBase
 		}
 
 		throw new RuntimeException("Not a child.");
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link ABinaryExp} node.
-	 * @return a deep clone of this {@link ABinaryExp} node
-	 */
-	public ABinaryExp clone()
-	{
-		return new ABinaryExp(
-			cloneNode(_left),
-			cloneNode(_operator),
-			cloneNode(_right)
-		);
 	}
 
 
@@ -258,7 +283,7 @@ public class ABinaryExp extends PExpBase
 	* @param analysis the {@link IAnalysis} to which this {@link ABinaryExp} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseABinaryExp(this);
 	}
@@ -269,7 +294,7 @@ public class ABinaryExp extends PExpBase
 	* @param caller the {@link IAnswer} to which this {@link ABinaryExp} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseABinaryExp(this);
 	}
@@ -281,7 +306,7 @@ public class ABinaryExp extends PExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseABinaryExp(this, question);
 	}
@@ -293,7 +318,7 @@ public class ABinaryExp extends PExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseABinaryExp(this, question);
 	}

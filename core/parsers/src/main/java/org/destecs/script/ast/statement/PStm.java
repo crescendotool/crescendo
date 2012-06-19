@@ -23,10 +23,11 @@ package org.destecs.script.ast.statement;
 
 
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.statement.EStm;
-import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import org.destecs.script.ast.node.NodeEnum;
 import org.destecs.script.ast.statement.PStm;
 
 
@@ -36,27 +37,17 @@ import org.destecs.script.ast.statement.PStm;
 *
 */
 public interface PStm extends INode
-{
-	public String toString();
+{	/**
+	 * Returns a deep clone of this {@link PStmBase} node.
+	 * @return a deep clone of this {@link PStmBase} node
+	 */
+	public abstract PStm clone();
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
 	 * type of this {@link INode} node.
 	 * @return the {@link NodeEnum} for this node
 	 */
 	public NodeEnum kindNode();
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	public abstract EStm kindPStm();
-	/**
-	 * Creates a deep clone of this {@link PStmBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PStmBase} node
-	 */
-	public abstract PStm clone(Map<INode,INode> oldToNewMap);
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PStmBase} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -66,9 +57,29 @@ public interface PStm extends INode
 	 */
 	public void removeChild(INode child);
 	/**
-	 * Returns a deep clone of this {@link PStmBase} node.
+	 * Creates a deep clone of this {@link PStmBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link PStmBase} node
 	 */
-	public abstract PStm clone();
+	public abstract PStm clone(Map<INode,INode> oldToNewMap);
+
+	public String toString();
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	public abstract EStm kindPStm();
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
 
 }

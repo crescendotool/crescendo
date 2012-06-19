@@ -19,6 +19,7 @@ import org.destecs.script.ast.expressions.PExp;
 import org.destecs.script.ast.expressions.binop.ALessEqualBinop;
 import org.destecs.script.ast.statement.AAssignStm;
 import org.destecs.script.ast.statement.AErrorMessageStm;
+import org.destecs.script.ast.statement.AOnceStm;
 import org.destecs.script.ast.statement.APrintMessageStm;
 import org.destecs.script.ast.statement.AQuitStm;
 import org.destecs.script.ast.statement.ARevertStm;
@@ -73,6 +74,10 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	ExpressionEvaluator expEval;
 	Map<AWhenStm, Set<VariableValue>> variableCache = new Hashtable<AWhenStm, Set<VariableValue>>();
 	Map<AWhenStm, PExp> whenForExp = new Hashtable<AWhenStm, PExp>();
+	
+	Map<AOnceStm, Set<VariableValue>> variableCacheOnce = new Hashtable<AOnceStm, Set<VariableValue>>();
+	Map<AOnceStm, PExp> onceForExp = new Hashtable<AOnceStm, PExp>();
+	Set<AOnceStm> disabledOnce = new HashSet<AOnceStm>();
 
 	public ScriptEvaluator(ISimulatorControl simulator)
 	{
@@ -80,8 +85,9 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		expEval = new ExpressionEvaluator(simulator);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public void caseAWhenStm(AWhenStm node)
+	public void caseAWhenStm(AWhenStm node) throws Throwable
 	{
 		Value v = node.getTest().apply(expEval);
 
@@ -111,8 +117,52 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			}
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void caseAOnceStm(AOnceStm node) throws Throwable {
+		
+		if(disabledOnce.contains(node))
+		{
+			return;
+		}
+		
+		Value v = node.getTest().apply(expEval);
 
-	private boolean checkWhenFor(AWhenStm node)
+		if (v instanceof BooleanValue && ((BooleanValue) v).value
+				|| checkOnceFor(node))
+		{
+			if (node.getFor() != null && onceForExp.get(node) == null)
+			{
+				Double expireTime = ((DoubleValue) node.getFor().apply(expEval)).value
+						+ ((DoubleValue) new ASystemTimeSingleExp().apply(expEval)).value;
+				onceForExp.put(node, new ABinaryExp(new ASystemTimeSingleExp(), new ALessEqualBinop(), new ANumericalSingleExp(expireTime)));
+			}
+			for (PStm stm : node.getThen())
+			{
+				stm.apply(this);
+			}
+			
+			if(node.getAfter().isEmpty())
+			{
+				disabledOnce.add(node);
+			}
+		} else
+		{
+			onceForExp.remove(node);
+			if (variableCacheOnce.containsKey(node))
+			{
+				for (PStm stm : node.getAfter())
+				{
+					stm.apply(this);
+				}
+				variableCacheOnce.remove(node);
+				disabledOnce.add(node);
+			}
+		}
+	}
+
+	private boolean checkWhenFor(AWhenStm node) throws Throwable
 	{
 		PExp forExp = whenForExp.get(node);
 		if (forExp != null)
@@ -122,9 +172,20 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		}
 		return false;
 	}
+	
+	private boolean checkOnceFor(AOnceStm node) throws Throwable
+	{
+		PExp forExp = onceForExp.get(node);
+		if (forExp != null)
+		{
+			Value v = forExp.apply(expEval);
+			return (v instanceof BooleanValue && ((BooleanValue) v).value);
+		}
+		return false;
+	}
 
 	@Override
-	public void caseAAssignStm(AAssignStm node)
+	public void caseAAssignStm(AAssignStm node) throws Throwable
 	{
 		Value v = null;
 		try

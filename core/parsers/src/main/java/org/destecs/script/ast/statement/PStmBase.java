@@ -24,10 +24,12 @@ package org.destecs.script.ast.statement;
 
 import org.destecs.script.ast.node.Node;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.statement.EStm;
-import org.destecs.script.ast.node.NodeEnum;
 import java.lang.String;
+import org.destecs.script.ast.node.NodeEnum;
+import java.util.HashMap;
 import org.destecs.script.ast.statement.PStm;
 
 
@@ -41,6 +43,8 @@ public abstract class PStmBase extends Node implements PStm
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link PStmBase} node with no children.
 	 */
@@ -50,26 +54,12 @@ public abstract class PStmBase extends Node implements PStm
 	}
 
 
-
-
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
+	 * Returns a deep clone of this {@link PStmBase} node.
+	 * @return a deep clone of this {@link PStmBase} node
+	 */
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof PStmBase)
-	 return toString().equals(o.toString());
-	return false; }
-	
-
-	public String toString()
-	{
-		return super.toString();
-
-	}
-
+	public abstract PStm clone();
 
 	/**
 	 * Returns the {@link NodeEnum} corresponding to the
@@ -82,22 +72,6 @@ public abstract class PStmBase extends Node implements PStm
 		return NodeEnum.STM;
 	}
 
-
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	public abstract EStm kindPStm();
-
-	/**
-	 * Creates a deep clone of this {@link PStmBase} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link PStmBase} node
-	 */
-	@Override
-	public abstract PStm clone(Map<INode,INode> oldToNewMap);
 
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link PStmBase} node.
@@ -113,11 +87,58 @@ public abstract class PStmBase extends Node implements PStm
 
 
 	/**
-	 * Returns a deep clone of this {@link PStmBase} node.
+	 * Creates a deep clone of this {@link PStmBase} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
 	 * @return a deep clone of this {@link PStmBase} node
 	 */
 	@Override
-	public abstract PStm clone();
+	public abstract PStm clone(Map<INode,INode> oldToNewMap);
+
+
+	public String toString()
+	{
+		return super.toString();
+
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	public abstract EStm kindPStm();
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof PStmBase)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
 
 
 }

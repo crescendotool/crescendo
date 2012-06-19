@@ -22,17 +22,19 @@
 package org.destecs.script.ast.expressions;
 
 
-import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
-import java.lang.Double;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.ESingleExp;
-import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.SSingleExpBase;
-import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
-import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
+import java.lang.Double;
+import org.destecs.script.ast.analysis.intf.IQuestion;
+import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
 
 /**
@@ -46,19 +48,6 @@ public class ANumericalSingleExp extends SSingleExpBase
 
 	private Double _value;
 
-	/**
-	* Creates a new {@code ANumericalSingleExp} node with the given nodes as children.
-	* The basic child nodes are removed from their previous parents.
-	* @param value_ the {@link Double} node for the {@code value} child of this {@link ANumericalSingleExp} node
-	*/
-	public ANumericalSingleExp(Double value_)
-	{
-		super();
-		this.setValue(value_);
-
-	}
-
-
 
 	/**
 	 * Creates a new {@link ANumericalSingleExp} node with no children.
@@ -69,33 +58,17 @@ public class ANumericalSingleExp extends SSingleExpBase
 	}
 
 
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ANumericalSingleExp)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
+	* Creates a new {@code ANumericalSingleExp} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
+	* The basic child nodes are removed from their previous parents.
+	* @param value_ the {@link Double} node for the {@code value} child of this {@link ANumericalSingleExp} node
+	*/
+	public ANumericalSingleExp(Double value_)
 	{
-		return ESingleExp.NUMERICAL;
-	}
+		super();
+		this.setValue(value_);
 
-
-
-	public String toString()
-	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -108,6 +81,43 @@ public class ANumericalSingleExp extends SSingleExpBase
 		return new ANumericalSingleExp(
 			_value
 		);
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_value",this._value);
+		return fields;
+	}
+
+
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName());
+	}
+
+
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
+	{
+		return ESingleExp.NUMERICAL;
 	}
 
 
@@ -141,6 +151,19 @@ public class ANumericalSingleExp extends SSingleExpBase
 
 
 	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof ANumericalSingleExp)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
 	 * Sets the {@code _value} child of this {@link ANumericalSingleExp} node.
 	 * @param value the new {@code _value} child of this {@link ANumericalSingleExp} node
 	*/
@@ -164,7 +187,7 @@ public class ANumericalSingleExp extends SSingleExpBase
 	* @param analysis the {@link IAnalysis} to which this {@link ANumericalSingleExp} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseANumericalSingleExp(this);
 	}
@@ -175,7 +198,7 @@ public class ANumericalSingleExp extends SSingleExpBase
 	* @param caller the {@link IAnswer} to which this {@link ANumericalSingleExp} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseANumericalSingleExp(this);
 	}
@@ -187,7 +210,7 @@ public class ANumericalSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseANumericalSingleExp(this, question);
 	}
@@ -199,7 +222,7 @@ public class ANumericalSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseANumericalSingleExp(this, question);
 	}

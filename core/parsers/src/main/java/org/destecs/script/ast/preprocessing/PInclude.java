@@ -23,6 +23,7 @@ package org.destecs.script.ast.preprocessing;
 
 
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.preprocessing.PInclude;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
@@ -37,13 +38,17 @@ import org.destecs.script.ast.preprocessing.EInclude;
 */
 public interface PInclude extends INode
 {	/**
-	 * Removes the {@link INode} {@code child} as a child of this {@link PIncludeBase} node.
-	 * Do not call this method with any graph fields of this node. This will cause any child's
-	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
-	 * @param child the child node to be removed from this {@link PIncludeBase} node
-	 * @throws RuntimeException if {@code child} is not a child of this {@link PIncludeBase} node
+	 * Returns the {@link EInclude} corresponding to the
+	 * type of this {@link EInclude} node.
+	 * @return the {@link EInclude} for this node
 	 */
-	public void removeChild(INode child);
+	public abstract EInclude kindPInclude();
+	/**
+	 * Returns the {@link NodeEnum} corresponding to the
+	 * type of this {@link INode} node.
+	 * @return the {@link NodeEnum} for this node
+	 */
+	public NodeEnum kindNode();
 	/**
 	 * Creates a deep clone of this {@link PIncludeBase} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
@@ -52,23 +57,29 @@ public interface PInclude extends INode
 	 */
 	public abstract PInclude clone(Map<INode,INode> oldToNewMap);
 	/**
+	 * Removes the {@link INode} {@code child} as a child of this {@link PIncludeBase} node.
+	 * Do not call this method with any graph fields of this node. This will cause any child's
+	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
+	 * @param child the child node to be removed from this {@link PIncludeBase} node
+	 * @throws RuntimeException if {@code child} is not a child of this {@link PIncludeBase} node
+	 */
+	public void removeChild(INode child);
+	/**
 	 * Returns a deep clone of this {@link PIncludeBase} node.
 	 * @return a deep clone of this {@link PIncludeBase} node
 	 */
 	public abstract PInclude clone();
-	/**
-	 * Returns the {@link NodeEnum} corresponding to the
-	 * type of this {@link INode} node.
-	 * @return the {@link NodeEnum} for this node
-	 */
-	public NodeEnum kindNode();
-	/**
-	 * Returns the {@link EInclude} corresponding to the
-	 * type of this {@link EInclude} node.
-	 * @return the {@link EInclude} for this node
-	 */
-	public abstract EInclude kindPInclude();
 
 	public String toString();
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	public Map<String,Object> getChildren(Boolean includeInheritedFields);
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	public boolean equals(Object o);
 
 }

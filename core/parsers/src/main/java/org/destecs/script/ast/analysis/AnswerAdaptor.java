@@ -42,9 +42,11 @@ import org.destecs.script.ast.types.PType;
 import org.destecs.script.ast.expressions.binop.PBinop;
 import org.destecs.script.ast.expressions.binop.APlusBinop;
 import org.destecs.script.ast.expressions.binop.ADifferentBinop;
-import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.expressions.AHTimeunit;
+import org.destecs.script.ast.ACtDomain;
 import org.destecs.script.ast.types.ATimeType;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import org.destecs.script.ast.statement.AOnceStm;
 import org.destecs.script.ast.expressions.binop.AEqualBinop;
 import org.destecs.script.ast.expressions.binop.AGreaterThanBinop;
 import java.lang.Integer;
@@ -66,8 +68,8 @@ import org.destecs.script.ast.expressions.binop.AOrBinop;
 import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.node.tokens.TInt;
 import org.destecs.script.ast.expressions.unop.AMinusUnop;
-import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.expressions.binop.ADivBinop;
+import org.destecs.script.ast.expressions.binop.AGreaterEqualBinop;
 import org.destecs.script.ast.statement.AWhenStm;
 import org.destecs.script.ast.expressions.unop.PUnop;
 import org.destecs.script.ast.expressions.binop.AAndBinop;
@@ -110,22 +112,11 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	}
 
 
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AnswerAdaptor)
-	 return toString().equals(o.toString());
-	return false; }
-	
 	/**
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public A caseTInt(TInt node)
+	public A caseTInt(TInt node) throws Throwable
 	{
 		return defaultIToken(node);
 	}
@@ -135,7 +126,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public A caseDouble(Double node)
+	public A caseDouble(Double node) throws Throwable
 	{
 		return null;
 	}
@@ -145,7 +136,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public A caseBoolean(Boolean node)
+	public A caseBoolean(Boolean node) throws Throwable
 	{
 		return null;
 	}
@@ -155,7 +146,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public A caseInteger(Integer node)
+	public A caseInteger(Integer node) throws Throwable
 	{
 		return null;
 	}
@@ -165,7 +156,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public A caseString(String node)
+	public A caseString(String node) throws Throwable
 	{
 		return null;
 	}
@@ -175,7 +166,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public A caseLong(Long node)
+	public A caseLong(Long node) throws Throwable
 	{
 		return null;
 	}
@@ -185,7 +176,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PUnop} node from {@link PUnop#apply(IAnalysis)}.
 	* @param node the calling {@link PUnop} node
 	*/
-	public A defaultPUnop(PUnop node)
+	public A defaultPUnop(PUnop node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -195,7 +186,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AAddUnop} node from {@link AAddUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAddUnop} node
 	*/
-	public A caseAAddUnop(AAddUnop node)
+	public A caseAAddUnop(AAddUnop node) throws Throwable
 	{
 		return defaultPUnop(node);
 	}
@@ -205,7 +196,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AMinusUnop} node from {@link AMinusUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusUnop} node
 	*/
-	public A caseAMinusUnop(AMinusUnop node)
+	public A caseAMinusUnop(AMinusUnop node) throws Throwable
 	{
 		return defaultPUnop(node);
 	}
@@ -215,7 +206,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AAbsUnop} node from {@link AAbsUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AAbsUnop} node
 	*/
-	public A caseAAbsUnop(AAbsUnop node)
+	public A caseAAbsUnop(AAbsUnop node) throws Throwable
 	{
 		return defaultPUnop(node);
 	}
@@ -225,7 +216,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AFloorUnop} node from {@link AFloorUnop#apply(IAnalysis)}.
 	* @param node the calling {@link AFloorUnop} node
 	*/
-	public A caseAFloorUnop(AFloorUnop node)
+	public A caseAFloorUnop(AFloorUnop node) throws Throwable
 	{
 		return defaultPUnop(node);
 	}
@@ -235,7 +226,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ACeilUnop} node from {@link ACeilUnop#apply(IAnalysis)}.
 	* @param node the calling {@link ACeilUnop} node
 	*/
-	public A caseACeilUnop(ACeilUnop node)
+	public A caseACeilUnop(ACeilUnop node) throws Throwable
 	{
 		return defaultPUnop(node);
 	}
@@ -245,7 +236,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PBinop} node from {@link PBinop#apply(IAnalysis)}.
 	* @param node the calling {@link PBinop} node
 	*/
-	public A defaultPBinop(PBinop node)
+	public A defaultPBinop(PBinop node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -255,7 +246,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link APlusBinop} node from {@link APlusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link APlusBinop} node
 	*/
-	public A caseAPlusBinop(APlusBinop node)
+	public A caseAPlusBinop(APlusBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -265,7 +256,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AMinusBinop} node from {@link AMinusBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMinusBinop} node
 	*/
-	public A caseAMinusBinop(AMinusBinop node)
+	public A caseAMinusBinop(AMinusBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -275,7 +266,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AMultiplyBinop} node from {@link AMultiplyBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AMultiplyBinop} node
 	*/
-	public A caseAMultiplyBinop(AMultiplyBinop node)
+	public A caseAMultiplyBinop(AMultiplyBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -285,7 +276,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ADivideBinop} node from {@link ADivideBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivideBinop} node
 	*/
-	public A caseADivideBinop(ADivideBinop node)
+	public A caseADivideBinop(ADivideBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -295,7 +286,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ADivBinop} node from {@link ADivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADivBinop} node
 	*/
-	public A caseADivBinop(ADivBinop node)
+	public A caseADivBinop(ADivBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -305,7 +296,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AModBinop} node from {@link AModBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AModBinop} node
 	*/
-	public A caseAModBinop(AModBinop node)
+	public A caseAModBinop(AModBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -315,7 +306,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ALessThanBinop} node from {@link ALessThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessThanBinop} node
 	*/
-	public A caseALessThanBinop(ALessThanBinop node)
+	public A caseALessThanBinop(ALessThanBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -325,7 +316,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ALessEqualBinop} node from {@link ALessEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ALessEqualBinop} node
 	*/
-	public A caseALessEqualBinop(ALessEqualBinop node)
+	public A caseALessEqualBinop(ALessEqualBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -335,7 +326,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AGreaterThanBinop} node from {@link AGreaterThanBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterThanBinop} node
 	*/
-	public A caseAGreaterThanBinop(AGreaterThanBinop node)
+	public A caseAGreaterThanBinop(AGreaterThanBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -345,7 +336,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AGreaterEqualBinop} node from {@link AGreaterEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AGreaterEqualBinop} node
 	*/
-	public A caseAGreaterEqualBinop(AGreaterEqualBinop node)
+	public A caseAGreaterEqualBinop(AGreaterEqualBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -355,7 +346,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AEqualBinop} node from {@link AEqualBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEqualBinop} node
 	*/
-	public A caseAEqualBinop(AEqualBinop node)
+	public A caseAEqualBinop(AEqualBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -365,7 +356,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ADifferentBinop} node from {@link ADifferentBinop#apply(IAnalysis)}.
 	* @param node the calling {@link ADifferentBinop} node
 	*/
-	public A caseADifferentBinop(ADifferentBinop node)
+	public A caseADifferentBinop(ADifferentBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -375,7 +366,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AOrBinop} node from {@link AOrBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AOrBinop} node
 	*/
-	public A caseAOrBinop(AOrBinop node)
+	public A caseAOrBinop(AOrBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -385,7 +376,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AAndBinop} node from {@link AAndBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AAndBinop} node
 	*/
-	public A caseAAndBinop(AAndBinop node)
+	public A caseAAndBinop(AAndBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -395,7 +386,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AImpliesBinop} node from {@link AImpliesBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AImpliesBinop} node
 	*/
-	public A caseAImpliesBinop(AImpliesBinop node)
+	public A caseAImpliesBinop(AImpliesBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -405,7 +396,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AEquivBinop} node from {@link AEquivBinop#apply(IAnalysis)}.
 	* @param node the calling {@link AEquivBinop} node
 	*/
-	public A caseAEquivBinop(AEquivBinop node)
+	public A caseAEquivBinop(AEquivBinop node) throws Throwable
 	{
 		return defaultPBinop(node);
 	}
@@ -415,7 +406,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PDomain} node from {@link PDomain#apply(IAnalysis)}.
 	* @param node the calling {@link PDomain} node
 	*/
-	public A defaultPDomain(PDomain node)
+	public A defaultPDomain(PDomain node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -425,7 +416,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ADeDomain} node from {@link ADeDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ADeDomain} node
 	*/
-	public A caseADeDomain(ADeDomain node)
+	public A caseADeDomain(ADeDomain node) throws Throwable
 	{
 		return defaultPDomain(node);
 	}
@@ -435,7 +426,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ACtDomain} node from {@link ACtDomain#apply(IAnalysis)}.
 	* @param node the calling {@link ACtDomain} node
 	*/
-	public A caseACtDomain(ACtDomain node)
+	public A caseACtDomain(ACtDomain node) throws Throwable
 	{
 		return defaultPDomain(node);
 	}
@@ -445,7 +436,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PExp} node from {@link PExp#apply(IAnalysis)}.
 	* @param node the calling {@link PExp} node
 	*/
-	public A defaultPExp(PExp node)
+	public A defaultPExp(PExp node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -455,7 +446,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link SSingleExp} node from {@link SSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link SSingleExp} node
 	*/
-	public A defaultSSingleExp(SSingleExp node)
+	public A defaultSSingleExp(SSingleExp node) throws Throwable
 	{
 		return defaultPExp(node);
 	}
@@ -465,7 +456,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AUnaryExp} node from {@link AUnaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link AUnaryExp} node
 	*/
-	public A caseAUnaryExp(AUnaryExp node)
+	public A caseAUnaryExp(AUnaryExp node) throws Throwable
 	{
 		return defaultPExp(node);
 	}
@@ -475,7 +466,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ABinaryExp} node from {@link ABinaryExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABinaryExp} node
 	*/
-	public A caseABinaryExp(ABinaryExp node)
+	public A caseABinaryExp(ABinaryExp node) throws Throwable
 	{
 		return defaultPExp(node);
 	}
@@ -485,7 +476,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ABoolSingleExp} node from {@link ABoolSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolSingleExp} node
 	*/
-	public A caseABoolSingleExp(ABoolSingleExp node)
+	public A caseABoolSingleExp(ABoolSingleExp node) throws Throwable
 	{
 		return defaultSSingleExp(node);
 	}
@@ -495,7 +486,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ANumericalSingleExp} node from {@link ANumericalSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ANumericalSingleExp} node
 	*/
-	public A caseANumericalSingleExp(ANumericalSingleExp node)
+	public A caseANumericalSingleExp(ANumericalSingleExp node) throws Throwable
 	{
 		return defaultSSingleExp(node);
 	}
@@ -505,7 +496,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ATimeSingleExp} node from {@link ATimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeSingleExp} node
 	*/
-	public A caseATimeSingleExp(ATimeSingleExp node)
+	public A caseATimeSingleExp(ATimeSingleExp node) throws Throwable
 	{
 		return defaultSSingleExp(node);
 	}
@@ -515,7 +506,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AIdentifierSingleExp} node from {@link AIdentifierSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link AIdentifierSingleExp} node
 	*/
-	public A caseAIdentifierSingleExp(AIdentifierSingleExp node)
+	public A caseAIdentifierSingleExp(AIdentifierSingleExp node) throws Throwable
 	{
 		return defaultSSingleExp(node);
 	}
@@ -525,7 +516,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ASystemTimeSingleExp} node from {@link ASystemTimeSingleExp#apply(IAnalysis)}.
 	* @param node the calling {@link ASystemTimeSingleExp} node
 	*/
-	public A caseASystemTimeSingleExp(ASystemTimeSingleExp node)
+	public A caseASystemTimeSingleExp(ASystemTimeSingleExp node) throws Throwable
 	{
 		return defaultSSingleExp(node);
 	}
@@ -535,7 +526,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PTimeunit} node from {@link PTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link PTimeunit} node
 	*/
-	public A defaultPTimeunit(PTimeunit node)
+	public A defaultPTimeunit(PTimeunit node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -545,7 +536,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AUsTimeunit} node from {@link AUsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AUsTimeunit} node
 	*/
-	public A caseAUsTimeunit(AUsTimeunit node)
+	public A caseAUsTimeunit(AUsTimeunit node) throws Throwable
 	{
 		return defaultPTimeunit(node);
 	}
@@ -555,7 +546,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AMsTimeunit} node from {@link AMsTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMsTimeunit} node
 	*/
-	public A caseAMsTimeunit(AMsTimeunit node)
+	public A caseAMsTimeunit(AMsTimeunit node) throws Throwable
 	{
 		return defaultPTimeunit(node);
 	}
@@ -565,7 +556,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ASTimeunit} node from {@link ASTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link ASTimeunit} node
 	*/
-	public A caseASTimeunit(ASTimeunit node)
+	public A caseASTimeunit(ASTimeunit node) throws Throwable
 	{
 		return defaultPTimeunit(node);
 	}
@@ -575,7 +566,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AMTimeunit} node from {@link AMTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AMTimeunit} node
 	*/
-	public A caseAMTimeunit(AMTimeunit node)
+	public A caseAMTimeunit(AMTimeunit node) throws Throwable
 	{
 		return defaultPTimeunit(node);
 	}
@@ -585,7 +576,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AHTimeunit} node from {@link AHTimeunit#apply(IAnalysis)}.
 	* @param node the calling {@link AHTimeunit} node
 	*/
-	public A caseAHTimeunit(AHTimeunit node)
+	public A caseAHTimeunit(AHTimeunit node) throws Throwable
 	{
 		return defaultPTimeunit(node);
 	}
@@ -595,7 +586,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PStm} node from {@link PStm#apply(IAnalysis)}.
 	* @param node the calling {@link PStm} node
 	*/
-	public A defaultPStm(PStm node)
+	public A defaultPStm(PStm node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -605,7 +596,17 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AWhenStm} node from {@link AWhenStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWhenStm} node
 	*/
-	public A caseAWhenStm(AWhenStm node)
+	public A caseAWhenStm(AWhenStm node) throws Throwable
+	{
+		return defaultPStm(node);
+	}
+
+
+	/**
+	* Called by the {@link AOnceStm} node from {@link AOnceStm#apply(IAnalysis)}.
+	* @param node the calling {@link AOnceStm} node
+	*/
+	public A caseAOnceStm(AOnceStm node) throws Throwable
 	{
 		return defaultPStm(node);
 	}
@@ -615,7 +616,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AAssignStm} node from {@link AAssignStm#apply(IAnalysis)}.
 	* @param node the calling {@link AAssignStm} node
 	*/
-	public A caseAAssignStm(AAssignStm node)
+	public A caseAAssignStm(AAssignStm node) throws Throwable
 	{
 		return defaultPStm(node);
 	}
@@ -625,7 +626,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ARevertStm} node from {@link ARevertStm#apply(IAnalysis)}.
 	* @param node the calling {@link ARevertStm} node
 	*/
-	public A caseARevertStm(ARevertStm node)
+	public A caseARevertStm(ARevertStm node) throws Throwable
 	{
 		return defaultPStm(node);
 	}
@@ -635,7 +636,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link SMessageStm} node from {@link SMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link SMessageStm} node
 	*/
-	public A defaultSMessageStm(SMessageStm node)
+	public A defaultSMessageStm(SMessageStm node) throws Throwable
 	{
 		return defaultPStm(node);
 	}
@@ -645,7 +646,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AQuitStm} node from {@link AQuitStm#apply(IAnalysis)}.
 	* @param node the calling {@link AQuitStm} node
 	*/
-	public A caseAQuitStm(AQuitStm node)
+	public A caseAQuitStm(AQuitStm node) throws Throwable
 	{
 		return defaultPStm(node);
 	}
@@ -655,7 +656,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link APrintMessageStm} node from {@link APrintMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link APrintMessageStm} node
 	*/
-	public A caseAPrintMessageStm(APrintMessageStm node)
+	public A caseAPrintMessageStm(APrintMessageStm node) throws Throwable
 	{
 		return defaultSMessageStm(node);
 	}
@@ -665,7 +666,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AErrorMessageStm} node from {@link AErrorMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AErrorMessageStm} node
 	*/
-	public A caseAErrorMessageStm(AErrorMessageStm node)
+	public A caseAErrorMessageStm(AErrorMessageStm node) throws Throwable
 	{
 		return defaultSMessageStm(node);
 	}
@@ -675,7 +676,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AWarnMessageStm} node from {@link AWarnMessageStm#apply(IAnalysis)}.
 	* @param node the calling {@link AWarnMessageStm} node
 	*/
-	public A caseAWarnMessageStm(AWarnMessageStm node)
+	public A caseAWarnMessageStm(AWarnMessageStm node) throws Throwable
 	{
 		return defaultSMessageStm(node);
 	}
@@ -685,7 +686,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PType} node from {@link PType#apply(IAnalysis)}.
 	* @param node the calling {@link PType} node
 	*/
-	public A defaultPType(PType node)
+	public A defaultPType(PType node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -695,7 +696,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ARealType} node from {@link ARealType#apply(IAnalysis)}.
 	* @param node the calling {@link ARealType} node
 	*/
-	public A caseARealType(ARealType node)
+	public A caseARealType(ARealType node) throws Throwable
 	{
 		return defaultPType(node);
 	}
@@ -705,7 +706,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AIntType} node from {@link AIntType#apply(IAnalysis)}.
 	* @param node the calling {@link AIntType} node
 	*/
-	public A caseAIntType(AIntType node)
+	public A caseAIntType(AIntType node) throws Throwable
 	{
 		return defaultPType(node);
 	}
@@ -715,7 +716,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ABoolType} node from {@link ABoolType#apply(IAnalysis)}.
 	* @param node the calling {@link ABoolType} node
 	*/
-	public A caseABoolType(ABoolType node)
+	public A caseABoolType(ABoolType node) throws Throwable
 	{
 		return defaultPType(node);
 	}
@@ -725,7 +726,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link ATimeType} node from {@link ATimeType#apply(IAnalysis)}.
 	* @param node the calling {@link ATimeType} node
 	*/
-	public A caseATimeType(ATimeType node)
+	public A caseATimeType(ATimeType node) throws Throwable
 	{
 		return defaultPType(node);
 	}
@@ -735,7 +736,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link PInclude} node from {@link PInclude#apply(IAnalysis)}.
 	* @param node the calling {@link PInclude} node
 	*/
-	public A defaultPInclude(PInclude node)
+	public A defaultPInclude(PInclude node) throws Throwable
 	{
 		return defaultINode(node);
 	}
@@ -745,7 +746,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link AScriptInclude} node from {@link AScriptInclude#apply(IAnalysis)}.
 	* @param node the calling {@link AScriptInclude} node
 	*/
-	public A caseAScriptInclude(AScriptInclude node)
+	public A caseAScriptInclude(AScriptInclude node) throws Throwable
 	{
 		return defaultPInclude(node);
 	}
@@ -755,7 +756,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link INode} node from {@link INode#apply(IAnalysis)}.
 	* @param node the calling {@link INode} node
 	*/
-	public A defaultINode(INode node)
+	public A defaultINode(INode node) throws Throwable
 	{
 		return null;//nothing to do
 	}
@@ -765,7 +766,7 @@ public class AnswerAdaptor<A> implements IAnswer<A>
 	* Called by the {@link IToken} node from {@link IToken#apply(IAnalysis)}.
 	* @param node the calling {@link IToken} node
 	*/
-	public A defaultIToken(IToken node)
+	public A defaultIToken(IToken node) throws Throwable
 	{
 		return null;//nothing to do
 	}

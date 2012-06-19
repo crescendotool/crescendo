@@ -26,12 +26,14 @@ import org.destecs.script.ast.expressions.AMsTimeunit;
 import org.destecs.script.ast.expressions.PTimeunitBase;
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.ETimeunit;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -44,6 +46,7 @@ public class AMsTimeunit extends PTimeunitBase
 	private static final long serialVersionUID = 1L;
 
 
+
 	/**
 	 * Creates a new {@link AMsTimeunit} node with no children.
 	 */
@@ -54,18 +57,17 @@ public class AMsTimeunit extends PTimeunitBase
 
 
 
-
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AMsTimeunit)
-	 return toString().equals(o.toString());
-	return false; }
-	
+	 * Returns a deep clone of this {@link AMsTimeunit} node.
+	 * @return a deep clone of this {@link AMsTimeunit} node
+	 */
+	public AMsTimeunit clone()
+	{
+		return new AMsTimeunit(
+		);
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AMsTimeunit} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -79,21 +81,23 @@ public class AMsTimeunit extends PTimeunitBase
 	}
 
 
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AMsTimeunit)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
 
 	public String toString()
 	{
 		return super.toString();
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AMsTimeunit} node.
-	 * @return a deep clone of this {@link AMsTimeunit} node
-	 */
-	public AMsTimeunit clone()
-	{
-		return new AMsTimeunit(
-		);
 	}
 
 
@@ -109,6 +113,23 @@ public class AMsTimeunit extends PTimeunitBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
 	}
 
 
@@ -129,7 +150,7 @@ public class AMsTimeunit extends PTimeunitBase
 	* @param analysis the {@link IAnalysis} to which this {@link AMsTimeunit} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAMsTimeunit(this);
 	}
@@ -140,7 +161,7 @@ public class AMsTimeunit extends PTimeunitBase
 	* @param caller the {@link IAnswer} to which this {@link AMsTimeunit} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAMsTimeunit(this);
 	}
@@ -152,7 +173,7 @@ public class AMsTimeunit extends PTimeunitBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAMsTimeunit(this, question);
 	}
@@ -164,7 +185,7 @@ public class AMsTimeunit extends PTimeunitBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAMsTimeunit(this, question);
 	}

@@ -32,6 +32,7 @@ import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.ABoolSingleExp;
 
 
@@ -58,6 +59,7 @@ public class ABoolSingleExp extends SSingleExpBase
 
 	/**
 	* Creates a new {@code ABoolSingleExp} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param value_ the {@link Boolean} node for the {@code value} child of this {@link ABoolSingleExp} node
 	*/
@@ -66,48 +68,6 @@ public class ABoolSingleExp extends SSingleExpBase
 		super();
 		this.setValue(value_);
 
-	}
-
-
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof ABoolSingleExp)
-	 return toString().equals(o.toString());
-	return false; }
-	
-
-	public String toString()
-	{
-		return (_value!=null?_value.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
-	{
-		return ESingleExp.BOOL;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link ABoolSingleExp} node.
-	 * @return a deep clone of this {@link ABoolSingleExp} node
-	 */
-	public ABoolSingleExp clone()
-	{
-		return new ABoolSingleExp(
-			_value
-		);
 	}
 
 
@@ -125,6 +85,18 @@ public class ABoolSingleExp extends SSingleExpBase
 
 
 	/**
+	 * Returns a deep clone of this {@link ABoolSingleExp} node.
+	 * @return a deep clone of this {@link ABoolSingleExp} node
+	 */
+	public ABoolSingleExp clone()
+	{
+		return new ABoolSingleExp(
+			_value
+		);
+	}
+
+
+	/**
 	 * Creates a deep clone of this {@link ABoolSingleExp} node while putting all
 	 * old node-new node relations in the map {@code oldToNewMap}.
 	 * @param oldToNewMap the map filled with the old node-new node relation
@@ -137,6 +109,56 @@ public class ABoolSingleExp extends SSingleExpBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof ABoolSingleExp)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_value",this._value);
+		return fields;
+	}
+
+
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
+	{
+		return ESingleExp.BOOL;
+	}
+
+
+
+	public String toString()
+	{
+		return (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -164,7 +186,7 @@ public class ABoolSingleExp extends SSingleExpBase
 	* @param analysis the {@link IAnalysis} to which this {@link ABoolSingleExp} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseABoolSingleExp(this);
 	}
@@ -175,7 +197,7 @@ public class ABoolSingleExp extends SSingleExpBase
 	* @param caller the {@link IAnswer} to which this {@link ABoolSingleExp} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseABoolSingleExp(this);
 	}
@@ -187,7 +209,7 @@ public class ABoolSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseABoolSingleExp(this, question);
 	}
@@ -199,7 +221,7 @@ public class ABoolSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseABoolSingleExp(this, question);
 	}

@@ -22,17 +22,19 @@
 package org.destecs.script.ast.statement;
 
 
-import org.destecs.script.ast.expressions.PExp;
-import org.destecs.script.ast.analysis.intf.IAnalysis;
-import java.util.Map;
 import org.destecs.script.ast.PDomain;
-import org.destecs.script.ast.analysis.intf.IQuestion;
+import java.util.Map;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import java.lang.Boolean;
 import org.destecs.script.ast.statement.PStmBase;
-import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.statement.EStm;
-import org.destecs.script.ast.statement.AAssignStm;
 import org.destecs.script.ast.analysis.intf.IAnswer;
+import java.util.HashMap;
+import org.destecs.script.ast.expressions.PExp;
+import org.destecs.script.ast.analysis.intf.IQuestion;
+import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.statement.AAssignStm;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
 
@@ -49,17 +51,10 @@ public class AAssignStm extends PStmBase
 	private String _name;
 	private PExp _value;
 
-	/**
-	 * Creates a new {@link AAssignStm} node with no children.
-	 */
-	public AAssignStm()
-	{
-
-	}
-
 
 	/**
 	* Creates a new {@code AAssignStm} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param domain_ the {@link PDomain} node for the {@code domain} child of this {@link AAssignStm} node
 	* @param name_ the {@link String} node for the {@code name} child of this {@link AAssignStm} node
@@ -75,41 +70,12 @@ public class AAssignStm extends PStmBase
 	}
 
 
-
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AAssignStm)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
+	 * Creates a new {@link AAssignStm} node with no children.
 	 */
-	@Override
-	public EStm kindPStm()
+	public AAssignStm()
 	{
-		return EStm.ASSIGN;
-	}
 
-
-	/**
-	 * Returns a deep clone of this {@link AAssignStm} node.
-	 * @return a deep clone of this {@link AAssignStm} node
-	 */
-	public AAssignStm clone()
-	{
-		return new AAssignStm(
-			cloneNode(_domain),
-			_name,
-			cloneNode(_value)
-		);
 	}
 
 
@@ -136,10 +102,23 @@ public class AAssignStm extends PStmBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
 	{
-		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName())+ (_value!=null?_value.toString():this.getClass().getSimpleName());
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_domain",this._domain);
+		fields.put("_name",this._name);
+		fields.put("_value",this._value);
+		return fields;
 	}
 
 
@@ -158,6 +137,52 @@ public class AAssignStm extends PStmBase
 		);
 		oldToNewMap.put(this, node);
 		return node;
+	}
+
+
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
+	{
+		return EStm.ASSIGN;
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AAssignStm)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AAssignStm} node.
+	 * @return a deep clone of this {@link AAssignStm} node
+	 */
+	public AAssignStm clone()
+	{
+		return new AAssignStm(
+			cloneNode(_domain),
+			_name,
+			cloneNode(_value)
+		);
+	}
+
+
+
+	public String toString()
+	{
+		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName())+ (_value!=null?_value.toString():this.getClass().getSimpleName());
 	}
 
 
@@ -243,7 +268,7 @@ public class AAssignStm extends PStmBase
 	* @param analysis the {@link IAnalysis} to which this {@link AAssignStm} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAAssignStm(this);
 	}
@@ -254,7 +279,7 @@ public class AAssignStm extends PStmBase
 	* @param caller the {@link IAnswer} to which this {@link AAssignStm} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAAssignStm(this);
 	}
@@ -266,7 +291,7 @@ public class AAssignStm extends PStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAAssignStm(this, question);
 	}
@@ -278,7 +303,7 @@ public class AAssignStm extends PStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAAssignStm(this, question);
 	}

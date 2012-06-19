@@ -24,14 +24,16 @@ package org.destecs.script.ast.statement;
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.statement.AQuitStm;
 import org.destecs.script.ast.statement.PStmBase;
 import org.destecs.script.ast.node.INode;
-import java.lang.String;
 import org.destecs.script.ast.statement.EStm;
+import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 
 
 /**
@@ -44,6 +46,8 @@ public class AQuitStm extends PStmBase
 	private static final long serialVersionUID = 1L;
 
 
+
+
 	/**
 	 * Creates a new {@link AQuitStm} node with no children.
 	 */
@@ -53,28 +57,16 @@ public class AQuitStm extends PStmBase
 	}
 
 
-
-
-
-
 	/**
-	 * Essentially this.toString().equals(o.toString()).
+	* Essentially this.toString().equals(o.toString()).
 	**/
 	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AQuitStm)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link EStm} corresponding to the
-	 * type of this {@link EStm} node.
-	 * @return the {@link EStm} for this node
-	 */
-	@Override
-	public EStm kindPStm()
+	public boolean equals(Object o)
 	{
-		return EStm.QUIT;
+		if (o != null && o instanceof AQuitStm)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
 	}
 
 
@@ -104,6 +96,25 @@ public class AQuitStm extends PStmBase
 	}
 
 
+
+	public String toString()
+	{
+		return super.toString();
+	}
+
+
+	/**
+	 * Returns the {@link EStm} corresponding to the
+	 * type of this {@link EStm} node.
+	 * @return the {@link EStm} for this node
+	 */
+	@Override
+	public EStm kindPStm()
+	{
+		return EStm.QUIT;
+	}
+
+
 	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link AQuitStm} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
@@ -117,10 +128,20 @@ public class AQuitStm extends PStmBase
 	}
 
 
-
-	public String toString()
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
 	{
-		return super.toString();
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
 	}
 
 
@@ -129,7 +150,7 @@ public class AQuitStm extends PStmBase
 	* @param analysis the {@link IAnalysis} to which this {@link AQuitStm} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAQuitStm(this);
 	}
@@ -140,7 +161,7 @@ public class AQuitStm extends PStmBase
 	* @param caller the {@link IAnswer} to which this {@link AQuitStm} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAQuitStm(this);
 	}
@@ -152,7 +173,7 @@ public class AQuitStm extends PStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAQuitStm(this, question);
 	}
@@ -164,7 +185,7 @@ public class AQuitStm extends PStmBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAQuitStm(this, question);
 	}

@@ -22,16 +22,18 @@
 package org.destecs.script.ast.expressions;
 
 
-import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
 import org.destecs.script.ast.PDomain;
+import org.destecs.script.ast.analysis.intf.IAnalysis;
+import java.lang.Boolean;
 import org.destecs.script.ast.expressions.ESingleExp;
-import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.expressions.SSingleExpBase;
-import org.destecs.script.ast.node.INode;
 import java.lang.String;
-import org.destecs.script.ast.expressions.AIdentifierSingleExp;
 import org.destecs.script.ast.analysis.intf.IAnswer;
+import java.util.HashMap;
+import org.destecs.script.ast.analysis.intf.IQuestion;
+import org.destecs.script.ast.node.INode;
+import org.destecs.script.ast.expressions.AIdentifierSingleExp;
 import org.destecs.script.ast.types.PType;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
 
@@ -49,9 +51,18 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	private PType _type;
 	private String _name;
 
+	/**
+	 * Creates a new {@link AIdentifierSingleExp} node with no children.
+	 */
+	public AIdentifierSingleExp()
+	{
+
+	}
+
 
 	/**
 	* Creates a new {@code AIdentifierSingleExp} node with the given nodes as children.
+	* @deprecated This method should not be used, use AstFactory instead.
 	* The basic child nodes are removed from their previous parents.
 	* @param domain_ the {@link PDomain} node for the {@code domain} child of this {@link AIdentifierSingleExp} node
 	* @param type_ the {@link PType} node for the {@code type} child of this {@link AIdentifierSingleExp} node
@@ -66,76 +77,6 @@ public class AIdentifierSingleExp extends SSingleExpBase
 
 	}
 
-
-	/**
-	 * Creates a new {@link AIdentifierSingleExp} node with no children.
-	 */
-	public AIdentifierSingleExp()
-	{
-
-	}
-
-
-
-
-	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof AIdentifierSingleExp)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns the {@link ESingleExp} corresponding to the
-	 * type of this {@link ESingleExp} node.
-	 * @return the {@link ESingleExp} for this node
-	 */
-	@Override
-	public ESingleExp kindSSingleExp()
-	{
-		return ESingleExp.IDENTIFIER;
-	}
-
-
-
-	public String toString()
-	{
-		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_type!=null?_type.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName());
-	}
-
-
-	/**
-	 * Creates a deep clone of this {@link AIdentifierSingleExp} node while putting all
-	 * old node-new node relations in the map {@code oldToNewMap}.
-	 * @param oldToNewMap the map filled with the old node-new node relation
-	 * @return a deep clone of this {@link AIdentifierSingleExp} node
-	 */
-	public AIdentifierSingleExp clone(Map<INode,INode> oldToNewMap)
-	{
-		AIdentifierSingleExp node = new AIdentifierSingleExp(
-			cloneNode(_domain, oldToNewMap),
-			cloneNode(_type, oldToNewMap),
-			_name
-		);
-		oldToNewMap.put(this, node);
-		return node;
-	}
-
-
-	/**
-	 * Returns a deep clone of this {@link AIdentifierSingleExp} node.
-	 * @return a deep clone of this {@link AIdentifierSingleExp} node
-	 */
-	public AIdentifierSingleExp clone()
-	{
-		return new AIdentifierSingleExp(
-			cloneNode(_domain),
-			cloneNode(_type),
-			_name
-		);
-	}
 
 
 	/**
@@ -158,6 +99,90 @@ public class AIdentifierSingleExp extends SSingleExpBase
 		}
 
 		throw new RuntimeException("Not a child.");
+	}
+
+
+	/**
+	 * Creates a deep clone of this {@link AIdentifierSingleExp} node while putting all
+	 * old node-new node relations in the map {@code oldToNewMap}.
+	 * @param oldToNewMap the map filled with the old node-new node relation
+	 * @return a deep clone of this {@link AIdentifierSingleExp} node
+	 */
+	public AIdentifierSingleExp clone(Map<INode,INode> oldToNewMap)
+	{
+		AIdentifierSingleExp node = new AIdentifierSingleExp(
+			cloneNode(_domain, oldToNewMap),
+			cloneNode(_type, oldToNewMap),
+			_name
+		);
+		oldToNewMap.put(this, node);
+		return node;
+	}
+
+
+	/**
+	 * Returns the {@link ESingleExp} corresponding to the
+	 * type of this {@link ESingleExp} node.
+	 * @return the {@link ESingleExp} for this node
+	 */
+	@Override
+	public ESingleExp kindSSingleExp()
+	{
+		return ESingleExp.IDENTIFIER;
+	}
+
+
+
+	public String toString()
+	{
+		return (_domain!=null?_domain.toString():this.getClass().getSimpleName())+ (_type!=null?_type.toString():this.getClass().getSimpleName())+ (_name!=null?_name.toString():this.getClass().getSimpleName());
+	}
+
+
+	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof AIdentifierSingleExp)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns a deep clone of this {@link AIdentifierSingleExp} node.
+	 * @return a deep clone of this {@link AIdentifierSingleExp} node
+	 */
+	public AIdentifierSingleExp clone()
+	{
+		return new AIdentifierSingleExp(
+			cloneNode(_domain),
+			cloneNode(_type),
+			_name
+		);
+	}
+
+
+	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		fields.put("_domain",this._domain);
+		fields.put("_type",this._type);
+		fields.put("_name",this._name);
+		return fields;
 	}
 
 
@@ -243,7 +268,7 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	* @param analysis the {@link IAnalysis} to which this {@link AIdentifierSingleExp} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAIdentifierSingleExp(this);
 	}
@@ -254,7 +279,7 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	* @param caller the {@link IAnswer} to which this {@link AIdentifierSingleExp} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAIdentifierSingleExp(this);
 	}
@@ -266,7 +291,7 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAIdentifierSingleExp(this, question);
 	}
@@ -278,7 +303,7 @@ public class AIdentifierSingleExp extends SSingleExpBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAIdentifierSingleExp(this, question);
 	}

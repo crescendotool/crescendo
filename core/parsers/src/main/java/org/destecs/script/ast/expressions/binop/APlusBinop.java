@@ -24,12 +24,14 @@ package org.destecs.script.ast.expressions.binop;
 
 import org.destecs.script.ast.analysis.intf.IAnalysis;
 import java.util.Map;
+import java.lang.Boolean;
 import org.destecs.script.ast.analysis.intf.IQuestion;
 import org.destecs.script.ast.node.INode;
 import java.lang.String;
 import org.destecs.script.ast.analysis.intf.IAnswer;
 import org.destecs.script.ast.expressions.binop.EBinop;
 import org.destecs.script.ast.analysis.intf.IQuestionAnswer;
+import java.util.HashMap;
 import org.destecs.script.ast.expressions.binop.PBinopBase;
 import org.destecs.script.ast.expressions.binop.APlusBinop;
 
@@ -44,8 +46,6 @@ public class APlusBinop extends PBinopBase
 	private static final long serialVersionUID = 1L;
 
 
-
-
 	/**
 	 * Creates a new {@link APlusBinop} node with no children.
 	 */
@@ -58,22 +58,14 @@ public class APlusBinop extends PBinopBase
 
 
 	/**
-	 * Essentially this.toString().equals(o.toString()).
-	**/
-	@Override
-	public boolean equals(Object o) {
-	if (o != null && o instanceof APlusBinop)
-	 return toString().equals(o.toString());
-	return false; }
-	
-	/**
-	 * Returns a deep clone of this {@link APlusBinop} node.
-	 * @return a deep clone of this {@link APlusBinop} node
+	 * Returns the {@link EBinop} corresponding to the
+	 * type of this {@link EBinop} node.
+	 * @return the {@link EBinop} for this node
 	 */
-	public APlusBinop clone()
+	@Override
+	public EBinop kindPBinop()
 	{
-		return new APlusBinop(
-		);
+		return EBinop.PLUS;
 	}
 
 
@@ -93,6 +85,23 @@ public class APlusBinop extends PBinopBase
 
 
 	/**
+	 * Creates a map of all field names and their value
+	 * @param includeInheritedFields if true all inherited fields are included
+	 * @return a a map of names to values of all fields
+	 */
+	@Override
+	public Map<String,Object> getChildren(Boolean includeInheritedFields)
+	{
+		Map<String,Object> fields = new HashMap<String,Object>();
+		if(includeInheritedFields)
+		{
+			fields.putAll(super.getChildren(includeInheritedFields));
+		}
+		return fields;
+	}
+
+
+	/**
 	 * Removes the {@link INode} {@code child} as a child of this {@link APlusBinop} node.
 	 * Do not call this method with any graph fields of this node. This will cause any child's
 	 * with the same reference to be removed unintentionally or {@link RuntimeException}will be thrown.
@@ -106,14 +115,13 @@ public class APlusBinop extends PBinopBase
 
 
 	/**
-	 * Returns the {@link EBinop} corresponding to the
-	 * type of this {@link EBinop} node.
-	 * @return the {@link EBinop} for this node
+	 * Returns a deep clone of this {@link APlusBinop} node.
+	 * @return a deep clone of this {@link APlusBinop} node
 	 */
-	@Override
-	public EBinop kindPBinop()
+	public APlusBinop clone()
 	{
-		return EBinop.PLUS;
+		return new APlusBinop(
+		);
 	}
 
 
@@ -125,11 +133,24 @@ public class APlusBinop extends PBinopBase
 
 
 	/**
+	* Essentially this.toString().equals(o.toString()).
+	**/
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o != null && o instanceof APlusBinop)		{
+			 return toString().equals(o.toString());
+		}
+		return false;
+	}
+
+
+	/**
 	* Calls the {@link IAnalysis#caseAPlusBinop(APlusBinop)} of the {@link IAnalysis} {@code analysis}.
 	* @param analysis the {@link IAnalysis} to which this {@link APlusBinop} node is applied
 	*/
 	@Override
-	public void apply(IAnalysis analysis)
+	public void apply(IAnalysis analysis) throws Throwable
 	{
 		analysis.caseAPlusBinop(this);
 	}
@@ -140,7 +161,7 @@ public class APlusBinop extends PBinopBase
 	* @param caller the {@link IAnswer} to which this {@link APlusBinop} node is applied
 	*/
 	@Override
-	public <A> A apply(IAnswer<A> caller)
+	public <A> A apply(IAnswer<A> caller) throws Throwable
 	{
 		return caller.caseAPlusBinop(this);
 	}
@@ -152,7 +173,7 @@ public class APlusBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q> void apply(IQuestion<Q> caller, Q question)
+	public <Q> void apply(IQuestion<Q> caller, Q question) throws Throwable
 	{
 		caller.caseAPlusBinop(this, question);
 	}
@@ -164,7 +185,7 @@ public class APlusBinop extends PBinopBase
 	* @param question the question provided to {@code caller}
 	*/
 	@Override
-	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question)
+	public <Q, A> A apply(IQuestionAnswer<Q, A> caller, Q question) throws Throwable
 	{
 		return caller.caseAPlusBinop(this, question);
 	}
