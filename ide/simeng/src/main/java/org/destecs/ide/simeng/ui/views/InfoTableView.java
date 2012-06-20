@@ -35,17 +35,22 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-public class InfoTableView extends ViewPart implements ISelectionListener
-{
-
+public class InfoTableView extends ViewPart implements ISelectionListener {
+	Clipboard clipboard;
 	private TableViewer viewer;
 	// private Action doubleClickAction;
 	final Display display = Display.getCurrent();
@@ -63,20 +68,15 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	private PauseAction pauseAction;
 	private ResumeAction resumeAction;
 
-	static class ViewContentProvider implements IStructuredContentProvider
-	{
-		public void inputChanged(Viewer v, Object oldInput, Object newInput)
-		{
+	static class ViewContentProvider implements IStructuredContentProvider {
+		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 		}
 
-		public void dispose()
-		{
+		public void dispose() {
 		}
 
-		public Object[] getElements(Object inputElement)
-		{
-			if (inputElement instanceof List)
-			{
+		public Object[] getElements(Object inputElement) {
+			if (inputElement instanceof List) {
 				@SuppressWarnings("rawtypes")
 				List list = (List) inputElement;
 				return list.toArray();
@@ -87,17 +87,13 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	}
 
 	static class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider
-	{
+			ITableLabelProvider {
 
-		public String getColumnText(Object element, int columnIndex)
-		{
-			if (element instanceof List)
-			{
+		public String getColumnText(Object element, int columnIndex) {
+			if (element instanceof List) {
 				@SuppressWarnings("rawtypes")
 				List list = (List) element;
-				if (list.size() > columnIndex)
-				{
+				if (list.size() > columnIndex) {
 					return list.get(columnIndex).toString();
 				}
 				return "---";
@@ -106,8 +102,7 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 		}
 
-		public Image getColumnImage(Object element, int columnIndex)
-		{
+		public Image getColumnImage(Object element, int columnIndex) {
 
 			return null;
 		}
@@ -117,39 +112,33 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	/**
 	 * The constructor.
 	 */
-	public InfoTableView()
-	{
+	public InfoTableView() {
 		// createMenu();
 		this.terminationAction = new TerminationAction();
 		this.pauseAction = new PauseAction();
 		this.resumeAction = new ResumeAction();
 		this.resumeAction.setEnabled(false);
-		
-//		this.pauseAction.setResume(this.resumeAction);
-//		this.resumeAction.setPause(this.pauseAction);
+
+		// this.pauseAction.setResume(this.resumeAction);
+		// this.resumeAction.setPause(this.pauseAction);
 	}
 
-	
-	public BaseSimulationControlAction getTerminationAction()
-	{
+	public BaseSimulationControlAction getTerminationAction() {
 		return terminationAction;
 	}
-	
-	public PauseAction getPauseAction()
-	{
+
+	public PauseAction getPauseAction() {
 		return pauseAction;
 	}
-	
-	public ResumeAction getResumeAction()
-	{
+
+	public ResumeAction getResumeAction() {
 		return resumeAction;
 	}
 
 	/**
 	 * Create toolbar.
 	 */
-	private void createToolbar()
-	{
+	private void createToolbar() {
 		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
 		// mgr.add(addItemAction);
 		// mgr.add(deleteItemAction);
@@ -159,13 +148,13 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	@Override
-	public void createPartControl(Composite parent)
-	{
+	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.FULL_SELECTION | SWT.H_SCROLL
-				| SWT.V_SCROLL);
+				| SWT.V_SCROLL | SWT.SINGLE);
 		// test setup columns...
 		TableLayout layout = new TableLayout();
 		layout.addColumnData(new ColumnWeightData(20, true));
@@ -193,22 +182,65 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 		viewer.setInput(dataSource);
 		if (getSite().getId() != null
-				&& getSite().getId().equals(SIMULATION_ENGINE_VIEW_ID))
-		{
+				&& getSite().getId().equals(SIMULATION_ENGINE_VIEW_ID)) {
 			createToolbar();
 		}
+
+		clipboard = new Clipboard(display);
+
+		viewer.getTable().addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				try {
+					if ((e.stateMask & SWT.CTRL) != 0
+							&& (char) e.keyCode == 'c') {
+						if (clipboard != null && !clipboard.isDisposed()) {
+							TextTransfer textTransfer = TextTransfer
+									.getInstance();
+							Transfer[] transfers = new Transfer[] { textTransfer };
+							Object[] data = new Object[] { getTableString() };
+							clipboard.setContents(data, transfers);
+						}
+					}
+				} catch (Exception ex) {
+					// Ignore
+				}
+			}
+		});
 	}
 
-	public void addColumn(String name)
-	{
-		for (TableColumn tc : viewer.getTable().getColumns())
-		{
-			if (tc.getText().equals(name))
-			{
+	protected String getTableString() {
+		StringBuffer sb = new StringBuffer();
+		for (TableColumn item : viewer.getTable().getColumns()) {
+			sb.append(item.getText() + "\t");
+		}
+		sb.append("\n");
+
+		for (TableItem item : viewer.getTable().getItems()) {
+			for (int i = 0; i < viewer.getTable().getColumnCount(); i++) {
+				sb.append(item.getText(i) + "\t");
+			}
+			sb.append("\n");
+		}
+
+		return sb.toString();
+
+	}
+
+	public void addColumn(String name) {
+		for (TableColumn tc : viewer.getTable().getColumns()) {
+			if (tc.getText().equals(name)) {
 				return;
 			}
 		}
-		((TableLayout) viewer.getTable().getLayout()).addColumnData(new ColumnWeightData(60, false));
+		((TableLayout) viewer.getTable().getLayout())
+				.addColumnData(new ColumnWeightData(60, false));
 
 		TableColumn column2 = new TableColumn(viewer.getTable(), SWT.LEFT);
 		column2.setText(name);
@@ -220,34 +252,27 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 	 * Passing the focus request to the viewer's control.
 	 */
 	@Override
-	public void setFocus()
-	{
+	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
 
 	Boolean isUpdating = false;
 
-	public void refreshList()
-	{
-		if (isUpdating)
-		{
+	public void refreshList() {
+		if (isUpdating) {
 			return;
 		}
-		synchronized (lock)
-		{
+		synchronized (lock) {
 			isUpdating = true;
 		}
 
-		display.asyncExec(new Runnable()
-		{
+		display.asyncExec(new Runnable() {
 
-			public void run()
-			{
+			public void run() {
 				viewer.refresh();
 				viewer.getTable().select(viewer.getTable().getItemCount() - 1);
 				viewer.getTable().showSelection();
-				synchronized (lock)
-				{
+				synchronized (lock) {
 					isUpdating = false;
 				}
 			}
@@ -256,15 +281,11 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 
 	}
 
-	public void packColumns()
-	{
-		display.asyncExec(new Runnable()
-		{
+	public void packColumns() {
+		display.asyncExec(new Runnable() {
 
-			public void run()
-			{
-				for (TableColumn col : viewer.getTable().getColumns())
-				{
+			public void run() {
+				for (TableColumn col : viewer.getTable().getColumns()) {
 					col.pack();
 				}
 			}
@@ -272,28 +293,21 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		});
 	}
 
-	public synchronized void setDataList(final List<String> data)
-	{
-		while (dataSource.size() > elementCount)
-		{
+	public synchronized void setDataList(final List<String> data) {
+		while (dataSource.size() > elementCount) {
 			dataSource.remove(0);
 		}
 		dataSource.add(data);
 		// refreshList();
 	}
 
-	public void refreshPackTable()
-	{
-		if (display.isDisposed())
-		{
+	public void refreshPackTable() {
+		if (display.isDisposed()) {
 			return;
 		}
-		display.asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				for (TableColumn col : viewer.getTable().getColumns())
-				{
+		display.asyncExec(new Runnable() {
+			public void run() {
+				for (TableColumn col : viewer.getTable().getColumns()) {
 					col.pack();
 				}
 			}
@@ -302,14 +316,12 @@ public class InfoTableView extends ViewPart implements ISelectionListener
 		refreshList();
 	}
 
-	public synchronized void resetBuffer()
-	{
+	public synchronized void resetBuffer() {
 		dataSource.clear();
 		// refreshList();
 	}
 
-	public void selectionChanged(IWorkbenchPart part, ISelection selection)
-	{
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 
 	}
 }
