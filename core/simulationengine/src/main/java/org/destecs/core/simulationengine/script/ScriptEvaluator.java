@@ -78,6 +78,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	Map<AOnceStm, Set<VariableValue>> variableCacheOnce = new Hashtable<AOnceStm, Set<VariableValue>>();
 	Map<AOnceStm, PExp> onceForExp = new Hashtable<AOnceStm, PExp>();
 	Set<AOnceStm> disabledOnce = new HashSet<AOnceStm>();
+	private Set<AOnceStm> disableOnceRevert = new HashSet<AOnceStm>();
 
 	public ScriptEvaluator(ISimulatorControl simulator)
 	{
@@ -125,11 +126,11 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		if(disabledOnce.contains(node))
 		{
 			return;
-		}
+		}		
 		
 		Value v = node.getTest().apply(expEval);
 
-		if (v instanceof BooleanValue && ((BooleanValue) v).value
+		if (!disableOnceRevert.contains(node) && v instanceof BooleanValue && ((BooleanValue) v).value
 				|| checkOnceFor(node))
 		{
 			if (node.getFor() != null && onceForExp.get(node) == null)
@@ -147,6 +148,10 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			{
 				disabledOnce.add(node);
 			}
+			else
+			{
+				disableOnceRevert.add(node);
+			}
 		} else
 		{
 			onceForExp.remove(node);
@@ -158,6 +163,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 				}
 				variableCacheOnce.remove(node);
 				disabledOnce.add(node);
+				disableOnceRevert.remove(node);
 			}
 		}
 	}
