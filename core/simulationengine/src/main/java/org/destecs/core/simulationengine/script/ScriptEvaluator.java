@@ -206,7 +206,25 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			simulator = Simulator.CT;
 		}
 
-		storeVariable(node.getAncestor(AWhenStm.class), new VariableValue(node.getName(), Value.valueOf(interpreter.getVariableValue(simulator, node.getName())), simulator));
+		AWhenStm whenStm = node.getAncestor(AWhenStm.class);
+		
+		if(whenStm != null)
+		{
+			storeVariable(whenStm, new VariableValue(node.getName(), Value.valueOf(interpreter.getVariableValue(simulator, node.getName())), simulator));	
+		}
+		else
+		{
+			AOnceStm onceStm = node.getAncestor(AOnceStm.class);
+			if(onceStm != null)
+			{
+				storeVariable(onceStm, new VariableValue(node.getName(), Value.valueOf(interpreter.getVariableValue(simulator, node.getName())), simulator));
+			}
+			else
+			{
+				return;
+			}
+		}
+		
 
 		if (v instanceof BooleanValue)
 		{
@@ -219,6 +237,19 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			interpreter.scriptError("Unsupported value returned from expression in assignment statement("
 					+ node + ") - " + v);
 		}
+	}
+
+	private void storeVariable(AOnceStm node, VariableValue var) {
+		Set<VariableValue> s = variableCacheOnce.get(node);
+		if (s == null)
+		{
+			s = new HashSet<VariableValue>();
+		}
+
+		s.add(var);
+
+		variableCacheOnce.put(node, s);
+		
 	}
 
 	private void storeVariable(AWhenStm node, VariableValue var)
@@ -255,7 +286,28 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	@Override
 	public void caseARevertStm(ARevertStm node)
 	{
-		VariableValue var = getVariableValue(node.getAncestor(AWhenStm.class), node.getIdentifier().getName());
+		VariableValue var = null;
+		AWhenStm whenStm = node.getAncestor(AWhenStm.class);
+		if(whenStm != null)
+		{
+			var = getVariableValue(whenStm, node.getIdentifier().getName());
+		}
+		else
+		{
+			AOnceStm onceStm = node.getAncestor(AOnceStm.class);
+			if(onceStm != null)
+			{
+				var =  getVariableValue(onceStm, node.getIdentifier().getName());
+			}
+			else
+			{
+				return;
+			}
+		}
+		
+		
+		
+			
 		if (var != null)
 		{
 			if (var.value instanceof BooleanValue)
@@ -274,6 +326,23 @@ public class ScriptEvaluator extends AnalysisAdaptor
 			interpreter.scriptError("Failed evaluating revert. No value cached for: "
 					+ node.getIdentifier());
 		}
+	}
+
+	private VariableValue getVariableValue(AOnceStm node, String variableName) {
+		Set<VariableValue> s = variableCacheOnce.get(node);
+		if (s == null)
+		{
+			return null;
+		}
+
+		for (VariableValue variableValue : s)
+		{
+			if (variableValue.name.equals(variableName))
+			{
+				return variableValue;
+			}
+		}
+		return null;
 	}
 
 	@Override
