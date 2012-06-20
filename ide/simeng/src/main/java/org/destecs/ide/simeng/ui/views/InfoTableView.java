@@ -190,12 +190,10 @@ public class InfoTableView extends ViewPart implements ISelectionListener {
 
 		viewer.getTable().addKeyListener(new KeyListener() {
 
-			@Override
 			public void keyReleased(KeyEvent e) {
 
 			}
 
-			@Override
 			public void keyPressed(KeyEvent e) {
 				try {
 					if ((e.stateMask & SWT.CTRL) != 0
