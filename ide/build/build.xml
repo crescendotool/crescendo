@@ -108,6 +108,7 @@
 			<arg value="-Dbaseos=${baseos}" />
 			<arg value="-Dbasews=${basews}" />
 			<arg value="-Dbasearch=${basearch}" />
+			<arg value="-DpluginPath=${pluginPath}" />
             <arg value="-Djava.io.tmpdir=${java.io.tmpdir}" />
 
 			<classpath>
