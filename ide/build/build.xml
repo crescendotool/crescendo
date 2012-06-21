@@ -19,7 +19,6 @@
 -->
 <!DOCTYPE project [
        <!ENTITY copyProjects SYSTEM "copyProjects.xml">
-		<!ENTITY copyOvertureProjects SYSTEM "copyOvertureProjects.xml">
 ]>
 <project name="org.destecs.ide" default="build">
 	<tstamp />
@@ -82,7 +81,6 @@
 		<mkdir dir="${buildDirectory}" />
 		<mkdir dir="${buildDirectory}/plugins" />
 		<mkdir dir="${buildDirectory}/features" />
-		&copyOvertureProjects;
 		&copyProjects;
 	</target>
 

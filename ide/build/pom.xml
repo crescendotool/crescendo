@@ -15,15 +15,7 @@
   </name>
 	<version>1.2.0</version>
 
-	<properties>
-		<user.rcp.build.includeFileLangMan>../../documentation/VDM10LangMan/VDM10_lang_man.pdf</user.rcp.build.includeFileLangMan>
-		<user.rcp.build.includeFileUserGuide>../../documentation/UserGuideOvertureIDE/OvertureIDEUserGuide.pdf</user.rcp.build.includeFileUserGuide>
-		<user.rcp.build.includeFileQuickOverviewOperator>../../documentation/QuickOverviewVDMPPOperators/QuickOverviewofVDMOperators.pdf</user.rcp.build.includeFileQuickOverviewOperator>
-		<includeFileExamplesBase>http://sourceforge.net/projects/overture/files/Examples/</includeFileExamplesBase>
-		<user.rcp.build.includeFileExamplesSL>${includeFileExamplesBase}examplesSL.zip</user.rcp.build.includeFileExamplesSL>
-		<user.rcp.build.includeFileExamplesPP>${includeFileExamplesBase}examplesPP.zip</user.rcp.build.includeFileExamplesPP>
-		<user.rcp.build.includeFileExamplesRT>${includeFileExamplesBase}examplesRT.zip</user.rcp.build.includeFileExamplesRT>
-	</properties>
+	
 
 
 	<build>
@@ -56,20 +48,10 @@
 
 								<property name="eclipseLocation" value="${base}" />
 								<property name="buildDirectory" value="${project.build.directory}/RCP" />
+								
+								<property name="pluginPath" value="${user.rcp.pluginpath}" />
 								<!-- Custom configuration for build server -->
-
-
-
-								<property name="includeFileLangMan" value="${user.rcp.build.includeFileLangMan}" />
-								<property name="includeFileUserGuide" value="${user.rcp.build.includeFileUserGuide}" />
-								<property name="includeFileQuickOverviewOperator"
-									value="${user.rcp.build.includeFileQuickOverviewOperator}" />
-								<property name="includeFileExamplesSL"
-									value="${user.rcp.build.includeFileExamplesSL}" />
-								<property name="includeFileExamplesPP"
-									value="${user.rcp.build.includeFileExamplesPP}" />
-								<property name="includeFileExamplesRT"
-									value="${user.rcp.build.includeFileExamplesRT}" />
+								
 								<ant antfile="build.xml" />
 							</target>
 
