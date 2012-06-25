@@ -1,6 +1,7 @@
 package org.destecs.ide.debug.launching.ui;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -30,7 +31,11 @@ public class Launch20simUtility {
 		if(!remoteLaunch)
 		{
 			Clp20SimProgramLauncher clp20sim = new Clp20SimProgramLauncher(new File(ctFile));
-			clp20sim.launch();
+			try {
+				clp20sim.launch();
+			} catch (IOException e) {
+				return null;
+			}
 		}
 		
 		ProxyICoSimProtocol protocol = null;

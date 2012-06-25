@@ -45,7 +45,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 
 	}
 
-	public Process launch()
+	public Process launch() throws IOException
 	{
 		if (!isWindowsPlatform())
 		{

@@ -82,6 +82,8 @@ import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.runtime.validation.BasicRuntimeValidator;
 import org.overturetool.vdmj.runtime.validation.ConjectureDefinition;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
+import org.overturetool.vdmj.scheduler.CPUResource;
+import org.overturetool.vdmj.scheduler.RunState;
 import org.overturetool.vdmj.scheduler.SharedStateListner;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.statements.IdentifierDesignator;
@@ -258,7 +260,9 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						EventThread eThread = new EventThread(Thread.currentThread());
 						BasicSchedulableThread.add(eThread);
+						CPUResource.vCPU.register(eThread, 1000);
 						eventOp.eval(coSimLocation, new ValueList(), mainContext);
+						eThread.setState(RunState.COMPLETE);
 						BasicSchedulableThread.remove(eThread);
 						evaluated = true;
 					} catch (ValueException e)

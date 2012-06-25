@@ -48,6 +48,7 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.ui.progress.UIJob;
 
@@ -76,8 +77,11 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
 		String outputPreFix = dateFormat.format(new Date()) + "_"
 				+ configuration.getName();
+		
+		ILaunchConfigurationWorkingCopy baseConfigWorkingCopy = baseConfig.getWorkingCopy();
+		baseConfigWorkingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION, false);
 
-		AcaGenerator generator = new AcaGenerator(configuration, baseConfig, monitor, 10, project, outputPreFix);
+		AcaGenerator generator = new AcaGenerator(configuration, baseConfigWorkingCopy, monitor, 10, project, outputPreFix);
 		generator.addGenerator(new IncludeBaseConfigAcaPlugin());
 		//generator.addGenerator(new ArchitectureAcaPlugin());
 		generator.addGenerator(new ArchitecturesAcaPlugin());

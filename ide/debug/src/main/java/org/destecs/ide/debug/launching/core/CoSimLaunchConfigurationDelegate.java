@@ -38,12 +38,14 @@ import java.util.Vector;
 import org.destecs.core.parsers.ScenarioParserWrapper;
 import org.destecs.core.parsers.ScriptParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
+import org.destecs.core.scenario.Action;
 import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.ScriptSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine.Simulator;
 import org.destecs.core.simulationengine.launcher.DummyLauncher;
+import org.destecs.core.simulationengine.launcher.ISimulatorLauncher;
 import org.destecs.core.simulationengine.launcher.VdmRtLauncher;
 import org.destecs.core.simulationengine.listener.IProcessCreationListener;
 import org.destecs.core.simulationengine.listener.ISimulationStartListener;
@@ -57,6 +59,7 @@ import org.destecs.ide.debug.core.model.internal.CoSimulationThread;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
 import org.destecs.ide.debug.launching.internal.LaunchStore;
 import org.destecs.ide.simeng.internal.core.Clp20SimProgramLauncher;
+import org.destecs.ide.simeng.internal.core.Clp20SimStatelessProgramLauncher;
 import org.destecs.ide.simeng.internal.core.VdmRtBundleLauncher;
 import org.destecs.ide.simeng.listener.EngineListener;
 import org.destecs.ide.simeng.listener.ListenerToLog;
@@ -67,8 +70,11 @@ import org.destecs.ide.ui.DestecsUIPlugin;
 import org.destecs.ide.ui.IDestecsPreferenceConstants;
 import org.destecs.ide.ui.utility.DestecsTypeCheckerUi;
 import org.destecs.protocol.structs.SetDesignParametersdesignParametersStructParam;
+import org.destecs.script.ast.EDomain;
+import org.destecs.script.ast.analysis.DepthFirstAnalysisAdaptor;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.preprocessing.AScriptInclude;
+import org.destecs.script.ast.statement.AAssignStm;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -133,6 +139,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	private boolean debug = false;
 	private String clp20simToolSettings = null;
 	private String clp20simImplementationSettings = null;
+	private boolean leaveCtDirtyRunning = true;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -217,8 +224,9 @@ public class CoSimLaunchConfigurationDelegate extends
 			showDebugInfo = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_DEBUG_INFO, false);
 			logVariablesVdm.clear();
 			clp20simToolSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
-			clp20simImplementationSettings  = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
-			
+			clp20simImplementationSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
+			leaveCtDirtyRunning = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION, true);
+
 			String tmpVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
 			for (String var : tmpVdm.split(","))
 			{
@@ -281,19 +289,20 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 		resultFolderRelativePath = tmp + dateFormat.format(new Date()) + "_"
 				+ configuration.getName();
-		outputFolder = new File(base,resultFolderRelativePath );
+		outputFolder = new File(base, resultFolderRelativePath);
 
 		if (!outputFolder.mkdirs())
 		{
 			outputFolder = null;
 		}
-		
+
 		try
 		{
 			LaunchStore.store(configuration, outputFolder);
 		} catch (CoreException e)
 		{
-			DestecsDebugPlugin.logError("Failed to store launch configuration to"+outputFolder, e);
+			DestecsDebugPlugin.logError("Failed to store launch configuration to"
+					+ outputFolder, e);
 		}
 
 	}
@@ -315,53 +324,6 @@ public class CoSimLaunchConfigurationDelegate extends
 				{
 					final String engineViewId = IDebugConstants.ENGINE_VIEW_ID;
 					final InfoTableView engineView = getInfoTableView(engineViewId);
-//					ISimulationControlProxy simulationControl = new ISimulationControlProxy()
-//					{
-//
-//						public void terminate()
-//						{
-//							try
-//							{
-//								launch.terminate();
-//							} catch (DebugException e)
-//							{
-//								DestecsDebugPlugin.logError("Failed to terminate launch", e);
-//							}
-//						}
-//
-//						public void pause()
-//						{
-//							engine.pause();
-//						}
-//
-//						public void resume()
-//						{
-//							ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-//
-//							ILaunchConfigurationType configType = launchManager.getLaunchConfigurationType(VDM_LAUNCH_CONFIG_TYPE);
-//							for (IDebugTarget target : launch.getDebugTargets())
-//							{
-//								try
-//								{
-//									if (target.getLaunch().getLaunchConfiguration().getType() == configType)
-//									{
-//										target.resume();
-//									}
-//								} catch (CoreException e)
-//								{
-//									DestecsDebugPlugin.logWarning("Failed to resume simulator", e);
-//								}
-//							}
-//							engine.resume();
-//						}
-//					};
-//
-//					engineView.getTerminationAction().addSimulationControlProxy(simulationControl);
-//					engineView.getPauseAction().addSimulationControlProxy(simulationControl);
-//					engineView.getResumeAction().addSimulationControlProxy(simulationControl);
-//					DebugPlugin.getDefault().addDebugEventListener(engineView.getResumeAction());
-//					DebugPlugin.getDefault().addDebugEventListener(engineView.getPauseAction());
-//					DebugPlugin.getDefault().addDebugEventListener(engineView.getTerminationAction());
 
 					views.add(engineView);
 					engine.engineListeners.add(new EngineListener(engineView));
@@ -412,22 +374,25 @@ public class CoSimLaunchConfigurationDelegate extends
 			engine.setDeModel(deModel);
 			engine.setDeEndpoint(deUrl);
 
-			if(!useRemoteCtSimulator)
+			if (!useRemoteCtSimulator)
 			{
-				engine.setCtSimulationLauncher(new Clp20SimProgramLauncher(ctFile));
+				// engine.setCtSimulationLauncher(new
+				// Clp20SimStatelessProgramLauncher(ctFile));
+				// engine.setCtSimulationLauncher(new
+				// Clp20SimProgramLauncher(ctFile));
+				engine.setCtSimulationLauncher(selectClp20SimLauncher(engine, ctFile));
 				engine.setCtEndpoint(new URL(IDebugConstants.DEFAULT_CT_ENDPOINT));
-			}else	
+			} else
 			{
 				engine.setCtSimulationLauncher(new DummyLauncher("20-sim"));
 				engine.setCtEndpoint(ctUrl);
 			}
 			ModelConfig ctModel = getCtModelConfig(ctFile);
 			engine.setCtModel(ctModel);
-			
 
 			setCtSettings(engine);
 			setCtImplementations(engine);
-			
+
 			engine.setOutputFolder(outputFolder);
 			engine.debug(debug);
 
@@ -439,13 +404,13 @@ public class CoSimLaunchConfigurationDelegate extends
 				}
 			});
 
-			if(deModel.logFile!=null)
+			if (deModel.logFile != null)
 			{
 				target.setDeCsvFile(new File(deModel.logFile));
 			}
-			if(!useRemoteCtSimulator)
+			if (!useRemoteCtSimulator)
 			{
-				if(ctModel.logFile!=null)
+				if (ctModel.logFile != null)
 				{
 					target.setCtCsvFile(new File(ctModel.logFile));
 				}
@@ -490,7 +455,8 @@ public class CoSimLaunchConfigurationDelegate extends
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
-			DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Failed to launch: " + ex.getMessage(), ex));
+			DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Failed to launch: "
+					+ ex.getMessage(), ex));
 			for (InfoTableView view : views)
 			{
 				view.refreshPackTable();
@@ -508,71 +474,143 @@ public class CoSimLaunchConfigurationDelegate extends
 			{
 				DestecsDebugPlugin.log(new Status(IStatus.ERROR, DestecsDebugPlugin.PLUGIN_ID, "Error launching", e));
 			}
-			
+
 		}
 	}
 
-	private void setCtImplementations(SimulationEngine engine) {
-		
+	private static class ScriptClp20simStateAffectSearcher extends
+			DepthFirstAnalysisAdaptor
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7732646898630654830L;
+		public boolean ctStateAffected = false;
+
+		@Override
+		public void caseAAssignStm(AAssignStm node) throws Throwable
+		{
+			if (node != null && node.getDomain().kindPDomain() == EDomain.CT)
+			{
+				ctStateAffected = true;
+				throw new Exception("Finished search");
+			}
+		}
+	}
+
+	private ISimulatorLauncher selectClp20SimLauncher(SimulationEngine engine,
+			File model)
+	{
+
+		if (engine instanceof ScriptSimulationEngine)
+		{
+			for (INode n : ((ScriptSimulationEngine) engine).script)
+			{
+				ScriptClp20simStateAffectSearcher searcher = new ScriptClp20simStateAffectSearcher();
+				try
+				{
+					n.apply(searcher);
+				} catch (Throwable e)
+				{
+					// Ignore
+				}
+				if (searcher.ctStateAffected)
+				{
+					return new Clp20SimStatelessProgramLauncher(model, leaveCtDirtyRunning);
+				}
+			}
+
+		} else if (engine instanceof ScenarioSimulationEngine)
+		{
+			boolean stateAffected = false;
+			for (Action a : ((ScenarioSimulationEngine) engine).actions)
+			{
+				if (a != null && a.targetSimulator == Action.Simulator.CT)
+				{
+					stateAffected = true;
+					break;
+				}
+			}
+			if (stateAffected)
+			{
+				return new Clp20SimStatelessProgramLauncher(model, leaveCtDirtyRunning);
+			}
+		}
+
+		return new Clp20SimProgramLauncher(model);
+
+	}
+
+	private void setCtImplementations(SimulationEngine engine)
+	{
+
 		Properties properties = new Properties();
-		
+
 		String[] settings = clp20simImplementationSettings.split(";");
-		
-		for (String setting : settings) {
-			
+
+		for (String setting : settings)
+		{
+
 			String[] splitSetting = setting.split("=");
-			if(splitSetting.length == 2)
+			if (splitSetting.length == 2)
 			{
 				properties.put(splitSetting[0], splitSetting[1]);
 			}
 		}
-		
+
 		StringWriter sw = new StringWriter();
-		try {
+		try
+		{
 			properties.store(sw, "");
 			engine.setCtImplementations(sw.toString());
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			DestecsDebugPlugin.logWarning("Failed record CT implementation settings for use in simulation", e);
 		}
-		
-		
+
 	}
 
-	private void setCtSettings(SimulationEngine engine) {
+	private void setCtSettings(SimulationEngine engine)
+	{
 		Properties properties = new Properties();
-		
+
 		String[] settings = clp20simToolSettings.split(";");
-		
-		for (String setting : settings) {
-			
+
+		for (String setting : settings)
+		{
+
 			String[] splitSetting = setting.split("=");
-			if(splitSetting.length == 2)
+			if (splitSetting.length == 2)
 			{
 				properties.put(splitSetting[0], splitSetting[1]);
 			}
 		}
-		
+
 		StringWriter sw = new StringWriter();
-		try {
+		try
+		{
 			properties.store(sw, "");
 			engine.setCtSettings(sw.toString());
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			DestecsDebugPlugin.logWarning("Failed record CT Tool settings for use in simulation", e);
 		}
-		
+
 	}
 
 	private ModelConfig getCtModelConfig(File ctFile)
 	{
 		String logfile = null;
 		CtModelConfig model = null;
-		if(!useRemoteCtSimulator)
+		if (!useRemoteCtSimulator)
 		{
 			model = new CtModelConfig(ctFile.getAbsolutePath());
 			logfile = new File(outputFolder, "20simVariables.csv").getAbsolutePath();
-		}else{
-			model = new CtModelConfig((remoteRelativeProjectPath+"\\"+ctFilePathRelative).replace("/","\\"));
-			logfile = (remoteRelativeProjectPath+"\\output\\"+resultFolderRelativePath+"\\"+"20simVariables.csv").replace("/","\\");
+		} else
+		{
+			model = new CtModelConfig((remoteRelativeProjectPath + "\\" + ctFilePathRelative).replace("/", "\\"));
+			logfile = (remoteRelativeProjectPath + "\\output\\"
+					+ resultFolderRelativePath + "\\" + "20simVariables.csv").replace("/", "\\");
 		}
 
 		if (logVariables20Sim.size() > 1)
@@ -597,16 +635,17 @@ public class CoSimLaunchConfigurationDelegate extends
 		model.arguments.put(DeModelConfig.LOAD_DEBUG_PORT, String.valueOf(port));
 		model.arguments.put(DeModelConfig.LOAD_BASE_DIR, p.getVdmModelFolder().getLocation().toFile().getAbsolutePath());
 
-		try{
-			if(!configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, false))
+		try
+		{
+			if (!configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_RT_VALIDATION, false))
 			{
 				model.arguments.put(DeModelConfig.LOAD_SETTING_DISABLE_RT_VALIDATOR, "true");
 			}
-		}catch(CoreException e)
+		} catch (CoreException e)
 		{
 			DestecsDebugPlugin.logError("Could not get realtime check option from launch configuration", e);
 		}
-		
+
 		if (deArchitectureFile != null && deArchitectureFile.exists())
 		{
 			StringBuffer architecture = new StringBuffer();
@@ -745,20 +784,21 @@ public class CoSimLaunchConfigurationDelegate extends
 			{
 				ScriptParserWrapper parser = new ScriptParserWrapper();
 				List<INode> script = parser.parse(scenarioFile);
-				
-				if(script.contains(null))
+
+				if (script.contains(null))
 				{
 					throw new Exception("Failed to parse script file");
 				}
-				
+
 				script = expandScript(script, scenarioFile);
 				return new ScriptSimulationEngine(contractFile, script);
 			}
 
 			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
-			if(scenario==null)
+			if (scenario == null)
 			{
-				throw new Exception("Scenario not parse correct: "+scenarioFile);
+				throw new Exception("Scenario not parse correct: "
+						+ scenarioFile);
 			}
 			return new ScenarioSimulationEngine(contractFile, scenario);
 
@@ -803,36 +843,35 @@ public class CoSimLaunchConfigurationDelegate extends
 			String name = key.toString();
 			List<Integer> size = new Vector<Integer>();
 			List<Double> value = new Vector<Double>();
-			
-			if(!(result.get(name) instanceof List))
+
+			if (!(result.get(name) instanceof List))
 			{
-				size.add(1);		
+				size.add(1);
 				value.add(convertToDouble(result.get(name)));
-			}
-			else if(result.get(name) instanceof List)
+			} else if (result.get(name) instanceof List)
 			{
 				@SuppressWarnings("rawtypes")
 				List list = (List) result.get(name);
-				for (Object object : list) {
+				for (Object object : list)
+				{
 					value.add(convertToDouble(object));
 				}
-				
-				String dimentions = name.substring(name.indexOf("[") + 1,
-						name.indexOf("]"));
-				String[] splitDimentions = dimentions.split(",");	
-				
-				for (String string : splitDimentions) {
+
+				String dimentions = name.substring(name.indexOf("[") + 1, name.indexOf("]"));
+				String[] splitDimentions = dimentions.split(",");
+
+				for (String string : splitDimentions)
+				{
 					size.add(Integer.parseInt(string));
 				}
-				
+
 				name = name.substring(0, name.indexOf("["));
-			} 
-			else
+			} else
 			{
 				throw new Exception("Design parameter type not supported by protocol: "
 						+ name);
 			}
-			
+
 			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
 
 		}
@@ -840,23 +879,22 @@ public class CoSimLaunchConfigurationDelegate extends
 		return shareadDesignParameters;
 	}
 
-	private static Double convertToDouble(Object object) {
+	private static Double convertToDouble(Object object)
+	{
 		if (object instanceof Double)
 		{
 			return ((Double) object);
-		}
-		else if (object instanceof Integer)
+		} else if (object instanceof Integer)
 		{
-			return(((Integer)object).doubleValue());
-		} 
-		else if (object instanceof Boolean)
+			return (((Integer) object).doubleValue());
+		} else if (object instanceof Boolean)
 		{
 			boolean r = ((Boolean) object).booleanValue();
 			Double val = Double.valueOf(0);
 			if (r)
 			{
 				val = Double.valueOf(1);
-			}				
+			}
 			return val;
 		}
 		return null;

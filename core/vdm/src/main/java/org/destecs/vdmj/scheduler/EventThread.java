@@ -30,6 +30,7 @@ public class EventThread implements ISchedulableThread
 {
 	private Thread thread;
 	private long tid = 0;
+	private RunState runstate = RunState.CREATED;
 	public EventThread(Thread t)
 	{
 		//Not used
@@ -71,7 +72,7 @@ public class EventThread implements ISchedulableThread
 	public RunState getRunState()
 	{
 		//Not used
-		return null;
+		return runstate ;
 	}
 
 	public long getSwapInBy()
@@ -123,7 +124,7 @@ public class EventThread implements ISchedulableThread
 	public boolean isVirtual()
 	{
 		//Not used
-		return false;
+		return true;
 	}
 
 	public void locking(Context ctxt, LexLocation location)
@@ -153,7 +154,7 @@ public class EventThread implements ISchedulableThread
 
 	public void setState(RunState newstate)
 	{
-		//Not used
+		this.runstate = newstate;
 	}
 
 	public void setSwapInBy(long swapInBy)

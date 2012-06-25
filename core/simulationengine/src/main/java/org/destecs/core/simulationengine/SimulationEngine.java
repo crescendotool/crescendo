@@ -563,7 +563,7 @@ public class SimulationEngine
 
 		} catch (IOException e)
 		{
-			abort(simulator, "Failed to launch simulator", e);
+			abort(simulator, "Failed to launch simulator. "+e.getMessage(), e);
 		}
 	}
 

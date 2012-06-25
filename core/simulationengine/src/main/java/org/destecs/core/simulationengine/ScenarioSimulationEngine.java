@@ -37,7 +37,7 @@ import org.destecs.protocol.structs.StepinputsStructParam;
 public class ScenarioSimulationEngine extends SimulationEngine
 {
 	Scenario scenario;
-	Queue<Action> actions;
+	public final Queue<Action> actions;
 
 	public ScenarioSimulationEngine(File contractFile, Scenario scenario)
 	{

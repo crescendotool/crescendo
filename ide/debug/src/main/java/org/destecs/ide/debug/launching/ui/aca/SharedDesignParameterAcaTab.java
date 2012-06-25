@@ -332,7 +332,7 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 					}
 				} else if (incrementTable.getItemCount() < sdps.size())
 				{
-					TableItem newItem = new TableItem(incrementTable, SWT.NONE);
+					/*TableItem newItem = */new TableItem(incrementTable, SWT.NONE);
 					
 					// allow new items to be created until we reach the total sdp count
 					
