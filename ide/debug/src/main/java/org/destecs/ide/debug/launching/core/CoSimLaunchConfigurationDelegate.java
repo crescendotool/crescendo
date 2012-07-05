@@ -31,8 +31,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.core.parsers.ScenarioParserWrapper;
@@ -790,7 +792,7 @@ public class CoSimLaunchConfigurationDelegate extends
 					throw new Exception("Failed to parse script file");
 				}
 
-				script = expandScript(script, scenarioFile);
+				script = expandScript(script, scenarioFile,null);
 				return new ScriptSimulationEngine(contractFile, script);
 			}
 
@@ -808,10 +810,31 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 	}
 
-	public List<INode> expandScript(List<INode> script, File scriptFile)
+	public List<INode> expandScript(List<INode> script, File scriptFile,Set<File> used)
 			throws IOException
 	{
-
+		if (used == null)
+		{
+			used = new HashSet<File>();
+		}
+		
+		//Check for infinite loop inclusion
+		if(used.contains(scriptFile))
+		{
+			return new Vector<INode>();//Do not include again
+//			List<INode> notExpandedScript = new Vector<INode>();
+//			for (INode node : script)
+//			{
+//				if (!(node instanceof AScriptInclude))
+//				{
+//					notExpandedScript.add(node);
+//				}
+//			}
+//			return notExpandedScript;
+		}
+		
+		used.add(scriptFile);
+		
 		List<INode> expandedScript = new Vector<INode>();
 		for (INode node : script)
 		{
@@ -820,7 +843,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				ScriptParserWrapper parser = new ScriptParserWrapper();
 				File file = new File(scriptFile.getParentFile(), ((AScriptInclude) node).getFilename().replace('\"', ' ').trim());
 				List<INode> subScript = parser.parse(file);
-				expandedScript.addAll(expandScript(subScript, file));
+				expandedScript.addAll(expandScript(subScript, file,used));
 			} else
 			{
 				expandedScript.add(node);
