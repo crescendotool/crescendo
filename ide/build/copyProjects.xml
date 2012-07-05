@@ -46,7 +46,7 @@
 	overwrite="true" filtering="true">
 	<filterchain>
 		<tokenfilter>
-			<replaceregex pattern="0.0.0" replace="${platformReleaseVersion}"
+			<replaceregex pattern="Bundle-Version: 1.3.3" replace="Bundle-Version: ${platformReleaseVersion}"
 				flags="gi" />
 		</tokenfilter>
 	</filterchain>
