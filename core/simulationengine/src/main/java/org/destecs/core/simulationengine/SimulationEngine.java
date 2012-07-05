@@ -699,6 +699,11 @@ public class SimulationEngine
 							+ deResult.time + " could only do " + ctResult.time
 							+ " and no events were detected. Simulation is stuck!");
 				}
+				
+				if(!ctResult.events.isEmpty() && !contract.getEvents().containsAll(ctResult.events))
+				{
+					abort(Simulator.CT, "Simulator raised unexpected events: " + ctResult.events);
+				}
 
 				// Step DT - step
 				beforeStep = System.currentTimeMillis();
