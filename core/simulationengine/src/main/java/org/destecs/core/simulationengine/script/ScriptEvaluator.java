@@ -17,6 +17,7 @@ import org.destecs.script.ast.expressions.ANumericalSingleExp;
 import org.destecs.script.ast.expressions.ASystemTimeSingleExp;
 import org.destecs.script.ast.expressions.PExp;
 import org.destecs.script.ast.expressions.binop.ALessEqualBinop;
+import org.destecs.script.ast.expressions.binop.ALessThanBinop;
 import org.destecs.script.ast.statement.AAssignStm;
 import org.destecs.script.ast.statement.AErrorMessageStm;
 import org.destecs.script.ast.statement.AOnceStm;
@@ -74,10 +75,13 @@ public class ScriptEvaluator extends AnalysisAdaptor
 	ExpressionEvaluator expEval;
 	Map<AWhenStm, Set<VariableValue>> variableCache = new Hashtable<AWhenStm, Set<VariableValue>>();
 	Map<AWhenStm, PExp> whenForExp = new Hashtable<AWhenStm, PExp>();
+	Set<AWhenStm> whenDisabled = new HashSet<AWhenStm>();
+	
 	
 	Map<AOnceStm, Set<VariableValue>> variableCacheOnce = new Hashtable<AOnceStm, Set<VariableValue>>();
 	Map<AOnceStm, PExp> onceForExp = new Hashtable<AOnceStm, PExp>();
 	Set<AOnceStm> disabledOnce = new HashSet<AOnceStm>();
+	
 	private Set<AOnceStm> disableOnceRevert = new HashSet<AOnceStm>();
 
 	public ScriptEvaluator(ISimulatorControl simulator)
@@ -86,29 +90,58 @@ public class ScriptEvaluator extends AnalysisAdaptor
 		expEval = new ExpressionEvaluator(simulator);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void caseAWhenStm(AWhenStm node) throws Throwable
 	{
+		
+		boolean checkRevert = false;
+		
 		Value v = node.getTest().apply(expEval);
 
-		if (v instanceof BooleanValue && ((BooleanValue) v).value
-				|| checkWhenFor(node))
+		if (v instanceof BooleanValue && ((BooleanValue) v).value && !whenDisabled.contains(node))
 		{
-			if (node.getFor() != null && whenForExp.get(node) == null)
+			
+			if(node.getFor() != null && whenForExp.get(node) == null)
 			{
 				Double expireTime = ((DoubleValue) node.getFor().apply(expEval)).value
 						+ ((DoubleValue) new ASystemTimeSingleExp().apply(expEval)).value;
-				whenForExp.put(node, new ABinaryExp(new ASystemTimeSingleExp(), new ALessEqualBinop(), new ANumericalSingleExp(expireTime)));
+				whenForExp.put(node, new ABinaryExp(new ASystemTimeSingleExp(), new ALessThanBinop(), new ANumericalSingleExp(expireTime)));
 			}
-			for (PStm stm : node.getThen())
+			
+			if((node.getFor() == null) || (whenForExp.get(node) != null && !checkWhenFor(node)))
 			{
-				stm.apply(this);
+				for (PStm stm : node.getThen())
+				{
+					stm.apply(this);
+				}
+				whenDisabled.add(node);
 			}
-		} else
+			
+		}
+		else
+			if(v instanceof BooleanValue && !((BooleanValue) v).value )
 		{
 			whenForExp.remove(node);
-			if (variableCache.containsKey(node))
+			whenDisabled.remove(node);
+			checkRevert = true;
+		}
+		
+		
+//			if(v instanceof BooleanValue && ((BooleanValue) v).value
+//				|| checkWhenFor(node))
+//		{
+//			if (node.getFor() != null && whenForExp.get(node) == null)
+//			{
+//				Double expireTime = ((DoubleValue) node.getFor().apply(expEval)).value
+//						+ ((DoubleValue) new ASystemTimeSingleExp().apply(expEval)).value;
+//				whenForExp.put(node, new ABinaryExp(new ASystemTimeSingleExp(), new ALessEqualBinop(), new ANumericalSingleExp(expireTime)));
+//			}
+//			
+//			
+//		} else
+//		{
+//			whenForExp.remove(node);
+			if (checkRevert && variableCache.containsKey(node) )
 			{
 				for (PStm stm : node.getAfter())
 				{
@@ -116,7 +149,7 @@ public class ScriptEvaluator extends AnalysisAdaptor
 				}
 				variableCache.remove(node);
 			}
-		}
+//		}
 	}
 	
 	@SuppressWarnings("deprecation")
