@@ -87,7 +87,7 @@ public class CoSimResourceScheduler extends ResourceScheduler
 				// System.out.println("Min step "+ minstep + " - Time: "+SystemClock.getWallTime());
 				if (canAdvanceSimulationTime(minstep))
 				{
-					SystemClock.advance(minstep);
+					SystemClock.advance(minstep);//maybe this is tofar
 
 					for (Resource resource : resources)
 					{
@@ -96,6 +96,19 @@ public class CoSimResourceScheduler extends ResourceScheduler
 				}
 
 				idle = false;
+			}else if(idle && minstep == Long.MAX_VALUE )
+			{
+				//only events may still be active
+				minstep = SimulationManager.getInstance().getDefaultEventStepSize();
+				if (canAdvanceSimulationTime(minstep))
+				{
+					SystemClock.advance(nextSimulationStop);
+
+					for (Resource resource : resources)
+					{
+						resource.advance();
+					}
+				}
 			}
 
 		} while (/*!idle &&*/ main.getRunState() != RunState.COMPLETE);
@@ -133,8 +146,9 @@ public class CoSimResourceScheduler extends ResourceScheduler
 	private synchronized boolean canAdvanceSimulationTime(long minstep)
 	{
 		long newTime = SystemClock.getWallTime() + minstep;
+		
 		SimulationManager manager = SimulationManager.getInstance();
-		if (newTime <= nextSimulationStop || ( manager.isOptimizationEnabled() && SharedStateListner.isAutoIncrementTime() && newTime <manager.getFinishTime()))
+		if (newTime > 0 && newTime <= nextSimulationStop || ( manager.isOptimizationEnabled() && SharedStateListner.isAutoIncrementTime() && newTime <manager.getFinishTime()))
 		{
 			return true; // OK, just proceed there is still simulation time left
 		} else

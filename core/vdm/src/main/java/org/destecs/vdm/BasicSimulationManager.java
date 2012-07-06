@@ -475,7 +475,13 @@ public abstract class BasicSimulationManager
 
 	public synchronized Long waitForStep(long minstep)
 	{
-		this.nextSchedulableActionTime = SystemClock.getWallTime() + minstep;
+		if(SystemClock.getWallTime() + minstep > 0)
+		{
+			this.nextSchedulableActionTime = SystemClock.getWallTime() + minstep;
+		}else
+		{
+			this.nextSchedulableActionTime = Long.MAX_VALUE;
+		}
 		interpreterRunning = false;
 		this.notify();
 

@@ -64,12 +64,9 @@ import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
 import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
 import org.overturetool.vdmj.definitions.SystemDefinition;
 import org.overturetool.vdmj.definitions.ValueDefinition;
-import org.overturetool.vdmj.expressions.Expression;
 import org.overturetool.vdmj.expressions.IntegerLiteralExpression;
 import org.overturetool.vdmj.expressions.RealLiteralExpression;
-import org.overturetool.vdmj.expressions.SeqEnumExpression;
 import org.overturetool.vdmj.expressions.SeqExpression;
-import org.overturetool.vdmj.expressions.UnaryMinusExpression;
 import org.overturetool.vdmj.lex.Dialect;
 import org.overturetool.vdmj.lex.LexLocation;
 import org.overturetool.vdmj.lex.LexNameToken;
@@ -82,8 +79,6 @@ import org.overturetool.vdmj.runtime.ValueException;
 import org.overturetool.vdmj.runtime.validation.BasicRuntimeValidator;
 import org.overturetool.vdmj.runtime.validation.ConjectureDefinition;
 import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.CPUResource;
-import org.overturetool.vdmj.scheduler.RunState;
 import org.overturetool.vdmj.scheduler.SharedStateListner;
 import org.overturetool.vdmj.scheduler.SystemClock;
 import org.overturetool.vdmj.statements.IdentifierDesignator;
@@ -99,7 +94,6 @@ import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.OperationValue;
 import org.overturetool.vdmj.values.RealValue;
 import org.overturetool.vdmj.values.SeqValue;
-import org.overturetool.vdmj.values.UndefinedValue;
 import org.overturetool.vdmj.values.UpdatableValue;
 import org.overturetool.vdmj.values.Value;
 import org.overturetool.vdmj.values.ValueList;
@@ -260,9 +254,7 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						EventThread eThread = new EventThread(Thread.currentThread());
 						BasicSchedulableThread.add(eThread);
-						CPUResource.vCPU.register(eThread, 1000);
 						eventOp.eval(coSimLocation, new ValueList(), mainContext);
-						eThread.setState(RunState.COMPLETE);
 						BasicSchedulableThread.remove(eThread);
 						evaluated = true;
 					} catch (ValueException e)
@@ -292,11 +284,6 @@ public class SimulationManager extends BasicSimulationManager
 
 			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()), list).value;
 
-			if(value.deref() instanceof UndefinedValue)
-			{
-				throw new RemoteSimulationException("Value: " + name + " not initialized");
-			}
-			
 			return new ValueContents(VDMClassHelper.getDoubleListFromValue(value), VDMClassHelper.getValueDimensions(value));
 
 		}
@@ -328,13 +315,9 @@ public class SimulationManager extends BasicSimulationManager
 			if (disableRtLog)
 			{
 				RTLogger.enable(false);
-				controller.setLogFile(null);
 			} else
 			{
-				File logFile = new File(outputDir, "ExecutionTrace.logrt");
-				controller.setLogFile(logFile);
-				RTLogger.enable(true);
-				RTLogger.setLogfile(new PrintWriter(logFile));
+				controller.setLogFile(new File(outputDir, "ExecutionTrace.logrt"));
 			}
 			
 			if(Settings.timingInvChecks)
@@ -720,9 +703,8 @@ public class SimulationManager extends BasicSimulationManager
 				@SuppressWarnings("deprecation")
 				StringPair vName = links.getBoundVariable(parameterName);
 				Object[] objValue = (Object[]) parameter.get("value");
-				Object[] dimension = (Object[]) parameter.get("size");
-				
-				
+
+				Double newValue = (Double) objValue[0];
 				for (ClassDefinition cd : controller.getInterpreter().getClasses())
 				{
 					if (!cd.getName().equals(vName.instanceName))
@@ -736,27 +718,33 @@ public class SimulationManager extends BasicSimulationManager
 						{
 							ValueDefinition vDef = (ValueDefinition) def;
 							if (vDef.pattern.toString().equals(vName.variableName)
-									&& vDef.isValueDefinition())
+									&& vDef.isValueDefinition()
+									&& vDef.getType() instanceof RealType)
 							{
-								if(dimension.length == 1 && ((Integer) dimension[0] == 1))
+
+								if (vDef.exp instanceof RealLiteralExpression)
 								{
-									Double newValue = (Double) objValue[0];
-									found = setValueForSDP(newValue, vDef);
+									RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
+									LexRealToken token = exp.value;
+
+									Field valueField = LexRealToken.class.getField("value");
+									valueField.setAccessible(true);
+
+									valueField.setDouble(token, newValue);
+									found = true;
 								}
-								else
+
+								if (vDef.exp instanceof IntegerLiteralExpression)
 								{
-									//dealing with a sequence				
-									if(vDef.exp instanceof SeqEnumExpression)
-									{
-										SeqEnumExpression seqEnum = (SeqEnumExpression) vDef.exp;
-										found = createSeqEnum(vName.variableName,seqEnum,objValue,dimension);										
-									}
-																		
+									RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.exp.location));
+									Field valDefField = ValueDefinition.class.getField("exp");
+									valDefField.setAccessible(true);
+									valDefField.set(vDef, newReal);
+									found = true;
 								}
+								break;
 							}
 						}
-						
-						
 					}
 				}
 				if (!found)
@@ -781,116 +769,6 @@ public class SimulationManager extends BasicSimulationManager
 		}
 
 		return true;
-	}
-
-	private boolean createSeqEnum(String variableName, SeqEnumExpression seqEnum, Object[] objValue,
-			Object[] objDimensions) throws NoSuchFieldException, IllegalAccessException, RemoteSimulationException
-	{
-		List<Integer> dimensions = new Vector<Integer>();
-		int index = 0;
-		boolean found = true;
-		for (Object o : objDimensions)
-		{
-			if(o instanceof Integer)
-			{
-				dimensions.add((Integer) o);
-			}
-		}
-		
-		if(dimensions.size() == 1) //it's an array
-		{
-			for (Expression exp : seqEnum.members)
-			{
-				if(exp instanceof SeqEnumExpression)
-				{
-					found = found && setValueForSDP((Double) objValue[index++], exp);
-				}
-			}
-		}
-		else //it's a matrix
-		{
-			boolean match = checkDimentionsOfSeqEnum(seqEnum,dimensions);
-			if(!match)
-			{
-				throw new RemoteSimulationException("Dimension of \""+ variableName + "\" does not match the SDP ");
-			}
-			for (Expression exp : seqEnum.members)
-			{
-				if(exp instanceof SeqEnumExpression)
-				{
-					SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
-					for (Expression expInner : seqEnumInner.members)
-					{
-						found = found && setValueForSDP((Double) objValue[index++], expInner);
-					}				
-				}
-			}
-		}
-		
-		
-		return found;
-	}
-
-	private boolean checkDimentionsOfSeqEnum(SeqEnumExpression seqEnum,
-			List<Integer> dimensions)
-	{
-		if(seqEnum.members.size() != dimensions.get(0))
-			return false;
-		
-		for (Expression exp : seqEnum.members)
-		{
-			if(exp instanceof SeqEnumExpression)
-			{
-				SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
-				if(seqEnumInner.members.size() != dimensions.get(1))
-					return false;
-			}
-		}
-		
-		return true;
-		
-	}
-
-	private boolean setValueForSDP( 
-			Double newValue, Expression exp) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException
-	{
-		boolean found = false;
-		
-		if (exp != null && exp instanceof RealLiteralExpression)
-		{
-			RealLiteralExpression rExp = ((RealLiteralExpression) exp);
-			LexRealToken token = rExp.value;
-
-			Field valueField = LexRealToken.class.getField("value");
-			valueField.setAccessible(true);
-
-			valueField.setDouble(token, newValue);
-			found = true;
-		}
-		return found;
-	}
-	
-	private boolean setValueForSDP( 
-			Double newValue, ValueDefinition vDef) throws NoSuchFieldException,
-			IllegalAccessException
-	{
-		boolean found = false;
-		
-				if (vDef.exp != null && vDef.exp instanceof RealLiteralExpression)
-				{
-					found = setValueForSDP(newValue, vDef.exp);
-
-				} else if (vDef.exp != null && vDef.exp instanceof IntegerLiteralExpression || vDef.exp instanceof UnaryMinusExpression)
-				{
-					RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.location));
-					Field valDefField = ValueDefinition.class.getField("exp");
-					valDefField.setAccessible(true);
-					valDefField.set(vDef, newReal);
-					found = true;
-				}
-				
-	
-		return found;
 	}
 
 	public GetDesignParametersStructdesignParametersStruct getDesignParameter(
@@ -1226,4 +1104,10 @@ public class SimulationManager extends BasicSimulationManager
 	public long getFinishTime() {
 		return internalFinishTime;
 	}
+
+	public long getDefaultEventStepSize()
+	{
+		return Long.MAX_VALUE;
+	}
+
 }

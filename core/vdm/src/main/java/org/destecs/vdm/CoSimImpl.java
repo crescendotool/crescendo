@@ -334,13 +334,21 @@ public class CoSimImpl implements IDestecs
 
 			outputTime = new Double(SystemClock.timeToInternal(TimeUnit.seconds, outputTime));
 			result = SimulationManager.getInstance().step(outputTime, inputs, events);
-
+			boolean skipFinishTestDoToLingTipOver = result.time == Long.MAX_VALUE;
 			result.time = SystemClock.internalToTime(TimeUnit.seconds, result.time.longValue());
-			if (result.time > finishTime)
+			if (result.time > finishTime && !skipFinishTestDoToLingTipOver)
 			{
 				// The next point where VDM needs CT communication is result.time but if the simulation stops before we
 				// are not by protocol allowed to ask for this.
 				result.time = finishTime;
+			}
+			
+			if(skipFinishTestDoToLingTipOver)
+			{
+				//this means that we have nothing to do in VDM except for a potential future event
+				// we can not report finish time since this will stop simulation
+				// we have to report finish time minus smallest step.
+				result.time = finishTime-1;
 			}
 
 			return result.toMap();
