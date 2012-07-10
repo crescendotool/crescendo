@@ -19,6 +19,7 @@
 package org.destecs.vdm.utility;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -198,8 +199,22 @@ public class VDMClassHelper {
 		return result;
 	}
 
+	private static String dotName(List<String> names)
+	{
+		String name = "";
+		for (Iterator<String> iterator = names.iterator(); iterator.hasNext();)
+		{
+			name+=(String) iterator.next();
+			if(iterator.hasNext())
+			{
+				name+=".";
+			}
+		}
+		return name;
+	}
+	
 	public static Definition findDefinitionInClass(ClassList classList,
-			List<String> variableName) {
+			List<String> variableName) throws RemoteSimulationException {
 		
 		if(variableName.size() <= 1)
 		{
@@ -210,6 +225,11 @@ public class VDMClassHelper {
 		String varName = variableName.get(1);
 		
 		Definition s = classList.findName(new LexNameToken(className, varName, null), NameScope.NAMES);
+		
+		if(s== null)
+		{
+			throw new RemoteSimulationException("Unable to locate: \""+dotName(variableName)+"\" failed with: \""+varName+"\". Is this accessiable through the system while inilializing");
+		}
 		
 		List<String> restOfQuantifier = variableName.subList(2, variableName.size());
 		
@@ -224,6 +244,11 @@ public class VDMClassHelper {
 				className = s.getType().getName();
 				
 				s = classList.findName(new LexNameToken(className, restOfQuantifier.get(i),null), NameScope.NAMESANDSTATE);
+				
+				if(s== null)
+				{
+					throw new RemoteSimulationException("Unable to locate: \""+dotName(variableName)+"\" failed with: \""+varName+"\". Is this accessiable through the system while inilializing");
+				}
 			}
 		}
 		

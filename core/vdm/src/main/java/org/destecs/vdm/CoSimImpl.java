@@ -241,7 +241,9 @@ public class CoSimImpl implements IDestecs
 				return extractDefinitionDimensions(def);
 			}
 
-		} catch (Exception e)
+		}catch(RemoteSimulationException e){
+			throw e;
+		}catch (Exception e)
 		{
 			ErrorLog.log(e);
 			throw new RemoteSimulationException("Fatal error in dimention calculation for \"" 	+ linkInfo 	+ "\"",e);
