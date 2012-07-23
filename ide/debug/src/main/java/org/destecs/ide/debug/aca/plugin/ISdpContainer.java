@@ -1,10 +1,10 @@
 package org.destecs.ide.debug.aca.plugin;
 
-import java.util.Set;
+import java.util.List;
 
 public interface ISdpContainer {
 
 	
 	public String getName();
-	public Set<Double> getValues();
+	public List<Double> getValues();
 }

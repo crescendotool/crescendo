@@ -24,11 +24,14 @@ import java.util.List;
 import java.util.Vector;
 
 import org.destecs.protocol.exceptions.RemoteSimulationException;
+import org.destecs.vdm.SimulationManager;
 import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.ClassList;
 import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.runtime.ValueException;
+import org.overturetool.vdmj.scheduler.Resource;
+import org.overturetool.vdmj.scheduler.ResourceScheduler;
 import org.overturetool.vdmj.typechecker.NameScope;
 import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.CPUValue;
@@ -54,7 +57,7 @@ public class VDMClassHelper {
 	
 	public static ValueInfo digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
 		Value value = null;						
-		if(list.size() >= 1)
+		if(list.size() > 0)
 		{
 			String namePart = varName.get(0);
 			for (NameValuePair p : list)
@@ -69,6 +72,10 @@ public class VDMClassHelper {
 						
 						ValueInfo result = digForVariable(getNewName(varName), newArgs);
 						return result;
+					}
+					else
+					{
+						return createValue(p.name, null, value, CPUValue.vCPU);
 					}
 				}
 			}
@@ -245,10 +252,10 @@ public class VDMClassHelper {
 				
 				s = classList.findName(new LexNameToken(className, restOfQuantifier.get(i),null), NameScope.NAMESANDSTATE);
 				
-				if(s== null)
-				{
-					throw new RemoteSimulationException("Unable to locate: \""+dotName(variableName)+"\" failed with: \""+varName+"\". Is this accessiable through the system while inilializing");
-				}
+//				if(s== null)
+//				{
+//					throw new RemoteSimulationException("Unable to locate: \""+dotName(variableName)+"\" failed with: \""+varName+"\". Is this accessiable through the system while inilializing");
+//				}
 			}
 		}
 		

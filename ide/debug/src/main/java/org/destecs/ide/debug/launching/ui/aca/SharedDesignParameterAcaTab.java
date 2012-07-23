@@ -20,11 +20,15 @@ package org.destecs.ide.debug.launching.ui.aca;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.ide.debug.DestecsDebugPlugin;
@@ -56,6 +60,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+
 
 public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 {
@@ -170,9 +175,6 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 		}
 
 		addEditorToIncrementTable();
-
-		
-		
 	}
 
 	private void addEditorToIncrementTable()
@@ -224,6 +226,9 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 						// }
 						for (String key : sdps)
 						{
+							if(key.contains("["))
+								continue;
+							
 							if (getItemIfPresent(key) == null
 									|| item.getText(column).equals(key))
 							{
@@ -773,7 +778,8 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 							if (result != null)
 							{
 								sdps.clear();
-								sdps.addAll(result.keySet());
+								sdps.addAll(filterComplexSdps(result.keySet()));
+								sdps.addAll(decomposeComplexSdps(result.keySet()));
 								return;
 							}
 						}
@@ -787,6 +793,78 @@ public class SharedDesignParameterAcaTab extends AbstractLaunchConfigurationTab
 				}
 			}
 		}
+	}
+
+	private Collection<? extends String> decomposeComplexSdps(Set<String> keySet) {
+		Set<String> result = new HashSet<String>();
+		for (String string : keySet) {
+			if(string.contains("["))
+			{
+				
+				int startIndex = string.indexOf("[");
+				int endIndex = string.indexOf("]");
+				String sdpName = string.substring(0,startIndex);
+				String sdpDimentions = string.substring(startIndex+1,endIndex);
+				String[] stringDims = sdpDimentions.split(",");
+				List<Integer> dimensions = parseStringDims(stringDims);
+				List<String> complexSdpDimensions = buildMatrixIndexes(dimensions);
+				for (String individualDims : complexSdpDimensions) {
+					result.add(sdpName + "[" + individualDims + "]");
+				}
+			}
+		}
+		
+		
+		return result;
+	}
+	
+	private List<Integer> parseStringDims(String[] stringDims) {
+		List<Integer> result = new Vector<Integer>();
+		
+		for (String integer : stringDims) {
+			result.add(Integer.parseInt(integer));
+		}
+		
+		return result;
+	}
+
+	private List<String> buildMatrixIndexes(List<Integer> dimensions)
+	{
+		List<String> result = new ArrayList<String>();
+
+		for (int i = 0; i < dimensions.get(0); i++)
+		{
+			result.add(Integer.toString(i + 1));
+		}
+
+		for (int i = 1; i < dimensions.size(); i++)
+		{
+			List<String> tempResult = new ArrayList<String>();
+			for (int j = 0; j < dimensions.get(i); j++)
+			{
+				for (String string : result)
+				{
+					tempResult.add(string + "," + (j + 1));
+				}
+			}
+			result = tempResult;
+		}
+
+		Collections.sort(result);
+		return result;
+	}
+
+	private Collection<? extends String> filterComplexSdps(Set<String> keySet) {
+		Set<String> result = new HashSet<String>();
+		
+		for (String string : keySet) {
+			if(!string.contains("["))
+			{
+				result.add(string);
+			}
+		}
+		
+		return result;
 	}
 
 	private HashMap<String, List<String>> getItemIfPresent(String name)

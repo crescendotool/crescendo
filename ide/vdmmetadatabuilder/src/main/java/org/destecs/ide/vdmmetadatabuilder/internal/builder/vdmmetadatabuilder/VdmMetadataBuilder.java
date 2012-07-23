@@ -121,7 +121,7 @@ public class VdmMetadataBuilder extends
 							{
 								values.add(def.getName());
 
-								String typeName = getVdmTypeName(def);
+								String typeName = getTypeName(getVdmTypeName(def));
 								if (!typeName.equals(UNKNOWN))
 								{
 									save(props, node.getName() + "."
@@ -133,11 +133,11 @@ public class VdmMetadataBuilder extends
 							{
 								values.add(def.getName());
 
-								String typeName = getVdmTypeName(def);
+								String typeName = getTypeName(getVdmTypeName(def));
 								if (!typeName.equals(UNKNOWN))
 								{
 									save(props, node.getName() + "."
-											+ def.getName(), typeName+ "," + "variable");
+											+ def.getName(), getNameTypeString(getVdmTypeName(def)));
 								}
 							}
 							else
@@ -215,7 +215,10 @@ public class VdmMetadataBuilder extends
 			save(props, name, SYSTEM_TYPE_NAME + ",systemclass");
 		} else
 		{
-			save(props, name, getVdmTypeName(def) + ",class");
+			
+			
+			
+			save(props, name, getNameTypeString(getVdmTypeName(def)));
 		}
 
 		if (defIsField)
@@ -238,6 +241,18 @@ public class VdmMetadataBuilder extends
 		}
 	}
 
+	private String getNameTypeString(Type type) {
+		if(type.isClass())
+		{
+			return getTypeName(type) + ",class";
+		}
+		else
+		{
+			return getTypeName(type) + ",variable";
+		}
+		
+	}
+
 	private void save(Properties props, String name, String list)
 	{
 		if (name.trim().length() > 0 && list.trim().length() > 0)
@@ -258,7 +273,7 @@ public class VdmMetadataBuilder extends
 		return sb.substring(1).trim();
 	}
 
-	private String getVdmTypeName(IAstNode node)
+	private Type getVdmTypeName(IAstNode node)
 	{
 		Type t = null;
 
@@ -273,14 +288,12 @@ public class VdmMetadataBuilder extends
 			t = ((LocalDefinition) node).type;
 		}
 
-		return getTypeName(t);
+		return t;
 
 	}
 
 	private String getTypeName(Type t)
 	{
-		
-		
 		if (t instanceof RealType || t.isType("real") != null)
 		{
 			return "real";
