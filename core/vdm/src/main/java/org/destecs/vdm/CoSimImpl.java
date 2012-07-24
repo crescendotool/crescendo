@@ -749,4 +749,9 @@ public class CoSimImpl implements IDestecs
 		return vars.toMap();
 	}
 
+	public Boolean saveRequired() throws Exception
+	{
+		return false;
+	}
+
 }

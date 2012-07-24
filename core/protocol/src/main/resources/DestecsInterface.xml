@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="protocol.xsl"?>
-<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<XML-RPC_Library xsi:noNamespaceSchemaLocation="xml-rpc_library.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<schemeVersion>
 		<major>1</major>
 		<minor>0</minor>
@@ -11,7 +12,7 @@
 	<interfaceVersion>
 		<major>3</major>
 		<minor>0</minor>
-		<revision>3</revision>
+		<revision>4</revision>
 	</interfaceVersion>
 	<implementationVersion>
 		<major>3</major>
@@ -45,6 +46,7 @@ Commands:
 <li>getVersion
 <li>initialize
 <li>load
+<li>saveRequired
 <li>queryInterface
 <li>getDesignParameters
 <li>setDesignParameters
@@ -65,7 +67,7 @@ Commands that can be fired at any point:
 </ul>
 ]]></description>
 	<methods>
-		<!--getVersion-->
+		<!--getVersion -->
 		<method>
 			<description>Gets the name and version of the simulator in the form: name / majorVersion.MinorVersion.revision.patch</description>
 			<methodCall>
@@ -103,7 +105,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--initialize-->
+		<!--initialize -->
 		<method>
 			<description>Initialize the simulator for co-simulation, after calling this function all the other functions should be available, load, step ...</description>
 			<methodCall>
@@ -119,7 +121,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--terminate-->
+		<!--terminate -->
 		<method>
 			<description>Terminates the simulator tool. After a reply no futher communication be be posible. The simulator tool will release all resources and terminate.</description>
 			<methodCall>
@@ -135,7 +137,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--load-->
+		<!--load -->
 		<method>
 			<description>Loads a (model) file from its path. The model is activated and initialized after loading</description>
 			<methodCall>
@@ -185,7 +187,23 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--queryInterface-->
+		<!--saveRequired -->
+		<method>
+			<description>Checks if the model requires a save. Function can be called to avoid loosing user data before a new load.</description>
+			<methodCall>
+				<methodName>destecs.saveRequired</methodName>
+			</methodCall>
+			<methodResponse>
+				<params>
+					<param>
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</param>
+				</params>
+			</methodResponse>
+		</method>
+		<!--queryInterface -->
 		<method>
 			<description>
         Queries the interface used in Co-Simulation Grouped in a Map with keys SharedDesignParameters,DesignParameters,Inputs,Outputs.
@@ -324,7 +342,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--queryVariables-->
+		<!--queryVariables -->
 		<method>
 			<description>
 			Perform a query and return a list of all variables that can be accessed and logged.
@@ -367,7 +385,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--queryParameters-->
+		<!--queryParameters -->
 		<method>
 			<description>
 			Perform a query and return a list of all parameters that can be accessed and logged.
@@ -410,7 +428,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--QueryImplementations-->
+		<!--QueryImplementations -->
 		<method>
 			<methodCall>
 				<methodName>destecs.queryImplementations</methodName>
@@ -433,9 +451,13 @@ Commands that can be fired at any point:
 											<member>
 												<name>implementations</name>
 												<value>
-													<array><data><value>
-														<string>implementationX</string>
-													</value></data></array>
+													<array>
+														<data>
+															<value>
+																<string>implementationX</string>
+															</value>
+														</data>
+													</array>
 												</value>
 												<description>List with available implementations for this model</description>
 											</member>
@@ -455,7 +477,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--SetParameters-->
+		<!--SetParameters -->
 		<method>
 			<description>Sets parameters that are *not* used in the co-simulation.</description>
 			<methodCall>
@@ -522,7 +544,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--SetDesignParameters-->
+		<!--SetDesignParameters -->
 		<method>
 			<description>Sets design parameters that are used in the co-simulation.</description>
 			<methodCall>
@@ -589,7 +611,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--SetImplementations-->
+		<!--SetImplementations -->
 		<method>
 			<methodCall>
 				<methodName>destecs.setImplementations</methodName>
@@ -621,7 +643,7 @@ Commands that can be fired at any point:
 						</value>
 					</param>
 				</params>
-				</methodCall>
+			</methodCall>
 			<methodResponse>
 				<params>
 					<param>
@@ -632,7 +654,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--GetParameters-->
+		<!--GetParameters -->
 		<method>
 			<description>Gets values from all parameters that are *not* used in the co-simulation.</description>
 			<methodCall>
@@ -640,9 +662,13 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<array><data>
-								<value><string>submodelA.parameterB</string></value>
-							</data></array>
+							<array>
+								<data>
+									<value>
+										<string>submodelA.parameterB</string>
+									</value>
+								</data>
+							</array>
 						</value>
 					</param>
 				</params>
@@ -702,7 +728,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--getDesignParameters-->
+		<!--getDesignParameters -->
 		<method>
 			<description>Gets values from all parameters that are used in the co-simulation.</description>
 			<methodCall>
@@ -710,9 +736,13 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<array><data>
-								<value><string>submodelA.designParameterB</string></value>
-							</data></array>
+							<array>
+								<data>
+									<value>
+										<string>submodelA.designParameterB</string>
+									</value>
+								</data>
+							</array>
 						</value>
 					</param>
 				</params>
@@ -772,7 +802,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--GetVariables-->
+		<!--GetVariables -->
 		<method>
 			<description>Gets values from all variables in the given list.</description>
 			<methodCall>
@@ -780,9 +810,13 @@ Commands that can be fired at any point:
 				<params>
 					<param>
 						<value>
-							<array><data>
-								<value><string>submodelA.variableB</string></value>
-							</data></array>
+							<array>
+								<data>
+									<value>
+										<string>submodelA.variableB</string>
+									</value>
+								</data>
+							</array>
 						</value>
 					</param>
 				</params>
@@ -842,7 +876,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--step-->
+		<!--step -->
 		<method>
 			<description>Step is used to progress in simulation, it pushes time forward. A step inputs variables and the step time and returns variables changed during the step and the time at which the next change in the server can take place.</description>
 			<methodCall>
@@ -1007,7 +1041,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--getStatus-->
+		<!--getStatus -->
 		<method>
 			<description>Gets the status: 0=Not Initialized, 1=Initialized, 2=Step Taken, not finished, 3=Finished, 4= Loaded</description>
 			<methodCall>
@@ -1031,7 +1065,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--start-->
+		<!--start -->
 		<method>
 			<description>Starts the simulator or interpreter. After this function is called a Step can be taken</description>
 			<methodCall>
@@ -1069,7 +1103,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--stop-->
+		<!--stop -->
 		<method>
 			<description>Stops the simulator or interpreter. After this function is no Steps can be taken and the model cannot be Satrted again</description>
 			<methodCall>
@@ -1085,7 +1119,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--suspend-->
+		<!--suspend -->
 		<method>
 			<description>Suspends the simulator or interpreter. After this function is no Steps can be taken. Simulation may be stopped</description>
 			<methodCall>
@@ -1101,7 +1135,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--resume-->
+		<!--resume -->
 		<method>
 			<description>Resumes the simulator or interpreter from suspended state. (Does nothing if state was not suspended)</description>
 			<methodCall>
@@ -1116,34 +1150,38 @@ Commands that can be fired at any point:
 					</param>
 				</params>
 			</methodResponse>
-		</method>	
-		<!--SetSetting-->
+		</method>
+		<!--SetSetting -->
 		<method>
 			<description>Set a setting.</description>
 			<methodCall>
 				<methodName>destecs.setSettings</methodName>
 				<params>
 					<param>
-						<value><array><data>
-							<value>
-								<struct>
-									<member>
-										<name>key</name>
-										<value>
-											<string>model.integrationmethod</string>
-										</value>
-										<description>The key (name) of the setting is an hierarchical path. In the key, for example, the first level may denote a model or tool setting.</description>
-									</member>
-									<member>
-										<name>value</name>
-										<value>
-											<string>Euler</string>
-										</value>
-										<description>The value belonging to the spefied key, in string format</description>
-									</member>
-								</struct>
-							</value>
-						</data></array></value>
+						<value>
+							<array>
+								<data>
+									<value>
+										<struct>
+											<member>
+												<name>key</name>
+												<value>
+													<string>model.integrationmethod</string>
+												</value>
+												<description>The key (name) of the setting is an hierarchical path. In the key, for example, the first level may denote a model or tool setting.</description>
+											</member>
+											<member>
+												<name>value</name>
+												<value>
+													<string>Euler</string>
+												</value>
+												<description>The value belonging to the spefied key, in string format</description>
+											</member>
+										</struct>
+									</value>
+								</data>
+							</array>
+						</value>
 					</param>
 				</params>
 			</methodCall>
@@ -1157,16 +1195,20 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--QuerySettings-->
+		<!--QuerySettings -->
 		<method>
 			<methodCall>
 				<methodName>destecs.querySettings</methodName>
 				<params>
 					<param>
 						<value>
-							<array><data>
-								<value><string>model.settingX</string></value>
-							</data></array>
+							<array>
+								<data>
+									<value>
+										<string>model.settingX</string>
+									</value>
+								</data>
+							</array>
 						</value>
 					</param>
 				</params>
@@ -1255,7 +1297,7 @@ Commands that can be fired at any point:
 				</params>
 			</methodResponse>
 		</method>
-		<!--setLogVariables-->
+		<!--setLogVariables -->
 		<method>
 			<description>Specify a list of variables that needs to be stored. After a simulation the variables are stored to the given file.</description>
 			<methodCall>
