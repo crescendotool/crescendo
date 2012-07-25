@@ -251,7 +251,7 @@ ${VersionCompare} $0 ${SIM20_VERSION} $1
 ;    $1=2  Version2 is newer
 IntCmp $1 2 higher lower 
 higher:
-   DetailPrint "Installing 20sim version $0 present in the installer" 
+   DetailPrint "Installing 20sim version ${SIM20_VERSION} present in the installer" 
    call 20simInstall   
    Goto done 
 lower:
