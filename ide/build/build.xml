@@ -67,9 +67,9 @@
 
 	
 	<!-- Git info -->
-	<available file=".git" type="dir" property="git.present"/>
+	<!--available file=".git" type="dir" property="git.present"/-->
 
-	<target name="git.revision" description="Store git revision in ${repository.version}" if="git.present">
+	<target name="git.revision" description="Store git revision in ${repository.version}">
 	    <exec executable="git" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
 	        <arg value="describe"/>
 	        <arg value="--tags"/>
@@ -82,7 +82,7 @@
 	            <length string="${git.revision}" trim="yes" length="0" when="greater"/>
 	        </and>
 	    </condition>
-		<echo message="-----------------------------------------------------\n Repository version: ${repository.version}" />
+		<echo message="Repository version: ${git.revision} ${repository.version}" />
 	</target>
 	
 	<!--
