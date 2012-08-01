@@ -82,6 +82,7 @@
 	            <length string="${git.revision}" trim="yes" length="0" when="greater"/>
 	        </and>
 	    </condition>
+		<echo message="-----------------------------------------------------\n Repository version: ${repository.version}" />
 	</target>
 	
 	<!--
