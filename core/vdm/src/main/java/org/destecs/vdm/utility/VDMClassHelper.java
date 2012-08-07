@@ -231,7 +231,7 @@ public class VDMClassHelper {
 		String className = variableName.get(0);
 		String varName = variableName.get(1);
 		
-		Definition s = classList.findName(new LexNameToken(className, varName, null), NameScope.NAMES);
+		Definition s = classList.findName(new LexNameToken(className, varName, null), NameScope.NAMESANDSTATE);
 		
 		if(s== null)
 		{
