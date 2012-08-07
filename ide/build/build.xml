@@ -1,69 +1,10 @@
-<!--
-    This program and the accompanying materials are made available
-    under the terms of the Eclipse Public License v1.0 which
-    accompanies this distribution, and is available at
-      http://www.eclipse.org/legal/epl-v10.html
-    
-    This build script creates a build directory containing the plugins
-    and features to be built, and then kicks off the PDE build process.
-    You could just as easily do this from a shell script or cron job.
-    
-    Also, the script can be run inside the Eclipse IDE by choosing 
-    Run As -> Ant Build from the context menu. It could obviously be
-    run outside of the IDE if you have ANT installed on your path.
-    
-    If you have any questions about this build, feel free to contact me
-    at patrick@rcpquickstart.com.
-    
-    Modified by Lukas Zapletal <lzapletal@pikeelectronic.com>.
--->
-<!DOCTYPE project [
-       <!ENTITY copyProjects SYSTEM "copyProjects.xml">
-]>
 <project name="org.destecs.ide" default="build">
 	<tstamp />
 	<property file="build.properties" />
 
 
 
-	<target name="validateEnv">
-		<sequential>
-			<available file="svn" filepath="${env.PATH}" property="svn.executable" />
-			<available file="mvn" filepath="${env.PATH}" property="mvn.executable" />
-			<!--property name="mvn.executable" value="true">
-			</property-->
-			<echo message="${mvn.executable}">
-			</echo>
-			<fail message="1MVN not avaliable in path">
-				<condition>
-					<not>
-						<available file="${mvn.executable}" />
-					</not>
-				</condition>
-			</fail>
-			<fail message="2SVN not avaliable in path" unless="svn.executable" />
-			<echo>Environment validated</echo>
-		</sequential>
-	</target>
-
-	<!-- Define the classpath which includes the jars that are required for svnant.jar -->
-	<path id="svnant.class.path">
-		<pathelement location="lib/svnant.jar" />
-		<pathelement location="lib/svnClientAdapter.jar" />
-		<pathelement location="lib/svnjavahl.jar" />
-		<pathelement location="lib/svnkit.jar" />
-	</path>
-
-	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svnant.class.path" />
-	<!-- SVN info -->
-	<target name="svn-info">
-		<svn>
-			<info target="../" />
-		</svn>
-		<!-- show revision, author and date -->
-
-		<echo message="${svn.info.rev}" />
-	</target>
+	
 
 	
 	<!-- Git info -->
@@ -101,7 +42,7 @@
 		<mkdir dir="${buildDirectory}" />
 		<mkdir dir="${buildDirectory}/plugins" />
 		<mkdir dir="${buildDirectory}/features" />
-		&copyProjects;
+		<ant antfile="copyProjects.xml" target="copy-projects" />
 	</target>
 
 	<!--

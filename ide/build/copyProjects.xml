@@ -1,80 +1,53 @@
-<copy todir="${buildDirectory}/plugins">
-	<fileset dir="../">
-		<include name="ui/**" />
-		<include name="core/**" />
-		<!--include name="contracteditor/**" /-->
-		<include name="simeng/**" />
+<project name="org.destecs.ide.copy" default="copy-projects">
+	<target name="copy-projects" description="Copies all projects into place">
+		<echo message="Copying sources into build folders" />
+		<copy todir="${buildDirectory}/plugins">
+			<fileset dir="../">
+				<include name="ui/**" />
+				<include name="core/**" />
+				<include name="simeng/**" />
+				<include name="debug/**" />
+				<include name="platform/**" />
+				<include name="vdmmetadatabuilder/**" />
+				<include name="libraries/**" />
+			</fileset>
+		</copy>
 
-		<!-- include name="ui/**" />
-		<include name="core/**" /-->
-		<include name="debug/**" />
-		<!--include name="help/**" /-->
-		<include name="platform/**" />
-		<include name="vdmmetadatabuilder/**" />
-		<include name="libraries/**" />
-		<!--  include name="ui/**" /-->
-		<!--exclude name="**/target/" /-->
-	</fileset>
-	<!--
-		fileset dir="../plugins/"> <include name="**" /> <exclude
-		name="**/idedebughelper/" /> <exclude name="**/proofsupport/" />
-		</fileset
-	-->
-</copy>
+		<!-- Platform plugin, manage version number -->
+		<copy todir="${buildDirectory}/plugins" filtering="true">
+			<fileset dir="../">
+				<include name="platform/**" />
+				<exclude name="**/target/" />
+			</fileset>
+		</copy>
+		<copy file="../platform/plugin.properties" toFile="${buildDirectory}/plugins/platform/plugin.properties"
+			overwrite="true" filtering="true">
+			<filterchain>
+				<replacetokens>
+					<token key="version" value="${platformReleaseVersion}${RCVersion}" />
+					<token key="builddate" value="${TODAY}" />
+					<token key="gitrevision" value="${repository.version}" />
+					<token key="svnurl" value="${svn.info.url}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<copy file="../platform/META-INF/MANIFEST.MF"
+			toFile="${buildDirectory}/plugins/platform/META-INF/MANIFEST.MF"
+			overwrite="true" filtering="true">
+			<filterchain>
+				<tokenfilter>
+					<replaceregex pattern="Bundle-Version: 1.3.3"
+						replace="Bundle-Version: ${platformReleaseVersion}" flags="gi" />
+				</tokenfilter>
+			</filterchain>
+		</copy>
 
+		<copy todir="${buildDirectory}">
+			<fileset dir="../">
+				<include name="features/rcp/**" />
+				<exclude name="**/target/" />
+			</fileset>
 
-	<!-- Platform plugin, manage version number -->
-<copy todir="${buildDirectory}/plugins" filtering="true">
-	<fileset dir="../">
-		<include name="platform/**" />
-		<exclude name="**/target/" />
-	</fileset>
-</copy>
-<copy file="../platform/plugin.properties" toFile="${buildDirectory}/plugins/platform/plugin.properties"
-	overwrite="true" filtering="true">
-	<filterchain>
-		<replacetokens>
-			<token key="version" value="${platformReleaseVersion}${RCVersion}" />
-			<token key="builddate" value="${TODAY}" />
-			<token key="gitrevision" value="${repository.version}" />
-			<token key="svnurl" value="${svn.info.url}" />
-		</replacetokens>
-	</filterchain>
-</copy>
-<copy file="../platform/META-INF/MANIFEST.MF"
-	toFile="${buildDirectory}/plugins/platform/META-INF/MANIFEST.MF"
-	overwrite="true" filtering="true">
-	<filterchain>
-		<tokenfilter>
-			<replaceregex pattern="Bundle-Version: 1.3.3" replace="Bundle-Version: ${platformReleaseVersion}"
-				flags="gi" />
-		</tokenfilter>
-	</filterchain>
-</copy>
-
-	<!-- generated -->
-<!--copy todir="${buildDirectory}/plugins/destecs.generated.simulationengine">
-	<fileset dir="../generated/simulationengine">
-		<exclude name="**/target/" />
-	</fileset>
-</copy>
-
-<copy todir="${buildDirectory}/plugins/destecs.generated.vdm">
-	<fileset dir="../generated/vdm">
-		<exclude name="**/target/" />
-	</fileset>
-</copy-->
-	<!-- IDE -->
-
-
-<copy todir="${buildDirectory}">
-	<fileset dir="../">
-		<!--  include name="features/core/**" /-->
-		<include name="features/rcp/**" />
-		<exclude name="**/target/" />
-	</fileset>
-
-</copy>
-	<!--
-		Copying features and renaming the directories to a flat structure
-	-->
+		</copy>
+	</target>
+</project>
