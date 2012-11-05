@@ -21,5 +21,11 @@ public class ValueInfo
 		this.classDef = classDef;
 		this.name = name;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Name: "+ name.getName()+ " CPU:"+ cpu.getName()+  " Class:"+ classDef.getName()+ " Value:"+value;
+	}
 
 }
