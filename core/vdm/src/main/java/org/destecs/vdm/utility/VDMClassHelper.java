@@ -18,46 +18,54 @@
  *******************************************************************************/
 package org.destecs.vdm.utility;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.protocol.exceptions.RemoteSimulationException;
-import org.destecs.vdm.SimulationManager;
 import org.overturetool.vdmj.definitions.ClassDefinition;
 import org.overturetool.vdmj.definitions.ClassList;
 import org.overturetool.vdmj.definitions.Definition;
 import org.overturetool.vdmj.lex.LexNameToken;
 import org.overturetool.vdmj.runtime.ValueException;
-import org.overturetool.vdmj.scheduler.Resource;
-import org.overturetool.vdmj.scheduler.ResourceScheduler;
 import org.overturetool.vdmj.typechecker.NameScope;
 import org.overturetool.vdmj.values.BooleanValue;
 import org.overturetool.vdmj.values.CPUValue;
 import org.overturetool.vdmj.values.NameValuePair;
 import org.overturetool.vdmj.values.NameValuePairList;
+import org.overturetool.vdmj.values.NameValuePairMap;
 import org.overturetool.vdmj.values.ObjectValue;
 import org.overturetool.vdmj.values.ReferenceValue;
 import org.overturetool.vdmj.values.SeqValue;
 import org.overturetool.vdmj.values.TransactionValue;
 import org.overturetool.vdmj.values.Value;
 
-public class VDMClassHelper {
+public class VDMClassHelper
+{
 
-	public static ClassDefinition findClassByName(String className, ClassList classes) {				
-		for (ClassDefinition classDefinition : classes) {
-			if(classDefinition.name.name.equals(className))
+	public static ClassDefinition findClassByName(String className,
+			ClassList classes)
+	{
+		for (ClassDefinition classDefinition : classes)
+		{
+			if (classDefinition.name.name.equals(className))
 				return classDefinition;
 		}
-		
+
 		return null;
-		
+
 	}
-	
-	public static ValueInfo digForVariable(List<String> varName, NameValuePairList list) throws RemoteSimulationException, ValueException {
-		Value value = null;						
-		if(list.size() > 0)
+
+	public static ValueInfo digForVariable(List<String> varName,
+			NameValuePairList list) throws RemoteSimulationException,
+			ValueException
+	{
+		Value value = null;
+		if (list.size() > 0)
 		{
 			String namePart = varName.get(0);
 			for (NameValuePair p : list)
@@ -65,28 +73,31 @@ public class VDMClassHelper {
 				if (namePart.equals(p.name.getName()))
 				{
 					value = p.value.deref();
-					
-					if(canResultBeExpanded(value))
-					{						
+
+					if (canResultBeExpanded(value))
+					{
 						List<ValueInfo> newArgs = getNamePairListFromResult(value);
-						
+
 						ValueInfo result = digForVariable(getNewName(varName), newArgs);
 						return result;
-					}
-					else
+					} else
 					{
 						return createValue(p.name, null, value, CPUValue.vCPU);
 					}
 				}
 			}
-		}			
-		
+		}
+
 		throw new RemoteSimulationException("Value: " + varName + " not found");
 	}
-	public static ValueInfo digForVariable(List<String> varName, List<ValueInfo> list) throws RemoteSimulationException, ValueException {
 
-		Value value = null;						
-		if(list.size() >= 1)
+	public static ValueInfo digForVariable(List<String> varName,
+			List<ValueInfo> list) throws RemoteSimulationException,
+			ValueException
+	{
+
+		Value value = null;
+		if (list.size() >= 1)
 		{
 			String namePart = varName.get(0);
 			for (ValueInfo p : list)
@@ -94,95 +105,137 @@ public class VDMClassHelper {
 				if (namePart.equals(p.name.getName()))
 				{
 					value = p.value.deref();
-					
-					if(canResultBeExpanded(value))
-					{						
+
+					if (canResultBeExpanded(value))
+					{
 						List<ValueInfo> newArgs = getNamePairListFromResult(value);
-						
+
 						ValueInfo result = digForVariable(getNewName(varName), newArgs);
 						return result;
-					}
-					else
+					} else
 					{
 						return p;
-						
+
 					}
 				}
 			}
-		}			
-		
+		}
+
 		throw new RemoteSimulationException("Value: " + varName + " not found");
 	}
-		
-	
-	private static boolean canResultBeExpanded(Value result) {
-		if(result instanceof ObjectValue || result instanceof ReferenceValue)
+
+	private static boolean canResultBeExpanded(Value result)
+	{
+		if (result instanceof ObjectValue || result instanceof ReferenceValue)
 		{
 			return true;
-		}
-		else
+		} else
 			return false;
 	}
-	
-	private static List<ValueInfo> getNamePairListFromResult(Value value) {
-		if(value instanceof ObjectValue)
+
+	private static List<ValueInfo> getNamePairListFromResult(Value value)
+	{
+		if (value instanceof ObjectValue)
 		{
 			ObjectValue objVal = ((ObjectValue) value);
 			List<ValueInfo> values = new Vector<ValueInfo>();
+			Set<String> existingFields = new HashSet<String>();
+
 			for (NameValuePair child : objVal.members.asList())
 			{
+				existingFields.add(child.name.name);
 				values.add(createValue(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
 			}
+
+			// FIXME: Fix for BUG: 54536, problematic static initialization with more then 30 files
+			// https://chessforge.chess-it.com/gf/project/destecs/tracker/?action=TrackerItemEdit&tracker_item_id=54536&start=0
+			try
+			{
+				for (Field fi : objVal.type.classdef.getClass().getDeclaredFields())
+				{
+					if (fi.getName().equals("privateStaticValues"))
+					{
+						fi.setAccessible(true);
+						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.classdef);
+
+						for (NameValuePair child : privateStaticValues.asList())
+						{
+							if (!existingFields.contains(child.name.name))
+							{
+								values.add(createValue(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
+							}
+						}
+					}
+					if (fi.getName().equals("publicStaticValues"))
+					{
+						fi.setAccessible(true);
+						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.classdef);
+
+						for (NameValuePair child : privateStaticValues.asList())
+						{
+							if (!existingFields.contains(child.name.name))
+							{
+								values.add(createValue(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
+							}
+						}
+					}
+				}
+
+			} catch (Exception e)
+			{
+				//Only show in console, should never happen.
+				e.printStackTrace();
+			}
 			return values;
-		}
-		else 
+		} else
 			return null;
 	}
-	
-	public static ValueInfo createValue(LexNameToken name, ClassDefinition classDef, Value value,
-			CPUValue cpu)
+
+	public static ValueInfo createValue(LexNameToken name,
+			ClassDefinition classDef, Value value, CPUValue cpu)
 	{
 		Value val = value.deref();
-		if(val instanceof SeqValue)
+		if (val instanceof SeqValue)
 		{
 			return new SeqValueInfo(name, classDef, (SeqValue) val, cpu);
 		}
-		return 	new ValueInfo(name, classDef, value, cpu);
+		return new ValueInfo(name, classDef, value, cpu);
 	}
-	
-	private static List<String> getNewName(List<String> varName) {
+
+	private static List<String> getNewName(List<String> varName)
+	{
 		List<String> result = new ArrayList<String>();
-		
-		if(varName.size() > 1)
+
+		if (varName.size() > 1)
 		{
-			for(int i=1; i< varName.size(); i++)
+			for (int i = 1; i < varName.size(); i++)
 			{
 				result.add(varName.get(i));
 			}
 			return result;
-		}
-		else
+		} else
 		{
-			return null;	
+			return null;
 		}
 	}
-	
-	public static List<Double> getDoubleListFromValue(Value value) throws ValueException
+
+	public static List<Double> getDoubleListFromValue(Value value)
+			throws ValueException
 	{
 		List<Double> result = new Vector<Double>();
-		
-		if(value instanceof TransactionValue)
+
+		if (value instanceof TransactionValue)
 		{
-			value = ((TransactionValue)value).deref();
+			value = ((TransactionValue) value).deref();
 		}
-		
-		if(value instanceof SeqValue)
+
+		if (value instanceof SeqValue)
 		{
 			SeqValue seqValue = (SeqValue) value;
 			result = getDoubleListFromSeq(seqValue);
-			return result;		
-		}		
-		
+			return result;
+		}
+
 		if (value.isNumeric())
 		{
 			result.add(value.realValue(null));
@@ -191,18 +244,21 @@ public class VDMClassHelper {
 		{
 			result.add(((BooleanValue) value).boolValue(null) ? 1.0 : 0.0);
 			return result;
-		} 
+		}
 		return null;
 	}
-	
-	private static List<Double> getDoubleListFromSeq(SeqValue seqValue) throws ValueException {
+
+	private static List<Double> getDoubleListFromSeq(SeqValue seqValue)
+			throws ValueException
+	{
 		List<Double> result = new Vector<Double>();
-		
-		for (Value insideValue : seqValue.values) {
-			
+
+		for (Value insideValue : seqValue.values)
+		{
+
 			result.addAll(getDoubleListFromValue(insideValue.deref()));
 		}
-		
+
 		return result;
 	}
 
@@ -211,90 +267,94 @@ public class VDMClassHelper {
 		String name = "";
 		for (Iterator<String> iterator = names.iterator(); iterator.hasNext();)
 		{
-			name+=(String) iterator.next();
-			if(iterator.hasNext())
+			name += (String) iterator.next();
+			if (iterator.hasNext())
 			{
-				name+=".";
+				name += ".";
 			}
 		}
 		return name;
 	}
-	
+
 	public static Definition findDefinitionInClass(ClassList classList,
-			List<String> variableName) throws RemoteSimulationException {
-		
-		if(variableName.size() <= 1)
+			List<String> variableName) throws RemoteSimulationException
+	{
+
+		if (variableName.size() <= 1)
 		{
 			return null;
 		}
-			
+
 		String className = variableName.get(0);
 		String varName = variableName.get(1);
-		
+
 		Definition s = classList.findName(new LexNameToken(className, varName, null), NameScope.NAMESANDSTATE);
-		
-		if(s== null)
+
+		if (s == null)
 		{
-			throw new RemoteSimulationException("Unable to locate: \""+dotName(variableName)+"\" failed with: \""+varName+"\". Is this accessiable through the system while inilializing");
+			throw new RemoteSimulationException("Unable to locate: \""
+					+ dotName(variableName)
+					+ "\" failed with: \""
+					+ varName
+					+ "\". Is this accessiable through the system while inilializing");
 		}
-		
+
 		List<String> restOfQuantifier = variableName.subList(2, variableName.size());
-		
-		if(restOfQuantifier.size() == 0)
+
+		if (restOfQuantifier.size() == 0)
 		{
 			return s;
-		}
-		else
+		} else
 		{
-			for(int i = 0; i<restOfQuantifier.size(); i++)
+			for (int i = 0; i < restOfQuantifier.size(); i++)
 			{
 				className = s.getType().getName();
-				
-				s = classList.findName(new LexNameToken(className, restOfQuantifier.get(i),null), NameScope.NAMESANDSTATE);
-				
-//				if(s== null)
-//				{
-//					throw new RemoteSimulationException("Unable to locate: \""+dotName(variableName)+"\" failed with: \""+varName+"\". Is this accessiable through the system while inilializing");
-//				}
+
+				s = classList.findName(new LexNameToken(className, restOfQuantifier.get(i), null), NameScope.NAMESANDSTATE);
+
+				// if(s== null)
+				// {
+				// throw new
+				// RemoteSimulationException("Unable to locate: \""+dotName(variableName)+"\" failed with: \""+varName+"\". Is this accessiable through the system while inilializing");
+				// }
 			}
 		}
-		
+
 		return s;
-		
+
 	}
-	
+
 	public static List<Integer> getValueDimensions(Value value)
 	{
 		List<Integer> result = new Vector<Integer>();
-		
-		if(value instanceof SeqValue)
+
+		if (value instanceof SeqValue)
 		{
 			SeqValue seqValue = (SeqValue) value;
 			result.add(seqValue.values.size());
-			if(seqValue.values.size() > 0)
+			if (seqValue.values.size() > 0)
 			{
-				if(seqValue.values.get(0) instanceof SeqValue)
+				if (seqValue.values.get(0) instanceof SeqValue)
 				{
 					result.addAll(getSequenceInnerDimensions(seqValue));
 				}
 			}
-		}
-		else
+		} else
 		{
 			result.add(1);
 		}
-		
+
 		return result;
 	}
 
-	private static List<Integer> getSequenceInnerDimensions(
-			SeqValue seqValue) {
+	private static List<Integer> getSequenceInnerDimensions(SeqValue seqValue)
+	{
 		List<Integer> result = new Vector<Integer>();
-		if(seqValue.values.size() > 0)
+		if (seqValue.values.size() > 0)
 		{
 			result.addAll(getValueDimensions(seqValue.values.get(0)));
 		}
-		
+
 		return result;
 	}
 }

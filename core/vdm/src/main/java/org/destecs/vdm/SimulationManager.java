@@ -292,11 +292,12 @@ public class SimulationManager extends BasicSimulationManager
 
 			Value value = VDMClassHelper.digForVariable(varName.subList(1, varName.size()), list).value;
 
-			if(value.deref() instanceof UndefinedValue)
+			if (value.deref() instanceof UndefinedValue)
 			{
-				throw new RemoteSimulationException("Value: " + name + " not initialized");
+				throw new RemoteSimulationException("Value: " + name
+						+ " not initialized");
 			}
-			
+
 			return new ValueContents(VDMClassHelper.getDoubleListFromValue(value), VDMClassHelper.getValueDimensions(value));
 
 		}
@@ -304,8 +305,8 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
-			File baseDirFile, boolean disableRtLog, boolean disableCoverage, boolean disableOptimization)
-			throws RemoteSimulationException
+			File baseDirFile, boolean disableRtLog, boolean disableCoverage,
+			boolean disableOptimization) throws RemoteSimulationException
 	{
 		try
 		{
@@ -336,11 +337,10 @@ public class SimulationManager extends BasicSimulationManager
 				RTLogger.enable(true);
 				RTLogger.setLogfile(new PrintWriter(logFile));
 			}
-			
-			if(Settings.timingInvChecks)
+
+			if (Settings.timingInvChecks)
 			{
-				PrintWriter p = new PrintWriter(new FileOutputStream(
-						new File(outputDir,"Timing.logtv"), false));
+				PrintWriter p = new PrintWriter(new FileOutputStream(new File(outputDir, "Timing.logtv"), false));
 				RuntimeValidator.setLogFile(p);
 			}
 			if (!disableCoverage)
@@ -446,7 +446,7 @@ public class SimulationManager extends BasicSimulationManager
 
 	private void configureSchedulingHooks()
 	{
-		if(!isOptimizationEnabled())
+		if (!isOptimizationEnabled())
 		{
 			return;
 		}
@@ -532,7 +532,7 @@ public class SimulationManager extends BasicSimulationManager
 		Settings.release = Release.VDM_10;
 		Settings.timingInvChecks = true;
 		RuntimeValidator.setLogFile(null);
-		
+
 		controller = new VDMCO();
 		SharedStateListner.setIdentityChecker(null);
 		isSchedulingHookConfigured = false;
@@ -540,20 +540,23 @@ public class SimulationManager extends BasicSimulationManager
 		return true;
 	}
 
-	public Boolean start(long internalFinishTime) throws RemoteSimulationException
+	public Boolean start(long internalFinishTime)
+			throws RemoteSimulationException
 	{
 		final List<File> files = getFiles();
 		this.internalFinishTime = internalFinishTime;
 
 		if (controller.asyncStartInterpret(files) == ExitStatus.EXIT_OK)
 		{
-//			this.status = CoSimStatusEnum.INITIALIZED;
-			while(this.status!=CoSimStatusEnum.STARTED)
+			// this.status = CoSimStatusEnum.INITIALIZED;
+			while (this.status != CoSimStatusEnum.STARTED)
 			{
-				try {
+				try
+				{
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					//ignore
+				} catch (InterruptedException e)
+				{
+					// ignore
 				}
 			}
 			return true;
@@ -588,28 +591,31 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		this.mainContext = ctxt;
 
-		try {
+		try
+		{
 			setLogVariables(simulationLogFile, new Vector<String>(variablesToLog));
-		} catch (RemoteSimulationException e) {
+		} catch (RemoteSimulationException e)
+		{
 			this.runtimeException = e;
 		}
-		
+
 		if (!isSchedulingHookConfigured)
 		{
 			configureSchedulingHooks();
 		}
-		
-		//show timing invariants if any
-		if(Settings.timingInvChecks)
+
+		// show timing invariants if any
+		if (Settings.timingInvChecks)
 		{
-			if(RuntimeValidator.validator!=null && RuntimeValidator.validator instanceof BasicRuntimeValidator)
+			if (RuntimeValidator.validator != null
+					&& RuntimeValidator.validator instanceof BasicRuntimeValidator)
 			{
 				Console.out.println("----------------------------------------------------------------------------------");
 				Console.out.println("Runtime Validator Initialized with conjectures:");
 				BasicRuntimeValidator validator = (BasicRuntimeValidator) RuntimeValidator.validator;
 				for (ConjectureDefinition conj : validator.getConjectures())
 				{
-					Console.out.println("\t"+conj+"\n");
+					Console.out.println("\t" + conj + "\n");
 				}
 				Console.out.println("----------------------------------------------------------------------------------");
 			}
@@ -617,7 +623,8 @@ public class SimulationManager extends BasicSimulationManager
 		this.status = CoSimStatusEnum.STARTED;
 	}
 
-	protected void setLogVariables(File logFile, List<String> logVariables) throws RemoteSimulationException
+	protected void setLogVariables(File logFile, List<String> logVariables)
+			throws RemoteSimulationException
 	{
 		// Cache info it called before execution is started.
 		this.simulationLogFile = logFile;
@@ -650,8 +657,8 @@ public class SimulationManager extends BasicSimulationManager
 				Value v = getRawValue(Arrays.asList(names), null);
 				if (v == null)
 				{
-					throw new RemoteSimulationException("Could not find variable: " + name
-							+ " logging is skipped.");
+					throw new RemoteSimulationException("Could not find variable: "
+							+ name + " logging is skipped.");
 				}
 
 				if (v instanceof UpdatableValue)
@@ -721,8 +728,7 @@ public class SimulationManager extends BasicSimulationManager
 				StringPair vName = links.getBoundVariable(parameterName);
 				Object[] objValue = (Object[]) parameter.get("value");
 				Object[] dimension = (Object[]) parameter.get("size");
-				
-				
+
 				for (ClassDefinition cd : controller.getInterpreter().getClasses())
 				{
 					if (!cd.getName().equals(vName.instanceName))
@@ -738,25 +744,24 @@ public class SimulationManager extends BasicSimulationManager
 							if (vDef.pattern.toString().equals(vName.variableName)
 									&& vDef.isValueDefinition())
 							{
-								if(dimension.length == 1 && ((Integer) dimension[0] == 1))
+								if (dimension.length == 1
+										&& ((Integer) dimension[0] == 1))
 								{
 									Double newValue = (Double) objValue[0];
 									found = setValueForSDP(newValue, vDef);
-								}
-								else
+								} else
 								{
-									//dealing with a sequence				
-									if(vDef.exp instanceof SeqEnumExpression)
+									// dealing with a sequence
+									if (vDef.exp instanceof SeqEnumExpression)
 									{
 										SeqEnumExpression seqEnum = (SeqEnumExpression) vDef.exp;
-										found = createSeqEnum(vName.variableName,seqEnum,objValue,dimension);										
+										found = createSeqEnum(vName.variableName, seqEnum, objValue, dimension);
 									}
-																		
+
 								}
 							}
 						}
-						
-						
+
 					}
 				}
 				if (!found)
@@ -783,79 +788,84 @@ public class SimulationManager extends BasicSimulationManager
 		return true;
 	}
 
-	private boolean createSeqEnum(String variableName, SeqEnumExpression seqEnum, Object[] objValue,
-			Object[] objDimensions) throws NoSuchFieldException, IllegalAccessException, RemoteSimulationException
+	private boolean createSeqEnum(String variableName,
+			SeqEnumExpression seqEnum, Object[] objValue, Object[] objDimensions)
+			throws NoSuchFieldException, IllegalAccessException,
+			RemoteSimulationException
 	{
 		List<Integer> dimensions = new Vector<Integer>();
 		int index = 0;
 		boolean found = true;
 		for (Object o : objDimensions)
 		{
-			if(o instanceof Integer)
+			if (o instanceof Integer)
 			{
 				dimensions.add((Integer) o);
 			}
 		}
-		
-		if(dimensions.size() == 1) //it's an array
+
+		if (dimensions.size() == 1) // it's an array
 		{
 			for (Expression exp : seqEnum.members)
 			{
-				if(exp instanceof SeqEnumExpression)
+				if (exp instanceof SeqEnumExpression)
 				{
-					found = found && setValueForSDP((Double) objValue[index++], exp);
+					found = found
+							&& setValueForSDP((Double) objValue[index++], exp);
 				}
 			}
-		}
-		else //it's a matrix
+		} else
+		// it's a matrix
 		{
-			boolean match = checkDimentionsOfSeqEnum(seqEnum,dimensions);
-			if(!match)
+			boolean match = checkDimentionsOfSeqEnum(seqEnum, dimensions);
+			if (!match)
 			{
-				throw new RemoteSimulationException("Dimension of \""+ variableName + "\" does not match the SDP ");
+				throw new RemoteSimulationException("Dimension of \""
+						+ variableName + "\" does not match the SDP ");
 			}
 			for (Expression exp : seqEnum.members)
 			{
-				if(exp instanceof SeqEnumExpression)
+				if (exp instanceof SeqEnumExpression)
 				{
 					SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
 					for (Expression expInner : seqEnumInner.members)
 					{
-						found = found && setValueForSDP((Double) objValue[index++], expInner);
-					}				
+						found = found
+								&& setValueForSDP((Double) objValue[index++], expInner);
+					}
 				}
 			}
 		}
-		
-		
+
 		return found;
 	}
 
 	private boolean checkDimentionsOfSeqEnum(SeqEnumExpression seqEnum,
 			List<Integer> dimensions)
 	{
-		if(seqEnum.members.size() != dimensions.get(0))
+		if (seqEnum.members.size() != dimensions.get(0))
 			return false;
-		
+
 		for (Expression exp : seqEnum.members)
 		{
-			if(exp instanceof SeqEnumExpression)
+			if (exp instanceof SeqEnumExpression)
 			{
 				SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
-				if(seqEnumInner.members.size() != dimensions.get(1))
+				if (seqEnumInner.members.size() != dimensions.get(1))
 					return false;
 			}
 		}
-		
+
 		return true;
-		
+
 	}
 
-	private boolean setValueForSDP( 
-			Double newValue, Expression exp) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException
+	private boolean setValueForSDP(Double newValue, Expression exp)
+			throws IllegalArgumentException, IllegalAccessException,
+			NoSuchFieldException, SecurityException
 	{
 		boolean found = false;
-		
+
 		if (exp != null && exp instanceof RealLiteralExpression)
 		{
 			RealLiteralExpression rExp = ((RealLiteralExpression) exp);
@@ -869,27 +879,27 @@ public class SimulationManager extends BasicSimulationManager
 		}
 		return found;
 	}
-	
-	private boolean setValueForSDP( 
-			Double newValue, ValueDefinition vDef) throws NoSuchFieldException,
-			IllegalAccessException
+
+	private boolean setValueForSDP(Double newValue, ValueDefinition vDef)
+			throws NoSuchFieldException, IllegalAccessException
 	{
 		boolean found = false;
-		
-				if (vDef.exp != null && vDef.exp instanceof RealLiteralExpression)
-				{
-					found = setValueForSDP(newValue, vDef.exp);
 
-				} else if (vDef.exp != null && vDef.exp instanceof IntegerLiteralExpression || vDef.exp instanceof UnaryMinusExpression)
-				{
-					RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.location));
-					Field valDefField = ValueDefinition.class.getField("exp");
-					valDefField.setAccessible(true);
-					valDefField.set(vDef, newReal);
-					found = true;
-				}
-				
-	
+		if (vDef.exp != null && vDef.exp instanceof RealLiteralExpression)
+		{
+			found = setValueForSDP(newValue, vDef.exp);
+
+		} else if (vDef.exp != null
+				&& vDef.exp instanceof IntegerLiteralExpression
+				|| vDef.exp instanceof UnaryMinusExpression)
+		{
+			RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.location));
+			Field valDefField = ValueDefinition.class.getField("exp");
+			valDefField.setAccessible(true);
+			valDefField.set(vDef, newReal);
+			found = true;
+		}
+
 		return found;
 	}
 
@@ -937,7 +947,8 @@ public class SimulationManager extends BasicSimulationManager
 								return new GetDesignParametersStructdesignParametersStruct(parameterName, value, size);
 							} else if (vDef.exp instanceof SeqExpression)
 							{
-								throw new RemoteSimulationException("getDesignParameter with type SeqExpression not supported: "+vDef.exp);
+								throw new RemoteSimulationException("getDesignParameter with type SeqExpression not supported: "
+										+ vDef.exp);
 							}
 
 						}
@@ -1191,12 +1202,12 @@ public class SimulationManager extends BasicSimulationManager
 		List<String> list = new Vector<String>();
 		for (ClassDefinition c : interpreter.getClasses())
 		{
-			if(c instanceof SystemDefinition)
+			if (c instanceof SystemDefinition)
 			{
 				String prefix = "System";
 				for (Definition def : c.getDefinitions())
 				{
-					list.addAll(getLogEnabledVariables(list,prefix,def,new Vector<Definition>()));	
+					list.addAll(getLogEnabledVariables(list, prefix, def, new Vector<Definition>()));
 				}
 			}
 		}
@@ -1204,26 +1215,28 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	private Collection<? extends String> getLogEnabledVariables(
-			final List<String> list, String prefix, Definition def,List<Definition> path)
+			final List<String> list, String prefix, Definition def,
+			List<Definition> path)
 	{
 		List<String> result = new Vector<String>();
-		if(def instanceof InstanceVariableDefinition && !path.contains(def))
+		if (def instanceof InstanceVariableDefinition && !path.contains(def))
 		{
 			InstanceVariableDefinition var = (InstanceVariableDefinition) def;
-			String name=prefix+"."+var.getName();
+			String name = prefix + "." + var.getName();
 			result.add(name);
 			path.add(var);
 			if (var.type instanceof ClassType)
 			{
-				result.addAll(getLogEnabledVariables(result, name, ((ClassType) var.type).classdef,path));
+				result.addAll(getLogEnabledVariables(result, name, ((ClassType) var.type).classdef, path));
 			}
-			
+
 		}
-		
+
 		return result;
 	}
 
-	public long getFinishTime() {
+	public long getFinishTime()
+	{
 		return internalFinishTime;
 	}
 }
