@@ -41,11 +41,12 @@ public class DBGPReaderCoSim extends DBGPReaderV2
 	}
 
 
+	/**
+	 * Changed visibility to alloy external access
+	 */
 	@Override
 	public void startup(RemoteControl remote) throws IOException
 	{
-//		interpreter.init(this);
-//		connect();
 		super.startup(remote);
 	}
 
