@@ -81,6 +81,7 @@ public class VDMCO extends VDMRT
 		{
 			ExitStatus status = null;
 			boolean finished = false;
+			public DBGPReaderCoSim dbgpreader = null;
 
 			public AsyncInterpreterExecutionThread()
 			{
@@ -91,7 +92,7 @@ public class VDMCO extends VDMRT
 			@Override
 			public void run()
 			{
-				try 
+				try
 				{
 					InitThread iniThread = new InitThread(this);
 					BasicSchedulableThread.setInitialThread(iniThread);
@@ -99,11 +100,10 @@ public class VDMCO extends VDMRT
 					if (script != null)
 					{
 						status = ExitStatus.EXIT_OK;
-						finished = true;
 						String host = "localhost";
 
 						String ideKey = "1";
-						DBGPReaderCoSim dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, getInterpreter(), script, null);
+						dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, getInterpreter(), script, null);
 
 						int retryCountDown = 5;
 						int retried = 0;
@@ -120,11 +120,10 @@ public class VDMCO extends VDMRT
 									+ dbgpreader.getStatus()
 									+ " with retried: " + retried);
 							dbgpreader.startup(null);
-							
-							if(retryCountDown==0)
+
+							if (retryCountDown == 0)
 							{
 								status = ExitStatus.EXIT_ERRORS;
-								return;
 							}
 							retryCountDown--;
 						}
@@ -135,10 +134,10 @@ public class VDMCO extends VDMRT
 							System.out.println("DBGPReader status is now STARTING and a new try to start dbgpreader will be made in 1 sec.");
 							Thread.sleep(1000);
 							dbgpreader.startup(null);
-							if(retryCountDown==0)
+							if (retryCountDown == 0)
 							{
-								finished = true;
 								status = ExitStatus.EXIT_ERRORS;
+								finished = true;
 								return;
 							}
 							retryCountDown--;
@@ -151,8 +150,9 @@ public class VDMCO extends VDMRT
 							// Failed to start simulation
 							e.printStackTrace();
 							exception = e;
-							finished = true;
+
 							status = ExitStatus.EXIT_ERRORS;
+							finished = true;
 						}
 
 					} else
@@ -184,7 +184,8 @@ public class VDMCO extends VDMRT
 
 			public boolean isFinished()
 			{
-				return finished;
+				return finished
+						|| (dbgpreader != null && (/* dbgpreader.getStatus()==DBGPStatus.STARTING|| */dbgpreader.getStatus() == DBGPStatus.RUNNING));
 			}
 
 			public ExitStatus getExitStatus()
@@ -213,12 +214,10 @@ public class VDMCO extends VDMRT
 
 	public void setLogFile(File file)
 	{
-		if(file != null)
+		if (file != null)
 		{
 			logfile = file.getAbsolutePath();
 		}
-		
-
 	}
 
 	public void setScript(String script)
