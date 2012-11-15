@@ -372,7 +372,7 @@ public class VdmTab extends AbstractLaunchConfigurationTab implements ICheckStat
 
 	public String getName()
 	{
-		return "VDM";
+		return "DE simulator";
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration)

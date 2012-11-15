@@ -65,7 +65,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 
 		public PopulatorJob(String ctFile, String ctUrl,boolean remote)
 		{
-			super("20-sim table Populator");
+			super("CT simulator table Populator");
 			this.ctFile = ctFile;
 			this.ctUrl = ctUrl;
 			this.remote = remote;
@@ -268,7 +268,7 @@ public class Clp20simTab extends AbstractLaunchConfigurationTab implements IUpda
 
 	public String getName()
 	{
-		return "20-sim";
+		return "CT simulator";
 	}
 
 	public IProject getProject()

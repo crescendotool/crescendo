@@ -44,7 +44,7 @@ public class Clp20simSettingsTab extends AbstractAcaTab implements IUpdatableTab
 
 		public PopulatorJob(String ctFile, String ctUrl,boolean remote)
 		{
-			super("20-sim table Populator");
+			super("CT simulator table Populator");
 			this.ctFile = ctFile;
 			this.ctUrl = ctUrl;
 			this.remote = remote;
