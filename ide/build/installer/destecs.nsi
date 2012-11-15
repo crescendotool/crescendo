@@ -21,7 +21,7 @@ SetCompress off
 !define TARBALL "combined.tar"
 
 !define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.2.6"
+!define SIM20_VERSION "4.3.0"
 !define SIM20_PLATFORM "win32"
 !define SIM20_EXE "${SIM20_NAME}-${SIM20_VERSION}-${SIM20_PLATFORM}.exe"
 
@@ -236,9 +236,9 @@ Function 20simVersionTest
 
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayVersion"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayVersion"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayVersion"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayVersion"
 ${EndIf}
 
 
@@ -273,9 +273,9 @@ FunctionEnd
 Function Add20simFirewallException
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayIcon"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayIcon"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.2\" "DisplayIcon"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayIcon"
 ${EndIf}
  
 IfErrors isError 
@@ -309,9 +309,9 @@ FunctionEnd
 
 Function writeRegistryKey
 ;${If} ${RunningX64}
-;    WriteRegDWORD HKCU "Software\Wow6432Node\20-sim\version 4.2\tools\general" "xmlrpc" 1
+;    WriteRegDWORD HKCU "Software\Wow6432Node\20-sim\version 4.3\tools\general" "xmlrpc" 1
 ;${Else}
-    WriteRegDWORD HKCU "Software\20-sim\version 4.2\tools\general" "xmlrpc" 1
+    WriteRegDWORD HKCU "Software\20-sim\version 4.3\tools\general" "xmlrpc" 1
 ;${EndIf}
 FunctionEnd
 
