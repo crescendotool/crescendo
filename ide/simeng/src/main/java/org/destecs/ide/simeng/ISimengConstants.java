@@ -32,8 +32,8 @@ public interface ISimengConstants
 	public static final String VDM_ENGINE_SIMULATION_SDP_PATH = "org.destecs.ide.simeng.preferences.shareddesignparameterspath";
 	public static final String VDM_ENGINE_SIMULATION_SCENATIO_PATH = "org.destecs.ide.simeng.preferences.scenariopath";
 	public static final String VDM_ENGINE_SIMULATION_TOTAL_SIMULATION_TIME = "org.destecs.ide.simeng.preferences.totalsimulationtime";
-	public static final String CLP_20_SIM_REGKEY =  "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\20-sim 4.2";
-	public static final String CLP_20_SIM_REGKEY_x64 =  "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\20-sim 4.2";
+	public static final String CLP_20_SIM_REGKEY =  "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\20-sim 4.3";
+	public static final String CLP_20_SIM_REGKEY_x64 =  "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\20-sim 4.3";
 	public static final String CLP_20_SIM_PATH_REGKEY = "DisplayIcon";
 
 }
