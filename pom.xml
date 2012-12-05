@@ -111,7 +111,6 @@
   <url>http://www.destecs.org</url> 
   </organization>
 
-<!-- This section contains repositories for DESTECS and the depended project Overture -->
    <repositories>
    
     <repository>
@@ -120,6 +119,23 @@
       <url>http://build.overturetool.org/builds/mt4e-m2repo-eclipse3.7.2/</url>
       <layout>default</layout>
     </repository>
+
+ </repositories>
+  
+<profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>       
+	 <java.version>1.5</java.version>
+      </properties>
+
+<!-- This section contains repositories for DESTECS and the depended project Overture -->
+   <repositories>
+   
+  
 	
         <!--
         overture.sf.net repos
@@ -203,17 +219,70 @@
           <layout>default</layout>
         </pluginRepository>
       </pluginRepositories>
-  
-<profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>       
-	 <java.version>1.5</java.version>
-      </properties>
+
+
 </profile>
+
+
+    <profile>
+      <id>buildserver</id>
+      <properties>       
+     <java.version>1.5</java.version>
+      </properties>
+
+<!-- This section contains repositories for DESTECS and the depended project Overture -->
+   <repositories>
+   	
+        <!--
+        Build server: overture pre-build
+        -->
+        <repository>
+          <id>overture.iha.dk</id>
+          <name>Local build</name>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </snapshots>
+          <url>file:///home/jenkins/.jenkins/jobs/Overture-DESTECS/workspace/publicmavenrepo/</url>
+          <layout>default</layout>
+        </repository>
+
+      </repositories>
+
+   <!--
+        Build server: overture pre-build
+        -->
+      <pluginRepositories>
+        <pluginRepository>
+          <id>overture.iha.dk</id>
+          <name>OvertureTool Snapshots</name>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </snapshots>
+          <url>file:///home/jenkins/.jenkins/jobs/Overture-DESTECS/workspace/publicmavenrepo/</url>
+          <layout>default</layout>
+        </pluginRepository>
+
+     
+      </pluginRepositories>
+
+
+</profile>
+
+
 </profiles>
 
 
