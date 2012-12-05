@@ -249,7 +249,7 @@
             <updatePolicy>daily</updatePolicy>
             <checksumPolicy>warn</checksumPolicy>
           </snapshots>
-          <url>file:///home/jenkins/.jenkins/jobs/Overture-DESTECS/workspace/publicmavenrepo/</url>
+          <url>file://${user.home}/.jenkins/jobs/Overture-DESTECS/workspace/publicmavenrepo/deploy/</url>
           <layout>default</layout>
         </repository>
 
@@ -272,7 +272,7 @@
             <updatePolicy>daily</updatePolicy>
             <checksumPolicy>warn</checksumPolicy>
           </snapshots>
-          <url>file:///home/jenkins/.jenkins/jobs/Overture-DESTECS/workspace/publicmavenrepo/</url>
+          <url>file://${user.home}/.jenkins/jobs/Overture-DESTECS/workspace/publicmavenrepo/deploy/</url>
           <layout>default</layout>
         </pluginRepository>
 
