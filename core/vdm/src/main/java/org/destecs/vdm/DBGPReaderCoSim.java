@@ -20,11 +20,12 @@ package org.destecs.vdm;
 
 import java.io.IOException;
 
-import org.overturetool.vdmj.debug.DBGPReaderV2;
-import org.overturetool.vdmj.debug.DBGPStatus;
-import org.overturetool.vdmj.debug.RemoteControl;
-import org.overturetool.vdmj.runtime.Interpreter;
-import org.overturetool.vdmj.values.CPUValue;
+import org.overture.interpreter.debug.DBGPReaderV2;
+import org.overture.interpreter.debug.DBGPStatus;
+import org.overture.interpreter.debug.RemoteControl;
+import org.overture.interpreter.runtime.Interpreter;
+import org.overture.interpreter.values.CPUValue;
+
 
 public class DBGPReaderCoSim extends DBGPReaderV2
 {

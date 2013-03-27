@@ -18,11 +18,13 @@
  *******************************************************************************/
 package org.destecs.ide.simeng;
 
+import org.destecs.ide.core.IDestecsCoreConstants;
+
 public interface ISimengConstants
 {
 
 	public static final String PLUGIN_ID = "org.destecs.ide.simeng";
-	public static final String VDM_ENGINE_BUNDLE_ID = "org.destecs.ide.simeng";// "org.destecs.ide.generated.vdm";
+	public static final String VDM_ENGINE_BUNDLE_IDS[] = {PLUGIN_ID,IDestecsCoreConstants.PLUGIN_ID};// "org.destecs.ide.generated.vdm";
 	public static final String VDM_ENGINE_CLASS = "org.destecs.vdm.CoSim";
 	
 	

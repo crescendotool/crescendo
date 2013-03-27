@@ -36,10 +36,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.osgi.framework.Bundle;
+import org.overture.config.Release;
 import org.overture.ide.core.resources.IVdmProject;
 import org.overture.ide.core.resources.ModelBuildPath;
 import org.overture.ide.vdmrt.core.IVdmRtCoreConstants;
-import org.overturetool.vdmj.Release;
 
 public class DestecsNewWizard extends BasicNewProjectResourceWizard
 {

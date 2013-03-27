@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.destecs.vdmj.VDMCO;
-import org.overturetool.vdmj.Settings;
+import org.overture.config.Settings;
 
 public class ErrorLog
 {

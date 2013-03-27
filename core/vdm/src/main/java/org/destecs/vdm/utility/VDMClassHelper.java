@@ -27,32 +27,33 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.destecs.protocol.exceptions.RemoteSimulationException;
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.definitions.ClassList;
-import org.overturetool.vdmj.definitions.Definition;
-import org.overturetool.vdmj.lex.LexNameToken;
-import org.overturetool.vdmj.runtime.ValueException;
-import org.overturetool.vdmj.typechecker.NameScope;
-import org.overturetool.vdmj.values.BooleanValue;
-import org.overturetool.vdmj.values.CPUValue;
-import org.overturetool.vdmj.values.NameValuePair;
-import org.overturetool.vdmj.values.NameValuePairList;
-import org.overturetool.vdmj.values.NameValuePairMap;
-import org.overturetool.vdmj.values.ObjectValue;
-import org.overturetool.vdmj.values.ReferenceValue;
-import org.overturetool.vdmj.values.SeqValue;
-import org.overturetool.vdmj.values.TransactionValue;
-import org.overturetool.vdmj.values.Value;
+import org.overture.ast.definitions.PDefinition;
+import org.overture.ast.definitions.SClassDefinition;
+import org.overture.ast.lex.LexNameToken;
+import org.overture.ast.typechecker.NameScope;
+import org.overture.ast.types.AClassType;
+import org.overture.interpreter.runtime.ValueException;
+import org.overture.interpreter.util.ClassListInterpreter;
+import org.overture.interpreter.values.BooleanValue;
+import org.overture.interpreter.values.CPUValue;
+import org.overture.interpreter.values.NameValuePair;
+import org.overture.interpreter.values.NameValuePairList;
+import org.overture.interpreter.values.NameValuePairMap;
+import org.overture.interpreter.values.ObjectValue;
+import org.overture.interpreter.values.ReferenceValue;
+import org.overture.interpreter.values.SeqValue;
+import org.overture.interpreter.values.TransactionValue;
+import org.overture.interpreter.values.Value;
 
 public class VDMClassHelper
 {
 
-	public static ClassDefinition findClassByName(String className,
-			ClassList classes)
+	public static SClassDefinition findClassByName(String className,
+			ClassListInterpreter classes)
 	{
-		for (ClassDefinition classDefinition : classes)
+		for (SClassDefinition classDefinition : classes)
 		{
-			if (classDefinition.name.name.equals(className))
+			if (classDefinition.getName().name.equals(className))
 				return classDefinition;
 		}
 
@@ -144,38 +145,38 @@ public class VDMClassHelper
 			for (NameValuePair child : objVal.members.asList())
 			{
 				existingFields.add(child.name.name);
-				values.add(createValue(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
+				values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 			}
 
 			// FIXME: Fix for BUG: 54536, problematic static initialization with more then 30 files
 			// https://chessforge.chess-it.com/gf/project/destecs/tracker/?action=TrackerItemEdit&tracker_item_id=54536&start=0
 			try
 			{
-				for (Field fi : objVal.type.classdef.getClass().getDeclaredFields())
+				for (Field fi : objVal.type.getClassdef().getClass().getDeclaredFields())
 				{
 					if (fi.getName().equals("privateStaticValues"))
 					{
 						fi.setAccessible(true);
-						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.classdef);
+						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.getClassdef());
 
 						for (NameValuePair child : privateStaticValues.asList())
 						{
 							if (!existingFields.contains(child.name.name))
 							{
-								values.add(createValue(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
+								values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 							}
 						}
 					}
 					if (fi.getName().equals("publicStaticValues"))
 					{
 						fi.setAccessible(true);
-						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.classdef);
+						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.getClassdef());
 
 						for (NameValuePair child : privateStaticValues.asList())
 						{
 							if (!existingFields.contains(child.name.name))
 							{
-								values.add(createValue(child.name, objVal.type.classdef, child.value, objVal.getCPU()));
+								values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 							}
 						}
 					}
@@ -192,7 +193,7 @@ public class VDMClassHelper
 	}
 
 	public static ValueInfo createValue(LexNameToken name,
-			ClassDefinition classDef, Value value, CPUValue cpu)
+			SClassDefinition classDef, Value value, CPUValue cpu)
 	{
 		Value val = value.deref();
 		if (val instanceof SeqValue)
@@ -276,7 +277,7 @@ public class VDMClassHelper
 		return name;
 	}
 
-	public static Definition findDefinitionInClass(ClassList classList,
+	public static PDefinition findDefinitionInClass(ClassListInterpreter classList,
 			List<String> variableName) throws RemoteSimulationException
 	{
 
@@ -288,7 +289,7 @@ public class VDMClassHelper
 		String className = variableName.get(0);
 		String varName = variableName.get(1);
 
-		Definition s = classList.findName(new LexNameToken(className, varName, null), NameScope.NAMESANDSTATE);
+		PDefinition s = classList.findName(new LexNameToken(className, varName, null), NameScope.NAMESANDSTATE);
 
 		if (s == null)
 		{
@@ -308,10 +309,12 @@ public class VDMClassHelper
 		{
 			for (int i = 0; i < restOfQuantifier.size(); i++)
 			{
-				className = s.getType().getName();
+				if(s.getType() instanceof AClassType)
+				{
+				className =((AClassType) s.getType()).getName().name;
 
 				s = classList.findName(new LexNameToken(className, restOfQuantifier.get(i), null), NameScope.NAMESANDSTATE);
-
+				}
 				// if(s== null)
 				// {
 				// throw new

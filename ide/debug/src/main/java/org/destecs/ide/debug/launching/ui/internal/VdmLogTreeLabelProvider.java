@@ -2,8 +2,8 @@ package org.destecs.ide.debug.launching.ui.internal;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
+import org.overture.ast.definitions.AInstanceVariableDefinition;
+import org.overture.ast.definitions.SClassDefinition;
 
 public class VdmLogTreeLabelProvider extends LabelProvider implements
 		IBaseLabelProvider
@@ -14,16 +14,16 @@ public class VdmLogTreeLabelProvider extends LabelProvider implements
 		if (element instanceof TreeNodeContainer)
 		{
 			Object child = ((TreeNodeContainer) element).data;
-			if (child instanceof ClassDefinition)
+			if (child instanceof SClassDefinition)
 			{
-				ClassDefinition classDef = (ClassDefinition) child;
-				return classDef.getName();
+				SClassDefinition classDef = (SClassDefinition) child;
+				return classDef.getName().name;
 
 			}
-			if (child instanceof InstanceVariableDefinition)
+			if (child instanceof AInstanceVariableDefinition)
 			{
-				InstanceVariableDefinition insVarDef = (InstanceVariableDefinition) child;
-				return insVarDef.getName();
+				AInstanceVariableDefinition insVarDef = (AInstanceVariableDefinition) child;
+				return insVarDef.getName().name;
 			} else
 			{
 				System.out.println("VdmLogTreeLabelProvider getText");

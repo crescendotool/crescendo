@@ -29,9 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.overturetool.vdmj.messages.Console;
-import org.overturetool.vdmj.scheduler.SystemClock;
-import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
+import org.overture.interpreter.messages.Console;
+import org.overture.interpreter.scheduler.SystemClock;
+import org.overture.interpreter.scheduler.SystemClock.TimeUnit;
+
 
 public class SimulationLogger
 {

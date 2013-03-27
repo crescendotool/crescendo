@@ -47,12 +47,13 @@ import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdmj.VDMCO;
-import org.overturetool.vdmj.Settings;
-import org.overturetool.vdmj.definitions.Definition;
-import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.Signal;
-import org.overturetool.vdmj.scheduler.SystemClock;
-import org.overturetool.vdmj.scheduler.SystemClock.TimeUnit;
+import org.overture.ast.definitions.PDefinition;
+import org.overture.config.Settings;
+import org.overture.interpreter.assistant.type.PTypeAssistantInterpreter;
+import org.overture.interpreter.scheduler.BasicSchedulableThread;
+import org.overture.interpreter.scheduler.Signal;
+import org.overture.interpreter.scheduler.SystemClock;
+import org.overture.interpreter.scheduler.SystemClock.TimeUnit;
 
 @SuppressWarnings("unchecked")
 public class CoSimImpl implements IDestecs
@@ -232,7 +233,7 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			Definition def = VDMClassHelper.findDefinitionInClass(SimulationManager.getInstance().controller.getInterpreter().getClasses(), qualifiedName);
+			PDefinition def = VDMClassHelper.findDefinitionInClass(SimulationManager.getInstance().controller.getInterpreter().getClasses(), qualifiedName);
 			if (def == null)
 			{
 				return -2;
@@ -253,10 +254,10 @@ public class CoSimImpl implements IDestecs
 
 	}
 
-	private Integer extractDefinitionDimensions(Definition def)
+	private Integer extractDefinitionDimensions(PDefinition def)
 	{
 
-		if (def.getType().isSeq())
+		if (PTypeAssistantInterpreter.isSeq(def.getType()))
 		{
 			return -1;
 		} else

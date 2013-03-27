@@ -32,22 +32,22 @@ import java.util.zip.GZIPInputStream;
 
 import org.destecs.vdm.DBGPReaderCoSim;
 import org.destecs.vdmj.runtime.CoSimClassInterpreter;
-import org.overturetool.vdmj.ExitStatus;
-import org.overturetool.vdmj.Settings;
-import org.overturetool.vdmj.VDMRT;
-import org.overturetool.vdmj.debug.DBGPStatus;
-import org.overturetool.vdmj.definitions.ClassList;
-import org.overturetool.vdmj.lex.BacktrackInputReader;
-import org.overturetool.vdmj.lex.LexLocation;
-import org.overturetool.vdmj.lex.LexTokenReader;
-import org.overturetool.vdmj.messages.Console;
-import org.overturetool.vdmj.messages.InternalException;
-import org.overturetool.vdmj.messages.rtlog.RTLogger;
-import org.overturetool.vdmj.runtime.ClassInterpreter;
-import org.overturetool.vdmj.runtime.ContextException;
-import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.InitThread;
-import org.overturetool.vdmj.syntax.ClassReader;
+import org.overture.ast.lex.LexLocation;
+import org.overture.ast.messages.InternalException;
+import org.overture.config.Settings;
+import org.overture.interpreter.VDMRT;
+import org.overture.interpreter.debug.DBGPStatus;
+import org.overture.interpreter.messages.Console;
+import org.overture.interpreter.messages.rtlog.RTLogger;
+import org.overture.interpreter.runtime.ClassInterpreter;
+import org.overture.interpreter.runtime.ContextException;
+import org.overture.interpreter.scheduler.BasicSchedulableThread;
+import org.overture.interpreter.scheduler.InitThread;
+import org.overture.interpreter.util.ClassListInterpreter;
+import org.overture.interpreter.util.ExitStatus;
+import org.overture.parser.lex.BacktrackInputReader;
+import org.overture.parser.lex.LexTokenReader;
+import org.overture.parser.syntax.ClassReader;
 
 public class VDMCO extends VDMRT
 {
@@ -246,12 +246,12 @@ public class VDMCO extends VDMRT
 					GZIPInputStream gis = new GZIPInputStream(fis);
 					ObjectInputStream ois = new ObjectInputStream(gis);
 
-					ClassList loaded = null;
+					ClassListInterpreter loaded = null;
 					long begin = System.currentTimeMillis();
 
 					try
 					{
-						loaded = (ClassList) ois.readObject();
+						loaded = (ClassListInterpreter) ois.readObject();
 					} catch (Exception e)
 					{
 						println(file + " is not a valid VDM++ library");

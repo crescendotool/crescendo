@@ -1,15 +1,16 @@
 package org.destecs.ide.debug.launching.ui.internal;
 
-import org.overturetool.vdmj.definitions.Definition;
+import org.overture.ast.definitions.PDefinition;
+
 
 public class TreeNodeContainer
 {
 
 	public TreeNodeContainer parent = null;
-	public Definition data = null;
+	public PDefinition data = null;
 	public boolean isVirtual = false;
 	
-	public TreeNodeContainer(TreeNodeContainer parent, Definition child, boolean isVirtual)
+	public TreeNodeContainer(TreeNodeContainer parent, PDefinition child, boolean isVirtual)
 	{
 		this.parent = parent;
 		this.data = child;

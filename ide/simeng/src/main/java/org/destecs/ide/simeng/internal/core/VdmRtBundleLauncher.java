@@ -99,7 +99,7 @@ public class VdmRtBundleLauncher implements ISimulatorLauncher
 		List<String> commandList = new Vector<String>();
 		List<String> entries = new Vector<String>();
 		// get the bundled class path of the debugger
-		ClasspathUtils.collectClasspath(new String[] { ISimengConstants.VDM_ENGINE_BUNDLE_ID }, entries);
+		ClasspathUtils.collectClasspath( ISimengConstants.VDM_ENGINE_BUNDLE_IDS , entries);
 		// get the class path for all jars in the project lib folder
 		File lib = libSearchRoot;// new File(project.getLocation().toFile(), "lib");
 		if (lib.exists() && lib.isDirectory())

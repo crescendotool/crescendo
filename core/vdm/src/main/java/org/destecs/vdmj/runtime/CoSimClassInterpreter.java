@@ -19,8 +19,8 @@
 package org.destecs.vdmj.runtime;
 
 import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
-import org.overturetool.vdmj.definitions.ClassList;
-import org.overturetool.vdmj.runtime.ClassInterpreter;
+import org.overture.ast.util.definitions.ClassList;
+import org.overture.interpreter.runtime.ClassInterpreter;
 
 
 

@@ -1,20 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-   <parent>
-    <groupId>org.destecs</groupId>
-  	<artifactId>core</artifactId>
-    <version>1.2.0</version>
-  </parent>
-  <groupId>org.destecs.core</groupId>
-  <artifactId>xmlrpc-extensions</artifactId>
-  <packaging>pom</packaging>
-  <version>1.2.0</version>
-  <name>xmlrpc-extensions</name>
-  
-  <modules>
-       <module>xmlrpcclientextension</module>
-       <module>xmlrpcserverextension</module>
-		 <module>xmlrpcbaseextension</module>
-  </modules>
-  
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.destecs</groupId>
+		<artifactId>core</artifactId>
+		<version>2.0.0</version>
+	</parent>
+	<groupId>org.destecs.core</groupId>
+	<artifactId>xmlrpc-extensions</artifactId>
+	<packaging>pom</packaging>
+	<name>xmlrpc-extensions</name>
+	<modules>
+		<module>xmlrpcclientextension</module>
+		<module>xmlrpcserverextension</module>
+		<module>xmlrpcbaseextension</module>
+	</modules>
 </project>

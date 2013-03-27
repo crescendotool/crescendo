@@ -18,13 +18,14 @@
  *******************************************************************************/
 package org.destecs.vdmj.scheduler;
 
-import org.overturetool.vdmj.lex.LexLocation;
-import org.overturetool.vdmj.runtime.Context;
-import org.overturetool.vdmj.scheduler.CPUResource;
-import org.overturetool.vdmj.scheduler.ISchedulableThread;
-import org.overturetool.vdmj.scheduler.RunState;
-import org.overturetool.vdmj.scheduler.Signal;
-import org.overturetool.vdmj.values.ObjectValue;
+import org.overture.ast.lex.LexLocation;
+import org.overture.interpreter.runtime.Context;
+import org.overture.interpreter.scheduler.CPUResource;
+import org.overture.interpreter.scheduler.ISchedulableThread;
+import org.overture.interpreter.scheduler.RunState;
+import org.overture.interpreter.scheduler.Signal;
+import org.overture.interpreter.values.ObjectValue;
+
 
 public class EventThread implements ISchedulableThread
 {

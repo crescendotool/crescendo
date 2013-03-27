@@ -44,67 +44,54 @@ import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStr
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
 import org.destecs.protocol.structs.StepinputsStructParam;
+import org.destecs.script.ast.types.ARealType;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdm.utility.ValueInfo;
 import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.log.SimulationLogger;
 import org.destecs.vdmj.log.SimulationMessage;
 import org.destecs.vdmj.scheduler.EventThread;
-import org.overturetool.vdmj.ExitStatus;
-import org.overturetool.vdmj.Release;
-import org.overturetool.vdmj.Settings;
-import org.overturetool.vdmj.config.Properties;
-import org.overturetool.vdmj.debug.DBGPReaderV2;
-import org.overturetool.vdmj.debug.DBGPStatus;
-import org.overturetool.vdmj.definitions.CPUClassDefinition;
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.definitions.Definition;
-import org.overturetool.vdmj.definitions.ExplicitFunctionDefinition;
-import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
-import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
-import org.overturetool.vdmj.definitions.SystemDefinition;
-import org.overturetool.vdmj.definitions.ValueDefinition;
-import org.overturetool.vdmj.expressions.Expression;
-import org.overturetool.vdmj.expressions.IntegerLiteralExpression;
-import org.overturetool.vdmj.expressions.RealLiteralExpression;
-import org.overturetool.vdmj.expressions.SeqEnumExpression;
-import org.overturetool.vdmj.expressions.SeqExpression;
-import org.overturetool.vdmj.expressions.UnaryMinusExpression;
-import org.overturetool.vdmj.lex.Dialect;
-import org.overturetool.vdmj.lex.LexLocation;
-import org.overturetool.vdmj.lex.LexNameToken;
-import org.overturetool.vdmj.lex.LexRealToken;
-import org.overturetool.vdmj.messages.Console;
-import org.overturetool.vdmj.messages.rtlog.RTLogger;
-import org.overturetool.vdmj.runtime.Context;
-import org.overturetool.vdmj.runtime.RuntimeValidator;
-import org.overturetool.vdmj.runtime.ValueException;
-import org.overturetool.vdmj.runtime.validation.BasicRuntimeValidator;
-import org.overturetool.vdmj.runtime.validation.ConjectureDefinition;
-import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.CPUResource;
-import org.overturetool.vdmj.scheduler.RunState;
-import org.overturetool.vdmj.scheduler.SharedStateListner;
-import org.overturetool.vdmj.scheduler.SystemClock;
-import org.overturetool.vdmj.statements.IdentifierDesignator;
-import org.overturetool.vdmj.statements.StateDesignator;
-import org.overturetool.vdmj.typechecker.TypeChecker;
-import org.overturetool.vdmj.types.ClassType;
-import org.overturetool.vdmj.types.RealType;
-import org.overturetool.vdmj.types.Type;
-import org.overturetool.vdmj.values.BooleanValue;
-import org.overturetool.vdmj.values.NameValuePair;
-import org.overturetool.vdmj.values.NameValuePairList;
-import org.overturetool.vdmj.values.ObjectValue;
-import org.overturetool.vdmj.values.OperationValue;
-import org.overturetool.vdmj.values.RealValue;
-import org.overturetool.vdmj.values.SeqValue;
-import org.overturetool.vdmj.values.UndefinedValue;
-import org.overturetool.vdmj.values.UpdatableValue;
-import org.overturetool.vdmj.values.Value;
-import org.overturetool.vdmj.values.ValueList;
-import org.overturetool.vdmj.values.ValueListener;
-import org.overturetool.vdmj.values.ValueListenerList;
+import org.overture.ast.definitions.AClassClassDefinition;
+import org.overture.ast.definitions.ACpuClassDefinition;
+import org.overture.ast.definitions.AExplicitFunctionDefinition;
+import org.overture.ast.definitions.AExplicitOperationDefinition;
+import org.overture.ast.definitions.AInstanceVariableDefinition;
+import org.overture.ast.definitions.ASystemClassDefinition;
+import org.overture.ast.definitions.AValueDefinition;
+import org.overture.ast.definitions.PDefinition;
+import org.overture.ast.definitions.SClassDefinition;
+import org.overture.ast.expressions.AIntLiteralExp;
+import org.overture.ast.expressions.ARealLiteralExp;
+import org.overture.ast.expressions.ASeqEnumSeqExp;
+import org.overture.ast.expressions.AUnaryMinusUnaryExp;
+import org.overture.ast.expressions.PExp;
+import org.overture.ast.expressions.SSeqExp;
+import org.overture.ast.factory.AstFactoryTC;
+import org.overture.ast.lex.*;
+import org.overture.ast.statements.AIdentifierObjectDesignator;
+import org.overture.ast.statements.PStateDesignator;
+import org.overture.ast.types.AClassType;
+import org.overture.ast.types.PType;
+import org.overture.config.Release;
+import org.overture.config.Settings;
+import org.overture.interpreter.assistant.definition.PDefinitionAssistantInterpreter;
+import org.overture.interpreter.debug.DBGPReaderV2;
+import org.overture.interpreter.debug.DBGPStatus;
+import org.overture.interpreter.messages.Console;
+import org.overture.interpreter.messages.rtlog.RTLogger;
+import org.overture.interpreter.runtime.*;
+import org.overture.interpreter.runtime.state.ASystemClassDefinitionRuntime;
+import org.overture.interpreter.runtime.validation.BasicRuntimeValidator;
+import org.overture.interpreter.runtime.validation.ConjectureDefinition;
+import org.overture.interpreter.scheduler.BasicSchedulableThread;
+import org.overture.interpreter.scheduler.CPUResource;
+import org.overture.interpreter.scheduler.RunState;
+import org.overture.interpreter.scheduler.SharedStateListner;
+import org.overture.interpreter.scheduler.SystemClock;
+import org.overture.interpreter.util.ExitStatus;
+import org.overture.interpreter.values.*;
+import org.overture.parser.config.Properties;
+import org.overture.typechecker.TypeChecker;
 
 public class SimulationManager extends BasicSimulationManager
 {
@@ -285,7 +272,7 @@ public class SimulationManager extends BasicSimulationManager
 	private ValueContents getOutput(String name) throws ValueException,
 			RemoteSimulationException
 	{
-		NameValuePairList list = SystemDefinition.getSystemMembers();
+		NameValuePairList list = ASystemClassDefinitionRuntime.getSystemMembers();
 		if (list != null && links.getLinks().containsKey(name))
 		{
 			List<String> varName = links.getQualifiedName(name);
@@ -385,32 +372,32 @@ public class SimulationManager extends BasicSimulationManager
 			boolean hasScriptCall = false;
 			int cpus = 0;
 			this.interpreter = controller.getInterpreter();
-			for (ClassDefinition def : interpreter.getClasses())
+			for (SClassDefinition def : interpreter.getClasses())
 			{
-				if (def instanceof SystemDefinition)
+				if (def instanceof ASystemClassDefinition)
 				{
-					for (Definition d : def.definitions)
+					for (PDefinition d : def.getDefinitions())
 					{
-						Type t = d.getType();
+						PType t = d.getType();
 
-						if (t instanceof ClassType)
+						if (t instanceof AClassType)
 						{
-							ClassType ct = (ClassType) t;
-							if (ct.classdef instanceof CPUClassDefinition)
+							AClassType ct = (AClassType) t;
+							if (ct.getClassdef() instanceof ACpuClassDefinition)
 							{
 								cpus++;
 							}
 						}
 					}
-				} else if (def instanceof ClassDefinition)
+				} else if (def instanceof AClassClassDefinition)
 				{
-					if (def.getName().equals(scriptClass))
+					if (def.getName().name.equals(scriptClass))
 					{
-						for (Definition d : def.definitions)
+						for (PDefinition d : def.getDefinitions())
 						{
 							if (d.getName() != null
-									&& d.getName().equals(scriptOperation)
-									&& (d instanceof ExplicitOperationDefinition || d instanceof ExplicitFunctionDefinition))
+									&& d.getName().name.equals(scriptOperation)
+									&& (d instanceof AExplicitOperationDefinition || d instanceof AExplicitFunctionDefinition))
 							{
 								hasScriptCall = true;
 							}
@@ -458,7 +445,7 @@ public class SimulationManager extends BasicSimulationManager
 			for (Entry<String, LinkInfo> entry : links.getInputs().entrySet())
 			{
 
-				NameValuePairList list = SystemDefinition.getSystemMembers();
+				NameValuePairList list = ASystemClassDefinitionRuntime.getSystemMembers();
 				if (list != null)
 				{
 					List<String> varName = entry.getValue().getQualifiedName();
@@ -469,7 +456,7 @@ public class SimulationManager extends BasicSimulationManager
 			}
 			for (Entry<String, LinkInfo> entry : links.getOutputs().entrySet())
 			{
-				NameValuePairList list = SystemDefinition.getSystemMembers();
+				NameValuePairList list = ASystemClassDefinitionRuntime.getSystemMembers();
 				if (list != null)
 				{
 					List<String> varName = entry.getValue().getQualifiedName();
@@ -485,11 +472,11 @@ public class SimulationManager extends BasicSimulationManager
 		SharedStateListner.setIdentityChecker(new SharedStateListner.IdentityChecker()
 		{
 
-			public boolean reuiresCheck(StateDesignator target)
+			public boolean reuiresCheck(PStateDesignator target)
 			{
-				if (target instanceof IdentifierDesignator)
+				if (target instanceof AIdentifierObjectDesignator)
 				{
-					LexNameToken name = ((IdentifierDesignator) target).name;
+					LexNameToken name = ((AIdentifierObjectDesignator) target).getName();
 					for (LexNameToken n : writeCheck)
 					{
 						if (name.module.equals(n.module)
@@ -729,20 +716,20 @@ public class SimulationManager extends BasicSimulationManager
 				Object[] objValue = (Object[]) parameter.get("value");
 				Object[] dimension = (Object[]) parameter.get("size");
 
-				for (ClassDefinition cd : controller.getInterpreter().getClasses())
+				for (SClassDefinition cd : controller.getInterpreter().getClasses())
 				{
-					if (!cd.getName().equals(vName.instanceName))
+					if (!cd.getName().name.equals(vName.instanceName))
 					{
 						// wrong class
 						continue;
 					}
-					for (Definition def : cd.definitions)
+					for (PDefinition def : cd.getDefinitions())
 					{
-						if (def instanceof ValueDefinition)
+						if (def instanceof AValueDefinition)
 						{
-							ValueDefinition vDef = (ValueDefinition) def;
-							if (vDef.pattern.toString().equals(vName.variableName)
-									&& vDef.isValueDefinition())
+							AValueDefinition vDef = (AValueDefinition) def;
+							if (vDef.getPattern().toString().equals(vName.variableName)
+									&& PDefinitionAssistantInterpreter.isValueDefinition( vDef))
 							{
 								if (dimension.length == 1
 										&& ((Integer) dimension[0] == 1))
@@ -752,9 +739,9 @@ public class SimulationManager extends BasicSimulationManager
 								} else
 								{
 									// dealing with a sequence
-									if (vDef.exp instanceof SeqEnumExpression)
+									if (vDef.getExpression() instanceof ASeqEnumSeqExp)
 									{
-										SeqEnumExpression seqEnum = (SeqEnumExpression) vDef.exp;
+										ASeqEnumSeqExp seqEnum = (ASeqEnumSeqExp) vDef.getExpression();
 										found = createSeqEnum(vName.variableName, seqEnum, objValue, dimension);
 									}
 
@@ -789,7 +776,7 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	private boolean createSeqEnum(String variableName,
-			SeqEnumExpression seqEnum, Object[] objValue, Object[] objDimensions)
+			ASeqEnumSeqExp seqEnum, Object[] objValue, Object[] objDimensions)
 			throws NoSuchFieldException, IllegalAccessException,
 			RemoteSimulationException
 	{
@@ -806,9 +793,9 @@ public class SimulationManager extends BasicSimulationManager
 
 		if (dimensions.size() == 1) // it's an array
 		{
-			for (Expression exp : seqEnum.members)
+			for (PExp exp : seqEnum.getMembers())
 			{
-				if (exp instanceof SeqEnumExpression)
+				if (exp instanceof ASeqEnumSeqExp)
 				{
 					found = found
 							&& setValueForSDP((Double) objValue[index++], exp);
@@ -823,12 +810,12 @@ public class SimulationManager extends BasicSimulationManager
 				throw new RemoteSimulationException("Dimension of \""
 						+ variableName + "\" does not match the SDP ");
 			}
-			for (Expression exp : seqEnum.members)
+			for (PExp exp : seqEnum.getMembers())
 			{
-				if (exp instanceof SeqEnumExpression)
+				if (exp instanceof ASeqEnumSeqExp)
 				{
-					SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
-					for (Expression expInner : seqEnumInner.members)
+					ASeqEnumSeqExp seqEnumInner = (ASeqEnumSeqExp) exp;
+					for (PExp expInner : seqEnumInner.getMembers())
 					{
 						found = found
 								&& setValueForSDP((Double) objValue[index++], expInner);
@@ -840,18 +827,18 @@ public class SimulationManager extends BasicSimulationManager
 		return found;
 	}
 
-	private boolean checkDimentionsOfSeqEnum(SeqEnumExpression seqEnum,
+	private boolean checkDimentionsOfSeqEnum(ASeqEnumSeqExp seqEnum,
 			List<Integer> dimensions)
 	{
-		if (seqEnum.members.size() != dimensions.get(0))
+		if (seqEnum.getMembers().size() != dimensions.get(0))
 			return false;
 
-		for (Expression exp : seqEnum.members)
+		for (PExp exp : seqEnum.getMembers())
 		{
-			if (exp instanceof SeqEnumExpression)
+			if (exp instanceof ASeqEnumSeqExp)
 			{
-				SeqEnumExpression seqEnumInner = (SeqEnumExpression) exp;
-				if (seqEnumInner.members.size() != dimensions.get(1))
+				ASeqEnumSeqExp seqEnumInner = (ASeqEnumSeqExp) exp;
+				if (seqEnumInner.getMembers().size() != dimensions.get(1))
 					return false;
 			}
 		}
@@ -860,16 +847,16 @@ public class SimulationManager extends BasicSimulationManager
 
 	}
 
-	private boolean setValueForSDP(Double newValue, Expression exp)
+	private boolean setValueForSDP(Double newValue, PExp exp)
 			throws IllegalArgumentException, IllegalAccessException,
 			NoSuchFieldException, SecurityException
 	{
 		boolean found = false;
 
-		if (exp != null && exp instanceof RealLiteralExpression)
+		if (exp != null && exp instanceof ARealLiteralExp)
 		{
-			RealLiteralExpression rExp = ((RealLiteralExpression) exp);
-			LexRealToken token = rExp.value;
+			ARealLiteralExp rExp = ((ARealLiteralExp) exp);
+			LexRealToken token = rExp.getValue();
 
 			Field valueField = LexRealToken.class.getField("value");
 			valueField.setAccessible(true);
@@ -880,21 +867,21 @@ public class SimulationManager extends BasicSimulationManager
 		return found;
 	}
 
-	private boolean setValueForSDP(Double newValue, ValueDefinition vDef)
+	private boolean setValueForSDP(Double newValue, AValueDefinition vDef)
 			throws NoSuchFieldException, IllegalAccessException
 	{
 		boolean found = false;
 
-		if (vDef.exp != null && vDef.exp instanceof RealLiteralExpression)
+		if (vDef.getExpression() != null && vDef.getExpression() instanceof ARealLiteralExp)
 		{
-			found = setValueForSDP(newValue, vDef.exp);
+			found = setValueForSDP(newValue, vDef.getExpression());
 
-		} else if (vDef.exp != null
-				&& vDef.exp instanceof IntegerLiteralExpression
-				|| vDef.exp instanceof UnaryMinusExpression)
+		} else if (vDef.getExpression() != null
+				&& vDef.getExpression() instanceof AIntLiteralExp
+				|| vDef.getExpression() instanceof AUnaryMinusUnaryExp)
 		{
-			RealLiteralExpression newReal = new RealLiteralExpression(new LexRealToken(newValue, vDef.location));
-			Field valDefField = ValueDefinition.class.getField("exp");
+			ARealLiteralExp newReal = AstFactoryTC.newARealLiteralExp(new LexRealToken(newValue, vDef.getLocation()));//new ARealLiteralExp(new LexRealToken(newValue, vDef.location));
+			Field valDefField = AValueDefinition.class.getField("exp");
 			valDefField.setAccessible(true);
 			valDefField.set(vDef, newReal);
 			found = true;
@@ -920,35 +907,35 @@ public class SimulationManager extends BasicSimulationManager
 			@SuppressWarnings("deprecation")
 			StringPair vName = links.getBoundVariable(parameterName);
 
-			for (ClassDefinition cd : controller.getInterpreter().getClasses())
+			for (SClassDefinition cd : controller.getInterpreter().getClasses())
 			{
 				if (!cd.getName().equals(vName.instanceName))
 				{
 					// wrong class
 					continue;
 				}
-				for (Definition def : cd.definitions)
+				for (PDefinition def : cd.getDefinitions())
 				{
-					if (def instanceof ValueDefinition)
+					if (def instanceof AValueDefinition)
 					{
-						ValueDefinition vDef = (ValueDefinition) def;
-						if (vDef.pattern.toString().equals(vName.variableName)
-								&& vDef.isValueDefinition()
-								&& vDef.getType() instanceof RealType)
+						AValueDefinition vDef = (AValueDefinition) def;
+						if (vDef.getPattern().toString().equals(vName.variableName)
+								&&PDefinitionAssistantInterpreter.isValueDefinition( vDef)
+								&& vDef.getType() instanceof ARealType)
 						{
-							if (vDef.exp instanceof RealLiteralExpression)
+							if (vDef.getExpression() instanceof ARealLiteralExp)
 							{
-								RealLiteralExpression exp = ((RealLiteralExpression) vDef.exp);
-								LexRealToken token = exp.value;
+								ARealLiteralExp exp = ((ARealLiteralExp) vDef.getExpression());
+								LexRealToken token = exp.getValue();
 								List<Double> value = new Vector<Double>();
 								value.add(token.value);
 								List<Integer> size = new Vector<Integer>();
 								size.add(1);
 								return new GetDesignParametersStructdesignParametersStruct(parameterName, value, size);
-							} else if (vDef.exp instanceof SeqExpression)
+							} else if (vDef.getExpression() instanceof SSeqExp)
 							{
 								throw new RemoteSimulationException("getDesignParameter with type SeqExpression not supported: "
-										+ vDef.exp);
+										+ vDef.getExpression());
 							}
 
 						}
@@ -992,7 +979,7 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
 
-			NameValuePairList list = SystemDefinition.getSystemMembers();
+			NameValuePairList list = ASystemClassDefinitionRuntime.getSystemMembers();
 			if (list != null && list.size() > 0)
 			{
 				parameters.putAll(getParameters(list.get(0).name.module, list, 0));
@@ -1200,14 +1187,14 @@ public class SimulationManager extends BasicSimulationManager
 	public List<String> getLogEnabledVariables()
 	{
 		List<String> list = new Vector<String>();
-		for (ClassDefinition c : interpreter.getClasses())
+		for (SClassDefinition c : interpreter.getClasses())
 		{
-			if (c instanceof SystemDefinition)
+			if (c instanceof ASystemClassDefinition)
 			{
 				String prefix = "System";
-				for (Definition def : c.getDefinitions())
+				for (PDefinition def : c.getDefinitions())
 				{
-					list.addAll(getLogEnabledVariables(list, prefix, def, new Vector<Definition>()));
+					list.addAll(getLogEnabledVariables(list, prefix, def, new Vector<PDefinition>()));
 				}
 			}
 		}
@@ -1215,19 +1202,19 @@ public class SimulationManager extends BasicSimulationManager
 	}
 
 	private Collection<? extends String> getLogEnabledVariables(
-			final List<String> list, String prefix, Definition def,
-			List<Definition> path)
+			final List<String> list, String prefix, PDefinition def,
+			List<PDefinition> path)
 	{
 		List<String> result = new Vector<String>();
-		if (def instanceof InstanceVariableDefinition && !path.contains(def))
+		if (def instanceof AInstanceVariableDefinition && !path.contains(def))
 		{
-			InstanceVariableDefinition var = (InstanceVariableDefinition) def;
+			AInstanceVariableDefinition var = (AInstanceVariableDefinition) def;
 			String name = prefix + "." + var.getName();
 			result.add(name);
 			path.add(var);
-			if (var.type instanceof ClassType)
+			if (var.getType() instanceof AClassType)
 			{
-				result.addAll(getLogEnabledVariables(result, name, ((ClassType) var.type).classdef, path));
+				result.addAll(getLogEnabledVariables(result, name, ((AClassType) var.getType()).getClassdef(), path));
 			}
 
 		}

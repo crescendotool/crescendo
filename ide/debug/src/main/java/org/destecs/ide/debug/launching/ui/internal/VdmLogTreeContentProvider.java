@@ -7,23 +7,24 @@ import java.util.Vector;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.overture.ast.definitions.ABusClassDefinition;
+import org.overture.ast.definitions.AClassClassDefinition;
+import org.overture.ast.definitions.ACpuClassDefinition;
+import org.overture.ast.definitions.AInstanceVariableDefinition;
+import org.overture.ast.definitions.ASystemClassDefinition;
+import org.overture.ast.definitions.PDefinition;
+import org.overture.ast.definitions.SClassDefinition;
+import org.overture.ast.node.INode;
+import org.overture.ast.types.AClassType;
+import org.overture.ast.types.AOptionalType;
+import org.overture.ast.types.PType;
 import org.overture.ide.core.IVdmModel;
-import org.overturetool.vdmj.ast.IAstNode;
-import org.overturetool.vdmj.definitions.BUSClassDefinition;
-import org.overturetool.vdmj.definitions.CPUClassDefinition;
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.definitions.Definition;
-import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
-import org.overturetool.vdmj.definitions.SystemDefinition;
-import org.overturetool.vdmj.types.ClassType;
-import org.overturetool.vdmj.types.OptionalType;
-import org.overturetool.vdmj.types.Type;
 
 public class VdmLogTreeContentProvider implements ITreeContentProvider
 {
 
-	private Set<Definition> visitedCount = new HashSet<Definition>();
-	private Set<Definition> visited = new HashSet<Definition>();
+	private Set<PDefinition> visitedCount = new HashSet<PDefinition>();
+	private Set<PDefinition> visited = new HashSet<PDefinition>();
 	
 	public void dispose()
 	{
@@ -41,11 +42,11 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		if (inputElement instanceof IVdmModel)
 		{
 			IVdmModel model = (IVdmModel) inputElement;
-			for (IAstNode elem : model.getRootElementList())
+			for (INode elem : model.getRootElementList())
 			{
-				if (elem instanceof SystemDefinition)
+				if (elem instanceof ASystemClassDefinition)
 				{
-					return new Object[] { new TreeNodeContainer(null, (SystemDefinition)elem,true) };
+					return new Object[] { new TreeNodeContainer(null, (ASystemClassDefinition)elem,true) };
 				}
 			}
 		}
@@ -58,7 +59,7 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		if(parentElement instanceof TreeNodeContainer)
 		{
 			TreeNodeContainer parentNode = ((TreeNodeContainer) parentElement);
-			Definition def = parentNode.data;
+			PDefinition def = parentNode.data;
 			
 			if(addToVisited && visited.contains(def))
 			{
@@ -82,15 +83,15 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 				visitedCount.add(def);
 			}
 			
-			if (def instanceof ClassDefinition)
+			if (def instanceof AClassClassDefinition)
 			{
-				List<Definition> defs =  getChildrenOf((ClassDefinition) def);
+				List<PDefinition> defs =  getChildrenOf((AClassClassDefinition) def);
 				
 				return encapsulateDefs(parentNode,defs);
 			}
-			if (def instanceof InstanceVariableDefinition)
+			if (def instanceof AInstanceVariableDefinition)
 			{
-				List<Definition> defs =  getChildrenOf((InstanceVariableDefinition) def);
+				List<PDefinition> defs =  getChildrenOf((AInstanceVariableDefinition) def);
 				return encapsulateDefs(parentNode,defs);
 			}
 			
@@ -103,11 +104,11 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		return getChildren(parentElement,true);
 	}
 
-	private Object[] encapsulateDefs(TreeNodeContainer parentNode, List<Definition> defs)
+	private Object[] encapsulateDefs(TreeNodeContainer parentNode, List<PDefinition> defs)
 	{
 		List<TreeNodeContainer> result = new Vector<TreeNodeContainer>();
 		
-		for (Definition definition : defs)
+		for (PDefinition definition : defs)
 		{			
 				result.add(new TreeNodeContainer(parentNode, definition,isVirtual(definition)));
 			
@@ -116,22 +117,22 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		return result.toArray();
 	}
 
-	private List<Definition> getChildrenOf(
-			InstanceVariableDefinition instance)
+	private List<PDefinition> getChildrenOf(
+			AInstanceVariableDefinition instance)
 	{
-		List<Definition> result = new Vector<Definition>();
+		List<PDefinition> result = new Vector<PDefinition>();
 
-		Type instanceType = instance.type;
+		PType instanceType = instance.getType();
 
-		if (instanceType instanceof OptionalType)
+		if (instanceType instanceof AOptionalType)
 		{
-			instanceType = ((OptionalType) instanceType).type;
+			instanceType = ((AOptionalType) instanceType).getType();
 		}
 
-		if (instanceType instanceof ClassType)
+		if (instanceType instanceof AClassType)
 		{
-			ClassDefinition internalClass = ((ClassType) instanceType).classdef;
-			if (!(internalClass instanceof CPUClassDefinition || internalClass instanceof BUSClassDefinition))
+			SClassDefinition internalClass = ((AClassType) instanceType).getClassdef();
+			if (!(internalClass instanceof ACpuClassDefinition || internalClass instanceof ABusClassDefinition))
 			{
 				result.addAll(getChildrenOf(internalClass));
 			}
@@ -141,13 +142,13 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		return result;
 	}
 
-	private List<Definition> getChildrenOf(ClassDefinition c)
+	private List<PDefinition> getChildrenOf(SClassDefinition c)
 	{
-		List<Definition> result = new Vector<Definition>();
+		List<PDefinition> result = new Vector<PDefinition>();
 
-		for (Definition def : c.getDefinitions())
+		for (PDefinition def : c.getDefinitions())
 		{
-			if (def instanceof InstanceVariableDefinition)
+			if (def instanceof AInstanceVariableDefinition)
 			{
 				if (isWorthAdding(def))
 				{
@@ -159,16 +160,16 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		return result;
 	}
 
-	private boolean isVirtual(Definition def)
+	private boolean isVirtual(PDefinition def)
 	{
-		Type instanceType = def.getType();
+		PType instanceType = def.getType();
 		
-		if (instanceType instanceof OptionalType)
+		if (instanceType instanceof AOptionalType)
 		{
-			instanceType = ((OptionalType) instanceType).type;
+			instanceType = ((AOptionalType) instanceType).getType();
 		}
 
-		if (instanceType instanceof ClassType)
+		if (instanceType instanceof AClassType)
 		{
 			return true;
 
@@ -178,22 +179,22 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 		
 	}
 	
-	private boolean isWorthAdding(Definition def)
+	private boolean isWorthAdding(PDefinition def)
 	{
-		Type instanceType = def.getType();
+		PType instanceType = def.getType();
 
-		if(def instanceof InstanceVariableDefinition)
+		if(def instanceof AInstanceVariableDefinition)
 		{
-			if (instanceType instanceof OptionalType)
+			if (instanceType instanceof AOptionalType)
 			{
-				instanceType = ((OptionalType) instanceType).type;
+				instanceType = ((AOptionalType) instanceType).getType();
 			}
 
-			if (instanceType instanceof ClassType)
+			if (instanceType instanceof AClassType)
 			{
-				ClassDefinition internalClass = ((ClassType) instanceType).classdef;
-				if (internalClass instanceof CPUClassDefinition
-						|| internalClass instanceof BUSClassDefinition)
+				SClassDefinition internalClass = ((AClassType) instanceType).getClassdef();
+				if (internalClass instanceof ACpuClassDefinition
+						|| internalClass instanceof ABusClassDefinition)
 				{
 					return false;
 				} else

@@ -19,15 +19,15 @@
 package org.destecs.vdmj.scheduler;
 
 import org.destecs.vdm.SimulationManager;
-import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.MainThread;
-import org.overturetool.vdmj.scheduler.Resource;
-import org.overturetool.vdmj.scheduler.ResourceScheduler;
-import org.overturetool.vdmj.scheduler.RunState;
-import org.overturetool.vdmj.scheduler.SharedStateListner;
-import org.overturetool.vdmj.scheduler.Signal;
-import org.overturetool.vdmj.scheduler.SystemClock;
-import org.overturetool.vdmj.values.BUSValue;
+import org.overture.interpreter.scheduler.BasicSchedulableThread;
+import org.overture.interpreter.scheduler.MainThread;
+import org.overture.interpreter.scheduler.Resource;
+import org.overture.interpreter.scheduler.ResourceScheduler;
+import org.overture.interpreter.scheduler.RunState;
+import org.overture.interpreter.scheduler.SharedStateListner;
+import org.overture.interpreter.scheduler.Signal;
+import org.overture.interpreter.scheduler.SystemClock;
+import org.overture.interpreter.values.BUSValue;
 
 public class CoSimResourceScheduler extends ResourceScheduler
 {

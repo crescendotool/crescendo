@@ -35,29 +35,29 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.overture.ast.definitions.ABusClassDefinition;
+import org.overture.ast.definitions.AClassClassDefinition;
+import org.overture.ast.definitions.ACpuClassDefinition;
+import org.overture.ast.definitions.AExplicitOperationDefinition;
+import org.overture.ast.definitions.AInstanceVariableDefinition;
+import org.overture.ast.definitions.ALocalDefinition;
+import org.overture.ast.definitions.ASystemClassDefinition;
+import org.overture.ast.definitions.AValueDefinition;
+import org.overture.ast.definitions.PDefinition;
+import org.overture.ast.modules.AModuleModules;
+import org.overture.ast.node.INode;
+import org.overture.ast.types.ABooleanBasicType;
+import org.overture.ast.types.ACharBasicType;
+import org.overture.ast.types.AClassType;
+import org.overture.ast.types.AIntNumericBasicType;
+import org.overture.ast.types.ANatNumericBasicType;
+import org.overture.ast.types.ANatOneNumericBasicType;
+import org.overture.ast.types.AOptionalType;
+import org.overture.ast.types.ARealNumericBasicType;
+import org.overture.ast.types.ASeqSeqType;
+import org.overture.ast.types.PType;
 import org.overture.ide.core.IVdmModel;
 import org.overture.ide.core.resources.IVdmProject;
-import org.overturetool.vdmj.ast.IAstNode;
-import org.overturetool.vdmj.definitions.BUSClassDefinition;
-import org.overturetool.vdmj.definitions.CPUClassDefinition;
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.definitions.Definition;
-import org.overturetool.vdmj.definitions.ExplicitOperationDefinition;
-import org.overturetool.vdmj.definitions.InstanceVariableDefinition;
-import org.overturetool.vdmj.definitions.LocalDefinition;
-import org.overturetool.vdmj.definitions.SystemDefinition;
-import org.overturetool.vdmj.definitions.ValueDefinition;
-import org.overturetool.vdmj.modules.Module;
-import org.overturetool.vdmj.types.BooleanType;
-import org.overturetool.vdmj.types.CharacterType;
-import org.overturetool.vdmj.types.ClassType;
-import org.overturetool.vdmj.types.IntegerType;
-import org.overturetool.vdmj.types.NaturalOneType;
-import org.overturetool.vdmj.types.NaturalType;
-import org.overturetool.vdmj.types.OptionalType;
-import org.overturetool.vdmj.types.RealType;
-import org.overturetool.vdmj.types.SeqType;
-import org.overturetool.vdmj.types.Type;
 
 public class VdmMetadataBuilder extends
 		org.eclipse.core.resources.IncrementalProjectBuilder
@@ -93,17 +93,17 @@ public class VdmMetadataBuilder extends
 				}
 
 				props.put("TYPE_CHECK_STATUS", "true");
-				for (IAstNode node : model.getRootElementList())
+				for (INode node : model.getRootElementList())
 				{
-					if (node instanceof SystemDefinition)
+					if (node instanceof ASystemClassDefinition)
 					{
-						SystemDefinition sd = (SystemDefinition) node;
+						ASystemClassDefinition sd = (ASystemClassDefinition) node;
 						expandAndSave(props, "", sd, model);
 						List<String> values = new Vector<String>();
-						for (Definition def : sd.getDefinitions())
+						for (PDefinition def : sd.getDefinitions())
 						{
-							if (def instanceof ValueDefinition
-									|| def instanceof LocalDefinition)
+							if (def instanceof AValueDefinition
+									|| def instanceof ALocalDefinition)
 							{
 								values.add(def.getName());
 							}
@@ -114,10 +114,10 @@ public class VdmMetadataBuilder extends
 					} else
 					{
 						List<String> values = new Vector<String>();
-						for (Definition def : getDefinitions(node))
+						for (PDefinition def : getDefinitions(node))
 						{
-							if (def instanceof ValueDefinition
-									|| def instanceof LocalDefinition)
+							if (def instanceof AValueDefinition
+									|| def instanceof ALocalDefinition)
 							{
 								values.add(def.getName());
 
@@ -129,7 +129,7 @@ public class VdmMetadataBuilder extends
 								}
 							}
 							else
-							if(def instanceof InstanceVariableDefinition)
+							if(def instanceof AInstanceVariableDefinition)
 							{
 								values.add(def.getName());
 
@@ -141,13 +141,13 @@ public class VdmMetadataBuilder extends
 								}
 							}
 							else
-							if(def instanceof ExplicitOperationDefinition)
+							if(def instanceof AExplicitOperationDefinition)
 							{
-								ExplicitOperationDefinition op = (ExplicitOperationDefinition) def;
+								AExplicitOperationDefinition op = (AExplicitOperationDefinition) def;
 								values.add(def.getName());
 								
 								save(props, node.getName() + "."
-										+ def.getName(), "_operation"+ "," + (op.accessSpecifier.isAsync  ? "async" : "sync") );
+										+ def.getName(), "_operation"+ "," + (op.getAccess().getAsync()!=null  ? "async" : "sync") );
 							}
 							
 						}
@@ -192,15 +192,15 @@ public class VdmMetadataBuilder extends
 		}
 	}
 
-	Set<Definition> expandedDefinitions = new HashSet<Definition>();
+	Set<PDefinition> expandedDefinitions = new HashSet<PDefinition>();
 
-	private void expandAndSave(Properties props, String prefix, Definition def,
+	private void expandAndSave(Properties props, String prefix, PDefinition def,
 			IVdmModel model)
 	{
 		expandAndSave(props, prefix, def, model, false);
 	}
 
-	private void expandAndSave(Properties props, String prefix, Definition def,
+	private void expandAndSave(Properties props, String prefix, PDefinition def,
 			IVdmModel model, boolean defIsField)
 	{
 
@@ -210,7 +210,7 @@ public class VdmMetadataBuilder extends
 		}
 
 		String name = prefix + (prefix == "" ? "" : ".") + def.getName();
-		if (def instanceof SystemDefinition)
+		if (def instanceof ASystemClassDefinition)
 		{
 			save(props, name, SYSTEM_TYPE_NAME + ",systemclass");
 		} else
@@ -226,9 +226,9 @@ public class VdmMetadataBuilder extends
 			return;
 		}
 
-		for (Definition field : getFieldDefinitions(getTypeName(def), model))
+		for (PDefinition field : getFieldDefinitions(getTypeName(def), model))
 		{
-			Definition child = field;// getDefinition(getTypeName(field),
+			PDefinition child = field;// getDefinition(getTypeName(field),
 										// model);
 			if (child != null)
 			{
@@ -241,8 +241,8 @@ public class VdmMetadataBuilder extends
 		}
 	}
 
-	private String getNameTypeString(Type type) {
-		if(type.isClass())
+	private String getNameTypeString(PType type) {
+		if(type instanceof AClassType)//FIXMEif( type.isClass())
 		{
 			return getTypeName(type) + ",class";
 		}
@@ -273,65 +273,65 @@ public class VdmMetadataBuilder extends
 		return sb.substring(1).trim();
 	}
 
-	private Type getVdmTypeName(IAstNode node)
+	private PType getVdmTypeName(INode node)
 	{
-		Type t = null;
+		PType t = null;
 
-		if (node instanceof InstanceVariableDefinition)
+		if (node instanceof AInstanceVariableDefinition)
 		{
-			t = ((InstanceVariableDefinition) node).type;
-		} else if (node instanceof ValueDefinition)
+			t = ((AInstanceVariableDefinition) node).getType();
+		} else if (node instanceof AValueDefinition)
 		{
-			t = ((ValueDefinition) node).type;
-		} else if (node instanceof LocalDefinition)
+			t = ((AValueDefinition) node).getType();
+		} else if (node instanceof ALocalDefinition)
 		{
-			t = ((LocalDefinition) node).type;
+			t = ((ALocalDefinition) node).getType();
 		}
 
 		return t;
 
 	}
 
-	private String getTypeName(Type t)
+	private String getTypeName(PType t)
 	{
-		if (t instanceof RealType || t.isType("real") != null)
+		if (t instanceof ARealNumericBasicType || t.isType("real") != null)
 		{
 			return "real";
-		} else if (t instanceof IntegerType || t.isType("int") != null)
+		} else if (t instanceof AIntNumericBasicType || t.isType("int") != null)
 		{
 			return "int";
-		} else if (t instanceof NaturalType || t.isType("nat") != null)
+		} else if (t instanceof ANatNumericBasicType || t.isType("nat") != null)
 		{
 			return "nat";
-		}else if (t instanceof NaturalOneType || t.isType("nat1") != null)
+		}else if (t instanceof ANatOneNumericBasicType || t.isType("nat1") != null)
 		{
 			return "nat1";
-		}  else if (t instanceof BooleanType || t.isType("bool") != null)
+		}  else if (t instanceof ABooleanBasicType || t.isType("bool") != null)
 		{
 			return "bool";
-		}else if (t instanceof CharacterType || t.isType("char") != null)
+		}else if (t instanceof ACharBasicType || t.isType("char") != null)
 		{
 			return "char";
 		}
-		 else if (t instanceof SeqType)
+		 else if (t instanceof ASeqSeqType)
 		 {
-			 SeqType t1 = (SeqType) t;
-		 return "seq of (" + getTypeName(t1.seqof) + ")";
+			 ASeqSeqType t1 = (ASeqSeqType) t;
+		 return "seq of (" + getTypeName(t1.getSeqof()) + ")";
 		 }
-		else if (t instanceof ClassType)
+		else if (t instanceof AClassType)
 		{
-			ClassType ct = (ClassType) t;
-			if(ct.classdef instanceof CPUClassDefinition)
+			AClassType ct = (AClassType) t;
+			if(ct.getClassdef() instanceof ACpuClassDefinition)
 			{
 				return CPU_TYPE_NAME;
-			}else if(ct.classdef instanceof BUSClassDefinition)
+			}else if(ct.getClassdef() instanceof ABusClassDefinition)
 			{
 				return BUS_TYPE_NAME;
 			}
-			return ct.getName();// "Class";
-		} else if (t instanceof OptionalType)
+			return ct.getName().name;// "Class";
+		} else if (t instanceof AOptionalType)
 		{
-			return getTypeName(((OptionalType) t).type);
+			return getTypeName(((AOptionalType) t).getType());
 		}
 		
 //		if(t.isNumeric()) //this is trying to fit the value in a real (if it is compatible with real it is ok)
@@ -342,33 +342,33 @@ public class VdmMetadataBuilder extends
 		return UNKNOWN;
 	}
 
-	private String getTypeName(Definition def)
+	private String getTypeName(PDefinition def)
 	{
-		Type t = null;
+		PType t = null;
 
-		if (def instanceof InstanceVariableDefinition)
+		if (def instanceof AInstanceVariableDefinition)
 		{
-			t = ((InstanceVariableDefinition) def).type;
-		} else if (def instanceof ValueDefinition)
+			t = ((AInstanceVariableDefinition) def).type;
+		} else if (def instanceof AValueDefinition)
 		{
-			t = ((ValueDefinition) def).type;
-		} else if (def instanceof LocalDefinition)
+			t = ((AValueDefinition) def).type;
+		} else if (def instanceof ALocalDefinition)
 		{
-			t = ((LocalDefinition) def).type;
+			t = ((ALocalDefinition) def).type;
 		}
 
 		String typeName = "";
-		if (t instanceof OptionalType)
+		if (t instanceof AOptionalType)
 		{
-			OptionalType opType = (OptionalType) t;
+			AOptionalType opType = (AOptionalType) t;
 			typeName = opType.type.getName();
 
 		}
-		if (t instanceof ClassType)
+		if (t instanceof AClassType)
 		{
 			typeName = t.getName();
-		} else if (t instanceof OptionalType
-				&& ((OptionalType) t).type instanceof ClassType)
+		} else if (t instanceof AOptionalType
+				&& ((AOptionalType) t).type instanceof AClassType)
 		{
 			typeName = t.getName();
 
@@ -379,18 +379,18 @@ public class VdmMetadataBuilder extends
 		return typeName;
 	}
 
-	private List<Definition> getFieldDefinitions(String type, IVdmModel model)
+	private List<PDefinition> getFieldDefinitions(String type, IVdmModel model)
 	{
-		List<Definition> variable = new Vector<Definition>();
-		for (IAstNode node : model.getRootElementList())
+		List<PDefinition> variable = new Vector<PDefinition>();
+		for (INode node : model.getRootElementList())
 		{
 			if (!node.getName().equals(type))
 			{
 				continue;
 			}
-			for (Definition def : getDefinitions(node))
+			for (PDefinition def : getDefinitions(node))
 			{
-				if (def instanceof InstanceVariableDefinition)
+				if (def instanceof AInstanceVariableDefinition)
 				{
 					variable.add(def);
 				}
@@ -399,16 +399,16 @@ public class VdmMetadataBuilder extends
 		return variable;
 	}
 
-	private List<Definition> getDefinitions(IAstNode node)
+	private List<PDefinition> getDefinitions(INode node)
 	{
-		if (node instanceof ClassDefinition)
+		if (node instanceof AClassClassDefinition)
 		{
-			return ((ClassDefinition) node).getDefinitions();
-		} else if (node instanceof Module)
+			return ((AClassClassDefinition) node).getDefinitions();
+		} else if (node instanceof AModuleModules)
 		{
-			return ((Module) node).defs;
+			return ((AModuleModules) node).getDefs();
 		}
-		return new Vector<Definition>();
+		return new Vector<PDefinition>();
 
 	}
 }

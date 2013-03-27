@@ -1,19 +1,20 @@
 Manifest-Version: 1.0
 Bundle-Vendor: DESTECS
 Bundle-ActivationPolicy: lazy
-Bundle-Version: 1.2.0
+Bundle-Version: 2.0.0
 Eclipse-BuddyPolicy: registered
 Bundle-Localization: plugin
 Bundle-Name: DESTECS Simulation Engine
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.destecs.ide.simeng;singleton:=true
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.ui.views;bundle-version="3.4.1",
- org.eclipse.ui;bundle-version="3.5.2",
- org.eclipse.core.runtime;bundle-version="3.5.0",
- org.eclipse.core.resources;bundle-version="3.5.2",
- org.eclipse.debug.core;bundle-version="3.5.0",
- org.destecs.ide.core;bundle-version="1.2.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Require-Bundle: org.eclipse.ui.views,
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.debug.core,
+ org.destecs.ide.core
 Bundle-Activator: org.destecs.ide.simeng.Activator
 Export-Package: org.destecs.ide.simeng,
  org.destecs.ide.simeng.actions,
@@ -21,28 +22,6 @@ Export-Package: org.destecs.ide.simeng,
  org.destecs.ide.simeng.listener,
  org.destecs.ide.simeng.ui.views
 Bundle-ClassPath: .,
- antlr-2.7.7.jar,
- commons-logging-1.1.jar,
- servlet-api-2.3.jar,
- log4j-1.2.12.jar,
- antlr-3.2.jar,
- antlr-runtime-3.2.jar,
- stringtemplate-3.2.jar,
- commons-io-1.3.2.jar,
- ws-commons-util-1.0.2.jar,
- xmlrpc-client-3.1.3.jar,
- xmlrpc-client-3.1.3-sources.jar,
- xmlrpc-common-3.1.3.jar,
- xmlrpc-server-3.1.3.jar,
- parsers-1.2.0.jar,
- protocol-1.2.0.jar,
- simulationengine-1.2.0.jar,
- vdm-1.2.0.jar,
- xmlrpcbaseextension-1.2.0.jar,
- xmlrpcclientextension-1.2.0.jar,
- xmlrpcserverextension-1.2.0.jar,
- ast-2.1.1.jar,
- vdmj-2.1.2.jar,
- cglib-2.1.1.jar,
- xercesImpl-2.9.1.jar,
- xml-apis-1.3.04.jar
+ jars/vdm.jar,
+ jars/xmlrpcbaseextension.jar,
+ jars/xmlrpcserverextension.jar

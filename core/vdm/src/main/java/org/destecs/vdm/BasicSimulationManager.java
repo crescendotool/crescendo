@@ -29,27 +29,15 @@ import org.destecs.vdm.utility.SeqValueInfo;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdm.utility.ValueInfo;
 import org.destecs.vdmj.VDMCO;
-import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
-import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
-import org.overturetool.vdmj.definitions.SystemDefinition;
-import org.overturetool.vdmj.lex.LexLocation;
-import org.overturetool.vdmj.messages.Console;
-import org.overturetool.vdmj.runtime.ClassContext;
-import org.overturetool.vdmj.runtime.ClassInterpreter;
-import org.overturetool.vdmj.runtime.Context;
-import org.overturetool.vdmj.runtime.ContextException;
-import org.overturetool.vdmj.runtime.ValueException;
-import org.overturetool.vdmj.scheduler.BasicSchedulableThread;
-import org.overturetool.vdmj.scheduler.ISchedulableThread;
-import org.overturetool.vdmj.scheduler.SystemClock;
-import org.overturetool.vdmj.values.BooleanValue;
-import org.overturetool.vdmj.values.NameValuePair;
-import org.overturetool.vdmj.values.NameValuePairList;
-import org.overturetool.vdmj.values.NumericValue;
-import org.overturetool.vdmj.values.ObjectValue;
-import org.overturetool.vdmj.values.SeqValue;
-import org.overturetool.vdmj.values.TransactionValue;
-import org.overturetool.vdmj.values.Value;
+import org.destecs.vdmj.scheduler.*;
+import org.overture.ast.lex.LexLocation;
+import org.overture.interpreter.messages.Console;
+import org.overture.interpreter.runtime.*;
+import org.overture.interpreter.runtime.state.ASystemClassDefinitionRuntime;
+import org.overture.interpreter.scheduler.BasicSchedulableThread;
+import org.overture.interpreter.scheduler.ISchedulableThread;
+import org.overture.interpreter.scheduler.SystemClock;
+import org.overture.interpreter.values.*;
 
 public abstract class BasicSimulationManager
 {
@@ -107,7 +95,7 @@ public abstract class BasicSimulationManager
 	protected Long nextTimeStep = Long.valueOf(0);
 	protected Long nextSchedulableActionTime = Long.valueOf(0);
 
-	protected final LexLocation coSimLocation = new LexLocation(new File("SimulationInterface"), "SimulationInterface", 0, 0, 0, 0);
+	protected final LexLocation coSimLocation = new LexLocation(new File("SimulationInterface"), "SimulationInterface", 0, 0, 0, 0,0,0);
 
 	ArrayBlockingQueue<ValueUpdateRequest> updateValueQueueRequest = new ArrayBlockingQueue<ValueUpdateRequest>(1);
 
@@ -430,7 +418,7 @@ public abstract class BasicSimulationManager
 	{
 		try
 		{
-			NameValuePairList list = SystemDefinition.getSystemMembers();
+			NameValuePairList list = ASystemClassDefinitionRuntime.getSystemMembers();
 			if (list != null && links.getLinks().containsKey(name))
 			{
 				List<String> varName = links.getQualifiedName(name);
@@ -454,7 +442,7 @@ public abstract class BasicSimulationManager
 		NameValuePairList list = null;
 		if (v == null)
 		{
-			list = SystemDefinition.getSystemMembers();
+			list = ASystemClassDefinitionRuntime.getSystemMembers();
 		} else if (v.deref() instanceof ObjectValue)
 		{
 			list = ((ObjectValue) v.deref()).members.asList();

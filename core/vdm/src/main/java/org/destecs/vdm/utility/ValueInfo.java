@@ -1,19 +1,19 @@
 package org.destecs.vdm.utility;
 
+import org.overture.ast.definitions.SClassDefinition;
+import org.overture.ast.lex.LexNameToken;
+import org.overture.interpreter.values.*;
 
-import org.overturetool.vdmj.definitions.ClassDefinition;
-import org.overturetool.vdmj.lex.LexNameToken;
-import org.overturetool.vdmj.values.CPUValue;
-import org.overturetool.vdmj.values.Value;
+
 
 public class ValueInfo
 {
 	public final Value value;
 	public final CPUValue cpu;
-	public final ClassDefinition classDef;
+	public final SClassDefinition classDef;
 	public final LexNameToken name;
 
-	protected ValueInfo(LexNameToken name, ClassDefinition classDef, Value value,
+	protected ValueInfo(LexNameToken name, SClassDefinition classDef, Value value,
 			CPUValue cpu)
 	{
 		this.value = value;
