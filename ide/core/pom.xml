@@ -28,25 +28,22 @@
 							<overWriteIfNewer>true</overWriteIfNewer>
 							<stripVersion>true</stripVersion>
 							<artifactItems>
-								<artifactItem>
-									<groupId>org.destecs.core</groupId>
-									<artifactId>simulationengine</artifactId>
-									<version>${project.version}</version>
-								</artifactItem>
+								<!-- parsers and dependencies-->
 								<artifactItem>
 									<groupId>org.destecs.core</groupId>
 									<artifactId>parsers</artifactId>
 									<version>${project.version}</version>
 								</artifactItem>
+
 								<artifactItem>
-									<groupId>org.destecs.core</groupId>
-									<artifactId>protocol</artifactId>
-									<version>${project.version}</version>
+									<groupId>antlr</groupId>
+									<artifactId>antlr</artifactId>
+									<version>2.7.7</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>xerces</groupId>
-									<artifactId>xercesImpl</artifactId>
-									<version>2.9.1</version>
+									<groupId>org.antlr</groupId>
+									<artifactId>stringtemplate</artifactId>
+									<version>3.2</version>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.antlr</groupId>
@@ -58,11 +55,27 @@
 									<artifactId>antlr</artifactId>
 									<version>3.2</version>
 								</artifactItem>
-								<artifactItem>
-									<groupId>org.antlr</groupId>
-									<artifactId>stringtemplate</artifactId>
-									<version>3.2</version>
-								</artifactItem>
+
+								<!--some thing more-->
+								<!--artifactItem>
+									<groupId>org.destecs.core</groupId>
+									<artifactId>simulationengine</artifactId>
+									<version>${project.version}</version>
+								</artifactItem-->
+								
+								<!--artifactItem>
+									<groupId>org.destecs.core</groupId>
+									<artifactId>protocol</artifactId>
+									<version>${project.version}</version>
+								</artifactItem-->
+								<!--artifactItem>
+									<groupId>xerces</groupId>
+									<artifactId>xercesImpl</artifactId>
+									<version>2.9.1</version>
+								</artifactItem-->
+								
+								
+								
 							</artifactItems>
 						</configuration>
 					</execution>

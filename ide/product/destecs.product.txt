@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="DESTECS Tools" uid="org.destecs.ide.platform.product" id="org.destecs.ide.platform.product" application="org.eclipse.ui.ide.workbench" version="0.1.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/org.destecs.ide.platform/icons/ctool128/destecs_misc.png"/>
+      <text>
+         %aboutText
+      </text>
+   </aboutInfo>
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <vmArgs>-Dosgi.instance.area.default=@user.home/Documents/DestecsWorkspace
+-Xmx512m</vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <windowImages i16="/org.destecs.ide.platform/icons/ctool16/destecs_misc.png" i32="/org.destecs.ide.platform/icons/ctool32/destecs_misc.png" i48="/org.destecs.ide.platform/icons/ctool48/destecs_misc.png" i64="/org.destecs.ide.platform/icons/ctool64/destecs_misc.png" i128="/org.destecs.ide.platform/icons/ctool128/destecs_misc.png"/>
+
+   <splash
+      location="org.destecs.ide.platform"
+      startupProgressRect="75,235,300,20"
+      startupMessageRect="75,250,300,15"
+      startupForegroundColor="FFFFFF" />
+   <launcher name="destecs">
+      <linux icon="/org.destecs.ide.platform/icons/full/destecs.xpm"/>
+      <macosx icon="/org.destecs.ide.platform/icons/full/destecs.icns"/>
+      <solaris/>
+      <win useIco="false">
+         <ico path="/org.destecs.ide.platform/icons/full/destecs.ico"/>
+         <bmp
+            winSmallHigh="/org.destecs.ide.platform/icons/full/win32icon/32/16/destecs.bmp"
+            winSmallLow="/org.destecs.ide.platform/icons/full/win32icon/8/16/destecs.bmp"
+            winMediumHigh="/org.destecs.ide.platform/icons/full/win32icon/32/32/destecs.bmp"
+            winMediumLow="/org.destecs.ide.platform/icons/full/win32icon/8/32/destecs.bmp"
+            winLargeHigh="/org.destecs.ide.platform/icons/full/win32icon/32/48/destecs.bmp"
+            winLargeLow="/org.destecs.ide.platform/icons/full/win32icon/8/48/destecs.bmp"/>
+      </win>
+   </launcher>
+
+   <intro introId="org.destecs.ide.platform.intro"/>
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.destecs.ide.features.rcp" version="0.0.1.qualifier"/>
+   </features>
+
+
+</product>

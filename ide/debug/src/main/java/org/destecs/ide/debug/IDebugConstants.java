@@ -111,4 +111,6 @@ public interface IDebugConstants {
 	public static final String OCTAVE_PLOT_FILE = "results.m";
 
 	public static final String DESTECS_DIRECTORY_LAUNCH_FOLDER = "DESTECS_DIRECTORY_LAUNCH_FOLDER".toLowerCase();
+
+	public static final int DEFAULT_DEBUG_PORT = 8080;
 }

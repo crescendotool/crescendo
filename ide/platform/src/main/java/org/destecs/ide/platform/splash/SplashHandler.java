@@ -18,6 +18,7 @@
  *******************************************************************************/
 package org.destecs.ide.platform.splash;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
@@ -35,36 +36,27 @@ public class SplashHandler extends BasicSplashHandler
 		super.init(splash);
 
 		int foregroundColorInteger;
-		// String foregroundColorString = null;
-
-		// try
-		// {
-		// foregroundColorInteger = Integer.parseInt(foregroundColorString, 16);
-		//
-		// } catch (Exception ex)
-		// {
 
 		foregroundColorInteger = 0xD2D7FF; // off white
-
-		// }
 		setForeground(new RGB((foregroundColorInteger & 0xFF0000) >> 16,
 
 		(foregroundColorInteger & 0xFF00) >> 8,
 
 		foregroundColorInteger & 0xFF));
 
-		final Point buildIdPoint = new Point(350, 200);
-		final String bundleVersion = "v"
-				+ Activator.getDefault().getBundle().getHeaders().get("Bundle-Version");
+		final Point buildIdPoint = new Point(76, 200);
 
+		final String productVersion = "Version " + Platform.getResourceString(Activator.getDefault().getBundle(), "%productVersion");
+		final String productBuild = Platform.getResourceString(Activator.getDefault().getBundle(), "%productBuild");
+				
 		getContent().addPaintListener(new PaintListener()
 		{
 			public void paintControl(PaintEvent e)
 			{
 				e.gc.setForeground(getForeground());
-				e.gc.drawText(bundleVersion, buildIdPoint.x, buildIdPoint.y, true);
+				e.gc.drawText(productVersion, buildIdPoint.x, buildIdPoint.y, true);
+				e.gc.drawText(productBuild, buildIdPoint.x, buildIdPoint.y+16, true);
 			}
-
 		});
 	}
 

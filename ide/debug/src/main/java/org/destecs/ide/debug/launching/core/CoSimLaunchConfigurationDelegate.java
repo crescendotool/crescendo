@@ -367,7 +367,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				engine.setDeSimulationLauncher(new VdmRtBundleLauncher(deFile, deUrl.getPort(), libSearchRoot));// new
 			} else
 			{
-				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", Integer.valueOf(8080).toString()));
+				deUrl = new URL(IDebugConstants.DEFAULT_DE_ENDPOINT.replaceAll("PORT", Integer.valueOf(IDebugConstants.DEFAULT_DEBUG_PORT).toString()));
 				engine.setDeSimulationLauncher(new VdmRtLauncher(5000));
 			}
 

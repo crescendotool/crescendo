@@ -16,14 +16,16 @@
 	</properties>
 	<modules>
 		<!-- Put all child Eclipse Plugin projects(modules) here -->
-		<module>platform</module>
-		<module>build</module>
-		<module>simeng</module>
 		<module>core</module>
 		<module>ui</module>
+		<module>simeng</module>
 		<module>debug</module>
-		<!--module>vdmmetadatabuilder</module-->
+		<!--module>build</module-->
+		<module>vdmmetadatabuilder</module>
 		<module>libraries</module>
+		<module>platform</module>
+		<module>features</module>
+		<module>product</module>
 	</modules>
 	<reporting>
 		<plugins>

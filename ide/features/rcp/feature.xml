@@ -2,7 +2,7 @@
 <feature
       id="org.destecs.ide.features.rcp"
       label="DESTECS RCP"
-      version="0.0.1.qualifier">
+      version="2.0.0">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -35,7 +35,6 @@
       <import plugin="org.eclipse.core.runtime" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.core" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.destecs.ide.core" version="1.2.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui" version="3.6.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.navigator" version="3.4.2" match="greaterOrEqual"/>
@@ -44,15 +43,9 @@
       <import plugin="org.eclipse.ui.ide" version="3.5.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.navigator.resources" version="3.4.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.6.1" match="greaterOrEqual"/>
-      <import plugin="org.overture.ide.ui" version="2.1.0" match="greaterOrEqual"/>
-      <import plugin="org.destecs.ide.simeng" version="1.2.0" match="greaterOrEqual"/>
-      <import plugin="org.overture.ide.vdmrt.core" version="2.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.expressions" version="3.4.300" match="greaterOrEqual"/>
-      <import plugin="org.overture.ide.core" version="2.1.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.ui" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.swt" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.overture.ide.core" version="2.1.0" match="greaterOrEqual"/>
-      <import plugin="org.destecs.ide.ui" version="1.2.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin

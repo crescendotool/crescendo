@@ -19,12 +19,16 @@
 package org.destecs.ide.simeng;
 
 import org.destecs.ide.core.IDestecsCoreConstants;
+import org.overture.ide.builders.vdmj.IBuilderVdmjConstants;
+import org.overture.ide.core.ICoreConstants;
+import org.overture.ide.debug.core.IDebugConstants;
 
 public interface ISimengConstants
 {
 
 	public static final String PLUGIN_ID = "org.destecs.ide.simeng";
-	public static final String VDM_ENGINE_BUNDLE_IDS[] = {PLUGIN_ID,IDestecsCoreConstants.PLUGIN_ID};// "org.destecs.ide.generated.vdm";
+	public static final String VDM_ENGINE_BUNDLE_IDS[] = {PLUGIN_ID,IDestecsCoreConstants.PLUGIN_ID,IDebugConstants.PLUGIN_ID,ICoreConstants.PLUGIN_ID,
+		IBuilderVdmjConstants.PLUGIN_ID};// "org.destecs.ide.generated.vdm";
 	public static final String VDM_ENGINE_CLASS = "org.destecs.vdm.CoSim";
 	
 	

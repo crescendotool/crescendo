@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description>
+      DESTECS
+   </description>
+   <feature url="features/org.destecs.ide.features.rcp_0.0.0.jar" id="org.destecs.ide.features.rcp" version="0.0.0">
+      <category name="Destecs"/>
+   </feature>
+   <category-def name="Destecs" label="DESTECS">
+      <description>
+         The DESTECS Project
+      </description>
+   </category-def>
+</site>
