@@ -29,6 +29,7 @@ import java.util.Vector;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.overture.ast.definitions.PDefinition;
 import org.overture.ast.definitions.SClassDefinition;
+import org.overture.ast.intf.lex.ILexNameToken;
 import org.overture.ast.lex.LexNameToken;
 import org.overture.ast.typechecker.NameScope;
 import org.overture.ast.types.AClassType;
@@ -53,7 +54,7 @@ public class VDMClassHelper
 	{
 		for (SClassDefinition classDefinition : classes)
 		{
-			if (classDefinition.getName().name.equals(className))
+			if (classDefinition.getName().getName().equals(className))
 				return classDefinition;
 		}
 
@@ -144,7 +145,7 @@ public class VDMClassHelper
 
 			for (NameValuePair child : objVal.members.asList())
 			{
-				existingFields.add(child.name.name);
+				existingFields.add(child.name.getName());
 				values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 			}
 
@@ -161,7 +162,7 @@ public class VDMClassHelper
 
 						for (NameValuePair child : privateStaticValues.asList())
 						{
-							if (!existingFields.contains(child.name.name))
+							if (!existingFields.contains(child.name.getName()))
 							{
 								values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 							}
@@ -174,7 +175,7 @@ public class VDMClassHelper
 
 						for (NameValuePair child : privateStaticValues.asList())
 						{
-							if (!existingFields.contains(child.name.name))
+							if (!existingFields.contains(child.name.getName()))
 							{
 								values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 							}
@@ -192,7 +193,7 @@ public class VDMClassHelper
 			return null;
 	}
 
-	public static ValueInfo createValue(LexNameToken name,
+	public static ValueInfo createValue(ILexNameToken name,
 			SClassDefinition classDef, Value value, CPUValue cpu)
 	{
 		Value val = value.deref();
@@ -311,7 +312,7 @@ public class VDMClassHelper
 			{
 				if(s.getType() instanceof AClassType)
 				{
-				className =((AClassType) s.getType()).getName().name;
+				className =((AClassType) s.getType()).getName().getName();
 
 				s = classList.findName(new LexNameToken(className, restOfQuantifier.get(i), null), NameScope.NAMESANDSTATE);
 				}

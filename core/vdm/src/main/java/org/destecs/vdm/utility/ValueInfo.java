@@ -1,8 +1,9 @@
 package org.destecs.vdm.utility;
 
 import org.overture.ast.definitions.SClassDefinition;
-import org.overture.ast.lex.LexNameToken;
-import org.overture.interpreter.values.*;
+import org.overture.ast.intf.lex.ILexNameToken;
+import org.overture.interpreter.values.CPUValue;
+import org.overture.interpreter.values.Value;
 
 
 
@@ -11,9 +12,9 @@ public class ValueInfo
 	public final Value value;
 	public final CPUValue cpu;
 	public final SClassDefinition classDef;
-	public final LexNameToken name;
+	public final ILexNameToken name;
 
-	protected ValueInfo(LexNameToken name, SClassDefinition classDef, Value value,
+	protected ValueInfo(ILexNameToken name, SClassDefinition classDef, Value value,
 			CPUValue cpu)
 	{
 		this.value = value;

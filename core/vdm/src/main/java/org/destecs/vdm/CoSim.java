@@ -42,6 +42,7 @@ public class CoSim
 {
 	private static int port = 8080;
 	private static final boolean DEBUG = false;
+	static WebServer webServer = null;
 
 	/**
 	 * @param args
@@ -62,26 +63,25 @@ public class CoSim
 				System.err.println("Parse error of port number");
 			}
 		}
-		if (args.length>0 )
+		if (args.length > 0)
 		{
 			for (String string : args)
 			{
-				if(string.equalsIgnoreCase("debug"))
+				if (string.equalsIgnoreCase("debug"))
 				{
 					CoSimImpl.DEBUG = true;
 				}
 			}
 		}
-		WebServer webServer = new WebServer(port);
-		
+		webServer = new WebServer(port);
+
 		Logger log = Logger.getLogger("org.apache.xmlrpc.server.XmlRpcStreamServer");
 		log.addAppender(new ConsoleAppender(new SimpleLayout()));
 		log.setLevel(Level.OFF);
-		
+
 		log = Logger.getLogger("org.apache.xmlrpc.server.XmlRpcErrorLogger");
 		log.addAppender(new ConsoleAppender(new SimpleLayout()));
 		log.setLevel(Level.OFF);
-		
 
 		if (!DEBUG)
 		{
@@ -101,5 +101,13 @@ public class CoSim
 		serverConfig.setEnabledForExceptions(true);
 
 		webServer.start();
+	}
+
+	public static void shutdown()
+	{
+		if (webServer != null)
+		{
+			webServer.shutdown();
+		}
 	}
 }

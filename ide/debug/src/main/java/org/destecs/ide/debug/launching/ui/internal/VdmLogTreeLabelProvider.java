@@ -17,13 +17,13 @@ public class VdmLogTreeLabelProvider extends LabelProvider implements
 			if (child instanceof SClassDefinition)
 			{
 				SClassDefinition classDef = (SClassDefinition) child;
-				return classDef.getName().name;
+				return classDef.getName().getName();
 
 			}
 			if (child instanceof AInstanceVariableDefinition)
 			{
 				AInstanceVariableDefinition insVarDef = (AInstanceVariableDefinition) child;
-				return insVarDef.getName().name;
+				return insVarDef.getName().getName();
 			} else
 			{
 				System.out.println("VdmLogTreeLabelProvider getText");

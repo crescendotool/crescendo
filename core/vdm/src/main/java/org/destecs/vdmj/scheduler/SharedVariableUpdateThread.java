@@ -18,7 +18,7 @@
  *******************************************************************************/
 package org.destecs.vdmj.scheduler;
 
-import org.overture.ast.lex.LexLocation;
+import org.overture.ast.intf.lex.ILexLocation;
 import org.overture.interpreter.runtime.Context;
 import org.overture.interpreter.scheduler.BasicSchedulableThread;
 import org.overture.interpreter.scheduler.CPUResource;
@@ -37,7 +37,7 @@ public class SharedVariableUpdateThread implements ISchedulableThread
 		this.tid =BasicSchedulableThread.nextThreadID();
 		this.thread = t;
 	}
-	public void duration(long pause, Context ctxt, LexLocation location)
+	public void duration(long pause, Context ctxt, ILexLocation location)
 	{
 		//Not used
 	}
@@ -128,7 +128,7 @@ public class SharedVariableUpdateThread implements ISchedulableThread
 		return false;
 	}
 
-	public void locking(Context ctxt, LexLocation location)
+	public void locking(Context ctxt, ILexLocation location)
 	{
 		//Not used
 	}
@@ -173,7 +173,7 @@ public class SharedVariableUpdateThread implements ISchedulableThread
 		//Not used
 	}
 
-	public void step(Context ctxt, LexLocation location)
+	public void step(Context ctxt, ILexLocation location)
 	{
 		//Not used
 	}
@@ -183,7 +183,7 @@ public class SharedVariableUpdateThread implements ISchedulableThread
 		//Not used
 	}
 
-	public void waiting(Context ctxt, LexLocation location)
+	public void waiting(Context ctxt, ILexLocation location)
 	{
 		//Not used
 	}

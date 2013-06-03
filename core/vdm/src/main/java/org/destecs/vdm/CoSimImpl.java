@@ -370,7 +370,7 @@ public class CoSimImpl implements IDestecs
 				{
 					// Wait for terminate to reply to client then terminate
 				}
-				System.exit(0);
+				CoSim.shutdown();
 			}
 		});
 		if(!DEBUG )

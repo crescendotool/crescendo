@@ -67,6 +67,9 @@ import org.overture.ast.expressions.AUnaryMinusUnaryExp;
 import org.overture.ast.expressions.PExp;
 import org.overture.ast.expressions.SSeqExp;
 import org.overture.ast.factory.AstFactoryTC;
+import org.overture.ast.intf.lex.ILexLocation;
+import org.overture.ast.intf.lex.ILexNameToken;
+import org.overture.ast.intf.lex.ILexRealToken;
 import org.overture.ast.lex.*;
 import org.overture.ast.statements.AIdentifierObjectDesignator;
 import org.overture.ast.statements.PStateDesignator;
@@ -391,12 +394,12 @@ public class SimulationManager extends BasicSimulationManager
 					}
 				} else if (def instanceof AClassClassDefinition)
 				{
-					if (def.getName().name.equals(scriptClass))
+					if (def.getName().getName().equals(scriptClass))
 					{
 						for (PDefinition d : def.getDefinitions())
 						{
 							if (d.getName() != null
-									&& d.getName().name.equals(scriptOperation)
+									&& d.getName().getName().equals(scriptOperation)
 									&& (d instanceof AExplicitOperationDefinition || d instanceof AExplicitFunctionDefinition))
 							{
 								hasScriptCall = true;
@@ -437,8 +440,8 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			return;
 		}
-		final List<LexNameToken> readCheck = new Vector<LexNameToken>();
-		final List<LexNameToken> writeCheck = new Vector<LexNameToken>();
+		final List<ILexNameToken> readCheck = new Vector<ILexNameToken>();
+		final List<ILexNameToken> writeCheck = new Vector<ILexNameToken>();
 		try
 		{
 
@@ -476,11 +479,11 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				if (target instanceof AIdentifierObjectDesignator)
 				{
-					LexNameToken name = ((AIdentifierObjectDesignator) target).getName();
-					for (LexNameToken n : writeCheck)
+					ILexNameToken name = ((AIdentifierObjectDesignator) target).getName();
+					for (ILexNameToken n : writeCheck)
 					{
-						if (name.module.equals(n.module)
-								&& name.name.equals(n.name))
+						if (name.getModule().equals(n.getModule())
+								&& name.getName().equals(n.getName()))
 						{
 							return true;
 						}
@@ -490,12 +493,12 @@ public class SimulationManager extends BasicSimulationManager
 				return false;
 			}
 
-			public boolean reuiresCheck(LexNameToken name)
+			public boolean requiresCheck(ILexNameToken name)
 			{
-				for (LexNameToken n : readCheck)
+				for (ILexNameToken n : readCheck)
 				{
-					if (name.module.equals(n.module)
-							&& name.name.equals(n.name))
+					if (name.getModule().equals(n.getModule())
+							&& name.getName().equals(n.getName()))
 					{
 						return true;
 					}
@@ -656,7 +659,7 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						final String name = variableLogName;
 
-						public void changedValue(LexLocation location,
+						public void changedValue(ILexLocation location,
 								Value value, Context ctxt)
 						{
 							SimulationLogger.log(new SimulationMessage(name, SystemClock.getWallTime(), value.toString()));
@@ -718,7 +721,7 @@ public class SimulationManager extends BasicSimulationManager
 
 				for (SClassDefinition cd : controller.getInterpreter().getClasses())
 				{
-					if (!cd.getName().name.equals(vName.instanceName))
+					if (!cd.getName().getName().equals(vName.instanceName))
 					{
 						// wrong class
 						continue;
@@ -856,7 +859,7 @@ public class SimulationManager extends BasicSimulationManager
 		if (exp != null && exp instanceof ARealLiteralExp)
 		{
 			ARealLiteralExp rExp = ((ARealLiteralExp) exp);
-			LexRealToken token = rExp.getValue();
+			ILexRealToken token = rExp.getValue();
 
 			Field valueField = LexRealToken.class.getField("value");
 			valueField.setAccessible(true);
@@ -926,9 +929,9 @@ public class SimulationManager extends BasicSimulationManager
 							if (vDef.getExpression() instanceof ARealLiteralExp)
 							{
 								ARealLiteralExp exp = ((ARealLiteralExp) vDef.getExpression());
-								LexRealToken token = exp.getValue();
+								ILexRealToken token = exp.getValue();
 								List<Double> value = new Vector<Double>();
-								value.add(token.value);
+								value.add(token.getValue());
 								List<Integer> size = new Vector<Integer>();
 								size.add(1);
 								return new GetDesignParametersStructdesignParametersStruct(parameterName, value, size);
@@ -982,7 +985,7 @@ public class SimulationManager extends BasicSimulationManager
 			NameValuePairList list = ASystemClassDefinitionRuntime.getSystemMembers();
 			if (list != null && list.size() > 0)
 			{
-				parameters.putAll(getParameters(list.get(0).name.module, list, 0));
+				parameters.putAll(getParameters(list.get(0).name.getModule(), list, 0));
 			}
 
 			return parameters;
@@ -1009,7 +1012,7 @@ public class SimulationManager extends BasicSimulationManager
 				if (p.value.deref() instanceof ObjectValue)
 				{
 					ObjectValue po = (ObjectValue) p.value.deref();
-					parameters.putAll(getParameters(prefix + p.name.name, po.members.asList(), depth++));
+					parameters.putAll(getParameters(prefix + p.name.getName(), po.members.asList(), depth++));
 
 				} else if (p.value.deref() instanceof RealValue)
 				{
@@ -1017,14 +1020,14 @@ public class SimulationManager extends BasicSimulationManager
 					realValue.add(p.value.realValue(null));
 					List<Integer> valueSize = new Vector<Integer>();
 					valueSize.add(1);
-					parameters.put(prefix + p.name.name, new ValueContents(realValue, valueSize));
+					parameters.put(prefix + p.name.getName(), new ValueContents(realValue, valueSize));
 				} else if (p.value.deref() instanceof BooleanValue)
 				{
 					List<Double> realValue = new Vector<Double>();
 					realValue.add(p.value.boolValue(null) ? 1.0 : 0.0);
 					List<Integer> valueSize = new Vector<Integer>();
 					valueSize.add(1);
-					parameters.put(prefix + p.name.name, new ValueContents(realValue, valueSize));
+					parameters.put(prefix + p.name.getName(), new ValueContents(realValue, valueSize));
 				} else if (p.value.deref() instanceof SeqValue)
 				{
 					System.out.println("getParameters:sequence");

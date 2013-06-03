@@ -144,9 +144,9 @@ public abstract class BasicSimulationManager
 						} catch (ContextException e)
 						{
 							String message = "Error in simulation: Cannot set shared instance variable \""
-								+ request.value.name.module
+								+ request.value.name.getModule()
 								+ "."
-								+ request.value.name.name
+								+ request.value.name.getName()
 								+ "\""
 								+ "\n\tReasong is: " + e.getMessage();
 							Console.err.println(message);
