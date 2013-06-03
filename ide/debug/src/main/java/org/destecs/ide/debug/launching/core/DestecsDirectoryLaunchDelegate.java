@@ -75,8 +75,8 @@ public class DestecsDirectoryLaunchDelegate implements ILaunchConfigurationDeleg
 		DestecsAcaDebugTarget acaTarget = new DestecsAcaDebugTarget(launch, project, new File(base, outputPreFix), configurations);
 		launch.addDebugTarget(acaTarget);
 
-		AcaSimulationManager manager = new AcaSimulationManager(acaTarget);
-		manager.start();
+		AcaSimulationManager manager = new AcaSimulationManager(acaTarget,monitor);
+//		manager.start();
 		acaTarget.setAcaSimulationManager(manager);
 
 		UIJob listeners = new UIJob("Set Listeners")
@@ -120,7 +120,7 @@ public class DestecsDirectoryLaunchDelegate implements ILaunchConfigurationDeleg
 			}
 		};
 		listeners.schedule();
-
+manager.run();
 		monitor.done();
 	}
 

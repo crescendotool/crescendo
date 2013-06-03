@@ -142,6 +142,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	private String clp20simToolSettings = null;
 	private String clp20simImplementationSettings = null;
 	private boolean leaveCtDirtyRunning = true;
+	private boolean acaMode = false;
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException
@@ -228,6 +229,7 @@ public class CoSimLaunchConfigurationDelegate extends
 			clp20simToolSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
 			clp20simImplementationSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
 			leaveCtDirtyRunning = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION, true);
+			acaMode = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_MODE,"").equals(IDebugConstants.DESTECS_LAUNCH_MODE_ACA);
 
 			String tmpVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
 			for (String var : tmpVdm.split(","))
@@ -450,7 +452,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				}
 			});
 
-			CoSimulationThread simThread = new CoSimulationThread(engine, log, shareadDesignParameters, totalSimulationTime, target, views);
+			CoSimulationThread simThread = new CoSimulationThread(engine, log, shareadDesignParameters, totalSimulationTime, target, views,acaMode);
 			target.setCoSimulationThread(simThread);
 			simThread.start();
 

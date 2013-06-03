@@ -43,6 +43,7 @@ public class CoSimulationThread extends Thread
 	final List<InfoTableView> views;
 	boolean isRunning = false;
 	boolean isTerminated = false;
+	private boolean acaMode;
 	
 	
 	public CoSimulationThread(
@@ -50,7 +51,7 @@ public class CoSimulationThread extends Thread
 			ListenerToLog log,
 			List<SetDesignParametersdesignParametersStructParam> shareadDesignParameters,
 			double totalSimulationTime, DestecsDebugTarget target,
-			List<InfoTableView> views)
+			List<InfoTableView> views, boolean acaMode)
 	{
 		this.engine = engine;
 		this.log = log;
@@ -58,6 +59,7 @@ public class CoSimulationThread extends Thread
 		this.totalSimulationTime = totalSimulationTime;
 		this.target = target;
 		this.views = views;
+		this.acaMode = acaMode;
 		setDaemon(true);
 		setName("CoSimulationThread Engine");
 	}
@@ -96,7 +98,11 @@ public class CoSimulationThread extends Thread
 		{
 			DestecsDebugPlugin.logError("Failed to terminate destecs target", e);
 		}
-		refreshProject();
+		
+		if(!acaMode)
+		{
+			refreshProject();
+		}
 
 //		engine.shutdownSimulators();
 	}

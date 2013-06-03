@@ -59,7 +59,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 			final ILaunch launch, IProgressMonitor monitor)
 			throws CoreException
 	{
-		monitor.beginTask("ACA execution", 100);
+		monitor.beginTask("ACA execution", IProgressMonitor.UNKNOWN);
 		String baseLaunchName = launch.getLaunchConfiguration().getAttribute(IDebugConstants.DESTECS_ACA_BASE_CONFIG, "");
 		System.out.println("ACA launch with base: " + baseLaunchName);
 		ILaunchConfiguration baseConfig = null;
@@ -80,7 +80,8 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		
 		ILaunchConfigurationWorkingCopy baseConfigWorkingCopy = baseConfig.getWorkingCopy();
 		baseConfigWorkingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION, false);
-
+		baseConfigWorkingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_MODE, IDebugConstants.DESTECS_LAUNCH_MODE_ACA);
+		
 		AcaGenerator generator = new AcaGenerator(configuration, baseConfigWorkingCopy, monitor, 10, project, outputPreFix);
 		generator.addGenerator(new IncludeBaseConfigAcaPlugin());
 		//generator.addGenerator(new ArchitectureAcaPlugin());
@@ -90,7 +91,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		generator.addGenerator(new CTImplementationsAcaPlugin());
 		generator.addGenerator(new CTSettingsAcaPlugin());
 
-		monitor.worked(10);
+//		monitor.worked(10);
 		Set<ILaunchConfiguration> configurations;
 		try {
 			configurations = generator.generate();
@@ -104,8 +105,8 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		DestecsAcaDebugTarget acaTarget = new DestecsAcaDebugTarget(launch, project, new File(base, outputPreFix), configurations);
 		launch.addDebugTarget(acaTarget);
 
-		AcaSimulationManager manager = new AcaSimulationManager(acaTarget);
-		manager.start();
+		AcaSimulationManager manager = new AcaSimulationManager(acaTarget,monitor);
+//		manager.start();
 		acaTarget.setAcaSimulationManager(manager);
 
 		UIJob listeners = new UIJob("Set Listeners")
@@ -150,6 +151,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		};
 		listeners.schedule();
 
+		manager.run();
 		monitor.done();
 	}
 

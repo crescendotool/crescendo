@@ -36,6 +36,8 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_CT_ENDPOINT = "DESTECS_LAUNCH_CONFIG_CT_ENDPOINT".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION = "DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG = "DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG".toLowerCase();
+	
+	public static final String DESTECS_LAUNCH_CONFIG_MODE = "DESTECS_LAUNCH_CONFIG_MODE".toLowerCase();
 
 	public static final String DESTECS_LAUNCH_CONFIG_DE_REPLACE = "DESTECS_LAUNCH_CONFIG_DE_REPLACE".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE = "DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE".toLowerCase();
@@ -113,4 +115,6 @@ public interface IDebugConstants {
 	public static final String DESTECS_DIRECTORY_LAUNCH_FOLDER = "DESTECS_DIRECTORY_LAUNCH_FOLDER".toLowerCase();
 
 	public static final int DEFAULT_DEBUG_PORT = 8080;
+	
+	public static final String DESTECS_LAUNCH_MODE_ACA = "aca".toLowerCase();
 }

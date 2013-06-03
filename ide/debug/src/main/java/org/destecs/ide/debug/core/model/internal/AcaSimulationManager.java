@@ -29,6 +29,7 @@ import java.util.Vector;
 import org.destecs.ide.debug.DestecsDebugPlugin;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
@@ -39,27 +40,33 @@ import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.progress.UIJob;
 
-public class AcaSimulationManager extends Thread
+public class AcaSimulationManager //extends Thread
 {
 	final private DestecsAcaDebugTarget target;
 	ILaunch activeLaunch;
 	boolean shouldStop = false;
 	final List<DestecsDebugTarget> completedTargets = new Vector<DestecsDebugTarget>();
+	private IProgressMonitor monitor;
 
-	public AcaSimulationManager(DestecsAcaDebugTarget target)
+	public AcaSimulationManager(DestecsAcaDebugTarget target, IProgressMonitor monitor)
 	{
 		this.target = target;
-		setDaemon(true);
-		setName("ACA Simulation Thread");
+		this.monitor = monitor;
+//		setDaemon(true);
+//		setName("ACA Simulation Thread");
 	}
 
-	@Override
+//	@Override
 	public void run()
 	{
 		List<ILaunchConfiguration> configurations = new Vector<ILaunchConfiguration>();
 		configurations.addAll(target.getAcaConfigs());
+		int totalCount = configurations.size();
+		int currentIndex = 0;
 		for (final ILaunchConfiguration config : configurations)
 		{
+//			System.out.println("Running ("+(++currentIndex)+"/"+totalCount+") "+config.getName());
+			monitor.subTask("Running ("+(++currentIndex)+"/"+totalCount+") "+config.getName());
 			if (shouldStop)
 			{
 				return;
@@ -129,6 +136,7 @@ public class AcaSimulationManager extends Thread
 		{
 			DestecsDebugPlugin.logError("Failed to terminate destecs target", e);
 		}
+		monitor.done();
 		refreshProject();
 	}
 
@@ -199,7 +207,8 @@ public class AcaSimulationManager extends Thread
 			{
 				l.terminate();
 			}
-			this.interrupt();
+//			this.interrupt();
+			this.shouldStop=true;
 		} catch (Exception e)
 		{
 			DestecsDebugPlugin.logError("Failed to stop ACA Manager.", e);

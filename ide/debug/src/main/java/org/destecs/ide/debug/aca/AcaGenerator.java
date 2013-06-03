@@ -33,7 +33,7 @@ public class AcaGenerator
 	private final ILaunchConfiguration baseConfig;
 	private final Set<IAcaGeneratorPlugin> generators = new HashSet<IAcaGeneratorPlugin>();
 	private final IProgressMonitor monitor;
-	private final int maxProgress;
+//	private final int maxProgress;
 	private final IProject project;
 	private final String outputPreFix;
 
@@ -43,7 +43,7 @@ public class AcaGenerator
 		this.configuration = configuration;
 		this.baseConfig = baseConfig;
 		this.monitor = monitor;
-		this.maxProgress = maxProgress;
+//		this.maxProgress = maxProgress;
 		this.project = project;
 		this.outputPreFix = outputPreFix;
 	}
@@ -59,10 +59,10 @@ public class AcaGenerator
 		final Set<ILaunchConfiguration> configurations = new HashSet<ILaunchConfiguration>();
 		configurations.add(baseConfig);
 		
-		int step = maxProgress/generators.size();
+//		int step = maxProgress/generators.size();
 		for (IAcaGeneratorPlugin g : generators)
 		{
-			monitor.worked(step);
+//			monitor.worked(step);
 			Collection<? extends ILaunchConfiguration> temp = g.generate(configuration, baseConfig, configurations,project,outputPreFix);
 			if(!temp.isEmpty())
 			{
@@ -71,7 +71,7 @@ public class AcaGenerator
 			}
 			
 		}
-		monitor.worked(maxProgress);
+//		monitor.worked(maxProgress);
 		return configurations;
 	}
 	
