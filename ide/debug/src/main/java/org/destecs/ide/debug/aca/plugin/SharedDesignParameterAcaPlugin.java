@@ -342,6 +342,7 @@ public class SharedDesignParameterAcaPlugin implements IAcaGeneratorPlugin
 				}
 				if(o instanceof List)
 				{
+					@SuppressWarnings("rawtypes")
 					List oList = (List) o;
 					List<Double> result = new Vector<Double>();
 					for (Object object : oList) {
