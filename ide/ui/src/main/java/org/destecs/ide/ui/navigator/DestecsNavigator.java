@@ -18,13 +18,12 @@
  *******************************************************************************/
 package org.destecs.ide.ui.navigator;
 
-import org.eclipse.ui.navigator.CommonNavigator;
+import org.overture.ide.ui.navigator.VdmNavigator;
 
-public class DestecsNavigator extends CommonNavigator {
+public class DestecsNavigator extends VdmNavigator {
 
 	public DestecsNavigator() {
 		super();
-		super.setLinkingEnabled(true);	
 	}
 
 }
