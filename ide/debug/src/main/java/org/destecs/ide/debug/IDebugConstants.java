@@ -23,6 +23,7 @@ public interface IDebugConstants {
 	public static final String PLUGIN_ID = "org.destecs.ide.debug";
 	
 	public static final String DESTECS_LAUNCH_CONFIG_PROJECT_NAME = "DESTECS_LAUNCH_CONFIG_PROJECT_NAME".toLowerCase();
+	public static final String DESTECS_LAUNCH_CONFIG_NAME_POSTFIX = "DESTECS_LAUNCH_CONFIG_NAME_POSTFIX".toLowerCase();
 	
 	public static final String DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH = "DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH_DEFAULT = "__DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH_DEFAULT__";
@@ -36,6 +37,7 @@ public interface IDebugConstants {
 	public static final String DESTECS_LAUNCH_CONFIG_CT_ENDPOINT = "DESTECS_LAUNCH_CONFIG_CT_ENDPOINT".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION = "DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION".toLowerCase();
 	public static final String DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG = "DESTECS_LAUNCH_CONFIG_REMOTE_DEBUG".toLowerCase();
+	public static final String DESTECS_LAUNCH_CONFIG_FILTER_OUTPUT = "DESTECS_LAUNCH_CONFIG_FILTER_OUTPUT".toLowerCase();
 	
 	public static final String DESTECS_LAUNCH_CONFIG_MODE = "DESTECS_LAUNCH_CONFIG_MODE".toLowerCase();
 
@@ -91,6 +93,8 @@ public interface IDebugConstants {
 	public static final String DESTECS_ACA_ARCHITECTURES = "DESTECS_ACA_ARCHITECTURES".toLowerCase();
 
 	public static final String DESTECS_ACA_SCENARIOS = "DESTECS_ACA_SCENARIOS".toLowerCase();
+	
+	public static final String DESTECS_ACA_DATA_INTENSE = "DESTECS_ACA_DATA_INTENSE".toLowerCase();
 
 	public static final String DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR = "DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR".toLowerCase();
 

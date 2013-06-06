@@ -46,6 +46,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
@@ -72,6 +73,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 	protected WidgetListener fListener = new WidgetListener();
 	private Text fBaseLaunchConfigNameText;
 	private Button checkBoxShowOctavePlot = null;
+	private Button checkBoxDataIntensive = null;
 
 	public void createControl(Composite parent)
 	{
@@ -195,6 +197,13 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		checkBoxShowOctavePlot.setText("Show plot automaticaly when the script runs");
 		checkBoxShowOctavePlot.setSelection(false);
 		checkBoxShowOctavePlot.addSelectionListener(fListener);
+		
+		new Label(group, SWT.CHECK);
+		checkBoxDataIntensive = new Button(group, SWT.CHECK);
+		checkBoxDataIntensive.setText("Data intensive");
+		checkBoxDataIntensive.setSelection(false);
+		checkBoxDataIntensive.addSelectionListener(fListener);
+		checkBoxDataIntensive.setToolTipText("Automatically hides generated output from the explorer. Automatically checked if more than 500 generated tests");
 
 	}
 
@@ -214,6 +223,7 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 		{
 			fBaseLaunchConfigNameText.setText(configuration.getAttribute(IDebugConstants.DESTECS_ACA_BASE_CONFIG, ""));
 			checkBoxShowOctavePlot.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false));
+			checkBoxDataIntensive.setSelection(configuration.getAttribute(IDebugConstants.DESTECS_ACA_DATA_INTENSE, false));
 
 		} catch (CoreException e)
 		{
@@ -309,11 +319,14 @@ public class DseMainTab extends AbstractLaunchConfigurationTab
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_ACA_BASE_CONFIG, fBaseLaunchConfigNameText.getText());
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, checkBoxShowOctavePlot.getSelection());
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_DATA_INTENSE, checkBoxDataIntensive.getSelection());
+		
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
 	{
 		configuration.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHOW_OCTAVE_PLOTS, false);
+		configuration.setAttribute(IDebugConstants.DESTECS_ACA_DATA_INTENSE, false);
 	}
 
 }

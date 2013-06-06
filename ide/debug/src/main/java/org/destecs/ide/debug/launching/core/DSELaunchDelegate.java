@@ -82,6 +82,11 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		baseConfigWorkingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION, false);
 		baseConfigWorkingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_MODE, IDebugConstants.DESTECS_LAUNCH_MODE_ACA);
 		
+		if(configuration.getAttribute(IDebugConstants.DESTECS_ACA_DATA_INTENSE, false))
+		{
+			baseConfigWorkingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_FILTER_OUTPUT, true);
+		}
+		
 		AcaGenerator generator = new AcaGenerator(configuration, baseConfigWorkingCopy, monitor, 10, project, outputPreFix);
 		generator.addGenerator(new IncludeBaseConfigAcaPlugin());
 		//generator.addGenerator(new ArchitectureAcaPlugin());
@@ -109,6 +114,14 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 //		manager.start();
 		acaTarget.setAcaSimulationManager(manager);
 
+		createListeners(launch);
+
+		manager.run();
+		monitor.done();
+	}
+
+	private void createListeners(final ILaunch launch)
+	{
 		UIJob listeners = new UIJob("Set Listeners")
 		{
 			@Override
@@ -150,9 +163,6 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 			}
 		};
 		listeners.schedule();
-
-		manager.run();
-		monitor.done();
 	}
 
 	private IProject getProject(ILaunchConfiguration configuration)

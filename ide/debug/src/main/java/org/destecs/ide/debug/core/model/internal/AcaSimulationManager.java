@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.destecs.ide.debug.DestecsDebugPlugin;
+import org.destecs.ide.debug.IDebugConstants;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -34,6 +35,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.ui.DebugUITools;
@@ -62,11 +64,13 @@ public class AcaSimulationManager //extends Thread
 		List<ILaunchConfiguration> configurations = new Vector<ILaunchConfiguration>();
 		configurations.addAll(target.getAcaConfigs());
 		int totalCount = configurations.size();
-		int currentIndex = 0;
-		for (final ILaunchConfiguration config : configurations)
+		Integer currentIndex = 0;
+		
+		for (final ILaunchConfiguration configOriginal : configurations)
 		{
+			
 //			System.out.println("Running ("+(++currentIndex)+"/"+totalCount+") "+config.getName());
-			monitor.subTask("Running ("+(++currentIndex)+"/"+totalCount+") "+config.getName());
+			monitor.subTask("Running ("+(++currentIndex)+"/"+totalCount+") "+configOriginal.getName());
 			if (shouldStop)
 			{
 				return;
@@ -77,8 +81,26 @@ public class AcaSimulationManager //extends Thread
 				{
 					break;
 				}
+				
+				ILaunchConfigurationWorkingCopy config = configOriginal.getWorkingCopy();
+				config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_NAME_POSTFIX, currentIndex.toString());
+				if(totalCount > 500)
+				{//protect eclipse 
+					config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_FILTER_OUTPUT, true);
+				}
+				
+				//group runs
+				String outputPreFix = config.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
+				//modify
+				// total count
+				//
+				config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
+				
+				
 				// monitor.worked(step);
 				System.out.println("Running ACA with: " + config.getName());
+				
+				
 				ILaunch acaRunLaunch = launch(config, ILaunchManager.DEBUG_MODE);
 				setActiveLaunch(acaRunLaunch);
 				IDebugTarget target = acaRunLaunch.getDebugTarget();

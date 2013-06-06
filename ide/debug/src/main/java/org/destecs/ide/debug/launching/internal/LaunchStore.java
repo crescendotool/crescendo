@@ -54,6 +54,7 @@ public class LaunchStore
 	        try
 			{
 	        	LaunchStoreConfig conf = new LaunchStoreConfig(configuration.getName(),configuration.getType().getIdentifier(),configuration.getAttributes());
+	        	file.mkdirs();
 	        	File outFile = new File(file,configuration.getName()+".dlaunch");
 	        	FileOutputStream out = new FileOutputStream(outFile);
 	 	        ObjectOutputStream objOut = new ObjectOutputStream(out);

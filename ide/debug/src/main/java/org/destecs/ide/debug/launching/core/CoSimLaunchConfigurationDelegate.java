@@ -77,15 +77,19 @@ import org.destecs.script.ast.analysis.DepthFirstAnalysisAdaptor;
 import org.destecs.script.ast.node.INode;
 import org.destecs.script.ast.preprocessing.AScriptInclude;
 import org.destecs.script.ast.statement.AAssignStm;
+import org.eclipse.core.resources.FileInfoMatcherDescription;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceFilterDescription;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -207,6 +211,7 @@ public class CoSimLaunchConfigurationDelegate extends
 	private void loadSettings(ILaunchConfiguration configuration)
 			throws IOException
 	{
+		boolean filterOutput = false;
 		try
 		{
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
@@ -229,7 +234,8 @@ public class CoSimLaunchConfigurationDelegate extends
 			clp20simToolSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_SETTINGS, "");
 			clp20simImplementationSettings = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_20SIM_IMPLEMENTATIONS, "");
 			leaveCtDirtyRunning = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION, true);
-			acaMode = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_MODE,"").equals(IDebugConstants.DESTECS_LAUNCH_MODE_ACA);
+			acaMode = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_MODE, "").equals(IDebugConstants.DESTECS_LAUNCH_MODE_ACA);
+			filterOutput = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_FILTER_OUTPUT, false);
 
 			String tmpVdm = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_VDM_LOG_VARIABLES, "");
 			for (String var : tmpVdm.split(","))
@@ -282,23 +288,43 @@ public class CoSimLaunchConfigurationDelegate extends
 			DestecsDebugPlugin.logError("Failed to load launch configuration attributes (URL's)", e);
 		}
 
-		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
-		File base = dProject.getOutputFolder().getLocation().toFile();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-		String tmp = ourputFolderPrefix;
-		tmp = tmp.replace('\\', File.separatorChar).replace('/', File.separatorChar);
-		if (!tmp.endsWith("" + File.separatorChar))
-		{
-			tmp += File.separatorChar;
-		}
-		resultFolderRelativePath = tmp + dateFormat.format(new Date()) + "_"
-				+ configuration.getName();
-		outputFolder = new File(base, resultFolderRelativePath);
+		IFolder outputTmp = createOutputFolder(configuration);
 
-		if (!outputFolder.mkdirs())
+		if (filterOutput)
 		{
-			outputFolder = null;
+			try
+			{
+
+				int type = IResourceFilterDescription.EXCLUDE_ALL
+						| IResourceFilterDescription.FOLDERS/* |IResourceFilterDescription.FILES */;
+				FileInfoMatcherDescription matchter = new FileInfoMatcherDescription("org.eclipse.ui.ide.multiFilter", "1.0-name-matches-false-false-"
+						+ outputTmp.getName());
+
+				boolean hasFilter = false;
+				for (IResourceFilterDescription filter : outputTmp.getParent().getFilters())
+				{
+					if (filter.getType() == type
+							&& filter.getFileInfoMatcherDescription().equals(matchter)
+							&& filter.getResource().equals(outputTmp.getParent()))
+					{
+						hasFilter = true;
+						break;
+					}
+				}
+				// outputTmp.setHidden(true);
+				if (!hasFilter)
+				{
+					outputTmp.getParent().createFilter(type, matchter, IResource.BACKGROUND_REFRESH, new NullProgressMonitor());
+				}
+
+			} catch (CoreException e)
+			{
+				DestecsDebugPlugin.logError("Unable to create exclude filter for output folder"
+						+ outputTmp.getName(), e);
+			}
 		}
+
+		outputFolder = outputTmp.getLocation().toFile();// new File(base, resultFolderRelativePath);
 
 		try
 		{
@@ -309,6 +335,64 @@ public class CoSimLaunchConfigurationDelegate extends
 					+ outputFolder, e);
 		}
 
+	}
+
+	private IFolder createOutputFolder(ILaunchConfiguration configuration)
+	{
+		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
+		IFolder base = dProject.getOutputFolder();// .getLocation().toFile();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+		String tmp = ourputFolderPrefix;
+		tmp = tmp.replace('\\', '/');
+		if (!tmp.endsWith("/"))
+		{
+			tmp += "/";
+		}
+		resultFolderRelativePath = tmp + dateFormat.format(new Date()) + "_"
+				+ configuration.getName();
+
+		try
+		{
+			String postfix = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_NAME_POSTFIX, "");
+			if (postfix != null && !postfix.isEmpty())
+			{
+				resultFolderRelativePath += " {" + postfix + "}";
+			}
+		} catch (CoreException e)
+		{
+			DestecsDebugPlugin.logError("Failed to load launch configuration attributes", e);
+		}
+
+		IFolder outputTmp = base;
+		try
+		{
+			outputTmp.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
+			if (!outputTmp.exists())
+			{
+				outputTmp.create(true, true, new NullProgressMonitor());
+			}
+		} catch (CoreException e)
+		{
+			DestecsDebugPlugin.logError("Failed to create output folder"
+					+ outputTmp, e);
+		}
+
+		for (String part : resultFolderRelativePath.split("/"))
+		{
+			outputTmp = outputTmp.getFolder(part);
+			try
+			{
+				if (!outputTmp.exists())
+				{
+					outputTmp.create(true, true, new NullProgressMonitor());
+				}
+			} catch (CoreException e)
+			{
+				DestecsDebugPlugin.logError("Failed to create output folder"
+						+ outputTmp + " part:" + part, e);
+			}
+		}
+		return outputTmp;
 	}
 
 	private void startSimulation()
@@ -452,7 +536,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				}
 			});
 
-			CoSimulationThread simThread = new CoSimulationThread(engine, log, shareadDesignParameters, totalSimulationTime, target, views,acaMode);
+			CoSimulationThread simThread = new CoSimulationThread(engine, log, shareadDesignParameters, totalSimulationTime, target, views, acaMode);
 			target.setCoSimulationThread(simThread);
 			simThread.start();
 
@@ -794,7 +878,7 @@ public class CoSimLaunchConfigurationDelegate extends
 					throw new Exception("Failed to parse script file");
 				}
 
-				script = expandScript(script, scenarioFile,null);
+				script = expandScript(script, scenarioFile, null);
 				return new ScriptSimulationEngine(contractFile, script);
 			}
 
@@ -812,31 +896,31 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 	}
 
-	public List<INode> expandScript(List<INode> script, File scriptFile,Set<File> used)
-			throws IOException
+	public List<INode> expandScript(List<INode> script, File scriptFile,
+			Set<File> used) throws IOException
 	{
 		if (used == null)
 		{
 			used = new HashSet<File>();
 		}
-		
-		//Check for infinite loop inclusion
-		if(used.contains(scriptFile))
+
+		// Check for infinite loop inclusion
+		if (used.contains(scriptFile))
 		{
-			return new Vector<INode>();//Do not include again
-//			List<INode> notExpandedScript = new Vector<INode>();
-//			for (INode node : script)
-//			{
-//				if (!(node instanceof AScriptInclude))
-//				{
-//					notExpandedScript.add(node);
-//				}
-//			}
-//			return notExpandedScript;
+			return new Vector<INode>();// Do not include again
+			// List<INode> notExpandedScript = new Vector<INode>();
+			// for (INode node : script)
+			// {
+			// if (!(node instanceof AScriptInclude))
+			// {
+			// notExpandedScript.add(node);
+			// }
+			// }
+			// return notExpandedScript;
 		}
-		
+
 		used.add(scriptFile);
-		
+
 		List<INode> expandedScript = new Vector<INode>();
 		for (INode node : script)
 		{
@@ -845,7 +929,7 @@ public class CoSimLaunchConfigurationDelegate extends
 				ScriptParserWrapper parser = new ScriptParserWrapper();
 				File file = new File(scriptFile.getParentFile(), ((AScriptInclude) node).getFilename().replace('\"', ' ').trim());
 				List<INode> subScript = parser.parse(file);
-				expandedScript.addAll(expandScript(subScript, file,used));
+				expandedScript.addAll(expandScript(subScript, file, used));
 			} else
 			{
 				expandedScript.add(node);
