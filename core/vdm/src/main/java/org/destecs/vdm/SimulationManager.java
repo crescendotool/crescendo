@@ -70,8 +70,9 @@ import org.overture.ast.factory.AstFactoryTC;
 import org.overture.ast.intf.lex.ILexLocation;
 import org.overture.ast.intf.lex.ILexNameToken;
 import org.overture.ast.intf.lex.ILexRealToken;
-import org.overture.ast.lex.*;
-import org.overture.ast.statements.AIdentifierObjectDesignator;
+import org.overture.ast.lex.Dialect;
+import org.overture.ast.lex.LexRealToken;
+import org.overture.ast.statements.AIdentifierStateDesignator;
 import org.overture.ast.statements.PStateDesignator;
 import org.overture.ast.types.AClassType;
 import org.overture.ast.types.PType;
@@ -82,7 +83,9 @@ import org.overture.interpreter.debug.DBGPReaderV2;
 import org.overture.interpreter.debug.DBGPStatus;
 import org.overture.interpreter.messages.Console;
 import org.overture.interpreter.messages.rtlog.RTLogger;
-import org.overture.interpreter.runtime.*;
+import org.overture.interpreter.runtime.Context;
+import org.overture.interpreter.runtime.RuntimeValidator;
+import org.overture.interpreter.runtime.ValueException;
 import org.overture.interpreter.runtime.state.ASystemClassDefinitionRuntime;
 import org.overture.interpreter.runtime.validation.BasicRuntimeValidator;
 import org.overture.interpreter.runtime.validation.ConjectureDefinition;
@@ -92,7 +95,19 @@ import org.overture.interpreter.scheduler.RunState;
 import org.overture.interpreter.scheduler.SharedStateListner;
 import org.overture.interpreter.scheduler.SystemClock;
 import org.overture.interpreter.util.ExitStatus;
-import org.overture.interpreter.values.*;
+import org.overture.interpreter.values.BooleanValue;
+import org.overture.interpreter.values.NameValuePair;
+import org.overture.interpreter.values.NameValuePairList;
+import org.overture.interpreter.values.ObjectValue;
+import org.overture.interpreter.values.OperationValue;
+import org.overture.interpreter.values.RealValue;
+import org.overture.interpreter.values.SeqValue;
+import org.overture.interpreter.values.UndefinedValue;
+import org.overture.interpreter.values.UpdatableValue;
+import org.overture.interpreter.values.Value;
+import org.overture.interpreter.values.ValueList;
+import org.overture.interpreter.values.ValueListener;
+import org.overture.interpreter.values.ValueListenerList;
 import org.overture.parser.config.Properties;
 import org.overture.typechecker.TypeChecker;
 
@@ -477,9 +492,9 @@ public class SimulationManager extends BasicSimulationManager
 
 			public boolean reuiresCheck(PStateDesignator target)
 			{
-				if (target instanceof AIdentifierObjectDesignator)
+				if (target instanceof AIdentifierStateDesignator)
 				{
-					ILexNameToken name = ((AIdentifierObjectDesignator) target).getName();
+					ILexNameToken name = ((AIdentifierStateDesignator) target).getName();
 					for (ILexNameToken n : writeCheck)
 					{
 						if (name.getModule().equals(n.getModule())
@@ -489,7 +504,6 @@ public class SimulationManager extends BasicSimulationManager
 						}
 					}
 				}
-
 				return false;
 			}
 
