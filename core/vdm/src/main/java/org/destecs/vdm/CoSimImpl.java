@@ -78,7 +78,8 @@ public class CoSimImpl implements IDestecs
 	public static final String LOAD_SETTING_DISABLE_RT_LOG = "settings_disable_rt_log";
 	public static final String LOAD_SETTING_DISABLE_RT_VALIDATOR = "settings_disable_rt_validator";
 
-	private static final String version = "1.0.2.0";
+	private static final String version = "2.0.0.0";
+	private static final String simulatorMame = "Overture (VDMJ)";
 	private static final String LOAD_SETTING_LOG_VARIABLES = "settings_log_variables";
 	private static final String LOAD_SETTING_DISABLE_COVERAGE = "settings_disable_coverage";
 	private String interfaceVersion = "3.0.4.0";
@@ -93,7 +94,7 @@ public class CoSimImpl implements IDestecs
 	public Map<String, Object> getVersion()
 	{
 
-		return new GetVersionStruct(interfaceVersion, "VDMJ", version).toMap();
+		return new GetVersionStruct(interfaceVersion, simulatorMame, version).toMap();
 	}
 
 	public Boolean initialize() throws RemoteSimulationException
