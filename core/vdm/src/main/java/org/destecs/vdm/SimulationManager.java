@@ -898,9 +898,10 @@ public class SimulationManager extends BasicSimulationManager
 				|| vDef.getExpression() instanceof AUnaryMinusUnaryExp)
 		{
 			ARealLiteralExp newReal = AstFactoryTC.newARealLiteralExp(new LexRealToken(newValue, vDef.getLocation()));//new ARealLiteralExp(new LexRealToken(newValue, vDef.location));
-			Field valDefField = AValueDefinition.class.getField("exp");
-			valDefField.setAccessible(true);
-			valDefField.set(vDef, newReal);
+//			Field valDefField = AValueDefinition.class.getField("exp");
+//			valDefField.setAccessible(true);
+//			valDefField.set(vDef, newReal);
+			vDef.setExpression(newReal);
 			found = true;
 		}
 
