@@ -86,8 +86,10 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 				if(path !=null)
 				{
 					commandList.add(path);
-					p = Runtime.getRuntime().exec(getArgumentString(commandList), null, model.getParentFile());
-	
+					ProcessBuilder procBuilder = new ProcessBuilder(commandList);
+					procBuilder.directory(model.getParentFile());
+					p = procBuilder.start();
+					
 					new ProcessConsolePrinter(p.getInputStream()).start();
 					new ProcessConsolePrinter(p.getErrorStream()).start();
 	
@@ -98,6 +100,7 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 
 		} catch (IOException e)
 		{
+			e.printStackTrace();
 			//ignore it
 		}
 
