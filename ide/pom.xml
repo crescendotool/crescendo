@@ -161,5 +161,41 @@
 				</plugins>
 			</build>
 		</profile>
+		
+		<profile>
+			<id>buildserver</id>
+			<!-- This section contains repositories for DESTECS and the depended project Overture -->
+			<repositories>
+				<repository>
+					<id>overture.iha.dk-p2</id>
+					<url>http://build.overturetool.org/builds/destecs-overture-p2repo/</url>
+					<layout>p2</layout>
+				</repository>
+			</repositories>
+			
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<configuration>
+							<environments>
+								<environment>
+									<os>win32</os>
+									<ws>win32</ws>
+									<arch>x86</arch>
+								</environment>
+								<environment>
+									<os>win32</os>
+									<ws>win32</ws>
+									<arch>x86_64</arch>
+								</environment>
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
 	</profiles>
 </project>
