@@ -169,8 +169,10 @@ public class VDMCO extends VDMRT
 					return;
 				} catch (ContextException e)
 				{
-					println("Execution: " + e);
-					e.ctxt.printStackTrace(Console.out, true);
+					Console.err.println("Execution: " + e);
+					e.ctxt.printStackTrace(Console.err, true);
+					Console.err.flush();
+					exception = e;
 				} catch (Exception e)
 				{
 					exception = e;

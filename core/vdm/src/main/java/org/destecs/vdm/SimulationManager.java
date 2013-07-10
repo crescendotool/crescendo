@@ -568,8 +568,8 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			this.status = CoSimStatusEnum.NOT_INITIALIZED;
 			throw new RemoteSimulationException("Status = " + this.status
-					+ ". Internal error: " + controller.exception != null ? controller.exception.getMessage()
-					: "unknown");
+					+ ". Internal error: " + (controller.exception != null ? controller.exception.getMessage()
+					: "unknown"));
 		}
 	}
 
