@@ -1,0 +1,6 @@
+DESTECS Tool is distributed in the hope that it will be useful, but without any warranty.
+
+- DESTECS Tool is distributed under GPL v3 license.
+- 20-sim is a registered trademark, refer to 20-sim website (www.20sim.com) for its licensing. 
+
+This program is being developed under European Union Seventh Framework Programme.
