@@ -2,28 +2,28 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-<!-- 
+	<!-- 
 	DESTECS Perspective 
 -->
-   <extension
+	<extension
          point="org.eclipse.ui.perspectives">
-      <perspective
+		<perspective
             class="org.destecs.ide.ui.DestecsPerspectiveFactory"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.perspective"
             name="DESTECS">
-         <description>
+			<description>
             %DestecsPerspectiveDescription
-         </description>
-      </perspective>
-   </extension>
-   
-<!-- 
+			</description>
+		</perspective>
+	</extension>
+
+	<!-- 
 	New Wizards
 -->
-   <extension
+	<extension
          point="org.eclipse.ui.newWizards">
-      <wizard
+		<wizard
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.wizards.DestecsNewWizard"
             finalPerspective="org.destecs.ide.ui.perspective"
@@ -32,93 +32,93 @@
             name="DESTECS Project"
             preferredPerspectives="org.destecs.ide.ui.perspective"
             project="true">
-      </wizard>
-      <category
+		</wizard>
+		<category
             id="org.destecs.ide.ui.category"
             name="DESTECS">
-      </category>
-      <wizard
+		</category>
+		<wizard
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.wizards.ScenarioNewWizard"
             id="org.destecs.ide.ui.newScenario"
             name="DESTECS New Scenario">
-      </wizard>
-      <primaryWizard
+		</wizard>
+		<primaryWizard
             id="org.destecs.ide.ui.newProjectWizard">
-      </primaryWizard>
-      <wizard
+		</primaryWizard>
+		<wizard
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.wizards.ContractNewWizard"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.ui.newContract"
             name="DESTECS New Contract">
-      </wizard>
-      <wizard
+		</wizard>
+		<wizard
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.wizards.ArchitectureNewWizard"
             id="org.destecs.ide.ui.newArchitecture"
             name="DESTECS New Architecure">
-      </wizard>
-   </extension>
-   
-<!-- 
+		</wizard>
+	</extension>
+
+	<!-- 
 	DESTECS Explorer
 -->
-   <extension
+	<extension
          point="org.eclipse.ui.views">
-      <view
+		<view
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.navigator.DestecsNavigator"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.destecsExplorer"
             name="DESTECS Explorer"
             restorable="true">
-      </view>
-      <category
+		</view>
+		<category
             id="org.destecs.ide.ui.category"
             name="DESTECS">
-      </category>
-   </extension>
-   
-<!-- Navigator viewer -->
-   <extension
+		</category>
+	</extension>
+
+	<!-- Navigator viewer -->
+	<extension
          point="org.eclipse.ui.navigator.viewer">
-      <viewerContentBinding
+		<viewerContentBinding
             viewerId="org.destecs.ide.ui.destecsExplorer">
-         <includes>
-            <contentExtension
+			<includes>
+				<contentExtension
                   pattern="org.eclipse.ui.navigator.resources.filters.*">
-            </contentExtension>
-            <contentExtension
+				</contentExtension>
+				<contentExtension
                   pattern="org.eclipse.ui.navigator.resources.linkHelper">
-            </contentExtension>
-            <contentExtension
+				</contentExtension>
+				<contentExtension
                   pattern="org.eclipse.ui.navigator.resources.workingSets">
-            </contentExtension>
-            <contentExtension
+				</contentExtension>
+				<contentExtension
                   pattern="org.destecs.ide.ui.destecsNavigatorContent">
-            </contentExtension>
-            <contentExtension
+				</contentExtension>
+				<contentExtension
                   pattern="org.destecs.ide.ui.navigator.resources.filters.*">
-            </contentExtension>
-            <contentExtension pattern="org.overture.resources.filters.coverageeditor.endsWithCovTbl"/>
-            
-         </includes>
-      </viewerContentBinding>
-      <viewerActionBinding
+				</contentExtension>
+				<contentExtension pattern="org.overture.resources.filters.coverageeditor.endsWithCovTbl"/>
+
+			</includes>
+		</viewerContentBinding>
+		<viewerActionBinding
             viewerId="org.destecs.ide.ui.destecsExplorer">
-         <includes>
-            <actionExtension
+			<includes>
+				<actionExtension
                   pattern="org.eclipse.ui.navigator.resources.*">
-            </actionExtension>           
-         </includes>
-      </viewerActionBinding>
-   </extension>
-   
-<!-- Navigator content -->
-   <extension
+				</actionExtension>           
+			</includes>
+		</viewerActionBinding>
+	</extension>
+
+	<!-- Navigator content -->
+	<extension
          point="org.eclipse.ui.navigator.navigatorContent">
-      <navigatorContent
+		<navigatorContent
             activeByDefault="true"
             contentProvider="org.overture.ide.ui.navigator.VdmNavigatorCustomContentProvider"
             icon="icons/ctool16/destecs_misc.png"
@@ -126,202 +126,205 @@
             labelProvider="org.destecs.ide.ui.navigator.DestecsLabelProvider"
             name="DESTECS Navigator Content"
             priority="highest">
-         <triggerPoints>
-            <or>
-               <instanceof
+			<triggerPoints>
+				<or>
+					<instanceof
                      value="org.eclipse.core.resources.IProject">
-               </instanceof>
-               <instanceof
+					</instanceof>
+					<instanceof
                      value="org.eclipse.core.resources.IResource">
-               </instanceof>
-            </or>
-         </triggerPoints>
-         <possibleChildren>
-            <or>
-               <instanceof
+					</instanceof>
+				</or>
+			</triggerPoints>
+			<possibleChildren>
+				<or>
+					<instanceof
                      value="org.eclipse.core.resources.IResource">
-               </instanceof>
-            </or>
-         </possibleChildren>
-         <enablement>
-            <or>
-               <instanceof
+					</instanceof>
+				</or>
+			</possibleChildren>
+			<enablement>
+				<or>
+					<instanceof
                      value="org.eclipse.core.resources.IProject">
-               </instanceof>
-               <instanceof
+					</instanceof>
+					<instanceof
                      value="org.eclipse.core.resources.IResource">
-               </instanceof>
-            </or>
-         </enablement>
-         <override
+					</instanceof>
+				</or>
+			</enablement>
+			<override
                policy="InvokeAlwaysRegardlessOfSuppressedExt"
                suppressedExtensionId="org.eclipse.team.ui.resourceContent">
-         </override>
-        <actionProvider
+			</override>
+			<actionProvider
                class="org.eclipse.ui.internal.navigator.resources.actions.EditActionProvider">
-               <enablement>
-               <adapt
+				<enablement>
+					<adapt
                      type="org.eclipse.core.resources.IResource">
-               </adapt>
-            </enablement>
-         </actionProvider>
-         <actionProvider
+					</adapt>
+				</enablement>
+			</actionProvider>
+			<actionProvider
                class="org.eclipse.ui.internal.navigator.resources.actions.RefactorActionProvider">
-               <enablement>
-               <adapt
+				<enablement>
+					<adapt
                      type="org.eclipse.core.resources.IResource">
-               </adapt>
-            </enablement>
-         </actionProvider>
-         <actionProvider
+					</adapt>
+				</enablement>
+			</actionProvider>
+			<actionProvider
                class="org.eclipse.ui.internal.navigator.resources.actions.WorkManagementActionProvider">
-            <enablement>
-               <adapt
+				<enablement>
+					<adapt
                      type="org.eclipse.core.resources.IResource">
-               </adapt>
-            </enablement>
-         </actionProvider>
-         <actionProvider
+					</adapt>
+				</enablement>
+			</actionProvider>
+			<actionProvider
                class="org.eclipse.ui.internal.navigator.resources.actions.ResourceMgmtActionProvider">
-            <enablement>
-               <or>
-                  <adapt
+				<enablement>
+					<or>
+						<adapt
                         type="org.eclipse.core.resources.IResource">
-                  </adapt>
-                  <adapt
+						</adapt>
+						<adapt
                         type="java.util.Collection">
-                     <count
+							<count
                            value="0">
-                     </count>
-                  </adapt>
-               </or>
-            </enablement>
-         </actionProvider>
-         <commonWizard
+							</count>
+						</adapt>
+					</or>
+				</enablement>
+			</actionProvider>
+			<commonWizard
                type="new"
                wizardId="org.destecs.ide.ui.newContract">
-            <enablement>
-               <or>
-                  <adapt
+				<enablement>
+					<or>
+						<adapt
                         type="org.destecs.ide.core.resources.IDestecsProject">
-                  </adapt>
-               </or></enablement>
-         </commonWizard>
-         <commonWizard
+						</adapt>
+					</or>
+				</enablement>
+			</commonWizard>
+			<commonWizard
                type="new"
                wizardId="org.destecs.ide.ui.newScenario">
-            <enablement>
-               <or>
-                  <adapt
+				<enablement>
+					<or>
+						<adapt
                         type="org.destecs.ide.core.resources.IDestecsProject">
-                  </adapt>
-               </or></enablement>
-         </commonWizard>
-          <commonWizard
+						</adapt>
+					</or>
+				</enablement>
+			</commonWizard>
+			<commonWizard
                type="new"
                wizardId="org.destecs.ide.ui.newArchitecture">
-            <enablement>
-               <or>
-                  <adapt
+				<enablement>
+					<or>
+						<adapt
                         type="org.destecs.ide.core.resources.IDestecsProject">
-                  </adapt>
-               </or></enablement>
-         </commonWizard>
-         <dropAssistant
+						</adapt>
+					</or>
+				</enablement>
+			</commonWizard>
+			<dropAssistant
                class="org.eclipse.ui.navigator.resources.ResourceDropAdapterAssistant"
                id="org.destecs.ide.ui.dropAssistant">
-            <possibleDropTargets></possibleDropTargets>
-         </dropAssistant>
-      </navigatorContent>
+				<possibleDropTargets/>
+			</dropAssistant>
+		</navigatorContent>
 
-      <commonWizard
+		<commonWizard
             type="new"
             wizardId="org.destecs.ide.ui.newProjectWizard">
-         <enablement></enablement>
-      </commonWizard>
-      
-      <commonWizard
+			<enablement/>
+		</commonWizard>
+
+		<commonWizard
             menuGroupId="org.destecs.ide.ui.destecs"
             type="new"
             wizardId="org.destecs.ide.ui.addLibraryWizard">
-         <enablement>
-          <or>
-               <adapt
+			<enablement>
+				<or>
+					<adapt
                      type="org.destecs.ide.core.resources.IDestecsProject">
-                 
-               </adapt>
-               <adapt
+
+					</adapt>
+					<adapt
                      type="org.eclipse.core.resources.IFolder">
-                  
-               </adapt>
-            </or>
-         </enablement>
-      </commonWizard>
-      
-      <commonFilter
+
+					</adapt>
+				</or>
+			</enablement>
+		</commonWizard>
+
+		<commonFilter
             activeByDefault="true"
             description="Filters Start with Dot"
             id="org.eclipse.ui.navigator.resources.filters.startsWithDot"
             name="Filters Start with Dot">
-         <filterExpression>
-            <and>
-               <adapt
+			<filterExpression>
+				<and>
+					<adapt
                      type="org.eclipse.core.resources.IResource">
-                  <test
+						<test
                         property="org.eclipse.core.resources.name"
                         value=".*">
-                  </test>
-               </adapt>
-            </and>
-         </filterExpression>
-      </commonFilter>
-      <!--http://wiki.eclipse.org/Command_Core_Expressions-->
-      <commonFilter
+						</test>
+					</adapt>
+				</and>
+			</filterExpression>
+		</commonFilter>
+		<!--http://wiki.eclipse.org/Command_Core_Expressions-->
+		<commonFilter
             activeByDefault="true"
             description="%Filters.Only.DestecsProjects.description"
             id="org.destecs.ide.ui.navigator.resources.filters.DestecsProjects"
             name="%Filters.Only.DestecsProjects.name">
-         <filterExpression>
-            <and>
-               <not>
-                  <adapt
+			<filterExpression>
+				<and>
+					<not>
+						<adapt
                         type="org.eclipse.core.resources.IProject">
-                     <or>
-                        <test
+							<or>
+								<test
                                property="org.eclipse.core.resources.projectNature"
                                 value="org.destecs.ide.core.nature">
-                        </test>
-                        <not>
-                            <test property="org.eclipse.core.resources.open">
-                            </test>
-                        </not>
-                     </or>
-                  </adapt>
-               </not>
-               <instanceof
+								</test>
+								<not>
+									<test property="org.eclipse.core.resources.open">
+									</test>
+								</not>
+							</or>
+						</adapt>
+					</not>
+					<instanceof
                      value="org.eclipse.core.resources.IProject">
-               </instanceof>
-           </and>
-         </filterExpression>
-      </commonFilter>
-   </extension>
-   <extension
+					</instanceof>
+				</and>
+			</filterExpression>
+		</commonFilter>
+	</extension>
+	<extension
          point="org.eclipse.ui.ide.projectNatureImages">
-      <image
+		<image
             icon="icons/ovr16/destecs_ovr.gif"
             id="org.destecs.ide.ui.image"
             natureId="org.destecs.ide.core.nature">
-      </image>
-   </extension>
-   
-   
-<!-- 
+		</image>
+	</extension>
+
+
+	<!-- 
 	Editors
 -->
-   <extension
+	<extension
          point="org.eclipse.ui.editors">
-         
-      <editor
+
+		<editor
             class="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
@@ -330,28 +333,28 @@
             id="org.destecs.ide.contracteditor.editor.impl.CoSimulationMultipageEditor"
             matchingStrategy="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditorMatchingStrategy"
             name="Co-Simulation Editor">
-      </editor>
-         
-         
-      <editor
+		</editor>
+
+
+		<editor
             class="org.destecs.ide.ui.editor.impl.ContractEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
             name="Contract Editor">
-      </editor>
-      
-      <editor
+		</editor>
+
+		<editor
             class="org.destecs.ide.ui.editor.impl.VdmLinkEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.VdmLinkEditor"
             name="VDM-Link Editor">
-      </editor>
-      
-      <editor
+		</editor>
+
+		<editor
             class="org.destecs.ide.ui.editor.impl.ScenarioEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
@@ -359,9 +362,9 @@
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScenarioEditor"
             name="Scenario Editor">
-      </editor>
-      
-      <editor
+		</editor>
+
+		<editor
             class="org.destecs.ide.ui.editor.impl.ScriptEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
@@ -369,9 +372,9 @@
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScriptEditor"
             name="Script Editor">
-      </editor>
-      
-      <editor
+		</editor>
+
+		<editor
             class="org.destecs.ide.ui.editor.impl.SdpEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
@@ -379,105 +382,105 @@
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.SdpEditor"
             name="Shared Design Parameter Editor">
-      </editor>
-   </extension>
-   <extension
+		</editor>
+	</extension>
+	<extension
          point="org.eclipse.ui.preferencePages">
-      <page
+		<page
             class="org.destecs.ide.ui.DestecsPreferencePage"
             id="org.destecs.ide.ui.page"
             name="DESTECS">
-      </page>
-   </extension>
-   <extension
+		</page>
+	</extension>
+	<extension
          point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
+		<perspectiveExtension
             targetID="org.destecs.ide.ui.perspective">
-         <view
+			<view
                id="org.destecs.ide.ui.destecsExplorer"
                minimized="false"
                ratio="0.25"
                relationship="left"
                relative="org.eclipse.ui.editorss">
-         </view>
-      </perspectiveExtension>
-   </extension>
+			</view>
+		</perspectiveExtension>
+	</extension>
 
-   <extension
+	<extension
          point="org.eclipse.ui.commands">
-      <command
+		<command
             id="org.destecs.ide.ui.projectUpgradeCommand"
             name="Upgrade DESTECS project">
-      </command>
-   </extension>
-   <extension
+		</command>
+	</extension>
+	<extension
          point="org.eclipse.ui.handlers">
-      <handler
+		<handler
             class="org.destecs.ide.ui.handlers.UpgradeProjectHandler"
             commandId="org.destecs.ide.ui.projectUpgradeCommand">
-      </handler>
-   </extension>
-   <extension
+		</handler>
+	</extension>
+	<extension
          point="org.eclipse.ui.menus">
-         <menuContribution
+		<menuContribution
            locationURI="popup:org.destecs.ide.ui.destecsExplorer">
-        <menu
+			<menu
               id="org.destecs.ui"
               label="DESTECS">
-           <command
+				<command
                  commandId="org.destecs.ide.ui.projectUpgradeCommand"
                  icon="icons/obj16/systemupgrade_obj.gif"
                  label="Upgrade Project"
                  style="push">
-              <visibleWhen
+					<visibleWhen
                     checkEnabled="false">
-                 <iterate>
-                     
-                            <adapt type="org.destecs.ide.core.resources.IDestecsProject">
-                            </adapt>
-                       
-                 </iterate>
-              </visibleWhen>
-           </command>
-        </menu>
-     </menuContribution>
-   </extension>
+						<iterate>
 
-   <extension
+							<adapt type="org.destecs.ide.core.resources.IDestecsProject">
+							</adapt>
+
+						</iterate>
+					</visibleWhen>
+				</command>
+			</menu>
+		</menuContribution>
+	</extension>
+
+	<extension
          point="org.eclipse.ui.handlers">
-      <handler
+		<handler
             class="org.destecs.ide.ui.commands.ToggleComment"
             commandId="org.overture.ide.ui.commands.toggleComment">
-         <activeWhen>
-            <reference
+			<activeWhen>
+				<reference
                   definitionId="org.destecs.ide.ui.insideDestecsEditor">
-            </reference>
-         </activeWhen>
-      </handler>
-   </extension>
-   <extension
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension
          point="org.eclipse.core.expressions.definitions">
-      <definition
+		<definition
             id="org.destecs.ide.ui.insideDestecsEditor">
-         <with
+			<with
                variable="activeEditor">
-            <or>
-               <instanceof
+				<or>
+					<instanceof
                      value="org.destecs.ide.ui.editor.impl.AbstractDestecsEditor">
-               </instanceof>
-               <instanceof
+					</instanceof>
+					<instanceof
                      value="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditor">
-               </instanceof>
-            </or>
-         </with>
-      </definition>
-   </extension>
+					</instanceof>
+				</or>
+			</with>
+		</definition>
+	</extension>
 
-   
-<!-- 
+
+	<!-- 
 	New contract  command
 -->
-   <!--extension
+	<!--extension
          point="org.eclipse.ui.commands">
       <command
             categoryId="org.destecs.ide.ui.category"
@@ -490,11 +493,11 @@
             name="DESTECS">
       </category>
    </extension-->
-   
-<!-- 
+
+	<!-- 
 	Menus
 -->
-   <!--extension
+	<!--extension
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
@@ -506,6 +509,6 @@
          </command>
       </menuContribution>
    </extension-->
-   
+
 
 </plugin>

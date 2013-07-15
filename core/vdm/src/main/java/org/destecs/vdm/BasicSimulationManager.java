@@ -130,7 +130,7 @@ public abstract class BasicSimulationManager
 						ValueUpdateRequest request = updateValueQueueRequest.take();
 						try
 						{
-							Context coSimCtxt = new ClassContext(coSimLocation, "SimulationInterface", interpreter.initialContext, request.value.classDef);
+							Context coSimCtxt = new ClassContext(interpreter.getAssistantFactory(),coSimLocation, "SimulationInterface", interpreter.initialContext, request.value.classDef);
 							coSimCtxt.setThreadState(null, request.value.cpu);
 
 							request.value.value.set(coSimLocation, request.newValue, coSimCtxt);

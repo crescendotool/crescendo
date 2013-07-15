@@ -11,7 +11,7 @@
           name="DESTECS Tools">
        <property
              name="windowImages"
-             value="icons/ctool16/destecs_misc.png,icons/ctool32/destecs_misc.png,icons/ctool48/destecs_misc.png,icons/ctool64/destecs_misc.png,icons/ctool128/destecs_misc.png">
+             value="/icons/ctool16/destecs_misc.png,/icons/ctool32/destecs_misc.png,/icons/ctool48/destecs_misc.png,/icons/ctool64/destecs_misc.png,/icons/ctool128/destecs_misc.png">
        </property>
        <property
              name="aboutText"
@@ -19,7 +19,7 @@
        </property>
        <property
              name="aboutImage"
-             value="icons/ctool128/destecs_misc.png">
+             value="/icons/ctool128/destecs_misc.png">
        </property>
        <property
              name="startupForegroundColor"
