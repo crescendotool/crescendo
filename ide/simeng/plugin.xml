@@ -56,5 +56,20 @@
       </view>
      
    </extension>
+   
+   
+   <extension
+       point="org.eclipse.ui.importWizards">
+    <category
+          id="org.destecs.ide.ui.category-destecs"
+          name="DESTECS">
+    </category>
+    <wizard
+          category="org.destecs.ide.ui.category-destecs"
+          class="org.destecs.ide.simeng.wizard.ImportExamplesWizard"
+          id="org.destecs.ide.ui.wizardImportExamples"
+          name="DESTECS Examples">
+    </wizard>
+ </extension>
 
 </plugin>
