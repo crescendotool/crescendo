@@ -44,7 +44,7 @@
 									<pluginExecutionFilter>
 										<groupId>org.destecs.tools</groupId>
 										<artifactId>jprotocolgenerator</artifactId>
-										<versionRange>[2.0.0,)</versionRange>
+										<versionRange>[2.0.0-SNAPSHOT,)</versionRange>
 										<goals>
 											<goal>java</goal>
 										</goals>
