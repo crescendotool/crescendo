@@ -67,6 +67,7 @@
     <wizard
           category="org.destecs.ide.ui.category-destecs"
           class="org.destecs.ide.simeng.wizard.ImportExamplesWizard"
+          icon="platform:/plugin/org.destecs.ide.platform/icons/ctool16/destecs_misc.png"
           id="org.destecs.ide.ui.wizardImportExamples"
           name="DESTECS Examples">
     </wizard>
