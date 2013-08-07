@@ -10,7 +10,7 @@
   <!-- generate po menu binding -->
   <extension point="org.eclipse.ui.menus">
     <menuContribution locationURI="popup:org.destecs.ide.ui.destecsExplorer">
-      <menu icon="platform:/plugin/org.overture.ide.plugins.poviewer/icons/cview16/po_tsk.png" id="org.overture.ide.plugins.poviewer" label="Proof Obligations">
+      <menu icon="platform:/plugin/org.overture.ide.plugins.poviewer-string-based/icons/cview16/po_tsk.png" id="org.overture.ide.plugins.poviewer" label="Proof Obligations">
         <command commandId="org.overture.ide.plugins.poviewer.commandGeneratedPO" label="Generate Proof Obligations" style="push" tooltip="Show POs">
           <visibleWhen checkEnabled="false">
             <iterate ifEmpty="false">
