@@ -38,7 +38,7 @@
 	  <products>
 	    <product>
 	      <id>org.destecs.ide.platform.product</id>
-	      <archiveFileName>Destecs-${project.version}</archiveFileName>
+	      <archiveFileName>Crescendo-${project.version}</archiveFileName>
 	    </product>
 	  </products>
 	</configuration>
