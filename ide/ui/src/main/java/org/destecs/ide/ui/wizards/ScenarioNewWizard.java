@@ -58,6 +58,10 @@ public class ScenarioNewWizard extends AbstractNewFileWizard implements
 	@Override
 	protected String getInitialFileName(IProject project)
 	{
+		if(project==null)
+		{
+			return "unknown-project";
+		}
 		return project.getName();
 	}
 }
