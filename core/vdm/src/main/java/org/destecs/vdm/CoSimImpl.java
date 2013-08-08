@@ -357,7 +357,7 @@ public class CoSimImpl implements IDestecs
 
 	public Boolean terminate()
 	{
-		System.out.println("DESTECS VDM is terminating now...");
+		System.out.println("The VDM interpreter is terminating now...");
 
 		Thread shutdown = new Thread(new Runnable()
 		{
