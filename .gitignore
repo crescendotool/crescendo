@@ -43,6 +43,6 @@ core/protocol/src/main/java/org/destecs/protocol/*.java
 ._*
 .Spotlight-V100
 .Trashes
-Icon?
+#Icon?
 ehthumbs.db
 Thumbs.db
