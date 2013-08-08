@@ -8,9 +8,9 @@
              category="org.destecs.ide.ui.category"
              class="org.destecs.ide.libraries.AddLibraryWizard"
              finalPerspective="org.destecs.ide.ui.perspective"
-             icon="icons/obj16/vdm_library_obj.gif"
+             icon="platform:/plugin/org.overture.ide.ui/icons/obj16/vdm_library_obj.gif"
              id="org.destecs.ide.ui.addLibraryWizard"
-             name="Add DESTECS Library"
+             name="%org.destecs.ide.ui.addLibraryWizard.name"
              preferredPerspectives="org.destecs.ide.ui.perspective"
              project="false">
       </wizard>
@@ -19,7 +19,7 @@
          point="org.eclipse.ui.commands">
       <command
             id="org.destecs.ide.libraries.upgradeLibraryCommand"
-            name="Upgrade Library Link">
+            name="%org.destecs.ide.libraries.upgradeLibraryCommand.name">
       </command>
    </extension>
    <extension

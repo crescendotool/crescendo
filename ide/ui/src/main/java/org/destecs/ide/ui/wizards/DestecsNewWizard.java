@@ -44,11 +44,10 @@ import org.overture.ide.vdmrt.core.IVdmRtCoreConstants;
 public class DestecsNewWizard extends BasicNewProjectResourceWizard
 {
 
-	private static final String WIZARD_NAME = "DESTECS New Project Wizard";
 
 	public DestecsNewWizard()
 	{
-		setWindowTitle(WIZARD_NAME);
+		setWindowTitle(Messages.DestecsNewWizard_0);
 
 	}
 
@@ -81,11 +80,11 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard
 
 			addNature(prj, IVdmRtCoreConstants.NATURE);
 			IVdmProject p = (IVdmProject) prj.getAdapter(IVdmProject.class);
-			Assert.isNotNull(p, "Project could not be adapted");
+			Assert.isNotNull(p, "Project could not be adapted"); //$NON-NLS-1$
 			p.setBuilder(Release.DEFAULT);
 			addNature(prj, IDestecsCoreConstants.NATURE);
 
-			addBuilder(prj, "org.destecs.ide.vdmmetadatabuilder.builder", null, null);
+			addBuilder(prj, "org.destecs.ide.vdmmetadatabuilder.builder", null, null); //$NON-NLS-1$
 			addBuilder(prj, IDestecsCoreConstants.BUILDER_ID, null, null);
 			addBuilder(prj, IDestecsCoreConstants.SCRIPT_BUILDER_ID, null, null);
 
@@ -94,32 +93,32 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard
 			modelPath.add(dp.getVdmModelFolder());
 			modelPath.remove(prj);
 			modelPath.setOutput(dp.getOutputFolder());
-			modelPath.setLibrary(dp.getVdmModelFolder().getFolder("lib"));
+			modelPath.setLibrary(dp.getVdmModelFolder().getFolder("lib")); //$NON-NLS-1$
 			modelPath.save();
 			p.getModel().clean();
 			prj.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 
 
 			IProjectDescription d = prj.getDescription();
-			d.setComment("DESTECS-"+getPlatformBundleVersion());
+			d.setComment(Messages.DestecsNewWizard_4+getPlatformBundleVersion());
 			prj.setDescription(d, new NullProgressMonitor());
 
 		} catch (CoreException e)
 		{
-			DestecsUIPlugin.log("Failed to create project",e);
+			DestecsUIPlugin.log("Failed to create project",e); //$NON-NLS-1$
 		}
 
 	}
 	
 	public static String getPlatformBundleVersion()
 	{
-		Bundle bundle = Platform.getBundle("org.destecs.ide.platform");
+		Bundle bundle = Platform.getBundle("org.destecs.ide.platform"); //$NON-NLS-1$
 		if(bundle!=null)
 		{
-			String version = ""+bundle.getHeaders().get("Bundle-Version");
+			String version = ""+bundle.getHeaders().get("Bundle-Version"); //$NON-NLS-1$ //$NON-NLS-2$
 			return version;
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	private static void addNature(IProject project, String nature)

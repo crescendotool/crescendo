@@ -8,7 +8,7 @@
        point="org.eclipse.core.runtime.products">
     <product
           application="org.eclipse.ui.ide.workbench"
-          name="DESTECS Tools">
+          name="%productName">
        <property
              name="windowImages"
              value="/icons/ctool16/destecs_misc.png,/icons/ctool32/destecs_misc.png,/icons/ctool48/destecs_misc.png,/icons/ctool64/destecs_misc.png,/icons/ctool128/destecs_misc.png">
@@ -35,7 +35,7 @@
        </property>
        <property
              name="appName"
-             value="DESTECS Tools">
+             value="%productName">
        </property>
        <property
              name="preferenceCustomization"

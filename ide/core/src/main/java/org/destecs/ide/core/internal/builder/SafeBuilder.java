@@ -22,7 +22,7 @@ public class SafeBuilder extends Thread
 		this.currentProject = currentProject;
 
 		this.monitor = monitor;
-		this.setName("DESTECS Safe Builder");
+		this.setName(Messages.SafeBuilder_0);
 		this.setDaemon(true);
 	}
 
@@ -36,7 +36,7 @@ public class SafeBuilder extends Thread
 
 				public void handleException(Throwable e)
 				{
-					DestecsCorePlugin.log("SafeBuilder", e);
+					DestecsCorePlugin.log("SafeBuilder", e); //$NON-NLS-1$
 				}
 
 				public void run() throws Exception
@@ -69,7 +69,7 @@ public class SafeBuilder extends Thread
 
 		} catch (CoreException e)
 		{
-			DestecsCorePlugin.log("DestecsCorePluginBuilder:clearProblemMarkers", e);
+			DestecsCorePlugin.log("DestecsCorePluginBuilder:clearProblemMarkers", e); //$NON-NLS-1$
 		}
 
 	}

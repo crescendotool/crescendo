@@ -11,7 +11,7 @@
             class="org.destecs.ide.ui.DestecsPerspectiveFactory"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.perspective"
-            name="DESTECS">
+            name="%org.destecs.ide.ui.perspective.name">
 			<description>
             %DestecsPerspectiveDescription
 			</description>
@@ -29,19 +29,19 @@
             finalPerspective="org.destecs.ide.ui.perspective"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.newProjectWizard"
-            name="DESTECS Project"
+            name="%org.destecs.ide.ui.newProjectWizard.name"
             preferredPerspectives="org.destecs.ide.ui.perspective"
             project="true">
 		</wizard>
 		<category
             id="org.destecs.ide.ui.category"
-            name="DESTECS">
+            name="%org.destecs.ide.ui.category.name">
 		</category>
 		<wizard
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.wizards.ScenarioNewWizard"
             id="org.destecs.ide.ui.newScenario"
-            name="DESTECS New Scenario">
+            name="%org.destecs.ide.ui.newScenario.name">
 		</wizard>
 		<primaryWizard
             id="org.destecs.ide.ui.newProjectWizard">
@@ -51,13 +51,13 @@
             class="org.destecs.ide.ui.wizards.ContractNewWizard"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.ui.newContract"
-            name="DESTECS New Contract">
+            name="%org.destecs.ide.ui.newContract.name">
 		</wizard>
 		<wizard
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.ui.wizards.ArchitectureNewWizard"
             id="org.destecs.ide.ui.newArchitecture"
-            name="DESTECS New Architecure">
+            name="%org.destecs.ide.ui.newArchitecture.name">
 		</wizard>
 	</extension>
 
@@ -71,12 +71,12 @@
             class="org.destecs.ide.ui.navigator.DestecsNavigator"
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.destecsExplorer"
-            name="DESTECS Explorer"
+            name="%org.destecs.ide.ui.destecsExplorer.name"
             restorable="true">
 		</view>
 		<category
             id="org.destecs.ide.ui.category"
-            name="DESTECS">
+            name="%org.destecs.ide.ui.category.name">
 		</category>
 	</extension>
 
@@ -125,7 +125,7 @@
             icon="icons/ctool16/destecs_misc.png"
             id="org.destecs.ide.ui.destecsNavigatorContent"
             labelProvider="org.destecs.ide.ui.navigator.DestecsLabelProvider"
-            name="DESTECS Navigator Content"
+            name="%org.destecs.ide.ui.destecsNavigatorContent.name"
             priority="highest">
 			<triggerPoints>
 				<or>
@@ -245,7 +245,7 @@
             activeByDefault="true"
             description="Filters Start with Dot"
             id="org.eclipse.ui.navigator.resources.filters.startsWithDot"
-            name="Filters Start with Dot">
+            name="%org.eclipse.ui.navigator.resources.filters.startsWithDot.name">
 			<filterExpression>
 				<and>
 					<adapt
@@ -312,7 +312,7 @@
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.impl.CoSimulationMultipageEditor"
             matchingStrategy="org.destecs.ide.ui.editor.impl.CoSimMultiPageEditorMatchingStrategy"
-            name="Co-Simulation Editor">
+            name="%org.destecs.ide.contracteditor.editor.impl.CoSimulationMultipageEditor.name">
 		</editor>
 
 
@@ -322,7 +322,7 @@
             default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.DestecsContractEditor"
-            name="Contract Editor">
+            name="%org.destecs.ide.contracteditor.editor.core.DestecsContractEditor.name">
 		</editor>
 
 		<editor
@@ -331,7 +331,7 @@
             default="false"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.VdmLinkEditor"
-            name="VDM-Link Editor">
+            name="%org.destecs.ide.contracteditor.editor.core.VdmLinkEditor.name">
 		</editor>
 
 		<editor
@@ -341,7 +341,7 @@
             extensions="script"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScenarioEditor"
-            name="Scenario Editor">
+            name="%org.destecs.ide.contracteditor.editor.core.ScenarioEditor.name">
 		</editor>
 
 		<editor
@@ -351,7 +351,7 @@
             extensions="script2"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScriptEditor"
-            name="Script Editor">
+            name="%org.destecs.ide.contracteditor.editor.core.ScriptEditor.name">
 		</editor>
 
 		<editor
@@ -361,7 +361,7 @@
             extensions="sdp"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.SdpEditor"
-            name="Shared Design Parameter Editor">
+            name="%org.destecs.ide.contracteditor.editor.core.SdpEditor.name">
 		</editor>
 	</extension>
 	<extension
@@ -369,7 +369,7 @@
 		<page
             class="org.destecs.ide.ui.DestecsPreferencePage"
             id="org.destecs.ide.ui.page"
-            name="DESTECS">
+            name="%org.destecs.ide.ui.page.name">
 		</page>
 	</extension>
 	<extension
@@ -393,7 +393,7 @@
          point="org.eclipse.ui.commands">
 		<command
             id="org.destecs.ide.ui.projectUpgradeCommand"
-            name="Upgrade DESTECS project">
+            name="%org.destecs.ide.ui.projectUpgradeCommand.name">
 		</command>
 	</extension>
 	<extension
@@ -409,11 +409,11 @@
            locationURI="popup:org.destecs.ide.ui.destecsExplorer">
 			<menu
               id="org.destecs.ui"
-              label="DESTECS">
+              label="%org.destecs.ui.menu.label">
 				<command
                  commandId="org.destecs.ide.ui.projectUpgradeCommand"
                  icon="icons/obj16/systemupgrade_obj.gif"
-                 label="Upgrade Project"
+                 label="%org.destecs.ide.ui.projectUpgradeCommand.name"
                  style="push">
 					<visibleWhen
                     checkEnabled="false">

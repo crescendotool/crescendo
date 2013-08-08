@@ -38,7 +38,7 @@
    </extension>
    <extension
          id="org.destecs.ide.core.builder"
-         name="DESTECS Project Builder"
+         name="%org.destecs.ide.core.builder.name"
          point="org.eclipse.core.resources.builders">
       <builder
             callOnEmptyDelta="true"
@@ -51,7 +51,7 @@
    </extension>
    <extension
          id="org.destecs.ide.core.scriptbuilder"
-          name="DESTECS Script Builder"
+          name="%org.destecs.ide.core.scriptbuilder.name"
          point="org.eclipse.core.resources.builders">
       <builder
             callOnEmptyDelta="false"

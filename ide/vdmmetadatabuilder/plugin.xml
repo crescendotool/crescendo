@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-  <extension id="org.destecs.ide.vdmmetadatabuilder.builder" name="DESTECS VDM Project builder" point="org.eclipse.core.resources.builders">
+  <extension id="org.destecs.ide.vdmmetadatabuilder.builder" name="%org.destecs.ide.vdmmetadatabuilder.builder.name" point="org.eclipse.core.resources.builders">
     <builder hasNature="false">
       <run class="org.destecs.ide.vdmmetadatabuilder.internal.builder.vdmmetadatabuilder.VdmMetadataBuilder">
 			</run>
@@ -10,8 +10,8 @@
   <!-- generate po menu binding -->
   <extension point="org.eclipse.ui.menus">
     <menuContribution locationURI="popup:org.destecs.ide.ui.destecsExplorer">
-      <menu icon="platform:/plugin/org.overture.ide.plugins.poviewer-string-based/icons/cview16/po_tsk.png" id="org.overture.ide.plugins.poviewer" label="Proof Obligations">
-        <command commandId="org.overture.ide.plugins.poviewer.commandGeneratedPO" label="Generate Proof Obligations" style="push" tooltip="Show POs">
+      <menu icon="platform:/plugin/org.overture.ide.plugins.poviewer-string-based/icons/cview16/po_tsk.png" id="org.overture.ide.plugins.poviewer" label="%org.overture.ide.plugins.poviewer.label">
+        <command commandId="org.overture.ide.plugins.poviewer.commandGeneratedPO" label="%org.overture.ide.plugins.poviewer.commandGeneratedPO.label" style="push" tooltip="%org.overture.ide.plugins.poviewer.commandGeneratedPO.tooltip">
           <visibleWhen checkEnabled="false">
             <iterate ifEmpty="false">
               <or>

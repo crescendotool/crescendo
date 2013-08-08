@@ -36,7 +36,7 @@
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.simeng.ui.views.InfoTableView"
             id="org.destecs.ide.simeng.ui.views.SimulationEngineView"
-            name="Simulation Engine View">
+            name="%org.destecs.ide.simeng.ui.views.SimulationEngineView.name">
       </view>
       
       <view
@@ -44,7 +44,7 @@
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.simeng.ui.views.InfoTableView"
             id="org.destecs.ide.simeng.ui.views.SimulationMessagesView"
-            name="Simulation Messages View">
+            name="%org.destecs.ide.simeng.ui.views.SimulationMessagesView.name">
       </view>
       
    <view
@@ -52,7 +52,7 @@
             category="org.destecs.ide.ui.category"
             class="org.destecs.ide.simeng.ui.views.InfoTableView"
             id="org.destecs.ide.simeng.ui.views.SimulationView"
-            name="Simulation View">
+            name="%org.destecs.ide.simeng.ui.views.SimulationView.name">
       </view>
      
    </extension>
@@ -62,14 +62,14 @@
        point="org.eclipse.ui.importWizards">
     <category
           id="org.destecs.ide.ui.category-destecs"
-          name="DESTECS">
+          name="%org.destecs.ide.ui.category-destecs.name">
     </category>
     <wizard
           category="org.destecs.ide.ui.category-destecs"
           class="org.destecs.ide.simeng.wizard.ImportExamplesWizard"
           icon="platform:/plugin/org.destecs.ide.platform/icons/ctool16/destecs_misc.png"
           id="org.destecs.ide.ui.wizardImportExamples"
-          name="DESTECS Examples">
+          name="%org.destecs.ide.ui.wizardImportExamples.name">
     </wizard>
  </extension>
 

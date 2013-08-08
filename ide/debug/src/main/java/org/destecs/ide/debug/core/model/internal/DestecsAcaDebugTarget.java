@@ -69,7 +69,7 @@ public class DestecsAcaDebugTarget extends PlatformObject implements
 
 	public String getName() throws DebugException
 	{
-		return "DESTECS ACA Application";
+		return Messages.DestecsAcaDebugTarget_0;
 	}
 
 	public IProcess getProcess()
@@ -170,10 +170,10 @@ public class DestecsAcaDebugTarget extends PlatformObject implements
 		try
 		{
 			String content = HtmlFactory.createAcaResultOverview(outputFolder.getName(), acaManager.getCompletedTargets());
-			writeFile(outputFolder, "index.html", content);
+			writeFile(outputFolder, "index.html", content); //$NON-NLS-1$
 		} catch (IOException e)
 		{
-			DestecsDebugPlugin.logError("Failed to write HTML overview file for ACA debug target.", e);
+			DestecsDebugPlugin.logError("Failed to write HTML overview file for ACA debug target.", e); //$NON-NLS-1$
 		}
 		try
 		{
@@ -181,10 +181,10 @@ public class DestecsAcaDebugTarget extends PlatformObject implements
 			writeFile(outputFolder, IDebugConstants.OCTAVE_PLOT_FILE, content);
 		} catch (IOException e)
 		{
-			DestecsDebugPlugin.logError("Failed to write Octave script file for ACA debug target.", e);
+			DestecsDebugPlugin.logError("Failed to write Octave script file for ACA debug target.", e); //$NON-NLS-1$
 		} catch (CoreException e)
 		{
-			DestecsDebugPlugin.logError("Failed to get Octave shoew option from launchconfig in ACA debug target.", e);
+			DestecsDebugPlugin.logError("Failed to get Octave shoew option from launchconfig in ACA debug target.", e); //$NON-NLS-1$
 		}
 		
 		try {

@@ -95,7 +95,7 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 	 */
 	protected  String getTypeSelectionTitle()
 	{
-		return "Select DESTECS Application";
+		return Messages.DestecsLaunchShortcut_0;
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 	 * @return error message when editor cannot be launched
 	 */
 	protected String getEditorEmptyMessage(){
-		return "Editor does not contain a main type";
+		return "Editor does not contain a main type"; //$NON-NLS-1$
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 	 */
 	protected  String getSelectionEmptyMessage()
 	{
-		return "Selection does not contain a launchable operation or function type";
+		return "Selection does not contain a launchable operation or function type"; //$NON-NLS-1$
 	}
 
 	IProject project = null;
@@ -239,7 +239,7 @@ public class DestecsLaunchShortcut implements ILaunchShortcut2
 				ILaunchConfiguration config = configs[i];
 
 //				String defaultModule = config.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_DEFAULT, "");
-				String pName = config.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, "");
+				String pName = config.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""); //$NON-NLS-1$
 //				String operation = config.getAttribute(IDebugConstants.VDM_LAUNCH_CONFIG_OPERATION, "");
 
 				if (//defaultModule.equals(getModuleName(type).toString())
