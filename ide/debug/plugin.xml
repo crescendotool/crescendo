@@ -82,7 +82,7 @@
       </launchConfigurationTypeImage>
       <launchConfigurationTypeImage
             configTypeID="org.destecs.ide.debug.directoryLaunch"
-            icon="icons/ctool16/directoryLaunch.gif"
+            icon="icons/ctool16/directoryLaunch.png"
             id="org.destecs.ide.debug.directoryLaunchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>

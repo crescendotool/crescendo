@@ -291,7 +291,7 @@
 	<extension
          point="org.eclipse.ui.ide.projectNatureImages">
 		<image
-            icon="icons/ovr16/destecs_ovr.gif"
+            icon="icons/ovr16/destecs_ovr.png"
             id="org.destecs.ide.ui.image"
             natureId="org.destecs.ide.core.nature">
 		</image>
