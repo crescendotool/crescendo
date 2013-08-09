@@ -55,8 +55,8 @@ RequestExecutionLevel admin
 
   !define MUI_HEADERIMAGE 
   !define MUI_HEADERIMAGE_BITMAP "Crescendo.bmp" ; optional
-  !define MUI_ICON "crescendo.ico"
-  ;!define MUI_UNICON "crescendo-uninst.ico"
+  !define MUI_ICON "crescendo_installer.ico"
+  !define MUI_UNICON "crescendo_uninstaller.ico"
   !define MUI_ABORTWARNING
   !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes Crescendo ${PRODUCT_VERSION} and 20-sim ${SIM20_VERSION}."
 ;-------------------------------- 
