@@ -15,8 +15,8 @@ SetCompress off
  
 
 !define PRODUCT_VERSION "0.0.0"
-!define PRODUCT_REG_KEY "DESTECS"
-!define PRODUCT_NAME "DESTECS"
+!define PRODUCT_REG_KEY "Crescendo"
+!define PRODUCT_NAME "Crescendo"
 
 !define TARBALL "combined.tar"
 
@@ -25,10 +25,10 @@ SetCompress off
 !define SIM20_PLATFORM "win32"
 !define SIM20_EXE "${SIM20_NAME}-${SIM20_VERSION}-${SIM20_PLATFORM}.exe"
 
-!define DESTECSIDE "DestecsIde-"
+!define DESTECSIDE "CrescendoIde-"
 !define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}"
 ;!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
-!define DESTECSZIP "destecs.zip"
+!define DESTECSZIP "Crescendo.zip"
 
 !include "WordFunc.nsh"
   !insertmacro VersionCompare
@@ -37,17 +37,16 @@ Var UNINSTALL_OLD_VERSION
 
 
 ; The name of the installer
-Name "DESTECS"
+Name "Crescendo"
 
-; The file to write
-OutFile "DESTECS_#VERSION#_#PLATFORM#.exe"
+OutFile "Crescendo_#VERSION#_#PLATFORM#.exe"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\DESTECS
+InstallDir $PROGRAMFILES\Crescendo
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "Software\DESTECS" "Install_Dir"
+InstallDirRegKey HKLM "Software\Crescendo" "Install_Dir"
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
@@ -55,9 +54,11 @@ RequestExecutionLevel admin
 ;Interface Configuration
 
   !define MUI_HEADERIMAGE 
-  !define MUI_HEADERIMAGE_BITMAP "destecs.bmp" ; optional
+  !define MUI_HEADERIMAGE_BITMAP "Crescendo.bmp" ; optional
+  !define MUI_ICON "crescendo.ico"
+  ;!define MUI_UNICON "crescendo-uninst.ico"
   !define MUI_ABORTWARNING
-  !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes DESTECS ${PRODUCT_VERSION} and 20-sim ${SIM20_VERSION}."
+  !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes Crescendo ${PRODUCT_VERSION} and 20-sim ${SIM20_VERSION}."
 ;-------------------------------- 
 
 ;!define MUI_WELCOMEPAGE_TITLE "dsasda"
@@ -90,7 +91,7 @@ RequestExecutionLevel admin
 
 
 ; The stuff to install
-Section "DESTECS (required)" ;No components page, name is not important
+Section "Crescendo (required)" ;No components page, name is not important
 
   SectionIn RO
 
@@ -111,7 +112,7 @@ Section "DESTECS (required)" ;No components page, name is not important
   untgz::extract -znone -j -d "$INSTDIR" "${TARBALL}"
   Delete "${TARBALL}"
 
-  ; Calling the function that installs DESTECS  
+  ; Calling the function that installs Crescendo  
   Call DESTECSInstall
   
   ; Calling the function that installs 20-sim
@@ -123,7 +124,7 @@ Section "DESTECS (required)" ;No components page, name is not important
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\${PRODUCT_REG_KEY} "Install_Dir" "$INSTDIR"
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "DisplayName" "DESTECS Tool"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "DisplayName" "Crescendo Tool"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe"'
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "NoRepair" 1
@@ -136,7 +137,7 @@ Section "Start Menu Shortcuts (Optional)"
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\${PRODUCT_REG_KEY}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\DESTECS.lnk" "$INSTDIR\destecs.exe" "" "$INSTDIR\destecs.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Crescendo.lnk" "$INSTDIR\Crescendo.exe" "" "$INSTDIR\Crescendo.exe" 0
 SectionEnd
 
 ; Uninstaller
@@ -165,10 +166,10 @@ Section "Uninstall"
   Delete "$INSTDIR\.eclipseproduct"
   DetailPrint "Deleting $INSTDIR\artifacts.xml"
   Delete "$INSTDIR\artifacts.xml"
-  DetailPrint "Deleting $INSTDIR\destecs.exe"
-  Delete "$INSTDIR\destecs.exe"
-  DetailPrint "Deleting $INSTDIR\destecs.ini"
-  Delete "$INSTDIR\destecs.ini"
+  DetailPrint "Deleting $INSTDIR\Crescendo.exe"
+  Delete "$INSTDIR\Crescendo.exe"
+  DetailPrint "Deleting $INSTDIR\Crescendo.ini"
+  Delete "$INSTDIR\Crescendo.ini"
   DetailPrint "Deleting $INSTDIR\epl-v10.html"
   Delete "$INSTDIR\epl-v10.html"
   DetailPrint "Deleting $INSTDIR\notice.html"
@@ -206,10 +207,10 @@ init.uninst:
 init.done:
 FunctionEnd
 
-; Install DESTECS Tool
+; Install Crescendo Tool
 Function DESTECSInstall
   ; Print to detail log 
-  DetailPrint "Installing DESTECS Tool"
+  DetailPrint "Installing Crescendo Tool"
   ; Unzip the file
    ZipDLL::extractall "${DESTECSZIP}" "$INSTDIR"
   
@@ -220,8 +221,8 @@ Function DESTECSInstall
   ;ExecWait 'xcopy /S /Y $\"$INSTDIR\${DESTECSFOLDER}$\" $\"$INSTDIR$\"'
   ; Delete the zip and old folder
   ;RMdir /r "$INSTDIR\${DESTECSFOLDER}"
-  DetailPrint "Adding DESTECS firewall exception"
-  SimpleFC::AddApplication "DESTECS" "$INSTDIR\destecs.exe" 0 2 "" 1
+  DetailPrint "Adding Crescendo firewall exception"
+  SimpleFC::AddApplication "Crescendo" "$INSTDIR\Crescendo.exe" 0 2 "" 1
   Pop $0
   DetailPrint "0=Success/1=Error: $0 "
   
