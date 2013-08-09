@@ -95,7 +95,7 @@
         class="org.destecs.ide.debug.ui.launchconfigurations.DestecsLaunchShortcut"
         icon="icons/ctool16/destecs_misc.png"
         id="org.destecs.ide.debug.ui.localDestecsShortcut"
-        label="%org.destecs.ide.debug.ui.localDestecsShortcut.label"
+        label="%org.destecs.ide.debug.ui.localShortcut.label"
         modes="debug">
      <contextualLaunch>
            <enablement>
