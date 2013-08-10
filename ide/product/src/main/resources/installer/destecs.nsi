@@ -21,14 +21,14 @@ SetCompress off
 !define TARBALL "combined.tar"
 
 !define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.3.0"
+!define SIM20_VERSION "4.3.3"
 !define SIM20_PLATFORM "win32"
 !define SIM20_EXE "${SIM20_NAME}-${SIM20_VERSION}-${SIM20_PLATFORM}.exe"
 
 !define DESTECSIDE "CrescendoIde-"
 !define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}"
 ;!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
-!define DESTECSZIP "Crescendo.zip"
+!define DESTECSZIP "destecs.zip"
 
 !include "WordFunc.nsh"
   !insertmacro VersionCompare
@@ -174,9 +174,11 @@ Section "Uninstall"
   Delete "$INSTDIR\epl-v10.html"
   DetailPrint "Deleting $INSTDIR\notice.html"
   Delete "$INSTDIR\notice.html"
+  DetailPrint "Deleting $INSTDIR\eclipsec.exe"
+  Delete "$INSTDIR\eclipsec.exe"
  
  
- 
+ SetShellVarContext all
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\${PRODUCT_REG_KEY}\*.*"
   ; Remove directories used
