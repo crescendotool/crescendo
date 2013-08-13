@@ -114,11 +114,21 @@
 		</plugins>
 	</build>
 	<repositories>
+	
+		
 		<repository>
-			<id>eclipse-juno</id>
+			<id>eclipse-kepler-cu.be</id>
+			<layout>p2</layout>
+			<url>http://eclipse.cu.be/releases/kepler</url>
+		</repository>
+		
+			<repository>
+			<id>eclipse-kepler</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/releases/kepler</url>
 		</repository>
+		
+		
 	</repositories>
 	<profiles>
 		<profile>
