@@ -27,4 +27,32 @@
       </menu>
     </menuContribution>
   </extension>
+  
+  <!-- latex generation -->
+   <extension
+         point="org.eclipse.ui.menus">
+         <menuContribution
+           locationURI="popup:org.destecs.ide.ui.destecsExplorer">
+        <menu
+              icon="platform:/plugin/org.overture.ide.plugins.latex/icons/ctool16/miktex_tsk.png"
+              id="org.overture.ide.plugins.latex"
+              label="Latex">
+          
+        </menu>
+     </menuContribution>
+   </extension>
+   
+   <!-- uml conversion -->
+   <extension
+         point="org.eclipse.ui.menus">
+         <menuContribution
+           locationURI="popup:org.destecs.ide.ui.destecsExplorer">
+        <menu
+              icon="platform:/plugin/org.overture.ide.plugins.uml2/icons/uml.png"
+              id="org.overture.ide.plugins.uml2"
+              label="UML Transformation">
+          
+        </menu>
+     </menuContribution>
+   </extension>
 </plugin>
