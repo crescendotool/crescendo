@@ -122,11 +122,11 @@
 			<url>http://eclipse.cu.be/releases/kepler</url>
 		</repository>
 		
-			<repository>
+			<!--repository>
 			<id>eclipse-kepler</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/releases/kepler</url>
-		</repository>
+		</repository-->
 		
 		
 	</repositories>
