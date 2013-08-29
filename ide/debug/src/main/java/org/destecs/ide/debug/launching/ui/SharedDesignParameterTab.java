@@ -477,7 +477,7 @@ public class SharedDesignParameterTab extends AbstractLaunchConfigurationTab
 							* (Integer.parseInt(splitLooseDimentions[1]))
 							+ Integer.parseInt(splitDimentions[1]);
 
-					if (k < o.size())
+					if (k-1 < o.size())
 					{
 						return o.get(k - 1).toString();
 					} else
