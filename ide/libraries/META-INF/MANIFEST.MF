@@ -3,6 +3,7 @@ Bundle-Vendor: DESTECS
 Bundle-ActivationPolicy: lazy
 Bundle-Version: 2.0.0.qualifier
 Eclipse-BuddyPolicy: registered
+Eclipse-BundleShape: dir
 Bundle-Localization: plugin
 Bundle-Name: org.destecs.ide.libraries
 Bundle-ManifestVersion: 2
