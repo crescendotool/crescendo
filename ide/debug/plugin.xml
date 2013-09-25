@@ -19,6 +19,13 @@
             name="%org.destecs.ide.debug.launchDSEConfigurationType.name"
             public="true">
       </launchConfigurationType>
+       <launchConfigurationType
+            delegate="org.destecs.ide.debug.launching.core.DSEExternalLaunchDelegate"
+            id="org.destecs.ide.debug.launchDSEExternalConfigurationType"
+            modes="debug"
+            name="%org.destecs.ide.debug.launchDSEExternalConfigurationType.name"
+            public="true">
+      </launchConfigurationType>
       <launchConfigurationType
             delegate="org.destecs.ide.debug.launching.core.DestecsDirectoryLaunchDelegate"
             id="org.destecs.ide.debug.directoryLaunch"
@@ -57,6 +64,11 @@
             id="org.destecs.ide.debug.launchDSEConfigurationTabGroup"
             type="org.destecs.ide.debug.launchDSEConfigurationType">
       </launchConfigurationTabGroup>
+       <launchConfigurationTabGroup
+            class="org.destecs.ide.debug.launching.ui.aca.DSEExternalConfigurationTabGroup"
+            id="org.destecs.ide.debug.launchDSEExternalConfigurationTabGroup"
+            type="org.destecs.ide.debug.launchDSEExternalConfigurationType">
+      </launchConfigurationTabGroup>
       <launchConfigurationTabGroup
             class="org.destecs.ide.debug.launching.ui.DestecsDirectoryLaunchTabGroup"
             id="org.destecs.ide.debug.directoryLaunchTabGroup"
@@ -79,6 +91,11 @@
             configTypeID="org.destecs.ide.debug.launchDSEConfigurationType"
             icon="icons/ctool16/destecs3_misc.png"
             id="org.destecs.ide.debug.launchDSEConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+       <launchConfigurationTypeImage
+            configTypeID="org.destecs.ide.debug.launchDSEExternalConfigurationType"
+            icon="icons/ctool16/externaldse_misc.png"
+            id="org.destecs.ide.debug.launchDSEExternalConfigurationTypeImage">
       </launchConfigurationTypeImage>
       <launchConfigurationTypeImage
             configTypeID="org.destecs.ide.debug.directoryLaunch"

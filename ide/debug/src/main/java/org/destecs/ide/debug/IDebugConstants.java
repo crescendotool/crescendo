@@ -121,4 +121,10 @@ public interface IDebugConstants {
 	public static final int DEFAULT_DEBUG_PORT = 8080;
 	
 	public static final String DESTECS_LAUNCH_MODE_ACA = "aca".toLowerCase();
+
+	public static final String EXTERNAL_ACA_CONSOLE_NAME = "External ACA Console";
+
+	public static final String DESTECS_EXTERNAL_ACA_HOST = "DESTECS_EXTERNAL_ACA_HOST".toLowerCase();
+
+	public static final String DESTECS_EXTERNAL_ACA_FILTER_ANNIMATIONS = "DESTECS_EXTERNAL_ACA_FILTER_ANNIMATIONS".toLowerCase();
 }

@@ -42,112 +42,36 @@ import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.progress.UIJob;
 
-public class AcaSimulationManager //extends Thread
+public class AcaSimulationManager
 {
-	final private DestecsAcaDebugTarget target;
+	final protected DestecsAcaDebugTarget target;
 	ILaunch activeLaunch;
 	boolean shouldStop = false;
 	final List<DestecsDebugTarget> completedTargets = new Vector<DestecsDebugTarget>();
-	private IProgressMonitor monitor;
+	final protected IProgressMonitor monitor;
+	protected File lastUsedOutputFolder=null;
 
 	public AcaSimulationManager(DestecsAcaDebugTarget target, IProgressMonitor monitor)
 	{
 		this.target = target;
 		this.monitor = monitor;
-//		setDaemon(true);
-//		setName("ACA Simulation Thread");
 	}
 
-//	@Override
 	public void run()
 	{
 		List<ILaunchConfiguration> configurations = new Vector<ILaunchConfiguration>();
 		configurations.addAll(target.getAcaConfigs());
 		int totalCount = configurations.size();
 		Integer currentIndex = 0;
+		boolean filterOutput = false;
 		
 		for (final ILaunchConfiguration configOriginal : configurations)
 		{
-			
-//			System.out.println("Running ("+(++currentIndex)+"/"+totalCount+") "+config.getName());
 			monitor.subTask("Running ("+(++currentIndex)+"/"+totalCount+") "+configOriginal.getName());
-			if (shouldStop)
+			filterOutput = totalCount > 500;
+			if(!launchSingleLaunchConfig(filterOutput, currentIndex, configOriginal))
 			{
-				return;
-			}
-			try
-			{
-				if (target.getLaunch().isTerminated())
-				{
-					break;
-				}
-				
-				ILaunchConfigurationWorkingCopy config = configOriginal.getWorkingCopy();
-				config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_NAME_POSTFIX, currentIndex.toString());
-				if(totalCount > 500)
-				{//protect eclipse 
-					config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_FILTER_OUTPUT, true);
-				}
-				
-				//group runs
-				String outputPreFix = config.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
-				//modify
-				// total count
-				//
-				config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
-				
-				
-				// monitor.worked(step);
-				System.out.println("Running ACA with: " + config.getName());
-				
-				
-				ILaunch acaRunLaunch = launch(config, ILaunchManager.DEBUG_MODE);
-				setActiveLaunch(acaRunLaunch);
-				IDebugTarget target = acaRunLaunch.getDebugTarget();
-				completedTargets.add((DestecsDebugTarget) target);
-				File outputFolder = target == null ? null
-						: ((DestecsDebugTarget) target).getOutputFolder();
-
-				while (!acaRunLaunch.isTerminated())
-				{
-					internalSleep(100);
-				}
-
-				if (acaRunLaunch != null && !acaRunLaunch.isTerminated())
-				{
-					acaRunLaunch.terminate();
-				}
-
-				setActiveLaunch(null);
-
-				@SuppressWarnings("unchecked")
-				Map<Object, Object> attributes = config.getAttributes();
-				String data = "** launch summery for ACA: " + config.getName();
-				for (Map.Entry<Object, Object> entry : attributes.entrySet())
-				{
-					data += entry.getKey() + " = " + entry.getValue() + "\n";
-				}
-
-				data += "\n\n----------------------- MEMENTO -------------------------------\n\n";
-				data += config.getMemento();
-
-				if (outputFolder != null)
-				{
-					try
-					{
-						FileWriter outFile = new FileWriter(new File(outputFolder, "launch"));
-						PrintWriter out = new PrintWriter(outFile);
-						out.println(data);
-						out.close();
-					} catch (IOException e)
-					{
-						e.printStackTrace();
-					}
-				}
-				internalSleep(1000);// just let the tools calm down.
-			} catch (Exception e)
-			{
-				DestecsDebugPlugin.logError("Error in AcaSimlation manager", e);
+				break;
 			}
 		}
 
@@ -162,7 +86,98 @@ public class AcaSimulationManager //extends Thread
 		refreshProject();
 	}
 
-	private void refreshProject()
+	protected boolean launchSingleLaunchConfig(boolean filterOutput, Integer currentIndex,
+			final ILaunchConfiguration configOriginal)
+	{
+		if (shouldStop)
+		{
+			return false;
+		}
+		try
+		{
+			if (target.getLaunch().isTerminated())
+			{
+				return false;
+			}
+			
+			ILaunchConfigurationWorkingCopy config = configOriginal.getWorkingCopy();
+			config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_NAME_POSTFIX, currentIndex.toString());
+			if(filterOutput)
+			{//protect eclipse 
+				config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_FILTER_OUTPUT, true);
+			}
+			
+			//group runs
+			String outputPreFix = config.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
+			//modify
+			// total count
+			//
+			config.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, outputPreFix);
+			
+			
+			// monitor.worked(step);
+			System.out.println("Running ACA with: " + config.getName());
+			
+			
+			ILaunch acaRunLaunch = launch(config, ILaunchManager.DEBUG_MODE);
+			setActiveLaunch(acaRunLaunch);
+			IDebugTarget target = acaRunLaunch.getDebugTarget();
+			completedTargets.add((DestecsDebugTarget) target);
+			
+			if(target==null)
+			{
+				lastUsedOutputFolder=null;
+			}else
+			{
+				lastUsedOutputFolder = ((DestecsDebugTarget) target).getOutputFolder();
+			}
+			
+
+			while (!acaRunLaunch.isTerminated())
+			{
+				internalSleep(100);
+			}
+
+			if (acaRunLaunch != null && !acaRunLaunch.isTerminated())
+			{
+				acaRunLaunch.terminate();
+			}
+
+			setActiveLaunch(null);
+
+			@SuppressWarnings("unchecked")
+			Map<Object, Object> attributes = config.getAttributes();
+			String data = "** launch summery for ACA: " + config.getName();
+			for (Map.Entry<Object, Object> entry : attributes.entrySet())
+			{
+				data += entry.getKey() + " = " + entry.getValue() + "\n";
+			}
+
+			data += "\n\n----------------------- MEMENTO -------------------------------\n\n";
+			data += config.getMemento();
+
+			if (lastUsedOutputFolder != null)
+			{
+				try
+				{
+					FileWriter outFile = new FileWriter(new File(lastUsedOutputFolder, "launch"));
+					PrintWriter out = new PrintWriter(outFile);
+					out.println(data);
+					out.close();
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			internalSleep(1000);// just let the tools calm down.
+		} catch (Exception e)
+		{
+			DestecsDebugPlugin.logError("Error in AcaSimlation manager", e);
+		}
+		return true;
+	}
+
+	protected void refreshProject()
 	{
 		try
 		{
@@ -229,7 +244,6 @@ public class AcaSimulationManager //extends Thread
 			{
 				l.terminate();
 			}
-//			this.interrupt();
 			this.shouldStop=true;
 		} catch (Exception e)
 		{

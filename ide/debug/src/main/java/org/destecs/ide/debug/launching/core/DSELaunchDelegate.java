@@ -19,9 +19,6 @@
 package org.destecs.ide.debug.launching.core;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Set;
 
 import org.destecs.ide.core.resources.IDestecsProject;
@@ -50,9 +47,10 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.ui.progress.UIJob;
 
-public class DSELaunchDelegate implements ILaunchConfigurationDelegate
+public class DSELaunchDelegate extends LaunchConfigurationDelegate implements ILaunchConfigurationDelegate
 {
 
 	public void launch(ILaunchConfiguration configuration, final String mode,
@@ -74,9 +72,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 
 		IProject project = getProject(baseConfig);
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-		String outputPreFix = dateFormat.format(new Date()) + "_"
-				+ configuration.getName();
+		String outputPreFix = DestecsLaunchDelegateUtil.getOutputPreFix(configuration);
 		
 		ILaunchConfigurationWorkingCopy baseConfigWorkingCopy = baseConfig.getWorkingCopy();
 		baseConfigWorkingCopy.setAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_LEAVE_DIRTY_FOR_INSPECTION, false);
@@ -111,7 +107,6 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		launch.addDebugTarget(acaTarget);
 
 		AcaSimulationManager manager = new AcaSimulationManager(acaTarget,monitor);
-//		manager.start();
 		acaTarget.setAcaSimulationManager(manager);
 
 		createListeners(launch);
@@ -120,7 +115,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		monitor.done();
 	}
 
-	private void createListeners(final ILaunch launch)
+	protected void createListeners(final ILaunch launch)
 	{
 		UIJob listeners = new UIJob("Set Listeners")
 		{
@@ -165,7 +160,7 @@ public class DSELaunchDelegate implements ILaunchConfigurationDelegate
 		listeners.schedule();
 	}
 
-	private IProject getProject(ILaunchConfiguration configuration)
+	protected IProject getProject(ILaunchConfiguration configuration)
 	{
 		try
 		{

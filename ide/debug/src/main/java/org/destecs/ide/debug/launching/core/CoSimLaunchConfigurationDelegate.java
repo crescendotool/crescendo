@@ -27,9 +27,6 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -90,7 +87,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentType;
@@ -191,22 +187,7 @@ public class CoSimLaunchConfigurationDelegate extends
 		}
 	}
 
-	private File getFileFromPath(IProject project, String path)
-			throws IOException
-	{
-		if (path == null || path.isEmpty())
-		{
-			return null;
-		}
 
-		IResource r = project.findMember(new Path(path));
-
-		if (r != null && !r.equals(project))
-		{
-			return r.getLocation().toFile();
-		}
-		throw new IOException("Faild to find file: " + path);
-	}
 
 	private void loadSettings(ILaunchConfiguration configuration)
 			throws IOException
@@ -216,15 +197,15 @@ public class CoSimLaunchConfigurationDelegate extends
 		{
 			project = ResourcesPlugin.getWorkspace().getRoot().getProject(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_PROJECT_NAME, ""));
 
-			contractFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
+			contractFile = DestecsLaunchDelegateUtil.getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CONTRACT_PATH, ""));
 			ourputFolderPrefix = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_OUTPUT_PRE_FIX, "");
-			deFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
+			deFile = DestecsLaunchDelegateUtil.getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_MODEL_PATH, ""));
 			ctFilePathRelative = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_CT_MODEL_PATH, "");
-			ctFile = getFileFromPath(project, ctFilePathRelative);
+			ctFile = DestecsLaunchDelegateUtil.getFileFromPath(project, ctFilePathRelative);
 			useRemoteCtSimulator = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_USE_REMOTE_CT_SIMULATOR, false);
 			remoteRelativeProjectPath = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_REMOTE_PROJECT_BASE, "");
-			scenarioFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
-			deArchitectureFile = getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
+			scenarioFile = DestecsLaunchDelegateUtil.getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SCENARIO_PATH, ""));
+			deArchitectureFile = DestecsLaunchDelegateUtil.getFileFromPath(project, configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_ARCHITECTURE, ""));
 			deReplacePattern = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_DE_REPLACE, "");
 			sharedDesignParam = configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SHARED_DESIGN_PARAM, "");
 			totalSimulationTime = Double.parseDouble(configuration.getAttribute(IDebugConstants.DESTECS_LAUNCH_CONFIG_SIMULATION_TIME, "0"));
@@ -341,15 +322,14 @@ public class CoSimLaunchConfigurationDelegate extends
 	{
 		IDestecsProject dProject = (IDestecsProject) project.getAdapter(IDestecsProject.class);
 		IFolder base = dProject.getOutputFolder();// .getLocation().toFile();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
 		String tmp = ourputFolderPrefix;
 		tmp = tmp.replace('\\', '/');
 		if (!tmp.endsWith("/"))
 		{
 			tmp += "/";
 		}
-		resultFolderRelativePath = tmp + dateFormat.format(new Date()) + "_"
-				+ configuration.getName();
+		resultFolderRelativePath = tmp
+				+ DestecsLaunchDelegateUtil.getOutputPreFix(configuration);
 
 		try
 		{
