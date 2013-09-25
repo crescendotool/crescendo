@@ -131,7 +131,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		// Total simulation time Line
 		Label simulationTimeLabel = new Label(group, SWT.NONE);
-		simulationTimeLabel.setText("Total simulation time:");
+		simulationTimeLabel.setText("Total simulation time (in seconds):");
 		simulationTimeText = new Text(group, SWT.BORDER);
 		gd = new GridData();
 		gd.horizontalAlignment = SWT.FILL;
@@ -169,7 +169,7 @@ public class CoSimLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		group.setLayout(layout);
 
 		Label label = new Label(group, SWT.MIN);
-		label.setText("Scenario:");
+		label.setText("Script:");
 		gd = new GridData(GridData.BEGINNING);
 		label.setLayoutData(gd);
 
