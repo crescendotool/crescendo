@@ -469,7 +469,8 @@ public class CoSimLaunchConfigurationDelegate extends
 				// engine.setCtSimulationLauncher(new
 				// Clp20SimProgramLauncher(ctFile));
 				engine.setCtSimulationLauncher(selectClp20SimLauncher(engine, ctFile));
-				engine.setCtEndpoint(new URL(IDebugConstants.DEFAULT_CT_ENDPOINT));
+//				engine.setCtEndpoint(new URL(IDebugConstants.DEFAULT_CT_ENDPOINT));
+				engine.setCtEndpoint(ctUrl);
 			} else
 			{
 				engine.setCtSimulationLauncher(new DummyLauncher("CT simulator"));
