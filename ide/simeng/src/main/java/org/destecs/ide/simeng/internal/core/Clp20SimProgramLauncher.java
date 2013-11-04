@@ -134,17 +134,6 @@ public class Clp20SimProgramLauncher implements ISimulatorLauncher
 		}
 	}
 
-	private String getArgumentString(List<String> args)
-	{
-		StringBuffer executeString = new StringBuffer();
-		for (String string : args)
-		{
-			executeString.append(string);
-			executeString.append(" ");
-		}
-		return executeString.toString().trim();
-
-	}
 
 	public static boolean isWindowsPlatform()
 	{
