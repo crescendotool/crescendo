@@ -395,6 +395,11 @@
             id="org.destecs.ide.ui.projectUpgradeCommand"
             name="%org.destecs.ide.ui.projectUpgradeCommand.name">
 		</command>
+		 <command
+          defaultHandler="org.destecs.ide.ui.handlers.ReportBugHandler"
+          id="org.destecs.ide.ui.commandReportBug"
+          name="%org.destecs.ide.ui.commandReportBug.name">
+    </command>
 	</extension>
 	<extension
          point="org.eclipse.ui.handlers">
@@ -433,6 +438,16 @@
     </visibleWhen>
 			</menu>
 		</menuContribution>
+		
+		 <menuContribution
+          allPopups="false"
+          locationURI="menu:help?after=intro">
+       <command
+             commandId="org.destecs.ide.ui.commandReportBug"
+             label="%org.destecs.ide.ui.commandReportBug.label"
+             style="push">
+       </command>
+    </menuContribution>
 	</extension>
 
 	<extension
