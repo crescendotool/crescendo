@@ -2,7 +2,7 @@
 <launchConfiguration type="org.destecs.ide.debug.launchConfigurationType">
 <stringAttribute key="destecs_launch_config_20sim_log_variables" value=""/>
 <stringAttribute key="destecs_launch_config_contract_path" value="configuration/contract.csc"/>
-<stringAttribute key="destecs_launch_config_ct_endpoint" value="http://localhost:1580"/>
+<stringAttribute key="destecs_launch_config_ct_endpoint" value="http://localhost:5580"/>
 <stringAttribute key="destecs_launch_config_ct_model_path" value="model_ct/Model_Self-balancing scooter.emx"/>
 <stringAttribute key="destecs_launch_config_de_architecture" value=""/>
 <stringAttribute key="destecs_launch_config_de_endpoint" value=""/>

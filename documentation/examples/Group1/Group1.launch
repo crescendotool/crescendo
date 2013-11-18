@@ -4,7 +4,7 @@
 <stringAttribute key="destecs_launch_config_20sim_log_variables" value=""/>
 <stringAttribute key="destecs_launch_config_20sim_settings" value=""/>
 <stringAttribute key="destecs_launch_config_contract_path" value="configuration/contract.csc"/>
-<stringAttribute key="destecs_launch_config_ct_endpoint" value="http://localhost:1580"/>
+<stringAttribute key="destecs_launch_config_ct_endpoint" value="http://localhost:5580"/>
 <booleanAttribute key="destecs_launch_config_ct_leave_dirty_for_inspection" value="true"/>
 <stringAttribute key="destecs_launch_config_ct_model_path" value="model_ct/selfBalancingScooter 2D_1.emx"/>
 <stringAttribute key="destecs_launch_config_de_architecture" value=""/>
