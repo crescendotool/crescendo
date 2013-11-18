@@ -177,7 +177,7 @@ public class DevelopLaunchConfigurationTab extends
 		ctRemoteProjectBase.addModifyListener(fListener);
 		
 		checkBoxRemoteCtSimulator= new Button(group, SWT.CHECK);
-		checkBoxRemoteCtSimulator.setText("Run CT Simlator Remotely");
+		checkBoxRemoteCtSimulator.setText("Run CT Simulator Remotely");
 		checkBoxRemoteCtSimulator.setSelection(false);
 		checkBoxRemoteCtSimulator.addSelectionListener(fListener);
 		checkBoxRemoteCtSimulator.setLayoutData(gd);
