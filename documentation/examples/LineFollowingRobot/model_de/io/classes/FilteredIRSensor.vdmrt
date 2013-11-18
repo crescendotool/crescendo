@@ -1,0 +1,38 @@
+class FilteredIRSensor is subclass of ISensorInt8
+
+instance variables
+
+private sensor: ISensorInt8;
+private samples: seq of Int8
+
+operations
+
+-- constructor for FilteredIRSensor
+public FilteredIRSensor: ISensorInt8 ==> FilteredIRSensor
+FilteredIRSensor(s) == (
+	sensor := s;
+	samples := []
+);
+
+-- read the value of this sensor
+public Read: () ==> Int8
+Read() == (
+	if len samples < NUM_SAMPLES then samples := samples ^ [sensor.Read()]
+	else samples := tl samples ^ [sensor.Read()];
+	return floor (sum(samples) / len samples);
+);
+
+-- calculate the sum of a sequence of integers 
+private sum: seq of int ==> int
+sum(s) == (
+	dcl sum: int := 0;
+	for i in s do sum := sum + i;
+	return sum
+)
+
+values
+
+-- number of samples to take
+NUM_SAMPLES = 5;
+
+end FilteredIRSensor

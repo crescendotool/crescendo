@@ -1,0 +1,63 @@
+system System
+	
+	instance variables
+
+	-- processes
+	public static rtControlInstanceL : [ RTControl ] := nil;
+	public static rtControlInstanceR : [ RTControl ] := nil;
+	public static pidInstanceL : [ Pid ] := nil;
+	public static pidInstanceR : [ Pid ] := nil;
+	public static monitorL : [ Monitor ] := nil;
+	public static monitorR : [ Monitor ] := nil;
+	public static etherI : [ LossyEther ] := nil;
+
+	
+	-- sensors
+	public gyroInstance : Gyro;
+	public velocitySensorInstance : VelocitySensor;
+	public safetyKeyInstance : SafetyKey;
+    public safetySwitchInstanceL : SafetySwitch;
+    public safetySwitchInstanceR : SafetySwitch;
+	public ignitionInstance : Ignition;
+	public velocityErrorInstance : VelocityError;
+ 
+ 	-- identify left and right controller and monitor
+ 	cL : Definitions`Controllers := <LEFT>;
+ 	cR : Definitions`Controllers := <RIGHT>;
+ 	
+	-- ## Architecture ## --
+
+	operations
+
+    public System : () ==> System
+    System () == 
+    (
+    	-- ether for wireless communication between cpu's
+    	etherI := new LossyEther();
+
+		-- Left & right
+		velocityErrorInstance := new VelocityError();
+	    safetyKeyInstance := new SafetyKey();
+	    velocitySensorInstance := new VelocitySensor();
+        ignitionInstance := new Ignition();
+	    gyroInstance := new Gyro();
+		-- LEFT
+		safetySwitchInstanceL := new SafetySwitch();
+	    monitorL := new Monitor(<LEFT>, 
+	    	velocitySensorInstance, safetyKeyInstance, safetySwitchInstanceL, gyroInstance, etherI);
+	    rtControlInstanceL := new RTControl(<LEFT>, 
+	    	monitorL, ignitionInstance, safetySwitchInstanceL, etherI);
+	    pidInstanceL := new Pid(rtControlInstanceL, gyroInstance); 
+		-- RIGHT
+		safetySwitchInstanceR := new SafetySwitch();
+	    monitorR := new Monitor(<RIGHT>, 
+	    	velocitySensorInstance, safetyKeyInstance, safetySwitchInstanceR, gyroInstance, etherI);
+	    rtControlInstanceR := new RTControl(<RIGHT>, 
+	    	monitorR, ignitionInstance, safetySwitchInstanceR, etherI);
+	    pidInstanceR := new Pid(rtControlInstanceR, gyroInstance);
+
+		-- ## Deployment ## --
+
+    );
+
+end System

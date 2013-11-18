@@ -1,0 +1,47 @@
+class FindLineMode is subclass of AbstractMode
+
+instance variables
+
+-- record when the robot leaves the black square and finds the line
+found_line: bool := false;
+left_calibration_square: bool := false;
+
+operations
+
+-- constructor for FindLineMode
+public FindLineMode: AbstractModalController ==> FindLineMode
+FindLineMode(c) == let - = AbstractMode`AbstractMode(c) in skip;
+
+-- called when we enter this mode
+public Enter: () ==> ()
+Enter() == (
+	-- check which sensors are over the calibration square
+	if con.GetLeftBW().IsWhite() and con.GetRightBW().IsWhite()
+	then left_calibration_square := true;
+
+	-- go forward looking for the line
+	con.Forward()
+);
+
+-- control loop
+public Step: () ==> [AbstractModalController`Mode]
+Step() == (
+	-- ensure the calibration square is cleared
+	if not left_calibration_square 
+	then if con.GetLeftBW().IsWhite() and con.GetRightBW().IsWhite()
+		 then left_calibration_square := true;
+
+	-- check if the line is found
+	if left_calibration_square
+	then if con.GetLeftBW().IsBlack() or con.GetRightBW().IsBlack()
+		 then found_line := true;	
+		 
+	-- no internal mode change
+	return nil;
+);
+
+-- this mode is done as soon as any black is seen
+public Done: () ==> bool
+Done() == return found_line;
+
+end FindLineMode

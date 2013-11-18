@@ -1,0 +1,29 @@
+class Gyro
+	types
+-- TODO Define types here
+	values
+-- TODO Define values here
+	instance variables
+	-- variables of the specific gyro
+	public angle : real := 0.0;
+	public angVel : real := 0.0;
+	public errorCode : int := 0;
+
+	operations
+
+	public getErrorCode : () ==> real
+		getErrorCode() == return errorCode;
+	
+	public getAngle : ()  ==> real
+	getAngle() ==
+		return angle;
+	
+	public getAngVel : () ==> real
+	getAngVel() ==
+		return angVel;
+
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end Gyro

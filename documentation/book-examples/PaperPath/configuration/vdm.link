@@ -1,0 +1,21 @@
+input E_ENC0 = PaperPath.enc1.mvalue;
+input E_ENC1 = PaperPath.enc2.mvalue;
+input E_ENC2 = PaperPath.enc3.mvalue;
+input E_ENC3 = PaperPath.enc4.mvalue;
+input E_ENC4 = PaperPath.enc5.mvalue;
+
+output I_PWM0 = PaperPath.pwm1.cvalue;
+output I_PWM1 = PaperPath.pwm2.cvalue;
+output I_PWM2 = PaperPath.pwm3.cvalue;
+output I_PWM3 = PaperPath.pwm4.cvalue;
+output I_PWM4 = PaperPath.pwm5.cvalue;
+output I_FeedSheet = PaperPath.detector.feed_sheet;
+
+-- event PD1_UP = PaperPath.detector.pimUp;
+-- event PD1_DOWN = PaperPath.detector.pimDown;
+-- event PD2_UP = PaperPath.detector.alignUp;
+-- event PD2_DOWN = PaperPath.detector.alignDown;
+-- event PD3_UP = PaperPath.detector.corrUp;
+-- event PD3_DOWN = PaperPath.detector.corrDown;
+-- event PD4_UP = PaperPath.detector.fuseUp;
+-- event PD4_DOWN = PaperPath.detector.fuseDown;

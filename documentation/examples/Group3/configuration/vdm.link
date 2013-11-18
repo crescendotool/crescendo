@@ -1,0 +1,20 @@
+-- inputs
+input sensorLeft = System.sensorLeft.value;
+input sensorRight = System.sensorRight.value;
+input sensorFront = System.sensorMiddle.value;
+
+input wheelCountLeft = System.wheelLeft.value;
+input wheelCountRight = System.wheelRight.value;
+
+-- outputs
+output motorVoltages = System.wheelLeft.motorVoltages; 
+
+--parameters:
+sdp	encoder_resolution = World.encoder_resolution;
+sdp	linefollow_lateral_offset = World.linefollow_lateral_offset; --//1cm offset in local_x direction
+sdp	linefollow_longitudinal_offset = World.linefollow_longitudinal_offset; --//6.65cm offset from c.o.m. in local_y direction
+sdp r_wheel = World.r_wheel;
+
+--sdp initial_Position = World.initial_Position; --// position, x,y in metres relative to the centre of the map
+--sdp	initial_Angle = World.initial_Angle;	--// angle in radians, 0 = north (y+ve) and +ve is clocwise when looking down
+sdp	routeIndex = World.routeIndex;

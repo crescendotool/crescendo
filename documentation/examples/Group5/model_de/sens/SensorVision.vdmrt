@@ -1,0 +1,38 @@
+-- sensor for detecting a line
+class SensorVision is subclass of AbstractSensorReal
+
+	instance variables
+		private rangeMin: real;
+		private rangeMax: real;
+	
+	types
+		public colour = <BLACK> | <WHITE> | <UNDEF>;
+	
+	operations
+	
+		public SensorVision : real * real ==> SensorVision
+			SensorVision (rMin,rMax) == (
+				rangeMin := rMin;
+				rangeMax := rMax;
+		);
+		
+		public SensorVision : () ==> SensorVision
+			SensorVision () == (
+				rangeMin := 0.0;
+				rangeMax := 1;
+		);
+	
+		public getColour: () ==> colour
+		getColour() ==
+		( 
+			if (rangeMax+rangeMin)*0.6 < value  and value <= rangeMax then
+				return <WHITE>
+			else if rangeMin <= value and value < (rangeMax+rangeMin)*0.4 then
+				return <BLACK>
+			else
+				return <UNDEF>
+		);
+		
+	values
+		
+end SensorVision

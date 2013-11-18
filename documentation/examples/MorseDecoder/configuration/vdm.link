@@ -1,0 +1,10 @@
+-- shared design parameters 
+sdp AToDResolutionBits = World.AToDResolutionBits;
+sdp AToDNoiseBits = World.AToDNoiseBits;
+
+
+-- inputs
+input morseSensorShared = System.codeSense.value;
+
+-- outputs
+output motorVoltageShared = System.motorVoltage.value; 

@@ -1,0 +1,51 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() ==
+(
+	start(System`controller);
+	block();
+);
+
+-- instantiate elements of System
+public static setup: () ==> ()
+setup() ==
+(
+	-- sensors
+	System`lineSenseLeft := new SensorReal();
+	System`lineSenseCenter := new SensorReal();
+	System`lineSenseRight := new SensorReal();
+	
+	System`positionSenseLeft := new SensorReal();
+	System`positionSenseRight := new SensorReal();
+
+    -- actuators
+	System`motorControlLeft := new ActuatorReal();
+	System`motorControlRight := new ActuatorReal();
+
+	-- instantiate controller
+	--System`controller := new LineFollowerController(System`codeSense, System`motorVoltage);
+	System`controller := new LineFollowerController(System`lineSenseLeft, System`lineSenseCenter, System`lineSenseRight,
+													System`positionSenseLeft, System`positionSenseRight,
+													System`motorControlLeft, System`motorControlRight);
+	
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+values
+
+-- shared design parameters
+public encoder_resolution: real = 0.0;
+public linefollow_lateral_offset: real = 0.01;
+public linefollow_longitudinal_offset: real = 0.01;
+public initial_Position: seq of real = [0, 0];
+public initial_Angle : real = 0;
+
+end World

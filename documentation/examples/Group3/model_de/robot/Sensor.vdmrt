@@ -1,0 +1,14 @@
+class Sensor
+
+instance variables
+
+-- this value will be set through the co-simulation
+public value: real := 0;
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> real
+Read() == return value;
+
+end Sensor

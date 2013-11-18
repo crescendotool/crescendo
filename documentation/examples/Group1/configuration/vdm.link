@@ -1,0 +1,25 @@
+-- Linking of Shared Design Parameters
+
+sdp encoder_resolution=World.encoder_resolution;
+sdp linefollow_lateral_offset= World.linefollow_lateral_offset;
+sdp linefollow_longitudinal_offset = World.linefollow_longitudinal_offset;
+sdp initial_Position = World.initial_Position;
+sdp initial_Angle = World.initial_Angle;
+
+-- Linking of Monitored Variables
+--input level=System.levelSensor.level;
+input rightLSValue = System.rightLineSensor.value;
+input leftLSValue = System.leftLineSensor.value;
+input leftEncoderValue = System.leftEncoder.value;
+input rightEncoderValue = System.rightEncoder.value;
+
+-- Linking of Controlled Variables
+--output valve=System.valveActuator.valveState;
+output leftMotorDC = System.leftPWM.value;
+output rightMotorDC = System.rightPWM.value;
+
+-- Linking of Events
+--event HIGH=System.eventHandler.high;
+
+-- other linked names used in scenarios
+--model fault=levelSensor.fault

@@ -1,0 +1,67 @@
+-- this class acts as a route follower
+-- it determines current position.  Individual route segments will be
+-- delegated to a low-level controller
+
+class Route
+	types 
+	public curve_type = <LINE> | <CIRCLE>;
+	public curve_function  = line | circle;
+		
+	public line ::
+		distance : int
+		orientation : int
+		type : curve_type;
+		
+	public circle ::
+		orientation : int
+		type : curve_type;
+	
+	
+	values
+	instance variables
+	
+	private current_route_element : curve_function;
+	
+	private route_elements : seq of curve_function;
+	
+	private remaining_route_elements : seq of curve_function;
+	
+
+	operations
+	
+	public Route: seq of curve_function ==> Route
+			Route(cfs) == (
+				route_elements := cfs;
+				remaining_route_elements := cfs; 
+			 );
+
+	-- get the next segment of the route
+	public NextRouteElement:() ==> curve_function
+	NextRouteElement() ==
+	(
+		current_route_element := (hd remaining_route_elements);
+		
+		remaining_route_elements := (tl remaining_route_elements);
+
+		return(current_route_element);
+	)pre ((len remaining_route_elements) > 0);
+
+	-- check if the route has been completed
+	public IsRouteDone:() ==> bool
+	IsRouteDone() ==
+	(
+		return ((len remaining_route_elements) = 0);
+	);
+
+	
+	public AddCurveFunction: curve_function ==> bool
+	AddCurveFunction(cf) ==
+	(
+		route_elements := route_elements ^ [cf];
+		
+		remaining_route_elements := route_elements;
+		
+		current_route_element := (hd route_elements);
+		return true;
+	);
+end Route

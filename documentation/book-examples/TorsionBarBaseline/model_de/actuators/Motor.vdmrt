@@ -1,0 +1,28 @@
+class Motor
+
+-- class representing a PWM-controlled motor
+-- accepts a real number in the range (-1,1)
+-- designed to be connected to a co-simulation
+
+types
+
+-- restricted to (-1,1)
+public PWM = real
+inv p == -1 <= p and p <= 1;
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected val: real := 0;
+
+operations
+
+-- write a value to this actuator
+public Write: PWM ==> ()
+Write(v) == val := v;
+
+-- read the value written to this actuator
+public Read: () ==> PWM
+Read() == return val;
+
+end Motor

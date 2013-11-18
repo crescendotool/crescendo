@@ -1,0 +1,7 @@
+-- inputs
+input v_in = System.vel_in.value;
+input a_in = System.acc_in.value;
+
+-- outputs
+output v_out = System.vel_out.value; 
+output a_out = System.acc_out.value;

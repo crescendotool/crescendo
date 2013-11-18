@@ -1,0 +1,52 @@
+class FileReader
+
+	instance variables
+	
+	private route: [Route] := nil;
+
+	operations
+	public FileReader: Route ==> FileReader
+	FileReader(r) ==
+	(
+		route := r;
+	);
+	
+	public LoadTravlRoute: seq of char ==> bool
+	LoadTravlRoute(filepath) ==
+	(
+		dcl test : bool := true;
+		def mk_(-,nl) = CSV`flinecount(filepath) in
+		(
+			for i = 1 to nl do
+			  (
+			  	def mk_(-,rsm) = CSV`freadval[seq of int](filepath,i) in
+		  			cases (hd rsm):
+		  				1 -> test := LoadLine(tl rsm),
+		  				2 -> test := LoadCircle(tl rsm),
+		  				others -> test := false
+		  			end;
+			  );
+			  if (not test) then(IO`println("Route LOAD fail !!!"));
+		);
+		return test
+	)pre route <> nil;
+	
+	private LoadLine: seq of int ==> bool
+	LoadLine(ls) == 
+	(
+		if ((len ls)=2) then
+		(
+			return route.AddCurveFunction(mk_Route`line(ls(1),ls(2),<LINE>));
+		)else(return false)
+	)pre route <> nil and len ls= 2;
+	
+	private LoadCircle: seq of int ==> bool
+	LoadCircle(cs) == 
+	(
+				if ((len cs)=1) then
+				(
+				return route.AddCurveFunction(mk_Route`circle(cs(1),<CIRCLE>));
+				)else(return false);
+	)pre route <> nil  and len cs= 1;
+	
+end FileReader

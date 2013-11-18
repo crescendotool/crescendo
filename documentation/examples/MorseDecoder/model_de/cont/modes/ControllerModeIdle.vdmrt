@@ -1,0 +1,25 @@
+class ControllerModeIdle is subclass of AbstractControllerMode
+	-- a concrete implementation of the mode, providing functionality
+	-- to remain idle
+	operations
+	
+	public ControllerModeIdle: ModalController ==> ControllerModeIdle
+		ControllerModeIdle (theController) == (
+		
+			let - = AbstractControllerMode(theController) in skip;
+		
+			--mainController := theController;			
+			mainController.setMotorVoltage(0);
+			
+		);
+	
+	public step: () ==> ()
+		step () == (
+			
+			mainController.setMotorVoltage(0);
+			
+		);
+		
+		
+
+end ControllerModeIdle

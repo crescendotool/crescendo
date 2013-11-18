@@ -1,0 +1,40 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() ==
+(
+    start(System`watchdog);	
+	start(System`controller);
+    block();
+);
+
+-- instantiate elements of System
+public static setup: () ==> ()
+setup() ==
+(
+	-- instantiate sensors
+    System`LFT := new LevelSensor_CT();
+    System`LMT := new LevelSensor_CT();
+    System`TT := new LevelSensor_CT();
+
+	-- instantiate actuators
+	System`LMT2LFT := new PumpSwitch_CT();
+	System`LMT2TT := new PumpSwitch_CT();
+	System`TT2LFT := new PumpSwitch_CT();
+
+	-- instantiate controller
+	System`controller := new Controller(System`LFT,	System`LMT, System`TT,System`LMT2LFT, System`LMT2TT, System`TT2LFT);
+
+    -- instantiate watchdog
+    System`watchdog := new TTWatchdog(System`controller, System`TT);
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+end World

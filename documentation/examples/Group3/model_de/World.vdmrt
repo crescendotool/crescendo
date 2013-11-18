@@ -1,0 +1,38 @@
+class World
+
+instance variables
+
+public static world : [World] := nil;
+
+operations
+
+public World: () ==> World
+World() == (
+	world := self;
+);
+
+-- run a simulation
+public run: () ==> ()
+run() ==
+(
+	start(System`controller);
+	block();
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+values
+
+public encoder_resolution : real = 44;
+public linefollow_lateral_offset : real = 0; --//1cm offset in local_x direction
+public linefollow_longitudinal_offset : real = 0; --//6.65cm offset from c.o.m. in local_y direction
+public r_wheel : real = 0; -- wheel radius in meters
+
+--public initial_Position : seq of real = [0,0]; --// position, x,y in metres relative to the centre of the map
+--public initial_Angle : real = 0;	--// angle in radians, 0 = north (y+ve) and +ve is clocwise when looking down
+public routeIndex : real = 1;
+
+end World

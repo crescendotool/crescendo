@@ -1,0 +1,23 @@
+-- this class provides functionality to bring the robot to a stop
+class ControllerModeIdle is subclass of AbstractControllerMode
+
+	operations
+	
+	public ControllerModeIdle: LineFollowerController ==> ControllerModeIdle
+		ControllerModeIdle (theController) == (
+		
+			let - = AbstractControllerMode(theController) in skip;
+			
+		);
+	
+	public step: () ==> ()
+		step () == (
+			
+			--IO`printf("Pos readings: %s, %s\n", [getPositionSensorLeft(), getPositionSensorRight()]);
+			--IO`printf("Line readings: %s, %s\n", [getLineSignalLeft(), getLineSignalRight()]); 
+			skip;
+		);
+		
+		
+
+end ControllerModeIdle

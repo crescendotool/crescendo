@@ -1,0 +1,145 @@
+\section{The set-point profile}
+
+The class \verb+SetpointProfile+ contains a continuous time 
+description of some set-point property. We use straight line segments 
+here for convenance, but the general concept is applicable to any 
+type of line segments. A so-called \verb+ProfileElement+ consists of 
+three values that identify a line segment: the $x$ and $y$ 
+coordinates and the direction coefficient.
+
+\begin{vdm_al}
+class SetpointProfile
+
+types
+  public ProfileElement = seq of real
+  inv pe == len pe = 3
+  
+instance variables
+  public profile : seq of ProfileElement := []
+  
+operations
+  public addElement: real * real * real ==> ()
+  addElement (px, py, pdydx) == profile := profile ^ [[px, py, pdydx]];
+\end{vdm_al}
+
+The \verb+calcSetpoint+ operation is used to calculate a specific 
+point on the line element. The line elements are considered 
+left-closed, therefore the first argument $pt$ of the operation must 
+be greater than or equal to the $x$-coordinate of the 
+\verb+ProfileElement+ at the head of the sequence.
+
+\begin{vdm_al}
+operations
+  private calcSetpoint: real * ProfileElement ==> real
+  calcSetpoint (pt, pe) ==
+    let px = pe(1), py = pe(2), pdydx = pe(3) in
+      return py + pdydx * (pt - px)
+    pre pt >= pe(1)
+\end{vdm_al}
+
+The operation \verb+getSetpoint+ is used to compute the actual 
+set-point from the continuous time description. We iterate over the 
+list of profile elements to determine the appropriate element. This 
+element is then used to compute the set-point by calling 
+\verb+calcSetpoint+. The operation \verb+getSetpoint+ is only 
+defined if the list of profile elements is not empty. It returns $0$ 
+otherwise.
+
+\begin{vdm_al}
+operations
+  public getOldSetpoint: real ==> real
+  getOldSetpoint (px) ==
+    if len profile = 0
+    then return 0
+    else ( dcl prev_pe : ProfileElement := hd profile;
+           for curr_pe in tl profile do
+             if curr_pe(1) > px
+             then return calcSetpoint(px, prev_pe)
+             else prev_pe := curr_pe;
+           -- first element is the appropriate element
+           return calcSetpoint(px, prev_pe) );
+           
+  public getSetpoint: real ==> real
+  getSetpoint (px) ==
+    if len profile = 0
+    then return 0
+    else ( dcl res   : real := 0.0,
+               done  : bool := false;
+           while not done do
+             ( dcl first : ProfileElement := hd profile,
+                   rest : seq of ProfileElement := tl profile;
+               if rest = []
+               then ( profile := [first];
+                      res := calcSetpoint(px, first);
+                      done := true )
+               else def pxnext = (hd rest)(1) in
+                      if px < pxnext
+                      then ( profile := [first] ^ rest;
+                             res := calcSetpoint(px, first);
+                             done := true )
+                      else profile := rest );
+           return res )
+               
+\end{vdm_al}
+
+The operation \verb+getIntegratedSetpoint+ is used to compute the 
+integral set-point value from the continuous time description. We 
+iterate over the list of elements to determine the appropriate 
+element. Elements are integrated on the fly and removed until we 
+reach the element that contains the required set-point value. This 
+element becomes the head of the sequence. The operation 
+\verb+getIntegratedSetpoint+ is only defined if the list of profile 
+elements is not empty. It returns $0$ otherwise. The instance 
+variable $sum$ contains the running integral value. We ignore the 
+possible value overflow here. The instance variable $icx$ contains 
+the x-coordinate to which we have integrated thus far.
+
+\begin{vdm_al}             
+instance variables
+  icx : real := 0;
+  sum : real := 0
+
+operations
+  -- calculate the trapezoid integral between x1 and x2
+  public calcIntegratedSetpoint: real * real * ProfileElement ==> real
+  calcIntegratedSetpoint (px1, px2, pe) ==
+    def a = pe(3); b = pe(2) - a * pe(1) in
+      def py1 = a * px1 + b;
+          py2 = a * px2 + b;
+          dt = px2 - px1 in
+        return 0.5 * dt * (py1 + py2)
+    pre px1 <= px2;
+        
+  public getIntegratedSetpoint: real ==> real
+  getIntegratedSetpoint (px) ==
+    if len profile = 0
+    then return 0
+    else
+         ( dcl first : ProfileElement := hd profile,
+               rest : seq of ProfileElement := tl profile,
+              done : bool := false;
+           while not done do
+             if rest = []
+             then ( sum := sum + calcIntegratedSetpoint(icx, px, first);
+                    profile := [first];
+                    icx := px;
+                    done := true )
+             else def pxnext = (hd rest)(1) in
+                    if px < pxnext
+                    then ( sum := sum + calcIntegratedSetpoint(icx, px, first);
+                           profile := [first] ^ rest;
+                           icx := px;
+                           done := true )
+                    else if px = pxnext
+                         then ( sum := sum + calcIntegratedSetpoint(icx, px, first);
+                                profile := rest;
+                                icx := px;
+                                done := true )
+                         else ( sum := sum + calcIntegratedSetpoint(icx, pxnext, first);
+                                icx := pxnext;
+                                first := hd rest;
+                                rest := tl rest );
+           return sum )
+     
+end SetpointProfile
+\end{vdm_al}

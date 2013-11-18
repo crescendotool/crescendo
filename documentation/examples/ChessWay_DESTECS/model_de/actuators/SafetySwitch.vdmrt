@@ -1,0 +1,30 @@
+class SafetySwitch
+	types
+    SafetySwitchType = <OPEN> | <CLOSED>;
+-- TODO Define types here
+	values
+-- TODO Define values here
+	instance variables
+    public mode : SafetySwitchType := <CLOSED>;
+    public realState : real := 0.0;  -- 0 = closed, 1 = open
+
+	operations
+
+	public open : () ==> ()
+	open() == (
+		realState := 1.0;
+		mode := <OPEN>;
+	);
+
+	public close : () ==> ()
+	close() == (
+		realState := 0.0;
+		mode := <CLOSED>;	
+	);	
+
+-- TODO Define operations here
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end SafetySwitch

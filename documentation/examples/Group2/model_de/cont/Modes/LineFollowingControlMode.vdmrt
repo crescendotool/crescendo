@@ -1,0 +1,133 @@
+-- this class provides functionality needed whilst following the line
+class LineFollowingControlMode is
+subclass of AbstractControllerMode
+ types
+ 	directions=<FLEFT>|<FRIGHT> | <BLEFT>|<BRIGHT> |<NONE> | <END>;
+ 	SensorValue=<B> | <W>;
+ 	SensorSeq = seq of SensorValue;
+ 	
+instance variables
+	direction:directions;
+	comulation:real;
+	senSeq : SensorSeq;
+	topSpeed : real;
+	crntSpeedLeft: real;
+	crntSpeedRight:real;
+	endCntrl:int;
+	
+operations 
+ public LineFollowingControlMode: Controller ==> LineFollowingControlMode
+ LineFollowingControlMode(theControl)==(
+ 	--	let - = AbstractControllerMode(theController) in skip;
+		
+			mainController := theControl;
+			direction:=<NONE>;	
+			comulation := 0;	
+			senSeq := [<W>, <W>, <W>, <W>];
+			topSpeed := 5;
+			endCntrl := 0;
+			
+ );
+
+ public step: () ==> ()
+			step () == (
+				dcl leftVal:SensorValue;
+				dcl rightVal:SensorValue;
+				dcl leftValBack:SensorValue;
+				dcl rightValBack:SensorValue;
+				
+				-- there are four sensors, two on the front and two on the back
+				-- check them all to see if they dected black or white
+				if mainController.lineSensorLeft.read()< mainController.SensorThreshold  then leftVal := <B> else leftVal := <W>;
+				if mainController.lineSensorRight.read()< mainController.SensorThreshold  then rightVal := <B> else rightVal := <W>;
+				if mainController.lineSensorLeftBack.read()< mainController.SensorThreshold  then leftValBack := <B> else leftValBack := <W>;
+				if mainController.lineSensorRightBack.read()< mainController.SensorThreshold  then rightValBack := <B> else rightValBack := <W>;
+
+				-- collect all sensors values together and handle different cases
+				senSeq := [leftVal, rightVal, leftValBack, rightValBack];	
+				
+				-- means the line is straight, so move straight ahead			
+				if senSeq(1,...,2) = [<B>, <B>] then 
+				(
+					crntSpeedLeft := topSpeed;
+					crntSpeedRight := topSpeed;
+					comulation := 0;
+				 	direction:=<NONE>;
+				 	endCntrl := 0;
+			 	);
+			 	
+			 	-- back left detects line but no other sensor does 
+			 	if  senSeq = [<W>, <W>, <B>, <W>] then 
+				(				
+					if direction = <NONE> or direction = <BLEFT> then (
+						comulation := comulation + 1;
+						if comulation > 3 then comulation := 3;
+					);
+					-- turn towards left
+					crntSpeedLeft:= 0.6*topSpeed - comulation;
+					crntSpeedRight:= 0.6*topSpeed;
+				 	direction:=<BLEFT>;
+				 	endCntrl := 0;
+			 	);
+			 	
+			 	-- back right detects line but no other sensor does 
+			 	if senSeq = [<W>, <W>, <W>, <B>] then 
+				(
+					if direction = <NONE> or direction = <BRIGHT> then (
+						comulation := comulation + 1;
+						if comulation > 3 then comulation := 3;
+					);
+					-- turn towards right
+					crntSpeedRight := 0.6*topSpeed - comulation;
+					crntSpeedLeft := 0.6*topSpeed;
+				 	direction:=<BRIGHT>;
+				 	endCntrl := 0;
+			 	);
+			 	
+			 	-- turning towards the right
+			 	if senSeq(1,...,2) = [<W>, <B>] then 
+				(
+					if direction = <NONE> or direction = <FRIGHT> then (
+						comulation := comulation + 0.2;
+						if comulation > 3 then comulation := 3;
+					);
+					crntSpeedRight := 0.6*topSpeed - comulation;
+					crntSpeedLeft := 0.6*topSpeed;
+				 	direction:=<FRIGHT>;
+				 	endCntrl := 0;
+			 	);
+			 	
+			 	-- turning towards the left
+			 	if senSeq(1,...,2) = [<B>, <W>] then 
+				(
+					if direction = <NONE> or direction = <FLEFT> then (
+						comulation := comulation + 0.2;
+						if comulation > 3 then comulation := 3;
+					);
+					crntSpeedLeft:= 0.6*topSpeed - comulation;
+					crntSpeedRight:= 0.6*topSpeed;
+				 	direction:=<FLEFT>;
+				 	endCntrl := 0;
+			 	);
+			 	
+			 	-- if no sensor detects the line 
+			 	if senSeq =  [<W>, <W>, <W>, <W>] then (
+			 		endCntrl := endCntrl + 1;
+			 		
+			 		if (endCntrl  > 5) then (
+			 			crntSpeedRight := topSpeed;
+			 			crntSpeedLeft := topSpeed;
+			 			IO`printf ("Line Length: %s \n", [mainController.pCounter.getLastLength()*1000 - mainController.robotLen ]);
+			 			IO`printf ("Navigation time: %s \n", [mainController.pCounter.getLastTime() ]);
+			 			IO`printf ("Navigation speed: %s \n", [(mainController.pCounter.getLastLength()*1000 - mainController.robotLen)/mainController.pCounter.getLastTime() ]);
+			 			
+			 		);
+			 	);
+			 		
+			 	
+			 	mainController.motorVoltageRight.setValue(crntSpeedRight);
+				mainController.motorVoltageLeft.setValue(crntSpeedLeft);
+			 	
+			);
+
+end LineFollowingControlMode

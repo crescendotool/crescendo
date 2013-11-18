@@ -1,0 +1,21 @@
+class IMode
+
+operations 
+
+-- perform control action in this mode
+public Step: () ==> [AbstractModalController`Mode]
+Step() == is subclass responsibility;
+
+-- called when we enter this mode
+public Enter: () ==> ()
+Enter() == is subclass responsibility;
+
+-- called when we exit this mode
+public Exit: () ==> ()
+Exit() == is subclass responsibility;
+
+-- return true if this mode has finished, false otherwise
+public Done: () ==> bool
+Done() == is subclass responsibility;
+
+end IMode

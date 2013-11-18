@@ -1,0 +1,141 @@
+%
+
+\begin{vdm_al}
+class LoopController
+	is subclass of ControlStrategy
+	
+values
+	-- the period of the control loop (1 kHz)
+	PERIOD : nat = ControlStrategy`RESOLUTION / 50 -- 1000
+
+instance variables
+	-- identifiers of the sensor and actuator
+	pwm : seq of char;
+	enc : seq of char;
+	
+	-- time-triggered or immediate output
+	hold : bool := false;
+	feedback : bool := false;
+	
+operations
+	-- constructor
+	public LoopController: SensorReal * ActuatorReal * bool * bool ==> LoopController
+	LoopController (psr, par, ph, pf) == (
+		-- initialize the member variables
+		hold := ph;
+		feedback := pf;
+		
+		-- register the sensor
+		addSensor(psr);
+		enc := psr.identify();
+		
+		-- register the actuator
+		addActuator(par);
+		pwm := par.identify();
+		
+		-- finally, call the base class constructor
+		ControlStrategy(PERIOD, 0, 0, 0)
+	)
+
+instance variables
+	-- profile is initialized in the class constructor
+	profile : SetpointProfile := new SetpointProfile()
+  
+operations
+	public addProfileElement: real * real * real ==> ()
+	addProfileElement (px, py, pa) == profile.addElement(px, py, pa);
+  
+	public getSetpoint: real ==> real
+	getSetpoint (pt) ==  profile.getSetpoint(pt);
+    
+--  private getIntegratedSetpoint: () ==> real
+--  getIntegratedSetpoint () ==  profile.getIntegratedSetpoint(now)
+    
+sync
+	-- access to the profile is mutual exclusive
+	mutex (addProfileElement, getSetpoint);
+	mutex (addProfileElement)
+	
+instance variables
+	-- the PID controller settings
+	K    : real := 0.0;
+	taud : real := 0.0;
+	taui : real := 0.0;
+	ts   : real := 0.0;
+	N    : real := 0.0;
+
+operations
+	public setUpPID: real * real * real * real * real ==> ()
+	setUpPID (pk, ptd, pti, pdt, pn) ==
+		( K := pk; taud := ptd; taui := pti; ts := pdt; N := pn )
+		pre pk > 0 and ptd > 0 and pti > 0 and pdt > 0 and pn > 0
+		    
+instance variables
+	-- the intermediate PID results
+	curr_pos  : real := 0.0;
+	curr_setp : real := 0.0;
+	prev_setp : real := 0.0;
+	curr_err  : real := 0.0;
+	prev_err  : real := 0.0;
+	uP : real := 0.0;
+	uI : real := 0.0;
+	uD : real := 0.0
+    
+operations
+	public calcPID: real ==> real
+	calcPID (measured_value) == (
+		-- retrieve the current velocity set point value
+		curr_setp := getSetpoint(now);
+		-- calculate the current position by numeric integration
+		curr_pos := curr_pos + (prev_setp + curr_setp) / 2 * ts;
+		-- calculate the current position error
+		curr_err := curr_pos - measured_value;
+		-- calculate the proportional part
+		uP := K * curr_err;
+		-- calculate the integral part
+		uI := uI + K * ts * curr_err / taui;
+		-- calculate the differential part
+		uD := taud / (ts + taud / N) * uD / N + K * (curr_err - prev_err);
+		-- remember the error for the next iteration
+		prev_setp := curr_setp;
+		prev_err := curr_err;
+		-- return the PID result
+		return uP + uI +uD
+	)
+      
+values
+	private ENCODER_GAIN : real = 5e-4
+  
+instance variables
+	private next_output : real := 0
+  
+functions
+	private limit: real -> real
+	limit (pval) ==
+		if pval < -0.999
+		then -0.999
+		else if pval > 0.999
+			then 0.999
+			else pval
+
+operations            
+	public loop_body: () ==> ()
+	loop_body () == (
+		-- first retrieve the current encoder value
+		dcl measured_value : real := ENCODER_GAIN * getSensor(enc);
+		-- output the previous value if we are time synchronous
+		if hold then setActuator(pwm, next_output);
+		-- calculate the new pwm control value
+      	next_output :=
+      		if feedback
+        	then limit(calcPID(measured_value))
+        	else limit(getSetpoint(now));
+		-- force some debug output
+		IO`printf("controller step at %s %s %s\n", [now, measured_value, next_output]);
+      	-- output the new value directly if we are not time synchronous
+      	-- otherwise wait until the next period is due
+      	if not hold then setActuator(pwm, next_output)
+	)
+	
+end LoopController
+\end{vdm_al}

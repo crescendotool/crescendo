@@ -1,0 +1,16 @@
+class ISensorReal
+
+instance variables
+
+-- sensor value
+protected value: real;
+
+
+operations
+
+-- set actuator value
+public GetValue: () ==> real
+GetValue() ==
+	is subclass responsibility;
+
+end ISensorReal

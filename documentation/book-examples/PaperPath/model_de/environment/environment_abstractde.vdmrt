@@ -1,0 +1,31 @@
+%
+
+\begin{vdm_al}
+class AbstractDeEnvironment
+	is subclass of Environment
+
+operations
+	public init: () ==> ()
+	init () ==  
+		-- start the abstract DE simulation loop
+		start (self);
+	
+operations
+	private tick: () ==> ()
+	tick () ==
+		-- the DE simulator does not progress time
+		duration (0)
+			-- default: stop after two seconds
+			if time >= 2E9
+			then World`done := true
+			else (
+				-- diagnostics
+				IO`printf("CT-SIM %s\n", [time/1E9]);
+			)
+
+thread
+	-- the DE simulator runs at 100 Hz
+	periodic(1E6, 0, 0, 0) (tick)
+			
+end AbstractDeEnvironment
+\end{vdm_al}

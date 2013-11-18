@@ -1,0 +1,11 @@
+-- inputs
+input wheelPosLeft = System.controller.wheelPosLeft.value;
+input wheelPosRight = System.controller.wheelPosRight.value;
+input lineSensorLeft = System.controller.lineSensorLeft.value;
+input lineSensorRight = System.controller.lineSensorRight.value;
+input lineSensorLeftB = System.controller.lineSensorLeftBack.value;
+input lineSensorRightB = System.controller.lineSensorRightBack.value;
+
+-- outputs
+output motorVoltageLeft = System.controller.motorVoltageLeft.value; 
+output motorVoltageRight = System.controller.motorVoltageRight.value;

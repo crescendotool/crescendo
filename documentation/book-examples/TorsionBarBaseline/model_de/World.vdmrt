@@ -1,0 +1,23 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() == (
+	start(TorsionBar`ctrl);
+	start(TorsionBar`monitor);
+	start(TorsionBar`user);
+	block();
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+values
+
+public USE_SCRIPT: real = 0;
+
+end World

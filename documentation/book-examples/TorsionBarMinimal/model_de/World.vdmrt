@@ -1,0 +1,18 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> <DONE>
+run() == (
+	start(TorsionBar`ctrl);
+	block();
+	return <DONE>
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+end World

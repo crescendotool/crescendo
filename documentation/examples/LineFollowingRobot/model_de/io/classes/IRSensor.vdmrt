@@ -1,0 +1,35 @@
+class IRSensor is subclass of ISensorInt8
+
+-- class representing an 8-bit infrared sensor
+-- this class yields a single integer in the range [0,255]
+-- the class also has a flag to indicate when the sensor has failed
+-- this class is designed to be connected to a co-simulation
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected val: real := 0;
+protected failed: bool := false;
+
+-- local copy of the shared variables
+protected local_val: Int8 := 0;
+protected local_failed: bool := false;
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> Int8
+Read() == return local_val;
+
+-- return true if this sensor has failed, false otherwise
+public HasFailed: () ==> bool
+HasFailed() == return local_failed;
+
+-- read shared variable to local variable
+public Sync: () ==> ()
+Sync() == (
+	local_val := floor val;
+	local_failed := failed
+)
+
+end IRSensor

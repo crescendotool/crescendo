@@ -1,0 +1,13 @@
+-- monitored variables
+input LFT_lvl = System.LFT.value;
+input LMT_lvl = System.LMT.value;
+input TT_lvl = System.TT.value;
+
+-- controlled variables
+output LMT2LFT_valve = System.LMT2LFT.open;
+output LMT2TT_valve = System.LMT2TT.open;
+output TT2LFT_valve = System.TT2LFT.open;
+
+-- events
+event enter_cruise = System.controller.EnterCruise;
+event enter_pre_landing = System.controller.EnterPreLanding;

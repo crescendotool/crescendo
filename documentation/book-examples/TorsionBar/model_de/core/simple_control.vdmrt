@@ -1,0 +1,109 @@
+% simple controller
+
+\begin{vdm_al}
+class SimpleControl
+	is subclass of ControlStrategy
+
+values
+	-- conversion constants used
+	ENCODER_RESOLUTION : real = 2000.0;
+	BELT_RATIO : real = 3.75;
+	
+	-- PID controller constants (1 Khz)
+	-- KP : real = 2.0;
+	-- TAUD : real = 5E-5;
+	-- BETA : real = 0.1;
+	-- TAUI : real = 2E3
+	
+	-- PID controller constants (50 hz)
+	KP : real = 1.0;
+	TAUD : real = 0.05;
+	BETA : real = 0.1;
+	TAUI : real = 2E3
+	
+operations
+	public SimpleControl: () ==> SimpleControl
+	SimpleControl () == ControlStrategy(2E7, 0, 0, 0)
+	
+instance variables
+	-- place holders for the current sample and hold values
+	private hold_pwm	: real := 0.0;
+	private sample_encm	: real := 0.0;
+	private sample_encl : real := 0.0
+
+functions
+	-- function to compute rotation from encoder signal
+	enc2rot: real -> real
+	enc2rot (penc) == penc / ENCODER_RESOLUTION / BELT_RATIO;
+	
+	-- function to compute the set point
+	sp: real -> real
+	sp (pt) ==
+		-- trapeziod set point profile
+		-- start time 0, stop time 1
+		-- return time 3, end time 5
+		-- stroke 1, period 5
+		if pt > 5.0 then sp(pt - 5.0)
+		else if pt < 1.0 then pt
+		else if pt < 3.0 then 1.0
+		else if pt < 4.0 then 4.0 - pt
+		else 0 
+
+instance variables
+	-- state of previous PID calculation
+	perr : real := 0;
+	pud  : real := 0;
+	pul  : real := 0
+	
+operations
+	-- perform the PID calculation
+	pid: real ==> real
+	pid (err) == (
+	  dcl
+		factor : real := 1 / (delta + TAUD * BETA),
+		ud : real := factor * (TAUD * pud * BETA + TAUD * KP * (err - perr) + delta * KP * err),
+		ul : real := pul + delta * ud / TAUI;
+	  -- first update the state
+	  pud := ud;
+	  pul := ul;
+	  perr := err;
+	  -- return the result
+	  return ul + ud
+	);
+	
+	-- auxiliary operation to obtain the set-point
+	public getSetpoint: real ==> real
+	getSetpoint (ptime) == return sp(ptime)
+	
+operations
+	-- action to execute before each loop body
+	public loop_pre: () ==> ()
+	loop_pre () == (
+		-- first take new samples
+		sample_encm := enc2rot(getSensor(TorsionBarController`SENSOR_ENCM));
+		sample_encl := enc2rot(getSensor(TorsionBarController`SENSOR_ENCL));
+		
+		-- then output last calculated actuator value
+		setActuator(TorsionBarController`ACTUATOR_PWM, hold_pwm)
+	);
+
+	-- action to execute each control loop
+	public loop_body: () ==> ()
+	loop_body () == (
+		-- compute the current control error
+		dcl err : real := getSetpoint(now) - sample_encm;
+		
+		-- compute the new steering value for next iteration
+		hold_pwm := pid(err);
+	);
+	
+	-- action to execute after each loop body
+	public loop_post: () ==> ()
+	loop_post () == (
+		-- diagnostics
+		IO`printf ("CTRL %s %s ENCM = %s, ENCL = %s, HOLD = %s\n",
+			[now, sp(now), sample_encm, sample_encl, hold_pwm] )
+	);
+
+end SimpleControl
+\end{vdm_al}

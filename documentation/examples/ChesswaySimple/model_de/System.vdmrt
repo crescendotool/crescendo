@@ -1,0 +1,31 @@
+system System
+
+instance variables
+
+-- controller
+public static controller : [Controller] := nil;
+
+-- sensors
+public static acc_in: [ISensorReal] := nil;
+public static vel_in: [ISensorReal] := nil;
+
+-- actuators
+public static acc_out: [IActuatorReal] := nil;
+public static vel_out: [IActuatorReal] := nil;
+
+-- architecture
+cpu1 : CPU := new CPU(<FP>, 1E6);
+
+operations
+
+public System : () ==> System
+System () == 
+(
+	-- controller
+	controller := new Controller();
+
+    -- deploy the controller
+    cpu1.deploy(controller);
+);
+
+end System

@@ -1,0 +1,2577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+ <Model version="4.2" build="4.1.2.2">
+  <Sidops><![CDATA[model 0 0
+ description '<Information>
+ <Description>
+    <LibraryPath>E:\PhD\DESTECS\TortoiseSVN\trunk\WP3\Deliverable_3.4\D3.4aExamplesCompendium\exampleModels\WaterTankPeriodic\WatertankPeriodic\model_ct\Watertank.emx</LibraryPath>
+  <TimeStamp>2012-11-15 12:49:23</TimeStamp>
+  <Version>4.2</Version>
+</Description>
+</Information>';
+ type Mainmodel
+ end;
+ implementation bg
+  submodels
+   Control 104 320
+			specifications active 'cosim'
+				specification 'local'
+type Constant
+  ports
+   signal out valvecontrol;
+   signal in level;
+  parameters
+   real C = 20.0;
+ end;
+ icon bg bottom
+  figures
+   rectangle 88.1 304 119.9 336 fill 15132390;
+   line 92.9 315.6 114.9 315.6 color 16711680 width 2;
+   line 90.2 326.7 115.9 326.7;
+   line 92.5 310.7 92.5 329;
+ end;
+ implementation eq
+parameters
+	real maxlevel;
+	real minlevel;
+variables
+	real count;
+	real timeadvance;
+initialequations
+	valvecontrol = 0;
+	count = 0;
+	timeadvance = 1;
+code
+	if level > maxlevel then valvecontrol = 1; end;
+	if level < minlevel then valvecontrol = 0; end;
+	if event(valvecontrol-0.5) then 
+			count = count +1; 
+			timeadvance = time + 1;
+		end;
+	if timeevent(timeadvance) then 
+			count = count +1; 
+			timeadvance = time + 1;
+		end;implementation_end;
+specification_end;
+				specification 'cosim'
+ type Constant
+  ports
+   signal out valvecontrolOut;
+   signal in levelIn;
+  parameters
+   real C = 20.0;
+ end;
+ icon bg bottom
+  figures
+   rectangle 88.1 304 119.9 336 fill 15132390;
+   line 92.9 315.6 114.9 315.6 color 16711680 width 2;
+   line 90.2 326.7 115.9 326.7;
+   line 92.5 310.7 92.5 329;
+ end;
+ implementation eq
+parameters
+	real global maxlevel ('shared', 'observable');
+	real global minlevel ('shared');
+
+externals
+	real global export level;
+	real global import valve;
+
+variables
+   real errorLevel;
+
+equations
+	// export from this model
+	level = levelIn;
+
+	// IN BETWEEN HERE THE DESTECS TOOL WILL CALCULATE THE NEW VALVE CONTROL VALUE
+
+	// import the valveControl to this model
+	valvecontrolOut = valve;
+
+   errorLevel = if level < minlevel then 
+						level-minlevel
+					 else 
+						if level > maxlevel then 
+							level-maxlevel 
+						else 
+							0
+						end
+					 end;
+
+implementation_end;
+specification_end;
+			end;
+   Drain 304 388
+    type R
+     ports
+      power psi in p;
+     parameters
+      real r = 9.0;
+    end;
+    icon bg right
+     figures
+      line 296 392 296 400 312 400 312 392;
+      line 304 376 304 400;
+     terminals
+      p 304 376 fixed;
+    end;
+    implementation eq
+equations					
+	p.e = r * p.f;implementation_end;
+   FlowSource 268 180
+    description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Hydraulics\Pumps\Basic Pumps\FlowSource.emx</LibraryPath>
+  <TimeStamp>2007-9-25 11:38:4</TimeStamp>
+</Description>';
+    type FlowSource
+     ports
+      hydraulic psi out p;
+     restrictions
+      causality fixed in p;
+    end;
+    icon ipm top
+     figures
+      line 240 192 240 176 304 176;
+      ellipse 256 160 288 192 fill 16777215;
+      line 232 192 232 200 248 200 248 192;
+      text 'phi' 268.8 174.4 color 16711680 14;
+      line 287.3 175.8 279.3 171.8 279.3 179.8 287.3 175.8 fill 0;
+     terminals
+      p 304 176 fixed;
+    end;
+    implementation eq
+parameters
+	real phi = 1 {m3/s};	// flow rate
+
+variables
+	real inflow;
+
+equations
+	p.phi = phi;
+	inflow = if p.phi < 0 then 0 else 0.1*abs(p.phi) end;
+implementation_end;
+   Tank 296 252
+    description '<Description>
+ <Version>4.1</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Submodel
+     ports
+      hydraulic psi in p;
+      hydraulic psi out p1;
+      signal out level;
+    end;
+    icon bg right
+     figures
+      rectangle 280 240 328 272 color 16711680 fill 16711680;
+      line 304 272 304 288;
+      line 304 216 304 240;
+      line 280 240 264 240 end;
+      line 280 224 280 272 328 272 328 224;
+     terminals
+      p 304 216 fixed;
+      p1 304 288 fixed;
+      level 264 240 fixed;
+    end;
+    implementation bg
+     submodels
+      plug p 256 64;
+      plug p1 256 232;
+      plug level 64 152;
+      Node1 255.9 151.9
+       description '<Description><Version>4.0</Version>
+   <LibraryPath>C:\Program Files\20-sim 4.0\System\Node.emx</LibraryPath>
+  <TimeStamp>2007-10-31 11:27:14</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+       knot Node
+        ports
+         hydraulic knot psi duplicatable none p [1];
+       end;
+       icon bg ellipse
+        figures
+         ellipse 252.7 148.7 259.1 155.1 color -1 fill 0;
+         ellipse 251.6 147.6 260.1 156.1 color -1;
+        terminals
+         p 255.9 151.9 fixed;
+         p 255.9 151.9 fixed;
+         p 255.9 151.9 fixed;
+         p 255.9 151.9 fixed;
+       end;
+       implementation eq
+equations
+	sum (direct (p.t)) = 0;
+	equal (collect (p.a));
+  implementation_end;
+      Tank 176 152
+       type C
+        ports
+         power in p;
+         signal out level;
+        restrictions
+         causality preferred out p;
+       end;
+       icon bg bottom
+        figures
+         text 'C' 176 152 18 bold;
+       end;
+       implementation eq
+variables
+   real volume, height;
+	real inflow, outflow;// for 3D Animation
+	real puddle;
+parameters
+	real area = 1;
+	real gravity = 9.81;
+	real liquid_density = 1.0;
+	
+equations
+	volume = int(p.f);
+
+	// the pressure
+	p.e = gravity * volume * liquid_density;
+
+	// calculate the height
+	level = volume / area;
+
+	
+implementation_end;
+     end;
+     connections
+      Node1\p => Tank\p;
+      p => Node1\p;
+      Node1\p => p1;
+      Tank\level -> level;
+     end;
+    implementation_end;
+   Valve 300 320
+    type 'Submodel-Equation'
+     ports
+      signal in valvecontrol;
+      hydraulic psi in powerIn;
+      power psi out powerOut;
+    end;
+    icon bg right
+     figures
+      line 304 288 304 304;
+      line 288 320 304 320;
+      line 296 304 304 320 312 304 296 304;
+      line 296 336 304 320 312 336 296 336;
+      line 304 336 304 352;
+     terminals
+      valvecontrol 288 320 fixed;
+      powerIn 304 288 fixed;
+      powerOut 304 352 fixed;
+    end;
+    implementation eq
+variables
+	real outflow, puddle;
+
+equations
+	powerIn.f = if valvecontrol then powerOut.f else 0 end;
+	powerOut.e = if valvecontrol then powerIn.e else 0 end;
+
+	outflow = if powerOut.f < 0 then 0 else 0.1*abs(powerOut.f) end;
+	puddle = 8*sqrt(int(outflow));
+         implementation_end;
+  end;
+  connections
+   FlowSource\p => Tank\p;
+   Tank\p1 => Valve\powerIn;
+   Valve\powerOut => Drain\p;
+   Tank\level -> Control\levelIn 104 240;
+   Control\valvecontrolOut -> Valve\valvecontrol;
+  end;
+  figures
+   rectangle 24 136 192 440 fill 16777152 dashed;
+   rectangle 192 136 360 440 fill 14804223 dashed;
+   text '1 = open
+0 = close' 240 344 color 32768 15 italic;
+   text 'waterlevel' 240 224 color 32768 15 italic;
+   text 'valve control' 240 304 color 32768 15 italic;
+   text 'IO_Plant' 272 432 color 32768 15 italic;
+   text 'DE_link' 112 432 color 32768 15 italic;
+   text 'This model is an implementation of a water tank that is supplied by a
+flow of water. The valve at the bottom of the tank can be opened so
+that water flows out of the tank when the water rises some maximum 
+level, or closed to stop the exiting flow when the water falls below some 
+minimum level. Underneath the tank is a drain to catch the outflowing 
+water.
+
+This particular water tank model accomplishes the above goal by polling
+the water level sensor periodically, as intervals of n miliseconds, to check
+that it falls within acceptable boundaries, and take some actions.' 584 112 color 32768 15;
+ implementation_end;
+]]>
+</Sidops>
+ </Model>
+ <Experiments>
+     <DefaultExperiment><![CDATA[Converted Experiment]]>
+</DefaultExperiment>
+  <Experiment>
+    <Name>Converted Experiment</Name>
+    <CreatedBy></CreatedBy>
+    <Info></Info>
+<ExpData>
+  <VersionNumber>4.2</VersionNumber>
+  <ModelProperties>
+  </ModelProperties>
+  <Variables>
+   <Parameters>
+    <Variable>
+     <Name>maxlevel</Name>
+     <Value>3</Value>
+    </Variable>
+    <Variable>
+     <Name>minlevel</Name>
+     <Value>2</Value>
+    </Variable>
+   </Parameters>
+   <Initials>
+    <Variable>
+     <Name>Tank\Tank\volume_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Valve\outflow_int_initial</Name>
+     <Value>0</Value>
+    </Variable>
+   </Initials>
+  </Variables>
+  <PlotSpecs>
+   <VarNames>
+    <VarName>time</VarName>
+    <VarName>Tank\Tank\level</VarName>
+    <VarName>Control\valvecontrolOut</VarName>
+    <VarName>Valve\outflow</VarName>
+    <VarName>Valve\puddle</VarName>
+    <VarName>FlowSource\inflow</VarName>
+    <VarName>maxlevel</VarName>
+    <VarName>minlevel</VarName>
+    <VarName>Control\errorLevel</VarName>
+    <VarName>Tank\level</VarName>
+   </VarNames>
+   <Plots>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>1</PlotId>
+       <UseWindowsBGColor>false</UseWindowsBGColor>
+       <BGColor>16777215</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>12632256</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>Water tank</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>-19</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>-19</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>16</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>15</Maximum>
+       <Linear>true</Linear>
+       <Scaling>0</Scaling>
+       <Label>time</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>-0.5</Minimum>
+       <Maximum>4.5</Maximum>
+       <Linear>true</Linear>
+       <Scaling>2</Scaling>
+       <Label>Water level</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>2124031</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711935</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>10</PixelThresshold>
+       <LineThickness>2</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Tank\Tank\level</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>false</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>2</PlotId>
+       <UseWindowsBGColor>false</UseWindowsBGColor>
+       <BGColor>16777215</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>12632256</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>Time triggered control</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>-19</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>-19</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>16</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>15</Maximum>
+       <Linear>true</Linear>
+       <Scaling>0</Scaling>
+       <Label>X</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>-0.4</Minimum>
+       <Maximum>1.6</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>Valve</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>37632</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>255</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>10</PixelThresshold>
+       <LineThickness>3</LineThickness>
+       <LineOrder>0</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Control\valvecontrolOut</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>false</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>3</PlotId>
+       <UseWindowsBGColor>false</UseWindowsBGColor>
+       <BGColor>16777215</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>12632256</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>Error</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>-19</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>-19</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>16</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>15</Maximum>
+       <Linear>true</Linear>
+       <Scaling>0</Scaling>
+       <Label>time</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>-0.2</Minimum>
+       <Maximum>0.2</Maximum>
+       <Linear>true</Linear>
+       <Scaling>0</Scaling>
+       <Label>errorLevel</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>0</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>0</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Control\errorLevel</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>false</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>D3DPlot</PlotType>
+     <BasePlot>
+       <PlotId>4</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>15790320</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <RenderQuality>137</RenderQuality>
+     <ShowGrid>true</ShowGrid>
+     <BackgroundColor>4294967295</BackgroundColor>
+     <FrameScale>1</FrameScale>
+     <FrameThickness>1</FrameThickness>
+     <MainFrame>
+      <Frame>
+       <ScaleValue>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Reference Frame</Name>
+       <Position>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+        <Frame>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Default Lights and Cameras</Name>
+         <Position>
+         </Position>
+         <Orientation>
+     <Angles>
+     </Angles>
+     <OrientationType>Bryant</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Ambient</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>0</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.3</Value>
+        </X>
+        <Y>
+         <Value>0.3</Value>
+        </Y>
+        <Z>
+         <Value>0.3</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <AmbientLight>
+       <Color>
+        <X>
+         <Value>0.3</Value>
+        </X>
+        <Y>
+         <Value>0.3</Value>
+        </Y>
+        <Z>
+         <Value>0.3</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </AmbientLight>
+      <AmbientOn>true</AmbientOn>
+      <DiffuseOn>false</DiffuseOn>
+      <SpecularOn>false</SpecularOn>
+     </Light>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Parallel</Name>
+      <Position>
+       <X>
+        <Value>-3</Value>
+       </X>
+       <Y>
+        <Value>5</Value>
+       </Y>
+       <Z>
+        <Value>3</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.457495710997814</Value>
+        </X>
+        <Y>
+         <Value>-0.762492851663023</Value>
+        </Y>
+        <Z>
+         <Value>-0.457495710997814</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.235379601434674</Value>
+        </X>
+        <Y>
+         <Value>-0.392299335724456</Value>
+        </Y>
+        <Z>
+         <Value>0.8892118276421</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>3</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <Attenuation>
+       <Constant>
+        <Value>1</Value>
+       </Constant>
+       <Linear>
+        <Value>0</Value>
+       </Linear>
+       <Quadratic>
+        <Value>0</Value>
+       </Quadratic>
+      </Attenuation>
+      <DiffuseLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </DiffuseLight>
+      <SpecularLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </SpecularLight>
+      <AmbientOn>false</AmbientOn>
+      <DiffuseOn>true</DiffuseOn>
+      <SpecularOn>true</SpecularOn>
+     </Light>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Spot Light 1</Name>
+      <Position>
+       <X>
+        <Value>-3</Value>
+       </X>
+       <Y>
+        <Value>-5</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.50709255283711</Value>
+        </X>
+        <Y>
+         <Value>0.845154254728517</Value>
+        </Y>
+        <Z>
+         <Value>-0.169030850945703</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.0869656553478671</Value>
+        </X>
+        <Y>
+         <Value>0.144942758913112</Value>
+        </Y>
+        <Z>
+         <Value>0.985610760609162</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>2</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <Attenuation>
+       <Constant>
+        <Value>1</Value>
+       </Constant>
+       <Linear>
+        <Value>0.05</Value>
+       </Linear>
+       <Quadratic>
+        <Value>0.05</Value>
+       </Quadratic>
+      </Attenuation>
+      <Umbra>
+       <Value>1.0471975511966</Value>
+      </Umbra>
+      <Penumbra>
+       <Value>1.0471975511966</Value>
+      </Penumbra>
+      <DiffuseLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </DiffuseLight>
+      <SpecularLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </SpecularLight>
+      <AmbientOn>false</AmbientOn>
+      <DiffuseOn>true</DiffuseOn>
+      <SpecularOn>true</SpecularOn>
+     </Light>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Spot Light 2</Name>
+      <Position>
+       <X>
+        <Value>2</Value>
+       </X>
+       <Y>
+        <Value>-3</Value>
+       </Y>
+       <Z>
+        <Value>-1</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>-0.534522483824849</Value>
+        </X>
+        <Y>
+         <Value>0.801783725737273</Value>
+        </Y>
+        <Z>
+         <Value>0.267261241912424</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.14824986333222</Value>
+        </X>
+        <Y>
+         <Value>-0.22237479499833</Value>
+        </Y>
+        <Z>
+         <Value>0.963624111659432</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>2</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <Attenuation>
+       <Constant>
+        <Value>1</Value>
+       </Constant>
+       <Linear>
+        <Value>0.05</Value>
+       </Linear>
+       <Quadratic>
+        <Value>0.05</Value>
+       </Quadratic>
+      </Attenuation>
+      <Umbra>
+       <Value>1.5707963267949</Value>
+      </Umbra>
+      <Penumbra>
+       <Value>1.5707963267949</Value>
+      </Penumbra>
+      <DiffuseLight>
+       <Color>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </DiffuseLight>
+      <SpecularLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </SpecularLight>
+      <AmbientOn>false</AmbientOn>
+      <DiffuseOn>true</DiffuseOn>
+      <SpecularOn>true</SpecularOn>
+     </Light>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Camera Looking at Origin</Name>
+      <Position>
+       <X>
+        <Value>-6.23867075149093</Value>
+       </X>
+       <Y>
+        <Value>10.3225285711903</Value>
+       </Y>
+       <Z>
+        <Value>4.39328037326481</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.507354232788904</Value>
+        </X>
+        <Y>
+         <Value>-0.839470260940794</Value>
+        </Y>
+        <Z>
+         <Value>-0.194631352734287</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.100672250098388</Value>
+        </X>
+        <Y>
+         <Value>-0.166572691421211</Value>
+        </Y>
+        <Z>
+         <Value>0.980876463441152</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>0.00392699081698724</Field>
+      <Fieldy>45</Fieldy>
+      <PlaneLeft>-10</PlaneLeft>
+      <PlaneRight>10</PlaneRight>
+      <PlaneTop>10</PlaneTop>
+      <PlaneBottom>-10</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+       <Z>
+        <Value>2</Value>
+       </Z>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>true</Perspective>
+      <IsSelectedCamera>true</IsSelectedCamera>
+     </Camera>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Front(XY)-Camera</Name>
+      <Position>
+       <Z>
+        <Value>10</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <Z>
+         <Value>-1</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>10</Field>
+      <Fieldy>45</Fieldy>
+      <PlaneLeft>-10</PlaneLeft>
+      <PlaneRight>10</PlaneRight>
+      <PlaneTop>10</PlaneTop>
+      <PlaneBottom>-10</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>false</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Side(YZ)-Camera</Name>
+      <Position>
+       <X>
+        <Value>10</Value>
+       </X>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>-1</Value>
+        </X>
+       </ZAxis>
+       <YAxis>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>10</Field>
+      <Fieldy>45</Fieldy>
+      <PlaneLeft>-10</PlaneLeft>
+      <PlaneRight>10</PlaneRight>
+      <PlaneTop>10</PlaneTop>
+      <PlaneBottom>-10</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>false</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Top(XZ)-Camera</Name>
+      <Position>
+       <Y>
+        <Value>10</Value>
+       </Y>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <Y>
+         <Value>-1</Value>
+        </Y>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>1</Value>
+        </X>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>10</Field>
+      <Fieldy>45</Fieldy>
+      <PlaneLeft>-10</PlaneLeft>
+      <PlaneRight>10</PlaneRight>
+      <PlaneTop>10</PlaneTop>
+      <PlaneBottom>-10</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <X>
+        <Value>1</Value>
+       </X>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>false</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+         </Childs>
+        </Frame>
+        <Frame>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Scenery</Name>
+         <Position>
+     <Z>
+      <Value>2</Value>
+     </Z>
+         </Position>
+         <Orientation>
+     <Angles>
+     </Angles>
+     <OrientationType>Bryant</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+     <Cylinder>
+      <CircleElements>64</CircleElements>
+      <LowerRadius>2</LowerRadius>
+      <UpperRadius>2</UpperRadius>
+      <Height>1</Height>
+      <Closed>true</Closed>
+      <LowerClosed>true</LowerClosed>
+      <UpperClosed>true</UpperClosed>
+      <CenterInOrigin>false</CenterInOrigin>
+      <ShowInnerSide>false</ShowInnerSide>
+      <ShowOuterSide>true</ShowOuterSide>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>4</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>0.4</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>13.5413365364075</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Tank</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Cylinder>
+     <Cylinder>
+      <CircleElements>32</CircleElements>
+      <LowerRadius>1</LowerRadius>
+      <UpperRadius>1</UpperRadius>
+      <Height>1</Height>
+      <Closed>true</Closed>
+      <LowerClosed>true</LowerClosed>
+      <UpperClosed>true</UpperClosed>
+      <CenterInOrigin>true</CenterInOrigin>
+      <ShowInnerSide>false</ShowInnerSide>
+      <ShowOuterSide>true</ShowOuterSide>
+      <ScaleValue>
+       <X>
+        <VariableName>Valve\outflow</VariableName>
+        <Value>0</Value>
+       </X>
+       <Y>
+        <VariableName>Valve\outflow</VariableName>
+        <Value>0</Value>
+       </Y>
+       <Z>
+        <Value>2</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>0</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>0</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>OutFlow</Name>
+      <Position>
+       <Z>
+        <Value>-2</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Cylinder>
+     <Cylinder>
+      <CircleElements>32</CircleElements>
+      <LowerRadius>0.5</LowerRadius>
+      <UpperRadius>0.5</UpperRadius>
+      <Height>1</Height>
+      <Closed>true</Closed>
+      <LowerClosed>true</LowerClosed>
+      <UpperClosed>true</UpperClosed>
+      <CenterInOrigin>true</CenterInOrigin>
+      <ShowInnerSide>false</ShowInnerSide>
+      <ShowOuterSide>true</ShowOuterSide>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <VariableName>Control\valvecontrolOut</VariableName>
+        <Value>0</Value>
+       </X>
+       <Y>
+        <VariableName>Control\valvecontrolOut</VariableName>
+        <Value>0</Value>
+       </Y>
+       <Z>
+        <Value>0</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>-1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+       <X>
+        <Value>1</Value>
+       </X>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.5</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.5</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>15</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Valve</Name>
+      <Position>
+       <Z>
+        <Value>-0.5</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Cylinder>
+     <Circle>
+      <CircleElements>128</CircleElements>
+      <XRadius>0.5</XRadius>
+      <XRadius>0.5</XRadius>
+      <StartAngle>0</StartAngle>
+      <EndAngle>6.28318530717959</EndAngle>
+      <BothSides>true</BothSides>
+      <ScaleValue>
+       <X>
+        <VariableName>Valve\puddle</VariableName>
+        <Value>13.2732441863997</Value>
+       </X>
+       <Y>
+        <VariableName>Valve\puddle</VariableName>
+        <Value>13.2732441863997</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>0</Value>
+       </X>
+       <Y>
+        <Value>0.501960784313725</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>14.298713684082</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Puddle</Name>
+      <Position>
+       <Z>
+        <Value>-1.9</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Circle>
+     <Cylinder>
+      <CircleElements>32</CircleElements>
+      <LowerRadius>1</LowerRadius>
+      <UpperRadius>1</UpperRadius>
+      <Height>1</Height>
+      <Closed>true</Closed>
+      <LowerClosed>true</LowerClosed>
+      <UpperClosed>true</UpperClosed>
+      <CenterInOrigin>false</CenterInOrigin>
+      <ShowInnerSide>false</ShowInnerSide>
+      <ShowOuterSide>true</ShowOuterSide>
+      <ScaleValue>
+       <X>
+        <VariableName>FlowSource\inflow</VariableName>
+        <Value>0.1</Value>
+       </X>
+       <Y>
+        <VariableName>FlowSource\inflow</VariableName>
+        <Value>0.1</Value>
+       </Y>
+       <Z>
+        <Value>6</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>0</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.5</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.5</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>15</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>InFlow</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Cylinder>
+     <Cylinder>
+      <CircleElements>64</CircleElements>
+      <LowerRadius>2</LowerRadius>
+      <UpperRadius>2</UpperRadius>
+      <Height>1</Height>
+      <Closed>true</Closed>
+      <LowerClosed>true</LowerClosed>
+      <UpperClosed>true</UpperClosed>
+      <CenterInOrigin>false</CenterInOrigin>
+      <ShowInnerSide>false</ShowInnerSide>
+      <ShowOuterSide>true</ShowOuterSide>
+      <ScaleValue>
+       <X>
+        <Value>0.95</Value>
+       </X>
+       <Y>
+        <Value>0.95</Value>
+       </Y>
+       <Z>
+        <VariableName>Tank\level</VariableName>
+        <Value>2.47202949503222</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>0</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>13.5413365364075</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>WaterLevel</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Cylinder>
+     <Torus>
+      <TorusRadius>2.1</TorusRadius>
+      <TubeRadius>0.05</TubeRadius>
+      <Segments>100</Segments>
+      <PointsPerSegment>16</PointsPerSegment>
+      <CenterInOrigin>true</CenterInOrigin>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>0.501960784313725</Value>
+       </Y>
+       <Z>
+        <Value>0</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.5</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.5</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>15</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>minLevel</Name>
+      <Position>
+       <Z>
+        <VariableName>maxlevel</VariableName>
+        <Value>3</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Torus>
+     <Torus>
+      <TorusRadius>2.1</TorusRadius>
+      <TubeRadius>0.05</TubeRadius>
+      <Segments>100</Segments>
+      <PointsPerSegment>16</PointsPerSegment>
+      <CenterInOrigin>true</CenterInOrigin>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>0.501960784313725</Value>
+       </Y>
+       <Z>
+        <Value>0</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.5</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.5</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>15</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>maxLevel</Name>
+      <Position>
+       <Z>
+        <VariableName>minlevel</VariableName>
+        <Value>2</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Torus>
+         </Childs>
+        </Frame>
+        <Frame>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Reference Frame</Name>
+         <Position>
+     <X>
+      <Value>-4</Value>
+     </X>
+     <Y>
+      <Value>-4</Value>
+     </Y>
+         </Position>
+         <Orientation>
+     <Angles>
+     </Angles>
+     <OrientationType>Bryant</OrientationType>
+         </Orientation>
+         <HasDuplicates>true</HasDuplicates>
+         <NrDuplicates>10</NrDuplicates>
+         <DuplPosOffset>
+     <Y>
+      <Value>1</Value>
+     </Y>
+         </DuplPosOffset>
+         <DuplOriOffset>
+         </DuplOriOffset>
+         <DuplScaleOffset>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </DuplScaleOffset>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+     <Square>
+      <CornerInOrigin>false</CornerInOrigin>
+      <XLength>1</XLength>
+      <YLength>1</YLength>
+      <BothSides>true</BothSides>
+      <Accuracy>4</Accuracy>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>0.501960784313725</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>0</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.5</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.5</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>15</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <Texture>
+       <Filename><![CDATA[Floor\ShityTilesGreyBump.bmp]]>
+</Filename>
+       <WrapStyle>0</WrapStyle>
+       <YWrap>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YWrap>
+       <ZWrap>
+        <Z>
+         <Value>-1</Value>
+        </Z>
+       </ZWrap>
+       <XOrigin>
+        <Value>0.5</Value>
+       </XOrigin>
+       <YOrigin>
+        <Value>0.5</Value>
+       </YOrigin>
+      </Texture>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Lawn</Name>
+      <Position>
+       <X>
+        <Value>-0.5</Value>
+       </X>
+       <Y>
+        <Value>-0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.05</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <HasDuplicates>true</HasDuplicates>
+      <NrDuplicates>10</NrDuplicates>
+      <DuplPosOffset>
+       <X>
+        <Value>1</Value>
+       </X>
+      </DuplPosOffset>
+      <DuplOriOffset>
+      </DuplOriOffset>
+      <DuplScaleOffset>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </DuplScaleOffset>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Square>
+         </Childs>
+        </Frame>
+       </Childs>
+      </Frame>
+     </MainFrame>
+    </Plot>
+   </Plots>
+   <PlotPanels>
+    <PlotPanel>
+     <PlotPanelId>1</PlotPanelId>
+     <PlotPanelVisible>true</PlotPanelVisible>
+     <Name>Window 1</Name>
+     <Tiling>2</Tiling>
+     <PlotIds>
+       <PlotId>1</PlotId>
+       <PlotId>2</PlotId>
+       <PlotId>3</PlotId>
+     </PlotIds>
+    </PlotPanel>
+    <PlotPanel>
+     <PlotPanelId>2</PlotPanelId>
+     <PlotPanelVisible>true</PlotPanelVisible>
+     <Name>Window 2</Name>
+     <Tiling>0</Tiling>
+     <PlotIds>
+       <PlotId>4</PlotId>
+     </PlotIds>
+    </PlotPanel>
+   </PlotPanels>
+   <WindowRectangles virtualDesktopWidth="2560" virtualDesktopHeight="1024">
+     <WindowRectangle monitor="0" left="0" top="0" right="1280" bottom="1024" plotpanelid="2">
+0.25 0.234375 0.75 0.703125
+     </WindowRectangle>
+     <WindowRectangle monitor="0" left="0" top="0" right="1280" bottom="1024" plotpanelid="1">
+0.25 0.234375 0.75 0.703125
+     </WindowRectangle>
+   </WindowRectangles>
+  </PlotSpecs>
+  <RunSpecs>
+   <SimulatorSettings>
+    <StartTime>0</StartTime>
+    <FinishTime>30</FinishTime>
+    <Warp>false</Warp>
+    <UseOutputAfterEach>false</UseOutputAfterEach>
+    <OutputAfterEach>0.1</OutputAfterEach>
+    <EventEpsilon>1e-006</EventEpsilon>
+    <AlgebraicTolerance>1e-007</AlgebraicTolerance>
+    <SteadyStateAnalysis>false</SteadyStateAnalysis>
+    <UpdateHoldInstructions>false</UpdateHoldInstructions>
+   </SimulatorSettings>
+   <IntegrationMethods>
+    <IntegrationMethod>
+     <Name>Euler</Name>
+     <StepSize>0.001</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BackwardEuler</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <StepSize>0.01</StepSize>
+     <Alpha>1</Alpha>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>AdamsBashforth</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta2</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta4</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta8</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <SafetyFactor>0.9</SafetyFactor>
+     <Factor1>0.33</Factor1>
+     <Factor2>6</Factor2>
+     <Beta>0</Beta>
+     <UseMaxNrSteps>false</UseMaxNrSteps>
+     <MaxNrSteps>100000</MaxNrSteps>
+     <UseStiffDetection>false</UseStiffDetection>
+     <MaxNrStiffnessSteps>1000</MaxNrStiffnessSteps>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKuttaFehlberg</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>VodeAdams</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <VodeUseBDF>true</VodeUseBDF>
+     <VodeUseNewton>true</VodeUseNewton>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BDFMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>true</UseMaximumStepSize>
+     <MaximumStepSize>0.01</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>MeBDFiMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <SelectedIntegrationMethod>8</SelectedIntegrationMethod>
+   </IntegrationMethods>
+  </RunSpecs>
+  <MultipleRun>
+   <NrSteps>10</NrSteps>
+   <CopyFromStates>false</CopyFromStates>
+   <JoinParameterVariation>true</JoinParameterVariation>
+   <ClearAfterRun>true</ClearAfterRun>
+   <RedrawAfterRun>false</RedrawAfterRun>
+   <DrawDuringSimulation>true</DrawDuringSimulation>
+   <ActionBeforeOptimization>0</ActionBeforeOptimization>
+   <CompareValue>0</CompareValue>
+   <UseCompareValue>true</UseCompareValue>
+   <MultipleRunType>MultipleRun</MultipleRunType>
+   <Minimize>true</Minimize>
+   <OptimizationVariable></OptimizationVariable>
+   <ResulVarUsage>UseEndValue</ResulVarUsage>
+   <Tolerance>0.001</Tolerance>
+   <OptimizationMethod>BroydonFletcherGoldfarbShanno</OptimizationMethod>
+   <MultipleRunVariables>
+   </MultipleRunVariables>
+  </MultipleRun>
+  <ExportData>
+   <WriteAsText>true</WriteAsText>
+   <ReadAsText>true</ReadAsText>
+   <WriteHeader>true</WriteHeader>
+   <ReadHeader>true</ReadHeader>
+   <ReadFilename></ReadFilename>
+   <WriteFilename></WriteFilename>
+   <DoWrite>false</DoWrite>
+   <ExportVariables>
+   </ExportVariables>
+   <ImportVariables>
+   </ImportVariables>
+  </ExportData>
+  <BreakPoints>
+  </BreakPoints>
+  <AnimationPlayback>
+   <PlaybackSpeed>1</PlaybackSpeed>
+  </AnimationPlayback>
+</ExpData>
+  </Experiment>
+</Experiments>
+</Document>

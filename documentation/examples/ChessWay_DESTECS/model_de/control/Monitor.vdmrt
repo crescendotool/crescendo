@@ -1,0 +1,209 @@
+% MONITOR
+\begin{vdm_al}
+class Monitor is subclass of IListener
+	types
+	public MonitorModeType = <SAFE> | <RTSAFE> | <UNSAFE>;
+
+	values
+-- TODO Define values here
+	instance variables
+-- TODO Define instance variables here
+	private me : Definitions`Controllers;
+	private mon : Definitions`ControlType := <MON>;
+	velsen : VelocitySensor;
+	private sake : SafetyKey;
+	private sasw : SafetySwitch;
+	private gyro : Gyro;
+	public mode : MonitorModeType := <SAFE>;
+	public modeReal : real := 1.0;
+	private mOtherMode : real := 1.0;
+	private activated : bool := true;
+	private ether : LossyEther;
+	private sakeMode : SafetyKey`SafetyKeyState := <IN>;
+
+	operations
+	public setState: MonitorModeType ==> ()
+	setState (mmt) ==  (
+		mode := mmt;
+		cases mode :
+			<SAFE> ->  (
+				modeReal := 1.0; ),
+			<RTSAFE> -> 
+				modeReal := 0.5,
+			<UNSAFE> -> (
+				modeReal := 0.0; )
+		end;
+	);
+	
+	public getState: () ==> MonitorModeType
+	getState () == return mode;
+	
+	private setOtherMode : real ==> ()
+	setOtherMode( m ) == (
+		mOtherMode := m;
+	);
+	
+	private getOtherMode : () ==> real
+	getOtherMode () == return mOtherMode;
+	
+-- TODO Define operations here
+	public Monitor : Definitions`Controllers * VelocitySensor * SafetyKey * SafetySwitch * Gyro * Ether ==> Monitor
+	Monitor(i, v, sk, ss, gy, e) ==
+	(
+		-- point to the newly created sensor and actuator objects
+		me := i;
+		sake := sk;
+		velsen := v;
+		sasw := ss;
+		gyro := gy;
+		ether := e;
+		
+		-- register self
+		ether.Register(self);
+	);
+
+	public activate : () ==> ()
+	activate() == (
+		activated := true;
+	);
+
+    private stateMachine : () ==> MonitorModeType
+    stateMachine() ==
+    (
+
+    	if me = <RIGHT> 
+    	then sakeMode := sake.getSafetyKeyStatus()
+    	else sakeMode := <IN>;
+
+    	cases mode :
+    	<UNSAFE> ->
+    	 (
+        	if (sakeMode = <IN>) and  
+        		not velsen.getVelSenHigh() and 
+        		(gyro.getErrorCode() = 0)
+        	then (
+           		if activated 
+           		then (
+            		modeReal := 0.5;
+               		return <RTSAFE>;
+               	);
+			);
+        ),
+
+		
+		<RTSAFE> ->
+		(
+			if sakeMode = <OUT> or 
+          		velsen.getVelSenHigh() or
+          		(gyro.getErrorCode() <> 0) 
+        	then -- from safe to unsafe alsways
+        	(
+            	--activated := false;
+            	sasw.open();
+            	modeReal := 0.0;
+            	return <UNSAFE>;
+        	)
+        	else (
+        		if getOtherMode() <> 0.0 
+        		then ( 
+        			modeReal := 1.0;
+        			return <SAFE>;
+        		);
+        	);
+        ), 			
+
+		
+		<SAFE> ->
+		(
+        	if sakeMode = <OUT> or 
+          		velsen.getVelSenHigh() or
+          		(gyro.getErrorCode() <> 0) or
+          		(getOtherMode() = 0.0)
+        	then -- from safe to unsafe also when other is unsafe
+        		(
+            	--activated := false;
+            	sasw.open();
+            	modeReal := 0.0;
+            	return <UNSAFE>;
+        	)
+        	else return <SAFE>;
+        )
+        end;
+        
+        -- default return
+        IO`println("Monotir should not reach these lines");
+        return mode;
+    );
+
+    private newState : () ==> ()
+    newState() == (
+        duration(1e5) (
+		mode := stateMachine();
+		ether.Broadcast( self, mk_(me, mon, modeReal, time));
+			--IO`print("Monitor state = ");
+			--IO`print(me);
+			--IO`print(",  ");
+			--IO`println(mode);	
+		);
+			--IO`print("Monitor state = ");
+			--IO`print(mode);
+			--IO`print(", sa k: ");
+			--IO`print(sake.getSafetyKeyStatus());
+			--IO`print(", velsen: ");
+			--IO`print(velsen.high);
+			--IO`print(", sa sw: ");
+			--IO`println(sasw.mode);
+	);
+	
+	-- receive a message
+	async public Receive: seq of Ether`Message ==> ()
+	Receive(ms) == (
+	  for m in ms do
+      (
+      	let mk_(a,b,c,d) = m in (
+      		if a <> me
+      		then (
+      			if b = <MON> then setOtherMode( c );
+     			--(
+	      		--IO`print("Message ");
+	      		--IO`print(me);
+      			--IO`print(", ");
+    	  		--IO`print(a);
+      			--IO`print(", ");
+      			--IO`print(b);
+      			--IO`print(", ");
+      			--IO`print(c);
+      			--IO`print(", ");
+      			--IO`print(d);
+      			--IO`print(", ");
+      			--IO`print("  received at:  ");
+      			--IO`println(time);
+      			--);
+      		);
+      	);
+
+      );
+
+      
+	);
+    thread 
+    -- 1000 Hz = 1 millisecond = 1,000,000 nanoseconds
+    --periodic(10e6, 0, 0, 0) (newState);
+    periodic(10e6, 0, 0, 0) (newState);
+
+	sync 
+		mutex (setOtherMode);
+		mutex (getOtherMode);
+		mutex (getOtherMode, setOtherMode);
+    
+	sync
+		mutex (getState);
+		mutex (setState);
+		mutex (getState, setState);
+		
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end Monitor
+\end{vdm_al}

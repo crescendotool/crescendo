@@ -1,0 +1,53 @@
+% abstract controller class
+
+\begin{vdm_al}
+class AbstractControl
+	is subclass of ControlStrategy
+
+operations
+	public AbstractControl: () ==> AbstractControl
+	AbstractControl () == ControlStrategy(1E7, 0, 0, 0)
+	
+values
+	-- use fixed set-point for this trivial example
+	private ENCM_SETP = 20
+	
+instance variables
+	-- place holders for the current sample and hold values
+	private hold_pwm	: real := 0.0;
+	private sample_encm	: real := 0.0;
+	private sample_encl : real := 0.0
+	 	
+operations
+	-- action to execute before each loop body
+	public loop_pre: () ==> ()
+	loop_pre () == (
+		-- first take new samples
+		sample_encm := getSensor(TorsionBarController`SENSOR_ENCM);
+		sample_encl := getSensor(TorsionBarController`SENSOR_ENCL);
+		
+		-- then output last calculated actuator value
+		setActuator(TorsionBarController`ACTUATOR_PWM, hold_pwm)
+	);
+	
+	-- action to execute each control loop
+	public loop_body: () ==> ()
+	loop_body () == (
+		-- compute the new steering value for next iteration
+		if sample_encm < ENCM_SETP
+		then hold_pwm := hold_pwm + 1
+		else if sample_encm > ENCM_SETP
+			 then hold_pwm := hold_pwm - 1
+			 else hold_pwm := ENCM_SETP
+	);
+	
+	-- action to execute after each loop body
+	public loop_post: () ==> ()
+	loop_post () == (
+		-- diagnostics
+		IO`printf ("CTRL %s %s ENCM = %s, ENCL = %s, HOLD = %s\n",
+			[now, delta, sample_encm, sample_encl, hold_pwm] )
+	);
+	
+end AbstractControl
+\end{vdm_al}

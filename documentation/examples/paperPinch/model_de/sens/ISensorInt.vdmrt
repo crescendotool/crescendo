@@ -1,0 +1,14 @@
+class ISensorInt
+
+-- An interface to a sensor that yields a single integer value.
+
+instance variables
+-- sensor value
+protected value: real;
+operations
+
+-- read the current value of this sensor
+public GetValue: () ==> int
+GetValue() == is subclass responsibility;
+
+end ISensorInt

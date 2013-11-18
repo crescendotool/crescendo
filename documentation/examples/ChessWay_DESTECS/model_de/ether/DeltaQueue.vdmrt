@@ -1,0 +1,148 @@
+class DeltaQueue
+
+types 
+
+Entry ::   dt : nat
+         msgs : seq of Ether`Message
+
+instance variables
+
+public queue: seq of Entry := []
+
+operations
+
+-- add a message with the specified delay
+public push: nat1 * Ether`Message ==> ()
+push(t, m) ==
+(
+	-- simple case
+	if queue = [] then
+	(
+		queue := [mk_Entry(t, [m])]
+	)
+	else 
+	(
+		-- variables for searching
+		dcl delay: nat := 0;
+		dcl found: bool := false;
+		dcl head: seq of Entry := [];
+		dcl tail: seq of Entry := queue;
+	
+		-- search for location to insert
+		while not found do
+		(
+			if tail = [] then
+			(
+				-- element goes at the end of the list
+				head := head ^ [mk_Entry(t - delay, [m])];
+				found := true
+			)
+			else
+			(
+				-- look at next item
+				dcl item: Entry := hd tail;
+				tail := tl tail;
+				delay := delay + item.dt;
+				
+				if t > delay then 
+				(
+					-- it should go later in queue
+					head := head ^ [item]
+				)
+				else if t = delay then
+				(
+					-- add to msgs
+					head := head ^ [mu(item, msgs |-> item.msgs ^ [m])];
+					found := true
+				)
+				else
+				(
+					-- new item here
+					dcl dt: nat := delay - t;
+					head := head ^ [mk_Entry(item.dt - dt, [m])];
+					head := head ^ [mu(item, dt |-> dt)];
+					found := true			
+				)
+			)
+		);
+	
+		-- write back to queue
+		queue := head ^ tail;
+	)
+)
+pre t > 0;
+
+-- return set of messages with zero delay remaining
+public pop: nat ==> seq of Ether`Message
+pop(dt) ==
+(
+	if queue <> [] then 
+	(
+		-- variables for searching
+		dcl output: seq of Ether`Message := [];
+		dcl delay: int := dt;
+		dcl done: bool := false;
+		dcl head: seq of Entry := [];
+		dcl tail: seq of Entry := queue;
+
+		while not done do
+		(
+			if tail = [] then
+			(
+				-- no more messages to search
+				done := true
+			)
+			else
+			(
+				-- inspect an item
+				dcl item: Entry := hd tail;
+				tail := tl tail;
+
+				if item.dt <= delay then
+				(
+					-- item was due before the current time
+					output := output ^ item.msgs;
+					delay := delay - item.dt;
+					
+                    -- all messages are now in the future 
+					if delay <= 0 then done := true
+				)
+				else
+				(
+					-- reduce the tick of the head
+					head := head ^ [mu(item, dt |-> item.dt - dt)];
+					done := true		
+				)				
+			)			
+		);
+
+		queue := head ^ tail;
+		return output;
+	)
+	else	
+	(
+		return []
+	)
+);
+
+--public Test: () ==> ()
+--Test() ==
+--(
+--	dcl queue: DeltaQueue := new DeltaQueue();
+--	queue.push(5, 1);
+----	IO`println(queue.queue);
+--	queue.push(6, 2);
+----	IO`println(queue.queue);
+--	queue.push(6, 3);
+----	IO`println(queue.queue);
+--	queue.push(3, 4);
+----	IO`println(queue.queue);
+--	queue.push(2, 5);
+--	IO`println(queue.queue);
+
+--	for i = 1 to 10 do IO`printf("t = %s, msgs = %s\n", [i, queue.pop(1)]);
+--);
+
+sync mutex (push, pop)
+
+end DeltaQueue

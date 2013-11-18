@@ -1,0 +1,12 @@
+class Sensor
+
+	instance variables
+		protected value: real := 0; 
+
+	operations
+		public read: () ==> real
+		read() == return value;
+		
+		
+
+end Sensor

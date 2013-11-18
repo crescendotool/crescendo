@@ -1,0 +1,53 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() ==
+(
+	start(System`controller);
+	block();
+);
+
+-- instantiate elements of System
+public static setup: () ==> ()
+setup() ==
+(
+
+	-- sensors
+	System`sensorVisionLeft := new SensorVision();
+	System`sensorVisionRight := new SensorVision();
+
+	System`sensorRotationSpeedLeft := new SensorRotation();
+	System`sensorRotationSpeedRight := new SensorRotation();
+
+    -- actuators
+    System`actuatorWheelLeft := new ActuatorWheel();
+    System`actuatorWheelRight := new ActuatorWheel();
+    
+	-- instantiate controller
+	System`controller := new Controller(System`sensorVisionLeft,
+										System`sensorVisionRight,
+										System`sensorRotationSpeedLeft,
+										System`sensorRotationSpeedRight,
+										System`actuatorWheelLeft,
+										System`actuatorWheelRight);
+
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+values
+
+-- shared design parameters
+public encoder_resolution: real = 0.0;
+public linefollow_lateral_offset: real = 0.0;
+public linefollow_longitudinal_offset: real = 0.0;
+public initial_Position: seq of seq of real = [];
+public initial_Angle: real = 0.0;
+
+end World

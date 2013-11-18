@@ -1,0 +1,9 @@
+class IListener
+
+operations
+
+-- receive a message
+async public Receive: seq of Ether`Message ==> ()
+Receive(m) == is subclass responsibility;
+
+end IListener

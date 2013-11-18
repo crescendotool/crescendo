@@ -1,0 +1,28 @@
+class Encoder is subclass of ISensorInt
+
+-- Class representing a counting rotary encoder.
+-- This sensor yields a single integer.
+-- This class is designed to be connected to a co-simulation.
+
+instance variables
+
+
+
+operations
+
+-- constructor for Encoder
+public Encoder: real ==> Encoder
+Encoder(v) ==
+	value := v;
+
+-- default constructor for Encoder
+public Encoder: () ==> Encoder
+Encoder() ==
+	Encoder(0.0);
+
+-- get sensor value
+public GetValue: () ==> real
+GetValue() ==
+	return floor value;
+
+end Encoder

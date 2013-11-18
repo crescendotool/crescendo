@@ -1,0 +1,65 @@
+class Controller
+
+	thread periodic(40E6, 0 ,0, 0)(Step);
+
+	instance variables
+	
+		private sensorVisionLeft : SensorVision;
+		private sensorVisionRight : SensorVision;
+		
+		private sensorRotationSpeedLeft : SensorRotation;
+		private sensorRotationSpeedRight : SensorRotation;
+		
+		private actuatorWheelLeft : ActuatorWheel;
+		private actuatorWheelRight : ActuatorWheel;
+		
+		private algoSpeed1 : ComputeSpeedAlg1 := new ComputeSpeedAlg1();
+		private algoSpeed2 : ComputeSpeedAlg2 := new ComputeSpeedAlg2();
+		
+		private currentTime : real := 0;
+				
+	operations
+	
+		public Controller: SensorVision * SensorVision *  SensorRotation * SensorRotation * ActuatorWheel * ActuatorWheel ==> Controller
+		Controller(sviL,sviR,sveL,sveR,awL,awR) == (
+			sensorVisionLeft := sviL;
+			sensorVisionRight := sviR;
+			sensorRotationSpeedLeft := sveL;
+			sensorRotationSpeedRight := sveR;
+			actuatorWheelLeft := awL;
+			actuatorWheelRight := awR;			
+		);
+		
+		-- all controllers implement a step operation
+		public Step : () ==> ()
+		Step () == (
+		
+			-- update the current time
+			currentTime := time;
+		
+			-- calculate the speed
+			algoSpeed2.calculateSpeed(sensorVisionLeft,sensorVisionRight,sensorRotationSpeedLeft,sensorRotationSpeedRight);
+			
+			-- Update the actuators
+			actuatorWheelLeft.setValue(algoSpeed2.getSpeedLeft());
+			actuatorWheelRight.setValue(algoSpeed2.getSpeedRight());
+
+			-- Update the distance			
+			Distance`update(sensorRotationSpeedLeft.read(),sensorRotationSpeedRight.read());
+			
+			-- Some outputs
+			IO`print("Sensor values: "); IO`print("\n");
+			IO`print("Sensor Tick: "); IO`print(sensorRotationSpeedLeft.read()); IO`print(" # "); IO`print(sensorRotationSpeedRight.read());IO`print("\n");
+			IO`print("Sensor Vision: "); IO`print(sensorVisionLeft.read()); IO`print(" # "); IO`print(sensorVisionRight.read());IO`print("\n");
+			IO`print("\n");
+			IO`print("State: "); IO`print(algoSpeed2.getState());IO`print("\n");
+			IO`print("---------------------------------------------------------------");IO`print("\n");
+			IO`print("Distance (total): "); IO`print(Distance`getDistance());IO`print("\n");
+			IO`print("Distance (needed for line): "); IO`print(Distance`getNeededDistance() - 0.1);IO`print("\n");
+			IO`print("Time (total): "); IO`print(currentTime/1000000000);IO`print("\n");
+			IO`print("Time (needed for the line): "); IO`print(Timer`getNeededTimeSec());IO`print("\n");
+			IO`print("################################################################");IO`print("\n");
+			
+		);
+
+end Controller

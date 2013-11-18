@@ -1,0 +1,193 @@
+% CONTROL
+\begin{vdm_al}
+class RTControl is subclass of IListener
+	types
+	public StateType  =  <IDLE> | <CHECK> | <SYNCH> | <DRIVE> ;
+
+	values
+-- TODO Define values here
+
+	instance variables
+
+	private me : Definitions`Controllers;
+	private ct : Definitions`ControlType := <RTC>;
+	public ign : Ignition;
+	public mon : Monitor;
+	public mOtherMode : real := 1.0; --  [Monitor] := nil;
+	public cOtherMode : real := 3.0; --  [RTControl] := nil;
+	public ss : SafetySwitch;
+	public mode : StateType := <DRIVE>;
+	public modeReal : real := 3.0;
+	private ether : [LossyEther] := nil;
+	
+
+	operations
+
+	--public setOtherMonitor: Monitor ==> ()
+	--setOtherMonitor (pmon) == mOther := pmon;
+
+	--public setOtherRTC : RTControl ==> ()
+	--setOtherRTC (prtc) == cOther := prtc;
+
+	public RTControl: Definitions`Controllers * Monitor * Ignition * SafetySwitch * Ether ==> RTControl
+	RTControl( i, m, ig, s, e ) ==
+	(
+		-- point to the referenced objects
+		me := i;
+		mon := m;
+		ign := ig;
+		ss := s;
+		ether := e;
+		
+		-- register self
+		ether.Register(self);
+	);
+
+
+	private stateMachine : () ==> StateType
+	stateMachine() ==
+	(
+		cases mode :
+			<IDLE> ->  
+				if ign.getMode() = <OFF>
+                then (
+					ss.open();
+					modeReal := 0.0; 
+					return <IDLE>;
+					) 
+                else (
+					modeReal := 1.0;
+					return <CHECK>;
+					),
+			<SYNCH> -> (
+				if (mon.mode = <SAFE> and mOtherMode = 1.0 and
+					(cOtherMode = 2.0 or cOtherMode = 3.0))
+				then (
+					modeReal := 3.0;
+					return <DRIVE>;
+					)
+				else
+					if mon.mode <> <SAFE>
+					then (
+						modeReal := 1.0;
+						return <CHECK>;
+						)
+					else (
+						modeReal := 2.0;
+						return <SYNCH>;
+						)
+				),					
+			<CHECK> -> 
+				if ign.getMode() = <OFF>
+				then (
+					modeReal := 0.0;
+					return <IDLE>;
+					)
+				else (
+					mon.activate();
+					if mon.mode = <SAFE> and mOtherMode = 1.0
+					then 
+						if ss.mode = <CLOSED>
+						then (
+							modeReal := 2.0;
+							return <SYNCH>;
+						)
+						else (
+							ss.close();
+							modeReal := 2.0;
+							return <SYNCH>;
+						)							
+					else (
+						modeReal := 1.0;
+						return <CHECK>;
+					)
+				),
+			<DRIVE> -> 
+				if mon.mode <> <SAFE> or ign.getMode() = <OFF> or mOtherMode <> 1.0
+                then (
+					modeReal := 1.0;
+					return <CHECK>;
+				)
+		end;
+		-- if nothing else
+		return mode;
+
+		--IO`print("Statemachine evaluation, sk = ");
+		--IO`println( "" );
+	);
+
+
+
+    public getMode : () ==> StateType
+    getMode() ==
+        return mode;
+
+    private newState : () ==> ()
+    newState() == (
+        duration(2e5)
+        (
+            mode := stateMachine();	
+            ether.Broadcast( self, mk_(me, ct, modeReal, time));
+            IO`print("Control me state other = ");
+            IO`print(time/1e9);
+            IO`print(",   ");
+            IO`print(me);
+            IO`print(",   ");
+            IO`print(mode);
+            IO`print(",   ");
+            IO`print(cOtherMode);
+            IO`print(",   ");
+            IO`println(mon.mode);
+        );
+	);
+	-- receive a message
+	async public Receive: seq of Ether`Message ==> ()
+	Receive(ms) == (
+	  for m in ms do
+      --  let mk_(a,b,c,d) = m in IO`printf("Message %s, %s received at %s\n", [b, c, time])
+      (
+      	let mk_(a,b,c,d) = m in (
+      		if a <> me 
+      		then (
+      			cases b :
+      				<RTC> -> (
+      					cOtherMode := c;
+      					),
+      				<MON> -> mOtherMode := c
+      			end;
+      						duration(1E5) (
+      						IO`print("Message ");
+	      					IO`print(me);
+      						IO`print(", ");
+    	  					IO`print(a);
+      						IO`print(", ");
+      						IO`print(b);
+      						IO`print(", ");
+      						IO`print(c);
+      						IO`print(", ");
+      						IO`print(d);
+      						IO`print(", ");
+      						IO`print("  received at:  ");
+      						IO`println(time);
+      						);
+			
+      			
+      		);
+      	);
+
+      );
+      
+	);
+
+    thread 
+    -- 1000 Hz = 1 millisecond = 1,000,000 nanoseconds
+    --periodic(10e6, 0, 0, 0) (newState);
+    periodic(10e6, 0, 0, 0) (newState);
+
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end RTControl
+
+\begin{vdm_al}

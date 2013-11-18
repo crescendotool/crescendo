@@ -1,0 +1,31 @@
+class SignalState
+
+	
+	types
+	
+		public signalState = <ON> | <OFF> | <UNDEFINED>;
+	
+	instance variables
+	
+		protected threshold: real;
+
+	operations
+
+
+	public SignalState : () ==> SignalState
+		SignalState() == (
+			threshold := 0.5;
+		);
+		
+		
+	public getState : real ==> signalState
+		getState(signal) == (
+		
+			if signal > threshold then
+				return <ON>
+			else			
+				return <OFF>;
+		);
+		
+
+end SignalState

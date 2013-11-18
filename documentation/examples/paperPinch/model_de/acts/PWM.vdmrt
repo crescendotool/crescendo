@@ -1,0 +1,19 @@
+class PWM is subclass of IActuatorPWM
+
+-- Class representing a PWM actuator.
+-- This actuator accepts a real number in the range -1 to 1.
+-- This class is designed to be connected to a co-simulation.
+
+
+
+operations
+
+-- write a value to this actuator
+public Write: IActuatorPWM`PWM ==> ()
+Write(v) == value := v;
+
+-- read the value written to this actuator
+public Read: () ==> IActuatorPWM`PWM
+Read() == return value;
+
+end PWM

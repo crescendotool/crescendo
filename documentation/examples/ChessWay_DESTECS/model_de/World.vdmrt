@@ -1,0 +1,39 @@
+class World
+	types
+-- TODO Define types here
+	values
+-- TODO Define values here
+	instance variables
+-- TODO Define instance variables here
+	operations
+
+	public run : () ==> ()
+	run() ==
+	(
+		-- ether channels
+		start(System`etherI);
+		-- LEFT
+ 		start(System`pidInstanceL);
+ 		start(System`rtControlInstanceL);
+		start(System`monitorL);
+		-- RIGHT
+		start(System`pidInstanceR);
+ 		start(System`rtControlInstanceR);
+		start(System`monitorR);
+
+  		block();
+ 	);
+
+	private block : () ==>()
+	block() ==
+  		skip;
+
+	sync
+
+  		per block => false;
+
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end World

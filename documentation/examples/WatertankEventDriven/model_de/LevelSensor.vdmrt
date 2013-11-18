@@ -1,0 +1,30 @@
+-- DESTECS (Design Support and Tooling for Embedded Control Software)
+-- Grant Agreement Number: INFSO-ICT-248134
+-- Seventh Framework Programme
+-- WaterTank project: introductory project to the DESTECS tool.
+-- More details can be found at DESTECS User Manual, chapter 6.
+
+-- File LevelSensor.vdmrt: model of a sensor that can determine the level
+-- of the watertank.
+
+class LevelSensor
+
+instance variables
+	level 		: real := 0.0;
+	public fault: real := 0.0;
+operations
+
+	public getLevel : () ==> real
+	getLevel () ==
+	(
+		if fault = 2.33 then
+		(
+			return 0;
+		)
+		else
+		(
+			return level;
+		);
+	);
+
+end LevelSensor

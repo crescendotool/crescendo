@@ -1,0 +1,20 @@
+class PumpSwitch_CT is subclass of AbstractActuatorBool
+
+-- Class representing a switch to pump between fuel tanks.
+-- This actuator accepts a boolean value.
+-- This class is designed to be connected to a co-simulation.
+
+operations
+
+-- write a value to this actuator
+public Write: bool ==> ()
+Write(o) == open := o;
+
+-- read the value written to this actuator
+public Read: () ==> bool
+Read() == return open;
+
+-- protect multiple access to Write
+sync mutex(Write)
+
+end PumpSwitch_CT

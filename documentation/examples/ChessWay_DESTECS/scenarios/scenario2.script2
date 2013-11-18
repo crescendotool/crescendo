@@ -1,0 +1,29 @@
+when time = 0.0 do
+  (de real safetyKeyEnabled := 1.0;
+  );
+ 
+--when time = 0.1 do
+--   (de int gyroError := 1;);
+   
+-- when time = 0.13 do
+--   (de int gyroError := 0;); 
+   
+when time = 0.2 do
+  (de real safetyKeyEnabled := 0.0;);
+  
+when time = 0.25 do
+  (de real safetyKeyEnabled := 1.0;);
+
+when de real poleAngle < 0.0-0.2 or de real poleAngle > 0.2 do (
+  print "QUIT  ... ";
+  quit;
+  );
+
+
+  
+  
+  
+  
+  
+  
+

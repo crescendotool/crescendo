@@ -1,0 +1,48 @@
+class FilteredSensorReal is subclass of AbstractFilteredSensorReal
+	
+	--instance variables
+	--	protected sampleSequence : seq of real;
+	
+	operations
+	
+		public FilteredSensorReal : int ==> FilteredSensorReal
+			FilteredSensorReal (initialSampleSize) == (
+			
+				sampleSequence := [x*0 | x in set {1,...,initialSampleSize}]
+				
+		);
+			
+			
+		-- for setting sample size (i.e., how many samples are used
+		-- to determine if the tape is black or white)
+		-- this must be determined during calibration - it's not known
+		-- in advance
+		public setSampleSize : int ==> ()
+			setSampleSize (newSampleSize) == (
+			
+				sampleSequence := [x*0 | x in set {1,...,newSampleSize}]
+				
+		);
+			
+		public updateSampleSequenceForNewValue: () ==> ()
+			updateSampleSequenceForNewValue() == (	
+			
+				sampleSequence := tl sampleSequence ^ [value];
+					
+		);
+		
+		-- for reading in data
+		public readFiltered: () ==> real
+			readFiltered () == (
+				
+				dcl sampleSum : real;
+				sampleSum := 0;
+				
+				for sample in sampleSequence do
+				sampleSum := sampleSum + sample;
+				
+				return sampleSum / len sampleSequence;
+		);
+
+
+end FilteredSensorReal

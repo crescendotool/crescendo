@@ -1,0 +1,73 @@
+class MorseLookup
+
+	-- this class acts as a lookup table to translate
+	-- sequences of dots and dashes into ASCII characters
+	types
+		public morseCharacter = <DOT> | <DASH>;
+		public morseResponseType = char | <END_OF_WORK> | <UNRECOGNISED_SEQUENCE>;
+		morseMapType = map seq of morseCharacter to morseResponseType;
+		 
+	instance variables
+		morseMap : morseMapType;		
+
+	operations
+	
+	public MorseLookup: () ==> MorseLookup
+		MorseLookup () == (
+			morseMap := {
+				[<DOT>, <DASH>]                                 |-> 'a',
+				[<DASH>, <DOT>, <DOT>, <DOT>]                   |-> 'b',
+				[<DASH>, <DOT>, <DASH>, <DOT> ]                 |-> 'c',
+				[<DASH>, <DOT>, <DOT> ]                         |-> 'd',
+				[<DOT>]                                         |-> 'e',
+				[<DOT>, <DOT>, <DASH>, <DOT>]                   |-> 'f',
+				[<DASH>, <DASH>, <DOT> ]                        |-> 'g',
+				[<DOT>, <DOT>, <DOT>, <DOT> ]                   |-> 'h',
+				[<DOT>, <DOT> ]                                 |-> 'i',
+				[<DOT>, <DASH>, <DASH>, <DASH> ]                |-> 'j',
+				[<DASH>, <DOT>, <DASH> ]                        |-> 'k',
+				[<DOT>, <DASH>, <DOT>, <DOT> ]                  |-> 'l',
+				[<DASH>, <DASH> ]                               |-> 'm',
+				[<DASH>, <DOT> ]                                |-> 'n',
+				[<DASH>, <DASH>, <DASH>]                        |-> 'o',
+				[<DOT>, <DASH>, <DASH>, <DOT> ]                 |-> 'p',
+				[<DASH>, <DASH>, <DOT>, <DASH> ]                |-> 'q',
+				[<DOT>, <DASH>, <DOT> ]                         |-> 'r',
+				[<DOT>, <DOT>, <DOT> ]                          |-> 's',
+				[<DASH> ]                                       |-> 't',
+				[<DOT>, <DOT>, <DASH> ]                         |-> 'u',
+				[<DOT>, <DOT>, <DOT>, <DASH> ]                  |-> 'v',
+				[<DOT>, <DASH>, <DASH> ]                        |-> 'w',
+				[<DASH>, <DOT>, <DOT>, <DASH> ]                 |-> 'x',
+				[<DASH>, <DOT>, <DASH>, <DASH> ]                |-> 'y',
+				[<DASH>, <DASH>, <DOT>, <DOT> ]                 |-> 'z',
+				[<DOT>, <DASH>, <DOT>, <DASH>, <DOT>, <DASH> ]  |-> '.',
+				[<DASH>, <DASH>, <DOT>, <DOT>, <DASH>, <DASH> ] |-> ',',
+				[<DOT>, <DOT>, <DASH>, <DASH>, <DOT>, <DOT> ]   |-> '?',
+				[<DASH>, <DOT>, <DOT>, <DASH>, <DOT> ]          |-> '/',
+				[<DOT>, <DASH>, <DASH>, <DOT>, <DASH>, <DOT> ]  |-> '@',
+				[<DOT>, <DASH>, <DASH>, <DASH>, <DASH> ]        |-> '1',
+				[<DOT>, <DOT>, <DASH>, <DASH>, <DASH>]          |-> '2',
+				[<DOT>, <DOT>, <DOT>, <DASH>, <DASH>]           |-> '3',
+				[<DOT>, <DOT>, <DOT>, <DOT>, <DASH>]            |-> '4',
+				[<DOT>, <DOT>, <DOT>, <DOT>, <DOT>]             |-> '5',
+				[<DASH>, <DOT>, <DOT>, <DOT>, <DOT>]            |-> '6',
+				[<DASH>, <DASH>, <DOT>, <DOT>, <DOT>]           |-> '7',
+				[<DASH>, <DASH>, <DASH>, <DOT>, <DOT>]          |-> '8',
+				[<DASH>, <DASH>, <DASH>, <DASH>, <DOT>]         |-> '9',
+				[<DASH>, <DASH>, <DASH>, <DASH>, <DASH>]        |-> '0',
+				[<DOT>, <DOT>, <DOT>, <DASH>, <DOT>, <DASH>]	|-> <END_OF_WORK>
+				};
+			
+		);
+	
+	public getChar: seq of morseCharacter ==> morseResponseType
+		getChar (morseSequence) == (
+		
+			if morseSequence in set dom morseMap then 
+				return morseMap(morseSequence)
+			else
+				return <UNRECOGNISED_SEQUENCE>;
+		);
+
+end MorseLookup

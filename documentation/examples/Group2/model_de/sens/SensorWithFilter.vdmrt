@@ -1,0 +1,48 @@
+class SensorWithFilter
+is subclass of AbstractSensorReal
+	types
+		private SeqSensorDataType= seq of real;
+	values
+		windowLenght : int = 3;
+	instance variables
+		private seqMeaserments:SeqSensorDataType;
+	functions
+	Merge: seq of real * seq of real -> seq of real
+  	Merge(l1,l2) ==
+    cases mk_(l1,l2):
+      mk_([],l),mk_(l,[]) -> l,
+      others              -> if hd l1 <= hd l2 then 
+                               [hd l1] ^ Merge(tl l1, l2)
+                             else
+                               [hd l2] ^ Merge(l1, tl l2)
+    end;
+	MergeSort: seq of real -> seq of real
+  	MergeSort(l) ==
+    cases l:
+      []      -> l,
+      [e]     -> l,
+      others  -> let l1^l2 in set {l} be st abs (len l1 - len l2) < 2
+                 in
+                   let l_l = MergeSort(l1),
+                       l_r = MergeSort(l2) in
+                    Merge(l_l, l_r)
+    end;
+
+  
+	
+	operations
+	public SensorWithFilter:()==>SensorWithFilter
+	SensorWithFilter()==(
+		seqMeaserments:=[];
+	); 
+		public read: () ==> real
+		read() ==(
+			dcl temp : SeqSensorDataType;
+			seqMeaserments:= [value]^seqMeaserments;
+			seqMeaserments:=[seqMeaserments(y)|y in set inds seqMeaserments & y<= windowLenght];
+			temp:=MergeSort(seqMeaserments);
+			--IO`println(temp);
+		 	return temp(floor(len temp/2)+1);
+		 );
+
+end SensorWithFilter

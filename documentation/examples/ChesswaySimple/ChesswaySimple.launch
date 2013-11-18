@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.destecs.ide.debug.launchConfigurationType">
+<stringAttribute key="destecs_launch_config_20sim_log_variables" value=""/>
+<stringAttribute key="destecs_launch_config_contract_path" value="configuration/contract.csc"/>
+<stringAttribute key="destecs_launch_config_ct_endpoint" value="http://localhost:1580"/>
+<stringAttribute key="destecs_launch_config_ct_model_path" value="model_ct/Model_Self-balancing scooter.emx"/>
+<stringAttribute key="destecs_launch_config_de_architecture" value=""/>
+<stringAttribute key="destecs_launch_config_de_endpoint" value=""/>
+<stringAttribute key="destecs_launch_config_de_model_path" value="model_de"/>
+<stringAttribute key="destecs_launch_config_de_replace" value=""/>
+<booleanAttribute key="destecs_launch_config_debug" value="false"/>
+<booleanAttribute key="destecs_launch_config_enable_logging" value="false"/>
+<stringAttribute key="destecs_launch_config_project_name" value="ChesswaySimple"/>
+<booleanAttribute key="destecs_launch_config_remote_debug" value="false"/>
+<stringAttribute key="destecs_launch_config_scenario_path" value=""/>
+<stringAttribute key="destecs_launch_config_shared_design_param" value=""/>
+<booleanAttribute key="destecs_launch_config_show_debug_info" value="false"/>
+<stringAttribute key="destecs_launch_config_simulation_time" value="5"/>
+<stringAttribute key="destecs_launch_config_vdm_log_variables" value=""/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+</listAttribute>
+<booleanAttribute key="vdm_launch_config_dtc_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_generate_coverage" value="false"/>
+<booleanAttribute key="vdm_launch_config_inv_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_log_rt" value="false"/>
+<booleanAttribute key="vdm_launch_config_measure_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_post_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_pre_checks" value="true"/>
+</launchConfiguration>

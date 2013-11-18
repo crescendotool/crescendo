@@ -1,0 +1,24 @@
+class SafetyKey
+	types
+	public SafetyKeyState = <IN> | <OUT>;
+
+	values
+
+	instance variables
+	public realState : real := 1.0;
+	private state : SafetyKeyState := <IN>;
+
+	operations
+
+	public getSafetyKeyStatus : () ==> SafetyKeyState
+	getSafetyKeyStatus() == (
+		if realState <> 0.0 
+        then return <IN> 
+        else return <OUT>;
+	);
+
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end SafetyKey

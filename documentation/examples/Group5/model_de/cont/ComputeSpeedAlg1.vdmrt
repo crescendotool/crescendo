@@ -1,0 +1,55 @@
+class ComputeSpeedAlg1 is subclass of AbstractComputeSpeed	
+	
+	instance variables
+		private state : int := 0; -- 0= on the box, 1= between box and line, 2= line
+		private history : map SensorVision`colour to SensorVision`colour := {|->};
+		
+	operations
+		public calculateSpeed: SensorVision * SensorVision *  SensorRotation * SensorRotation ==> ()
+			calculateSpeed(sviLeft, sviRight, sveLeft, sveRight) == (
+
+				dcl colourLeft : SensorVision`colour := sviLeft.getColour();
+				dcl colourRight : SensorVision`colour := sviRight.getColour();
+
+				IO`print("Get from environment: "); IO`print(colourLeft); IO`print(" ----- "); IO`print(colourRight); IO`print("\n");
+
+				if colourLeft = <UNDEF> or colourRight = <UNDEF>
+				then return;
+				
+				if state= 0 and colourLeft=<BLACK> and colourRight=<WHITE> then -- we are in state zero and stay in zero 
+				( setSpeedLeft(1); setSpeedRight(1); return; );
+
+				if state= 0 and colourLeft=<WHITE> and colourRight=<WHITE> then -- we are in state zero and leave the box 
+				( state:=1; setSpeedLeft(1); setSpeedRight(1); return; );
+
+				if state= 1 and colourLeft=<WHITE> and colourRight=<WHITE> then -- we are in state one and stay in one 
+				( setSpeedLeft(1); setSpeedRight(1); return; );
+
+				if state= 1 and colourLeft=<WHITE> and colourRight=<BLACK> then -- we are in state one and enter the line and start timer 
+				( state:=2; setSpeedLeft(1); setSpeedRight(1); Timer`startTimer(); return; );
+				
+				if state= 1 and colourLeft=<BLACK> and colourRight=<WHITE> then -- we are in state one and enter the line and start timer
+				( state:=2; setSpeedLeft(1); setSpeedRight(1); Timer`startTimer(); return; );								
+				
+				if colourLeft = <WHITE>
+				then -- WHITE 1
+				(
+					if colourRight = <WHITE>
+					then (setSpeedLeft(1); setSpeedRight(1)) -- WHITE/WHITE
+					else (setSpeedLeft(0.5); setSpeedRight(-0.5)); -- WHITE/BLACK
+					
+				) 
+				else -- BLACK 0
+				(
+					if colourRight = <WHITE>
+					then (setSpeedLeft(-0.5); setSpeedRight(0.5)) -- BLACK/WHITE
+					else (setSpeedLeft(1); setSpeedRight(1)); -- BLACK/BLACK
+				)
+				
+			);
+			
+		public getState: () ==> real
+		getState() == return state;
+			
+
+end ComputeSpeedAlg1

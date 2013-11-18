@@ -1,0 +1,104 @@
+% advanced controller example (written by Ken Pierce)
+
+\begin{vdm_al}
+class AdvancedControl
+	is subclass of SimpleControl
+
+values
+	-- time to wait between setpoint changes
+	WAIT_TIME = 5
+	
+types
+	-- represents an angle in radians
+	public Angle = real
+	inv a == 0 <= a and a <= (2 * MATH`pi);
+
+	-- represents a setpoint in revolutions
+	Setpoint = real;
+
+instance variables
+	-- current setpoint
+	current : Setpoint := 0;
+	
+	-- setpoints to visit
+  	queue: seq of Setpoint := [];
+
+	-- track time between setpoint changes
+	next_time: real := WAIT_TIME / 2
+
+functions
+	-- round a real number to nearest three digits
+	round: real -> real
+	round (pval) == floor (pval * 1000 + 0.5) / 1000;
+	
+	-- round a sequence of real numbers to nearest three digits
+	round: seq of real -> seq of real
+	round (pvs) == [ round(pvs(i)) | i in set inds pvs ];
+	
+	-- auxiliary function for the Sort operation
+	insert: Angle * seq of Angle -> seq of Angle
+	insert(a, sorted) == 
+		if sorted = [] then [a]
+		elseif a < hd sorted then [a] ^ sorted
+		else [hd sorted] ^ insert(a, tl sorted)
+
+operations
+	-- sort angles in ascending order
+	private Sort: set of Angle ==> seq of Angle
+	Sort(s) == (
+		dcl sorted: seq of Angle := [];
+		-- insert each element into the right position
+		for all a in set s do sorted := insert(a, sorted);
+		return sorted
+	)
+	post elems RESULT = s and 
+		forall i in set inds RESULT &
+			i <> len RESULT => RESULT(i) <= RESULT(i+1);
+		
+	-- visit a set of angles
+	public Visit: set of Angle ==> ()
+	Visit(s) == (
+		-- sort angles
+		dcl sorted: seq of Angle := Sort(s);
+		-- convert to revolutions
+		dcl setpoints: seq of Setpoint := 
+			[angle / (2 * MATH`pi) | angle in set elems sorted];
+		-- append new setpoints to the queue	
+		queue := queue ^ setpoints ^ [0]
+	)
+	pre s <> {};
+
+operations
+	public AdvancedControl: () ==> AdvancedControl
+	AdvancedControl () == (
+		-- prepare the (unordered) set of setpoints to visit
+		Visit({MATH`pi, MATH`pi/2, 4*MATH`pi/3});
+		-- call the base class constructor
+		SimpleControl()
+	);
+	
+	public getSetpoint: real ==> real
+	getSetpoint (pnow) == (
+		if pnow >= next_time and len queue > 0 then (
+			-- change the setpoint
+			current := hd queue;
+			-- set time for next setpoint change
+			next_time := if TorsionBar`ctrl.mode = 9.0
+			             then pnow + 0.1
+			             else pnow + WAIT_TIME;
+			-- output debug information
+			IO`printf("[%s]: Setpoint changed to %s. Next change at %s.\n", 
+		  		round([pnow, hd queue, next_time]));
+			-- remove setpoint from queue
+			queue := tl queue;
+		);
+		-- return the current setpoint
+		return current
+	)
+
+sync
+	-- negotiate write access to the queue variable
+	mutex (Visit, getSetpoint)	
+	
+end AdvancedControl
+\end{vdm_al}

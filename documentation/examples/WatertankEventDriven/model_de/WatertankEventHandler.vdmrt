@@ -1,0 +1,22 @@
+-- DESTECS (Design Support and Tooling for Embedded Control Software)
+-- Grant Agreement Number: INFSO-ICT-248134
+-- Seventh Framework Programme
+-- WaterTank project: introductory project to the DESTECS tool.
+-- More details can be found at DESTECS User Manual, chapter 6.
+
+-- File WatertankEventHandler.vdmrt: model of a handler to receive the events
+-- that are triggered by the CT model.
+
+class WatertankEventHandler
+
+operations
+
+-- this operation is connected to the event: maxLevelReached
+public async high : () ==> ()
+high()== System`controller.openValve();
+
+-- this operation is connected to the event: minLevelReached
+public async low : () ==> ()
+low()== System`controller.closeValve();
+
+end WatertankEventHandler

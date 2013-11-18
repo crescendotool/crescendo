@@ -1,0 +1,45 @@
+class LimitedDTControl is subclass of DTControl
+
+instance variables
+
+-- enclosed object
+limitedController: DTControl;
+
+-- minimum and maxiumum value
+min: real;
+max: real;
+inv max > min
+
+operations
+
+-- constructor for LimitedDTControl
+public LimitedDTControl: DTControl * real * real ==> LimitedDTControl
+LimitedDTControl(lc, minimum, maximum) == (
+	limitedController := lc;
+	min := minimum;
+	max := maximum;
+)
+pre maximum > minimum;
+
+-- default constructor for LimitedDTControl
+public LimitedDTControl: DTControl ==> LimitedDTControl
+LimitedDTControl(lc) == LimitedDTControl(lc, -1, 1);
+
+-- limit the output of the enclosed object
+public Output: real ==> real
+Output(err) == limit(limitedController.Output(err), -1, 1);
+
+-- delegate sampletime to enclosed object
+public SetSampleTime: real ==> ()
+SetSampleTime(s) == limitedController.SetSampleTime(s);
+
+functions
+
+-- limit x between min and max
+private limit: real * real * real -> real
+limit(x, min, max) ==
+	if x < min then min
+	elseif x > max then max
+	else x;
+
+end LimitedDTControl

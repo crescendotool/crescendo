@@ -1,0 +1,62 @@
+class Distance
+
+	instance variables
+		private static startDistance : real := 0;
+		private static endDistance : real := 0;
+		private static neededDistance : real := 0;
+
+		private static x   : real := 0;  -- x position of the robot
+		private static y   : real := 0;  -- y position of the robot
+		private static ang : real := 0;  -- rotation angle of the robot
+	    private static distTravelled : real := 0;
+		
+		private static leftMotorOld  : real := 0;  -- previous position of the left motor sensor in wheel rotations since lifetime
+		private static rightMotorOld : real := 0;  -- previous position of the right motor sensor in wheel rotations since lifetime
+		
+		private static m : MATH := new MATH();
+		
+	operations
+
+		public static setStartDistance : () ==> ()
+		setStartDistance() == (
+			startDistance := Distance`getDistance();
+		);
+		
+		public static setEndDistance : () ==> ()
+		setEndDistance() == (
+			endDistance := Distance`getDistance();
+		);
+		
+		public static getNeededDistance : () ==> real
+		getNeededDistance () == (
+			neededDistance := endDistance - startDistance;
+			return neededDistance;	
+		);
+		
+		public static update : real * real ==> ()
+		update ( leftWheelTick,          -- value of left motor sensor. Eg 0=no movement, 1=one rotation forward, -1 one rotation backwards.
+				 rightWheelTick )        -- value of right motor sensor. Eg 0=no movement, 1=one rotation forward, -1 one rotation backwards.
+		== (
+			dcl angleL     : real := (leftWheelTick-leftMotorOld); 
+			dcl angleR     : real := (rightWheelTick-rightMotorOld); 
+			dcl angle      : real := ((angleL+angleR)*(m.pi))/44; 
+			dcl deltaDist  : real := angle * 0.03325; -- put radius of wheel here
+			
+			distTravelled := distTravelled + deltaDist;
+			
+			--dcl xNew     : real =: x + dist * sin (ang)  
+			--dcl yNew     : real =: y + dist * cos (ang)
+
+			--x:= xNew;
+			--y:= yNew;
+			
+			leftMotorOld  := leftWheelTick;
+			rightMotorOld := rightWheelTick;
+		);
+		
+		public static getDistance : () ==> real
+		getDistance() == (
+			return distTravelled;
+		);
+				
+end Distance

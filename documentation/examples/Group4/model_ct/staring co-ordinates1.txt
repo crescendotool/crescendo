@@ -1,0 +1,27 @@
+30mm rad right hand - (3061, 3279) 1.061, 1.279 30 degs cw *
+30mm rad left hand - (3742, 3277) 1.742, 1.277 30 degs ccw *
+
+60mm rad right hand - (323, 3264) -1.670, 1.264 30 degs cw *
+60mm rad left hand - (1051, 3296) -0.949, 1.296 30 degs ccw *
+
+125mm rad right hand - (228, 2195)  -1.772, 0.195 30 degs cw *
+125mm rad left hand - (1167,2208 ) -0.833, 0.208 30 degs ccw *
+
+250mm rad right hand - (3003, 2214) 1.003, 0.214 30 degs cw *
+250mm rad left hand - (3764, 2218) 1.764, 0.218 30 degs ccw *
+
+500mm rad right hand - (1378, 2683) -0.622, 0.683 30 degs cw *
+500mm rad left hand - (2660, 2681) 0.660, 0.681 30 degs ccw *
+
+45 degree right hand - (281, 435) -1.719, -1.565 30 degs cw *
+45 degree left hand -  (832 1777) -1.168, -0.223 3.40 radians *
+
+90 degree right hand - (2431 537) 0.431, -1.463 30 degs cw *
+90 degree left hand - (3336 1430) 1.336, -0.570 -2.09 radians *
+
+135 degree right hand - (1038 352) -0.962, -1.648 30 degs cw *
+135 degree left hand - (1811 671) -0.189, -1.329 -1.25 radians
+
+straight line - (3574,283) 1.574,-1.717 30 degs cw *
+
+30 degs = 0.523598776 radians

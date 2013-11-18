@@ -1,0 +1,203 @@
+class Controller
+
+types
+
+-- represents an angle in radians
+public Angle = real
+inv a == 0 <= a and a <= (2 * MATH`pi);
+
+-- represents a time, must be positive
+Time = real
+inv t == t >= 0;
+
+-- represents setpoint change time / value
+SetpointChange ::    setpoint : real
+                  travel_time : Time
+                    wait_time : Time
+
+instance variables
+
+-- thread sampletime and period
+private sampletime: real;
+private period: nat := 1E9;
+
+-- sensors (two encoders)
+private encMotor: Encoder;
+private encLoad: Encoder;
+
+-- actuators (one motor)
+private pwmMotor: Motor;
+
+-- signal generator
+private sp_gen: [CycloidGenerator] := nil;
+
+-- PID control object
+private pid: PID;
+
+-- store sensor and hold values
+private hold_pwm: real := 0.0;
+private sample_encm: real := 0.0;
+private sample_encl: real := 0.0;
+
+-- setpoints to visit
+queue: seq of SetpointChange := [];
+
+-- track time between setpoint changes
+next_time: real := 0
+
+operations
+
+public Controller: nat1 * Encoder * Encoder * Motor ==> Controller
+Controller(f, encm, encl, motor) == (
+	-- set sampletime / period
+	sampletime := 1/f;
+	period := floor (sampletime * 1E9); 
+
+	-- set instance variables
+	encMotor := encm;
+	encLoad := encl;
+	pwmMotor := motor;
+	
+	-- initialise instance variables
+    pid := new PID(k, tauI, tauD);
+	pid.SetSampleTime(sampletime);
+);
+
+-- periodic operation
+public Step: () ==> ()
+Step() == let now = time/1e9 in (
+  -- write held value to actuator
+  pwmMotor.Write(hold_pwm);
+	
+  -- read sensor values
+  sample_encm := enc2rot(encMotor.Read());
+  sample_encl := enc2rot(encLoad.Read());
+	
+  -- change setpoint if necessary
+  if len queue > 0 then (
+    let mk_SetpointChange(sp, t_time, w_time) = hd queue 
+    in (
+      if now >= next_time then (
+	    dcl travel_time: real := t_time;
+	    let next_angle = 2*MATH`pi * sp in
+	      if next_angle = 0 or 
+	        (next_angle >= Monitor`SLOW_MIN and 
+	        next_angle <= Monitor`SLOW_MAX) then 
+	          -- increase travel time to limit speed
+              let distance = abs (next_angle - 
+                               (2*MATH`pi * sample_encm)) 
+              in  travel_time := distance / 0.5;
+      
+        -- update setpoint generation
+        sp_gen := new CycloidGenerator(sample_encm, 
+                                       sp - sample_encm, 
+                                       now, 
+                                       now + travel_time);
+      
+        -- set next change time
+        next_time := now + t_time + w_time;
+
+        -- update queue
+        queue := tl queue;
+        
+        -- diagnostics
+        IO`printf("[%s] Setpoint changed to %s. Next change at %s.\n", 
+            [now, sp, next_time]);        
+      );
+    );  
+  );	
+	
+  -- calculate new hold value
+  if sp_gen <> nil then
+  let err = sp_gen.Output() - sample_encm 
+  in hold_pwm := limit(pid.Output(err), -1, 1);
+	
+  -- diagnostics
+  IO`printf("[%s] sp = %s; hold_pwm = %s; sample_encm = %s; sample_encl = %s\n", 
+    [now, if sp_gen = nil then "n/a" else sp_gen.Output(), hold_pwm, sample_encm, sample_encl])
+);
+
+-- stop if speed limit or no-go region are violated
+public EmergencyStop: () ==> ()
+EmergencyStop() == (
+  -- stop movement
+  hold_pwm := 0;
+  -- clear setpoint and queue
+  sp_gen := nil;
+  queue := [];
+  -- diagnostics
+  IO`printf ("[%s] EMERGENCY STOP!\n", [time/1e9])
+); 
+
+-- visit a set of angles
+public Visit: set of Angle ==> ()
+Visit(s) == (
+  let sorted = Sort(s),
+      setpoints = [angle / (2 * MATH`pi) | 
+                               angle in set elems sorted] 
+  in for sp in setpoints ^ [0] do
+    -- update queue
+    queue := queue ^ 
+      [mk_SetpointChange(sp, TRAVEL_TIME, WAIT_TIME)]
+)
+pre s <> {} and 
+    forall a in set s & 
+      (a < Monitor`NO_GO_MIN or a > Monitor`NO_GO_MAX);
+
+-- sort angles in ascending order
+private Sort: set of Angle ==> seq of Angle
+Sort(s) == (
+	dcl sorted: seq of Angle := [];
+	-- insert each element into the right position
+	for all a in set s do sorted := insert(a, sorted);
+	return sorted
+)
+post elems RESULT = s and 
+     len RESULT = card s and
+     forall i in set inds RESULT & 
+	     i <> len RESULT => RESULT(i) <= RESULT(i+1);
+
+-- avoid concurrent access to queue
+sync mutex(Visit, Step);
+sync mutex(Visit);
+sync mutex(Step);
+
+-- define periodic thread
+thread periodic(period, 0, 0, 0)(Step)
+
+functions 
+
+-- auxiliary function for Sort operation
+private insert: Angle * seq of Angle -> seq of Angle
+insert(a, sorted) == 
+    if sorted = [] then [a]
+    elseif a < hd sorted then [a] ^ sorted
+    else [hd sorted] ^ insert(a, tl sorted);
+
+-- function to compute rotation from encoder signal
+private enc2rot: real -> real
+enc2rot(penc) == (penc / ENC_RESOLUTION) / BELT_RATIO;
+
+-- limit x between min and max
+private limit: real * real * real -> real
+limit(x, min, max) ==
+	if x < min then min
+	elseif x > max then max
+	else x;
+
+values
+
+-- PID constants
+k : real = 0.6;
+tauI : real = 31;
+tauD : real = 0.119;
+
+-- conversion constants used
+public ENC_RESOLUTION : real = 2000.0;
+BELT_RATIO : real = 3.75;
+
+-- setpoint time changes
+TRAVEL_TIME : real = 1;
+WAIT_TIME : real = 0.5;
+
+end Controller

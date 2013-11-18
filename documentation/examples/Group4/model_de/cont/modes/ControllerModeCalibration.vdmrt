@@ -1,0 +1,63 @@
+-- this class provides functionality for the robot whilst it calibrates
+-- it calibrates by detecting a starting pattern on the floor, which 
+-- is known in advance
+
+class ControllerModeCalibration is subclass of AbstractControllerMode
+
+	instance variables
+	
+	private seenWhiteWhite : bool := false;
+	
+	operations
+	
+	public ControllerModeCalibration: LineFollowerController ==> ControllerModeCalibration
+		ControllerModeCalibration (theController) == (
+					
+			let - = AbstractControllerMode(theController) in skip;
+			--IO`println("dot measurer constructed");
+			
+		);
+	
+	-- the robot starts on a black square, moves in a straight line over
+	-- white floor, and then should encounter the line that will be followed
+	public step: () ==> ()
+		step () ==
+		let leftSensor = mainController.getLineSignalLeft(),
+			centerSensor = mainController.getLineSignalCenter(),
+			rightSensor = mainController.getLineSignalRight()
+		in
+			(
+				-- if we've seen some white floor...
+				if seenWhiteWhite then
+				(
+					-- ...and then we find a black line...
+					if centerSensor = Black then
+					(
+						-- ... that means we've found the line
+						IO`println("Line folllower calibration done!\n");
+						
+						mainController.stop();
+						--Record current number of ticks and time
+						mainController.setCalibrationTicksLeft();
+						mainController.setCalibrationTicksRight();
+						mainController.setCalibrationTime();		
+						mainController.controllerModeFinished();
+						return;
+					)
+				)
+				else
+				(
+					if leftSensor = White and rightSensor = White then 
+						seenWhiteWhite := true
+						
+				);
+				
+				--keep moving	
+				mainController.goForward();			
+				
+			);
+	values
+		public White : real = 1;
+		public Black : real = 0;
+		
+end ControllerModeCalibration

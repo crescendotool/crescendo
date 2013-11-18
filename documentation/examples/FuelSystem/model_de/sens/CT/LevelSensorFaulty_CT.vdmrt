@@ -1,0 +1,19 @@
+class LevelSensorFaulty_CT is subclass of AbstractFaultySensorReal
+
+-- Class representing a fuel tank level sensor.
+-- This sensor yields a single real value.
+-- This class is designed to be connected to a co-simulation.
+-- This sensor can exhibit a (signalled) fail silent.
+
+operations
+
+-- read the current value of this sensor
+-- a special value signals a failed reading
+public Read: () ==> [real]
+Read() == return value;
+
+-- true if an error in reading has occurred, false otherwise
+public Error: () ==> bool
+Error() == if value = 9e18 then return true else return false;
+
+end LevelSensorFaulty_CT

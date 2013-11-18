@@ -1,0 +1,40 @@
+--
+-- System
+--
+-- This class represents the architecture of the system and includes
+-- references to the controller, sensors and actuators, and handles
+-- deployment to CPUs. The constructor calls World`setup to 
+-- instantiate its instance variables.
+--
+system System
+
+instance variables
+
+-- controller
+public static controller : [Controller] := nil;
+
+-- sensor(s)
+public static enc1: [ISensorInt] := nil;
+public static enc2: [ISensorInt] := nil;
+public static enc3: [ISensorInt] := nil;
+
+-- actuator
+public static pwm: [IActuatorPWM] := nil;
+
+-- architecture
+cpu: CPU := new CPU(<FP>, 1E6);
+
+operations
+
+-- constructor for System
+public System: () ==> System
+System () == 
+(
+	-- instantiate sensors/actuators/controller
+	World`setup();
+
+	-- deployment
+	cpu.deploy(controller);
+);
+
+end System

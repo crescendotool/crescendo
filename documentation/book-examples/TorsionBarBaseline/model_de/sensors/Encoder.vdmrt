@@ -1,0 +1,18 @@
+class Encoder
+
+-- class representing an encoder
+-- this sensor yields a single integer value
+-- this class is designed to be connected to a co-simulation
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected val: real := 0;
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> int
+Read() == return floor val;
+
+end Encoder

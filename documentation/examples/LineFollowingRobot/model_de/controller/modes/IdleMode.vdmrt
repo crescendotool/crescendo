@@ -1,0 +1,28 @@
+class IdleMode is subclass of AbstractMode
+
+instance variables
+
+private count: int := 0;
+
+operations
+
+-- constructor for DoneMode
+public IdleMode: AbstractModalController ==> IdleMode
+IdleMode(c) == let - = AbstractMode`AbstractMode(c) in skip;
+
+-- called when we enter this mode
+public Enter: () ==> ()
+Enter() == (
+	-- stop robot
+	con.Stop();
+);
+
+-- perform control action in this mode
+public Step: () ==> [AbstractModalController`Mode]
+Step() == (count := count+1; return nil);
+
+-- return true if the robot has been stopped
+public Done: () ==> bool
+Done() == return count > 1;
+
+end IdleMode

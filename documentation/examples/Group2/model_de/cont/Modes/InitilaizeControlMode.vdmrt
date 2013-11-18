@@ -1,0 +1,67 @@
+-- this class provides functionality for initialising the robot
+-- before we can start following the actual line
+
+class InitilaizeControlMode is
+subclass of AbstractControllerMode
+types
+	public states=<BLACK>|<WHITE>;
+
+instance variables
+	private levelBlackSum:real;
+	private levelWhiteSum:real;
+	private numberSample:int;
+	private avarage:real;
+	private state:states;
+operations 
+ public InitilaizeControlMode: Controller ==> InitilaizeControlMode
+ InitilaizeControlMode(theControl)==(
+ 	--	let - = AbstractControllerMode(theController) in skip;
+		
+			mainController := theControl;			
+			numberSample:=0;
+			levelBlackSum:=0;--mainController.lineSensorLeft.read();
+			levelWhiteSum:=0;--mainController.lineSensorRight.read();
+			avarage:=0;
+			state:=<BLACK>;
+			IO`println("State black");
+			
+ );
+ public step: () ==> ()
+			step () == (
+			cases(state):
+			(<BLACK>)->
+				(
+				mainController.motorVoltageLeft.setValue(5);
+				mainController.motorVoltageRight.setValue(5);
+				--IO`printf("Light reading %s,%s \n",[mainController.lineSensorLeft.read(),mainController.lineSensorRight.read()]);
+				--IO`printf("Wheel Pos %s,%s \n",[mainController.wheelPosLeft.read(),mainController.wheelPosRight.read()]);		
+				if mainController.lineSensorLeftBack.read()>avarage then
+				(
+					IO`println("State white");
+					state:=<WHITE>;
+					mainController.SensorThreshold:=avarage;
+					
+				);
+				levelBlackSum:=levelBlackSum+mainController.lineSensorLeftBack.read();
+				levelWhiteSum:=levelWhiteSum+mainController.lineSensorRightBack.read();
+				numberSample:=numberSample+1;	
+				avarage:=(levelWhiteSum+levelBlackSum)/numberSample/2 ;	 
+				IO`printf("Avarage %s \n",[avarage]);
+				),
+			(<WHITE>)->
+				(
+				mainController.motorVoltageLeft.setValue(5);
+				mainController.motorVoltageRight.setValue(5);			
+				if mainController.lineSensorLeftBack.read()<avarage or mainController.lineSensorRightBack.read()<avarage or 
+				   mainController.lineSensorLeft.read()<avarage or mainController.lineSensorRight.read()<avarage then
+				(
+
+					mainController.switchMode();
+					
+				);
+
+				)
+			end;
+			);
+			
+end InitilaizeControlMode

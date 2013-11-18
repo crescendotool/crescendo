@@ -1,0 +1,66 @@
+class Controller
+
+values
+  -- time base is 1 nanosec
+  private TB = 1E9;
+
+values
+  -- attenuation
+  private K = 2000;
+  -- K constant in P-CTRL
+  private KP = 2.0
+
+instance variables
+  -- sensor and actuator objects
+  private counts : Sensor;
+  private rev  : Actuator;
+
+instance variables
+  -- simulation time at the start of the period
+  private now : nat := 0;
+  -- P-CTRL response computed in previous period
+  private curr : real := 0
+
+instance variables
+  -- placeholder for the setpoint
+  private sp   : real := 0.0;
+  -- placeholder for the error
+  private err  : real := 0.0;
+  -- placeholder for the P-CTRL response
+  private hold : real := 0.0
+
+operations
+  -- constructor of the controller
+  public Controller: () ==> Controller
+  Controller () == 
+    ( -- create the sensor instance
+      counts := new Sensor();
+      -- link as shared variable
+      Demo`counts := counts;
+      -- create the actuator instance
+      rev := new Actuator();
+      -- link as shared variable
+      Demo`rev := rev );
+
+  public CtrlLoop: () ==> ()
+  CtrlLoop () ==
+    ( -- immediately output the (previous) hold value
+      duration (0) ( rev.SetValue(hold); now := time; curr := hold );
+      -- compute the current setpoint
+      sp := if time >= TB then 1.0 else 0.0;
+      -- compute the error
+      err := sp - (counts.GetValue() / K);
+      -- compute the new P-CTRL response
+      hold := err * KP;
+      -- diagnosis
+      duration (0) IO`printf("%s,%s,%s,%s,%s\n",
+        [now / TB, sp, err, curr, (time - now)/TB*1E6]) ) 
+      -- simulation time, setpoint, error, current response, execution time
+thread
+  -- control loop is executed every second
+  periodic (1000E6, 0, 0, 0) (CtrlLoop)
+  -- note that CtrlLoop will have a 2 microsecond
+  -- start-up delay (periodic task start penalty)
+  -- with a 42 microsecond execution time
+  
+end Controller

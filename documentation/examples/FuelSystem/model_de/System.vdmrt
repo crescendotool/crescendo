@@ -1,0 +1,41 @@
+system System
+
+instance variables 
+
+-- sensors (interfaces)
+public static LFT: [AbstractSensorReal] := nil;
+public static LMT: [AbstractSensorReal] := nil;
+public static TT: [AbstractSensorReal] := nil;
+
+-- actuators
+public static LMT2LFT: [AbstractActuatorBool] := nil;
+public static LMT2TT: [AbstractActuatorBool] := nil;
+public static TT2LFT: [AbstractActuatorBool] := nil;
+
+-- controller
+public static controller: [Controller] := nil;
+
+-- watchdog
+public static watchdog: [TTWatchdog] := nil;
+
+-- architecture
+cpu: CPU := new CPU(<FP>, 1E7);
+cpu2: CPU := new CPU(<FP>, 1E7);
+
+-- bus
+bus: BUS := new BUS(<FCFS>, 115E2, {cpu, cpu2});
+
+operations
+
+public System: () ==> System
+System() == 
+(
+	-- instantiate controller
+	World`setup();
+
+	-- deploy controller and watchdog
+	cpu.deploy(controller);
+    cpu2.deploy(watchdog)
+)
+
+end System

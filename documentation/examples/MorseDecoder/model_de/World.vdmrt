@@ -1,0 +1,38 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() ==
+(
+	start(System`controller);
+	block();
+);
+
+-- instantiate elements of System
+public static setup: () ==> ()
+setup() ==
+(
+	-- sensors
+	System`codeSense := new FilteredSensorReal(1);
+
+    -- actuators
+    System`motorVoltage := new ActuatorReal();
+
+	-- instantiate controller
+	System`controller := new ModalController(System`codeSense, System`motorVoltage);
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+values
+
+-- shared design parameters
+public AToDResolutionBits: real = 0.0;
+public AToDNoiseBits: real = 0.0;
+
+end World

@@ -1,0 +1,30 @@
+system System
+
+instance variables 
+
+-- sensors (as interface types)
+public static codeSense:  [AbstractFilteredSensorReal] := nil;
+
+-- actuators (as interface types)
+public static motorVoltage:  [AbstractActuatorReal] := nil;
+
+
+-- controller
+public static controller: [AbstractMorseReader] := nil;
+
+-- cpu
+cpu: CPU := new CPU(<FP>, 1E6)
+
+operations
+
+public System: () ==> System
+System() ==
+(
+	-- instantiate instance variables
+	World`setup();
+
+	-- deployment
+	cpu.deploy(controller)
+)
+
+end System

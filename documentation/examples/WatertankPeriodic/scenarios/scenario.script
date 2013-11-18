@@ -1,0 +1,24 @@
+-- DESTECS (Design Support and Tooling for Embedded Control Software)
+-- Grant Agreement Number: INFSO-ICT-248134
+-- Seventh Framework Programme
+-- WaterTank project: introductory project to the DESTECS tool.
+-- More details can be found at DESTECS User Manual, chapter 6.
+
+-- File scenario.script: scenario file containing different parameters to
+-- be used in the co-simulation.
+
+-- Scenario usage:
+-- [Double number] SPACE [DE].[fieldName] := [Double number]
+-- [Double number] SPACE [CE].[submodelName\variableName] = [Double number] 
+-- 2.5 DE.fault := 2.33;
+-- 1 CT.Control\testSignal = 1;
+
+-- we assume that the valve is broken at simulation time = 6
+-- check 20-sim plot to see the result
+6 DE.isValveBroken := 1;
+7 DE.isValveBroken := 0;
+
+-- we assume that the level sensor is broken at simulation time = 10
+-- check 20-sim plot to see the result
+10 DE.isLevelSensorBroken := 1;
+11 DE.isLevelSensorBroken := 0;

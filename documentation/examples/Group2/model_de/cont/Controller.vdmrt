@@ -1,0 +1,116 @@
+class Controller 
+	types
+		modes = <INIT> | <WORK>;
+
+
+	instance variables
+		-- sensors for detecting the line - there are for
+		public lineSensorLeft: AbstractSensorReal;
+		public lineSensorRight: AbstractSensorReal;
+		public lineSensorLeftBack: AbstractSensorReal;
+		public lineSensorRightBack: AbstractSensorReal;
+		
+		-- encoders for the two wheels
+		public wheelPosLeft: AbstractSensorReal;
+		public wheelPosRight: AbstractSensorReal;
+
+		-- motors for the wheel
+		public motorVoltageLeft: AbstractActuatorReal;
+		public motorVoltageRight: AbstractActuatorReal;	
+		
+		-- controller mode variable stores an instance of a class
+		-- supplying the functionality we need in the current mode of operation
+		private  controllerMode: AbstractControllerMode	;
+		private mode: modes;
+
+		public SensorThreshold:real;
+		public pCounter:PathCounter;
+
+values
+	public robotLen = 30;
+
+	operations
+		-- constructor
+		public Controller:  AbstractSensorReal*AbstractSensorReal*AbstractSensorReal*AbstractSensorReal*AbstractSensorReal*AbstractSensorReal
+		*AbstractActuatorReal*AbstractActuatorReal ==> Controller
+		Controller (lineSensorLeft1,lineSensorRight1,lineSensorLeftBack1,lineSensorRightBack1,wheelPosLeft1,
+		wheelPosRight1,motorVoltageLeft1,motorVoltageRight1) == (
+			lineSensorLeft := lineSensorLeft1;
+			lineSensorRight :=lineSensorRight1;
+			lineSensorLeftBack := lineSensorLeftBack1;
+			lineSensorRightBack :=lineSensorRightBack1;
+			
+			wheelPosLeft := wheelPosLeft1;
+			wheelPosRight := wheelPosRight1;
+			
+			motorVoltageLeft := motorVoltageLeft1;
+			motorVoltageRight := motorVoltageRight1;
+			
+			pCounter := new PathCounter(wheelPosLeft, wheelPosRight);
+			controllerMode:=new InitilaizeControlMode(self);
+			mode := <INIT>;
+			IO`println("State INIT");
+		);
+		
+		-- this method required for the controller
+		public Step : () ==> ()
+		Step () == (
+			controllerMode.step();
+			pCounter.step();
+		);
+		
+		-- allows robot to change from one mode of operation to another
+		-- functionality for each mode is supplied in the mode variable
+		public switchMode: () ==> ()
+		switchMode() == (
+			cases(mode):
+			(<INIT>)->
+				(
+				IO`println("State WORK");
+				mode:=<WORK>;
+				controllerMode:=new LineFollowingControlMode(self);
+				pCounter.reset();
+				),
+			(<WORK>)->(skip;)
+			end;
+			
+
+				
+		);
+		
+		-- operations for turning the robot in different directions
+		public setMotorVoltageLeft : real ==> () 
+			setMotorVoltageLeft (newVoltage) == (
+			
+				motorVoltageLeft.setValue(newVoltage);
+		
+		);
+		
+		public setMotorVoltageRight : real ==> () 
+			setMotorVoltageRight (newVoltage) == (
+				motorVoltageRight.setValue(newVoltage);
+		
+		);
+		
+		
+		-- operations for checking current motor voltage on left and right
+		public getMotorVoltageLeft : () ==> real 
+			getMotorVoltageLeft () == (
+			
+				return motorVoltageLeft.getValue();
+		
+		);
+		
+		public getMotorVoltageRight : () ==> real 
+			getMotorVoltageRight () == (
+			
+				return motorVoltageRight.getValue();
+		
+		);
+		
+		
+		
+
+	thread periodic(40E6, 0 ,0, 0)(Step);
+
+end Controller

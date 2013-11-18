@@ -1,0 +1,16 @@
+% interface definition
+
+\begin{vdm_al}
+class IActuatorReal
+	is subclass of ISharedVariable
+	
+operations
+	public Write: real ==> ()
+	Write (-) == is subclass responsibility
+
+sync
+	-- make sure there is only one concurrent write
+	mutex(Write)
+		
+end IActuatorReal
+\end{vdm_al}

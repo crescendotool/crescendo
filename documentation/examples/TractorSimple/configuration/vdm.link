@@ -1,0 +1,12 @@
+-- Linking of shared design parameters 
+sdp P_k = World.P_k;
+sdp Voltage_Power =  World.Power;
+
+-- Linking of Monitored Variables
+input wheelRotations = System.controller.rotations;
+input steerRotations = System.controller.sterringrotations;
+input ImuOrientation = System.controller.ImuOrientation;
+
+-- Linking of Controlled Variables
+output drivingControl = System.controller.drivingControl;
+output steeringControl = System.controller.steeringControl;

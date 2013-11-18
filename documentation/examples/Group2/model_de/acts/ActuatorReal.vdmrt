@@ -1,0 +1,10 @@
+class ActuatorReal is subclass of AbstractActuatorReal		
+
+	operations
+		public setValue: real ==> ()
+		setValue(val) == value := val;
+		
+		public getValue: () ==> real
+			getValue() == return value;
+
+end ActuatorReal

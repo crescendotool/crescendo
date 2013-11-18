@@ -1,0 +1,161 @@
+-- Controller for a robot with 3 sensors (two in front, one in the middle), 
+-- smoothing the path
+class Controller
+
+	thread periodic(40E6, 0 ,0, 0)(Step);
+
+	types
+		public State = <CALIBRATING> | <SEARCHING> | <POSITIONING_ON_LINE> | <FOLLOWING> | <DONE>;
+		public Direction = <LEFT> | <RIGHT>;
+	
+	instance variables
+		protected state : State;
+
+		protected sensorLeft : Sensor;
+		protected sensorRight: Sensor;
+		protected sensorMiddle: Sensor;
+		
+		protected wheelLeft : Wheel;
+		protected wheelRight: Wheel;
+		
+		protected motorVoltages : seq of real;
+		
+		protected lineDetectionTime : [real] := nil;
+		protected lineDetectionMotors : [real] := nil;
+		protected steps : real := 0;
+		
+		protected recognitionValue : real := 0.3;
+		protected recognitionValueStart : real := 0.6;
+		protected turningDirection : [Direction] := nil;
+		
+	operations
+		public Controller: Sensor * Sensor * Sensor * Wheel * Wheel * seq of real ==> Controller
+		Controller(sL, sR, sM, wL, wR, mVs) == (
+			sensorLeft  := sL;
+			sensorRight := sR;
+			sensorMiddle := sM;
+			wheelLeft  := wL;
+			wheelRight := wR;
+			motorVoltages  := mVs;
+	
+			state := <CALIBRATING>;
+		);
+		
+		-- controllers have to implement a step operation
+		public Step : () ==> ()
+		Step () == (
+			ProcessState();
+			steps := steps + 1;
+		);
+		
+		ProcessState : () ==> ()
+		ProcessState() == (
+			if state = <CALIBRATING> then
+				Calibrate()
+			else if state = <SEARCHING> then
+				Search()
+			else if state = <POSITIONING_ON_LINE> then
+				PositionOnLine()
+			else if state = <FOLLOWING> then
+				Follow()
+			else
+				Done();
+		);
+		
+		NextState : State ==> ()
+		NextState(s) == (
+			state := s;
+			ProcessState();
+		);
+		
+		-- for calibrating the robot before we start to hunt for the line
+		Calibrate : () ==> ()
+		Calibrate () == (
+			SetSpeed(0.5, 0.5);
+			IO`printf("%s %s\n", [sensorLeft.Read(), sensorRight.Read()]);
+			if sensorLeft.Read() < recognitionValue and sensorRight.Read() < recognitionValue then (
+				-- left calibration square
+				IO`println("Leaving calibration square.");
+				IO`printf("%s %s\n", [sensorLeft.Read(), sensorRight.Read()]);
+				NextState(<SEARCHING>);
+			);
+		);
+		
+		-- searching for the line
+		Search : () ==> ()
+		Search () == (
+			SetSpeed(0.5, 0.5);
+			if sensorLeft.Read() > recognitionValue or sensorRight.Read() > recognitionValue then (
+				-- found line
+				IO`println("Found the line, driving towards it now.");
+				NextState(<POSITIONING_ON_LINE>);
+			)
+		);
+		
+		-- positioning the robot over the line
+		PositionOnLine : () ==> ()
+		PositionOnLine () == (
+			SetSpeed(0.5, 0.5);
+			if sensorMiddle.Read() > recognitionValueStart then (
+				-- found line
+				lineDetectionTime := time;
+				lineDetectionMotors := wheelLeft.Read() + wheelRight.Read();
+				steps := 0;
+				IO`printf("Found the line (left wheel at %s and right wheel at %s).\n", [wheelLeft.Read(), wheelRight.Read()]);
+				NextState(<FOLLOWING>);
+			)
+		);
+		
+		-- following the line
+		Follow : () ==> ()
+		Follow () == (
+			if sensorLeft.Read() < recognitionValue and sensorMiddle.Read() < recognitionValue and sensorRight.Read() < recognitionValue then (
+				-- at then end of the line
+				IO`printf("Done (left wheel at %s and right wheel at %s).\n", [wheelLeft.Read(), wheelRight.Read()]);
+				PrintLineLength();
+				NextState(<DONE>);
+			) else if sensorLeft.Read() > recognitionValue and sensorRight.Read() > recognitionValue then (
+				-- both front sensors are on the line
+				if turningDirection = <LEFT> then (
+					SetSpeed(-1, 1);
+				) else if turningDirection = <RIGHT> then (
+					SetSpeed(1, -1);
+				) else (
+					IO`println("Don't know what to do.");
+					SetSpeed(-0.1, -0.1);
+				);
+			) else (
+				-- set turning direction
+				if sensorLeft.Read() > recognitionValue then
+					turningDirection := <LEFT>
+				else if sensorRight.Read() > recognitionValue then
+					turningDirection := <RIGHT>
+				else
+					turningDirection := nil;
+				-- turn smoothly
+				SetSpeed(1 - sensorLeft.Read(), 1 - sensorRight.Read());
+			);
+		);
+		
+		-- finished - reached the end of the line
+		Done : () ==> ()
+		Done () == (
+			SetSpeed(0, 0);
+		);
+		
+		PrintLineLength: () ==> ()
+		PrintLineLength() == (
+			let lineLengthInTicks = (wheelLeft.Read() + wheelRight.Read() - lineDetectionMotors) / 2 in
+			let lineLength = lineLengthInTicks / World`world.encoder_resolution * 2 * MATH`pi * World`world.r_wheel in
+			IO`printf("Detected %sm of line in %ss (%ss).\n", [lineLength, (time - lineDetectionTime) / 1e9, steps / 25]);
+		);
+		
+		SetSpeed : real * real ==> ()
+		SetSpeed(l, r) == (
+		
+		
+			wheelLeft.motorVoltages := [l, r];
+			--IO`println(wheelLeft.motorVoltages);
+		);
+
+end Controller

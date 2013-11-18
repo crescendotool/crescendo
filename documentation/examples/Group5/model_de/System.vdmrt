@@ -1,0 +1,36 @@
+system System
+
+instance variables 
+
+-- sensors (as interface types)
+public static sensorVisionLeft:  [SensorVision] := nil;
+public static sensorVisionRight:  [SensorVision] := nil;
+
+public static sensorRotationSpeedLeft:  [SensorRotation] := nil;
+public static sensorRotationSpeedRight:  [SensorRotation] := nil;
+
+-- actuators (as interface types)
+public static actuatorWheelLeft:  [ActuatorWheel] := nil;
+public static actuatorWheelRight:  [ActuatorWheel] := nil;
+
+-- public static seqe : map char to SensorWheel := {|->};
+
+-- controller
+public static controller : [Controller] := nil;
+
+-- cpu
+cpu: CPU := new CPU(<FP>, 25E3)
+
+operations
+
+public System: () ==> System
+System() ==
+(
+	-- instantiate instance variables
+	World`setup();
+
+	-- deployment of the controller
+	cpu.deploy(controller,"Controller")
+)
+
+end System

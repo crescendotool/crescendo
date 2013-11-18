@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.destecs.ide.debug.launchConfigurationType">
+<stringAttribute key="destecs_launch_config_20sim_implementations" value=""/>
+<stringAttribute key="destecs_launch_config_20sim_log_variables" value=""/>
+<stringAttribute key="destecs_launch_config_20sim_settings" value=""/>
+<stringAttribute key="destecs_launch_config_contract_path" value="configuration/contract.csc"/>
+<stringAttribute key="destecs_launch_config_ct_endpoint" value="http://localhost:1580"/>
+<booleanAttribute key="destecs_launch_config_ct_leave_dirty_for_inspection" value="true"/>
+<stringAttribute key="destecs_launch_config_ct_model_path" value="model_ct/Watertank.emx"/>
+<stringAttribute key="destecs_launch_config_de_architecture" value=""/>
+<stringAttribute key="destecs_launch_config_de_endpoint" value=""/>
+<stringAttribute key="destecs_launch_config_de_model_path" value="model_de"/>
+<stringAttribute key="destecs_launch_config_de_replace" value=""/>
+<booleanAttribute key="destecs_launch_config_de_rt_validation" value="false"/>
+<booleanAttribute key="destecs_launch_config_debug" value="false"/>
+<booleanAttribute key="destecs_launch_config_enable_logging" value="true"/>
+<stringAttribute key="destecs_launch_config_log_variables" value=""/>
+<stringAttribute key="destecs_launch_config_project_name" value="WatertankEventDriven"/>
+<booleanAttribute key="destecs_launch_config_remote_debug" value="false"/>
+<stringAttribute key="destecs_launch_config_remote_project_base1" value=""/>
+<stringAttribute key="destecs_launch_config_scenario_path" value=""/>
+<stringAttribute key="destecs_launch_config_shared_design_param" value="maxlevel:=2;minlevel:=1;"/>
+<booleanAttribute key="destecs_launch_config_show_debug_info" value="true"/>
+<booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>
+<stringAttribute key="destecs_launch_config_simulation_time" value="10"/>
+<booleanAttribute key="destecs_launch_config_use_remote_ct_simulator" value="false"/>
+<stringAttribute key="destecs_launch_config_vdm_log_variables" value=""/>
+<booleanAttribute key="vdm_launch_config_dtc_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_generate_coverage" value="false"/>
+<booleanAttribute key="vdm_launch_config_inv_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_log_rt" value="false"/>
+<booleanAttribute key="vdm_launch_config_measure_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_post_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_pre_checks" value="true"/>
+</launchConfiguration>

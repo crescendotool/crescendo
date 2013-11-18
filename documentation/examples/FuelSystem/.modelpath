@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modelpath>
+	<modelpathentry kind="src" path="model_de"/>
+	<modelpathentry kind="output" path="generated"/>
+</modelpath>

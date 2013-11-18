@@ -1,0 +1,65 @@
+class AbstractModeTimed is subclass of IMode
+
+instance variables
+
+-- this allows the mode to access sensors and actuators
+protected con: AbstractModalController;
+
+-- timings
+private t: real;
+private prev_t: [real] := nil;
+private done: bool;
+private TOTAL_TIME: real
+
+operations
+
+-- constructor for AbstractModeTimed
+public AbstractModeTimed: AbstractModalController * real ==> AbstractModeTimed
+AbstractModeTimed(c, total_time) == (
+	-- initialise instance variables
+	con := c;
+	t := 0;
+	prev_t := 0;
+	done := false;
+	TOTAL_TIME := total_time
+);
+
+-- control loop
+public Step: () ==> [AbstractModalController`Mode]
+Step() == (
+	-- count time
+	if prev_t = nil or prev_t = 0 
+	then prev_t := time/1E9;
+	let now_t = time/1E9 in (
+		t := t + (now_t - prev_t);
+		prev_t := now_t
+	);
+	
+	-- check if time has elapsed
+	if t <= TOTAL_TIME 
+	then SubStep()
+	else done := true;
+		
+	-- finished
+	return nil			
+);
+
+-- called when we enter this mode
+-- can be overriden
+public Enter: () ==> ()
+Enter() == skip;
+
+-- called when we exit this mode
+-- can be overriden
+public Exit: () ==> ()
+Exit() == skip;
+
+-- return true if this mode has finished, false otherwise
+public Done: () ==> bool
+Done() == return done;
+
+-- subclass control loop
+public SubStep: () ==> ()
+SubStep() == skip;
+
+end AbstractModeTimed

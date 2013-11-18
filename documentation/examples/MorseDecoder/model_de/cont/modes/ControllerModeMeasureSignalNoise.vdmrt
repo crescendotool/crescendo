@@ -1,0 +1,93 @@
+class ControllerModeMeasureSignalNoise is subclass of AbstractControllerMode
+	-- this class provides functionality for an initial mode where we 
+	-- study the amount of noise in our signal when we read the tape
+	instance variables
+
+		private sampleCount : int;
+		private targetSampleCount : int;
+		private sampleMin : real;
+		private sampleMax : real;
+
+	operations
+	
+	public ControllerModeMeasureSignalNoise: ModalController * int ==> ControllerModeMeasureSignalNoise
+		ControllerModeMeasureSignalNoise (theController, targetCount) == (
+		
+			let - = AbstractControllerMode(theController) in skip;
+		
+			sampleCount :=0;
+			targetSampleCount := targetCount;
+			
+			sampleMin :=1;
+			sampleMax :=0;
+			mainController := theController;
+			
+			mainController.setMotorVoltage(0);
+			
+		);
+	
+	public step: () ==> ()
+		step () == (
+			
+			-- take several samples and determine the range 
+			dcl thisSample : real;
+			thisSample := mainController.getMorseSignalRaw();
+			
+			if thisSample < sampleMin then
+				sampleMin := thisSample;
+				
+			if thisSample > sampleMax then
+				sampleMax := thisSample;
+				
+			sampleCount := sampleCount + 1;
+		
+			if sampleCount = targetSampleCount then 
+			(
+				dcl filterLevel : int;
+				
+				-- we now examine the range of noise we saw
+				-- for higher amounts of noise, we take more samples in 
+				-- the same time frame, to increase confidence that we are
+				-- accurately determining light and dark areas.
+				-- For lower amounts of noise, fewer samples in the same
+				-- time frame are required
+				mainController.signalNoiseScale := sampleMax - sampleMin;
+				
+				if mainController.signalNoiseScale > 0 then
+				(
+					filterLevel := 2;
+					mainController.setMorseSensorFilterLevel(filterLevel);
+					mainController.setMotorVoltage(0.006);
+				);
+				
+				if mainController.signalNoiseScale > 0.2 then
+				(
+					filterLevel:= 3;
+					mainController.setMorseSensorFilterLevel(filterLevel);
+					mainController.setMotorVoltage(0.006);
+				);
+				
+				if mainController.signalNoiseScale > 0.4 then
+				(
+					filterLevel:= 3;
+					mainController.setMorseSensorFilterLevel(filterLevel);
+					mainController.setMotorVoltage(0.008);
+				);
+				
+				
+				if mainController.signalNoiseScale > 0.8 then
+				(
+					filterLevel:= 35;
+					mainController.setMorseSensorFilterLevel(filterLevel);
+					mainController.setMotorVoltage(0.00035);
+				);
+				
+				IO`printf(" Noise scale was read at %s so filter level: %s  motor voltage %s",[mainController.signalNoiseScale,filterLevel ,mainController.getMotorVoltage()]); 
+						
+				mainController.controllerModeFinished();
+			)
+		);
+		
+		
+
+end ControllerModeMeasureSignalNoise
