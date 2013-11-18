@@ -15,8 +15,12 @@
 
 -- we assume that the valve is broken at simulation time = 6
 -- check 20-sim plot to see the result
-6 DE.isValveBroken := 1;
-7 DE.isValveBroken := 0;
+-- 6 DE.isValveBroken := 1;
+-- 7 DE.isValveBroken := 0;
+
+-- Not that this file is written in a format no longer supported and that the following two lines is a port of the two lines above
+when time = 6.0 do ( de real isValveBroken := 1;);
+when time = 7.0 do ( de real isValveBroken := 0;);
 
 -- we assume that the level sensor is broken at simulation time = 10
 -- check 20-sim plot to see the result
