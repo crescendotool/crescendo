@@ -5,7 +5,7 @@
 <stringAttribute key="destecs_aca_architectures" value="Two_cpu.arch"/>
 <stringAttribute key="destecs_aca_base_config" value="ChessWay_DESTECS_CoSIM_2D_PIDinCT"/>
 <stringAttribute key="destecs_aca_incremental_sdps" value=""/>
-<stringAttribute key="destecs_aca_scenarios" value="scenario2.script2"/>
+<stringAttribute key="destecs_aca_scenarios" value="scenario2.script"/>
 <stringAttribute key="destecs_aca_valueset_sdps" value="pidGain|-225;-150;-75"/>
 <stringAttribute key="destecs_launch_config_de_architecture" value="dse"/>
 <booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>

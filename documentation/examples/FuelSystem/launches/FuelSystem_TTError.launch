@@ -16,7 +16,7 @@
 <stringAttribute key="destecs_launch_config_project_name" value="FuelSystem"/>
 <booleanAttribute key="destecs_launch_config_remote_debug" value="false"/>
 <stringAttribute key="destecs_launch_config_remote_project_base1" value=""/>
-<stringAttribute key="destecs_launch_config_scenario_path" value="scenarios/tt_fail.script2"/>
+<stringAttribute key="destecs_launch_config_scenario_path" value="scenarios/tt_fail.script"/>
 <stringAttribute key="destecs_launch_config_shared_design_param" value=""/>
 <booleanAttribute key="destecs_launch_config_show_debug_info" value="true"/>
 <booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>

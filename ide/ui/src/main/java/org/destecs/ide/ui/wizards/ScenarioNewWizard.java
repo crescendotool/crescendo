@@ -52,7 +52,8 @@ public class ScenarioNewWizard extends AbstractNewFileWizard implements
 	@Override
 	protected String getFileTemplate(String fileName)
 	{
-		return "// Time  [DE/CT].variable := value;\n// 0.2    DE.enableFault1   :=  1.0;\n";
+//		return "// Time  [DE/CT].variable := value;\n// 0.2    DE.enableFault1   :=  1.0;\n";
+		return "when time = 0.0 do\n\t( print \"Test  ... \"; );";
 	}
 
 	@Override

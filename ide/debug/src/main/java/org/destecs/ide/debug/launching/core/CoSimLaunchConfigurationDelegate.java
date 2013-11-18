@@ -869,8 +869,8 @@ public class CoSimLaunchConfigurationDelegate extends
 
 		if (scenarioFile != null)
 		{
-			if (scenarioFile.getName().endsWith("script2"))
-			{
+//			if (scenarioFile.getName().endsWith("script2"))
+//			{
 				ScriptParserWrapper parser = new ScriptParserWrapper();
 				List<INode> script = parser.parse(scenarioFile);
 
@@ -881,15 +881,15 @@ public class CoSimLaunchConfigurationDelegate extends
 
 				script = expandScript(script, scenarioFile, null);
 				return new ScriptSimulationEngine(contractFile, script);
-			}
+//			}
 
-			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
-			if (scenario == null)
-			{
-				throw new Exception("Scenario not parse correct: "
-						+ scenarioFile);
-			}
-			return new ScenarioSimulationEngine(contractFile, scenario);
+//			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
+//			if (scenario == null)
+//			{
+//				throw new Exception("Scenario not parse correct: "
+//						+ scenarioFile);
+//			}
+//			return new ScenarioSimulationEngine(contractFile, scenario);
 
 		} else
 		{

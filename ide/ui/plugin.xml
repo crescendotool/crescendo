@@ -334,7 +334,7 @@
             name="%org.destecs.ide.contracteditor.editor.core.VdmLinkEditor.name">
 		</editor>
 
-		<editor
+		<!--editor
             class="org.destecs.ide.ui.editor.impl.ScenarioEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
@@ -342,13 +342,13 @@
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScenarioEditor"
             name="%org.destecs.ide.contracteditor.editor.core.ScenarioEditor.name">
-		</editor>
+		</editor-->
 
 		<editor
             class="org.destecs.ide.ui.editor.impl.ScriptEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
-            extensions="script2"
+            extensions="script"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScriptEditor"
             name="%org.destecs.ide.contracteditor.editor.core.ScriptEditor.name">
