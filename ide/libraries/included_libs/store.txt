@@ -1,2 +1,1 @@
-DESTECS_Startup
 DTControl

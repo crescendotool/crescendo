@@ -6,7 +6,8 @@ protected sampletime: [real] := nil;
 
 operations
 
--- set the sample time used to calculate response	
+-- set the sample time used in 
+-- time dependent calculated responses
 public SetSampleTime: real ==> ()
 SetSampleTime(s) ==
 	sampletime := s

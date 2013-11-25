@@ -11,7 +11,7 @@ operations
 public P: real ==> P
 P(k_) ==
 (
-    k := k_;
+  k := k_;
 );
     
 -- default constructor for PD
@@ -23,7 +23,7 @@ P() ==
 public Output: real ==> real
 Output(err) == 
 (
-	return k * err
+  return k * err
 );
 
 values
