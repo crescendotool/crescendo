@@ -260,11 +260,19 @@ co-simulation.
 
 \section{Related Tools}\label{sec:toolsIntro}
 
+The Crescendo tool is one in a family of tools with common shared code.
+
 \subsection{Overture}
+
+The \textbf{Overture} tool represents the \emph{opening} of these tools. This tool is build on top of the Eclipse platform and it support all the VDM dialects: VDM-SL, VDM++ and VDM Real-Time (VDM-RT). Many different features are included but the emphasis is on validation of VDM models by interpretation of executable subsets. This also includes support for DE notation VDM-RT used inside the Crescendo tool. Users who are only interested in Discrete Event (DE) modelling using one or more of the VDM dialects should use this Overture tool.
 
 \subsection{Crescendo}
 
+The \textbf{Crescendo} tool is a \emph{gradual increase} of the Overture tool in the sense that it has all the support present inside Overture and in addition it supports collaborative modelling and simulation with a combination of the DE notation VDM-RT and the Continuous Time (CT) simulation by the 20-sim tool\footnote{This tool was originally developed in the DESTECS (Design Support and Tooling for Embedded Control Software) project. This was partially supported by EU as project number 248134 under the embedded system design area.}. This is particular useful for those who are interested in modelling and validation of embedded control systems including modelling of the physical plants to be controlled. Users who are interested in both DE and CT modelling in a collaborative fashion should use this.
+
 \subsection{Symphony}
+
+The \textbf{Symphony} tool is an \emph,{extended musical composition} carried out by a large band (i.e.\ a System of Systems). This tool is developed in the COMPASS project\footnote{This is an acronym for ``Comprehensive Modelling for Advanced Systems of Systems'' project number 287829 under the EU FP7 programme.} and it supports the COMPASS Modelling Language (CML). CML is a combination of VDM and CSP/Circus. This tool provides validation using execution of an executable subset and test automation using the RT Tester tool but also formal verification using model checking (partially supported by the FORMULA model checker) and theorem proving (partially supported by the Isabelle theorem prover). Users who are interested in modelling and analysis of Systems of Systems should use this.
 
 \section{Structure of this User Manual}\label{sec:structure}
 
@@ -387,7 +395,9 @@ download the installer from the Crescendo website:
 
 During installation the main installer will pause. A second installer
 will then guide you through the installation of 20-sim. Once 20-sim is
-installed, the Crescendo installer will continue.
+installed, the Crescendo installer will continue. Both the Overture/VDM
+tool as well as the Crescendo tool are released as open source under the 
+GNU General Public License v3.0. 
 
 \subsection{License}
 
@@ -1187,7 +1197,7 @@ simulation time. In this section we will go through each pane in the debug confi
   Configuration.
 \item
   Press the \textbf{small arrow} next to the debug icon
-  \includegraphics{images/DestecsDebugButtonArrow.png}~at the top of the
+  \includegraphics{images/DestecsDebugButton.png}~at the top of the
   the Crescendo Tool.
 \item
   A drop-down menu will appear, in which the option
@@ -2049,14 +2059,17 @@ prefixed by ``\texttt{generated}''.
 \caption{Relaunching single ACA experiments.\label{fig:CreateAndLaunchCommand}}
 \end{figure}
 
-By inspecting the launch configurations it is possible to find the launch
-that was just created. The launch contains all the same settings as the
-launch that was selected to be created from the ACA.
+\section{Folder Launch Configuration}
+
+This is a new way of launching
+an ACA by selecting a folder containing \texttt{.launch} files. The user has to
+produce its own \texttt{.launch} files. The options to select are the project
+and the folder containing the launch files. This is shown in Figure~\ref{fig:dirlaunch}.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/GeneratedLaunch.png}
-\caption{images/GeneratedLaunch.png}
+\caption{Lauching with a Folder of launch files.\label{fig:dirlaunch}}
 \end{figure}
 
 \section{Control Library}
@@ -2080,24 +2093,18 @@ the project.
 \item
   Under the \emph{Crescendo folder}, select \emph{Add Crescendo
   Library~}and click~\emph{Next}.
+\item
+  Then check the box marked \emph{Control Library}.
 \end{itemize}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/DestecsAddNewLibrary.png}
-\caption{images/GeneratedLaunch.png}
+\caption{Adding Crescendo Control Libraries\label{fig:crescendoLibNew}}
 \end{figure}
 
-''Add the Control Library '\textbf{'TODO: New screenshot with control
-library in.}
-
-\begin{itemize}
-\item
-  Then check the box marked \emph{Control Library}.
-\end{itemize}
-
 Unless you want to edit the class files, leave ``Use linked libraries''
-checked (default). The classes will now be added to your co-model.
+checked (default). The classes will now be added to your co-model (see Figure~\ref{fig:crescendoLibNew}).
 
 \subsection{Using the Control Library}
 
@@ -2161,8 +2168,8 @@ SetSampleTime(s) ==
 
 Unlike 20-sim, VDM does not have a \textbf{sampletime} keyword, so it is
 necessary to explicitly tell the object what sample time to use in
-calculations. Therefore, for all control objects (except P) you must
-call \emph{SetSampleTime} before the ''Output ''is used. This only needs
+calculations. Therefore, for all control objects (except \texttt{P}) you must
+call \texttt{SetSampleTime} before the ''Output ''is used. This only needs
 to be done once and it is recommended that it is called immediately
 after the constructor. If this is not done, the co-simulation will fail
 with a pre-condition violation the first time \emph{Output} is called.
@@ -2170,16 +2177,16 @@ with a pre-condition violation the first time \emph{Output} is called.
 \subsection{Advanced Use}
 
 All of the controller classes in the library are subclasses of a single
-class called ``DTObject'' (Discrete-Time object). This class contains
+class called ``DTControl'' (Discrete-Time control). This class contains
 the definitions for ``SetSampleTime'' and ``Output'' and enforces a
 consistent interface. It is possible to use the various controller
-classes without making reference to \emph{DTObject}. However, if it is
+classes without making reference to \texttt{DTControl}. However, if it is
 desirable to test different controllers, variables can be defined as
-type \emph{DTObject}, meaning that only the call to the constructor
+type \texttt{DTControl}, meaning that only the call to the constructor
 needs to be changed in order to use a different controller
 implementation. This is also useful if control objects are passed to
 controllers. In the following example, the \texttt{Controller} class can
-accept any control object (\emph{P}, \emph{PID} etc.):
+accept any control object (\texttt{P}, \texttt{PID} etc.):
 
 \begin{vdmrt}
 class Controller
@@ -2470,7 +2477,7 @@ Figure~\ref{fig:octaveplotnormal} shows where to find this option for a normal r
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/TickOctaveplotNormal.png}
-\caption{images/TickOctaveplotNormal.png}
+\caption{Normal Octave Selection.}
 \label{fig:octaveplotnormal}
 \end{figure}
 
@@ -2479,7 +2486,7 @@ Figure~\ref{fig:octaveplotaca} show the ACA launch (Main Tab)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/TickOctavePlotACA.png}
-\caption{images/TickOctavePlotACA.png}
+\caption{Octave with use of ACA.}
 \label{fig:octaveplotaca}
 \end{figure}
 
@@ -2488,21 +2495,21 @@ Figure~\ref{fig:octaveplotaca} show the ACA launch (Main Tab)
 It is possible to invoke Octave from the Crescendo IDE. Right-clicking on
 an Octave (\texttt{.m}) file reveals the option ``Run Octave''. If you want to
 use this command, be sure to tick the ``Show plot automatically when the
-script runs'' box
+script runs'' box to get the result shown in Figure~\ref{fig:octPlot}.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/OctaveAction.png}
-\caption{}
+\caption{Octave in action.\label{fig:octPlot}}
 \end{figure}
 
 If the option to show plot automatically was chosen, a plot will be drawn
-and shown in a window like this:
+and shown in a window like in Figure~\ref{fig:OctavePlotting}.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/OctavePlotting.png}
-\caption{}
+\caption{Octave plotting in seperate window.\label{fig:OctavePlotting}}
 \end{figure}
 
 \subsection{Setting Octave path}
@@ -2510,27 +2517,14 @@ and shown in a window like this:
 If your Octave installation was not made in the default installer path,
 the path to Octave must be corrected in the Crescendo settings for the
 feature mentioned above to work. The settings below can be found by
-navigating to the Window-\textgreater{}Preferences menu.
+navigating to the Window-\textgreater{}Preferences menu as shown in Figure~\ref{fig:OctaveSetting}.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/OctaveSettings.png}
-\caption{images/OctaveSettings.png}
+\caption{Setting of Octave usage.\label{fig:OctaveSetting}}
 \end{figure}
 
-\section{Folder Launch Configuration}
-
-This is a new way of launching
-an ACA by selecting a folder containing \texttt{.launch} files. The user has to
-produce its own \texttt{.launch} files. The options to select are the project
-and the folder containing the launch files. This is shown in Figure~\ref{fig:DirectoryLaunchMainTab}.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=.6\textwidth]{images/DirectoryLaunchMainTab.png}
-\caption{images/DirectoryLaunchMainTab.png}
-\label{fig:DirectoryLaunchMainTab}
-\end{figure}
 
 \appendix
 %%%% Bibliography %%%%
