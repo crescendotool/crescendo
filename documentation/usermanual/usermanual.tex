@@ -264,15 +264,15 @@ The Crescendo tool is one in a family of tools with common shared code.
 
 \subsection{Overture}
 
-The \textbf{Overture} tool represents the \emph{opening} of these tools. This tool is build on top of the Eclipse platform and it support all the VDM dialects: VDM-SL, VDM++ and VDM Real-Time (VDM-RT). Many different features are included but the emphasis is on validation of VDM models by interpretation of executable subsets. This also includes support for DE notation VDM-RT used inside the Crescendo tool. Users who are only interested in Discrete Event (DE) modelling using one or more of the VDM dialects should use this Overture tool.
+The \textbf{Overture} tool (\url{www.overturetool.org}) represents the \emph{opening} of these tools. This tool is build on top of the Eclipse platform and it support all the VDM dialects: VDM-SL, VDM++ and VDM Real-Time (VDM-RT). Many different features are included but the emphasis is on validation of VDM models by interpretation of executable subsets. This also includes support for DE notation VDM-RT used inside the Crescendo tool. Users who are only interested in Discrete Event (DE) modelling using one or more of the VDM dialects should use this Overture tool.
 
 \subsection{Crescendo}
 
-The \textbf{Crescendo} tool is a \emph{gradual increase} of the Overture tool in the sense that it has all the support present inside Overture and in addition it supports collaborative modelling and simulation with a combination of the DE notation VDM-RT and the Continuous Time (CT) simulation by the 20-sim tool\footnote{This tool was originally developed in the DESTECS (Design Support and Tooling for Embedded Control Software) project. This was partially supported by EU as project number 248134 under the embedded system design area.}. This is particular useful for those who are interested in modelling and validation of embedded control systems including modelling of the physical plants to be controlled. Users who are interested in both DE and CT modelling in a collaborative fashion should use this.
+The \textbf{Crescendo} tool (\url{www.crescendotool.org}) is a \emph{gradual increase} of the Overture tool in the sense that it has all the support present inside Overture and in addition it supports collaborative modelling and simulation with a combination of the DE notation VDM-RT and the Continuous Time (CT) simulation by the 20-sim tool\footnote{This tool was originally developed in the DESTECS (Design Support and Tooling for Embedded Control Software) project. This was partially supported by EU as project number 248134 under the embedded system design area.}. This is particular useful for those who are interested in modelling and validation of embedded control systems including modelling of the physical plants to be controlled. Users who are interested in both DE and CT modelling in a collaborative fashion should use this.
 
 \subsection{Symphony}
 
-The \textbf{Symphony} tool is an \emph,{extended musical composition} carried out by a large band (i.e.\ a System of Systems). This tool is developed in the COMPASS project\footnote{This is an acronym for ``Comprehensive Modelling for Advanced Systems of Systems'' project number 287829 under the EU FP7 programme.} and it supports the COMPASS Modelling Language (CML). CML is a combination of VDM and CSP/Circus. This tool provides validation using execution of an executable subset and test automation using the RT Tester tool but also formal verification using model checking (partially supported by the FORMULA model checker) and theorem proving (partially supported by the Isabelle theorem prover). Users who are interested in modelling and analysis of Systems of Systems should use this.
+The \textbf{Symphony} tool (\url{www.symphonytool.org}) is an \emph,{extended musical composition} carried out by a large band (i.e.\ a System of Systems). This tool is developed in the COMPASS project\footnote{This is an acronym for ``Comprehensive Modelling for Advanced Systems of Systems'' project number 287829 under the EU FP7 programme.} and it supports the COMPASS Modelling Language (CML). CML is a combination of VDM and CSP/Circus. This tool provides validation using execution of an executable subset and test automation using the RT Tester tool but also formal verification using model checking (partially supported by the FORMULA model checker) and theorem proving (partially supported by the Isabelle theorem prover). Users who are interested in modelling and analysis of Systems of Systems should use this.
 
 \section{Structure of this User Manual}\label{sec:structure}
 
@@ -1656,7 +1656,7 @@ Options presented in Figure~\ref{fig:logvariables}. If a model does not contain 
 errors, this tab will display all instance variables that are accessible
 from the VDM \vdmkeyw{system} class.
 
-\begin{figure}[htbp]
+\begin{figure}[hb]
 \centering
 \includegraphics[width=.6\textwidth]{images/Destecsloggingvariables.PNG}
 \caption{VDM Options tab permits the selection of variables to log.}
@@ -1668,7 +1668,7 @@ variable. Currently it is only possible to log variables with basic
 types (all types except objects).
 
 For the \texttt{WatertankPeriodic} example, if we use the configuration
-shown above, a file with the contents as follows is generated:
+shown above, a file with the contents as follows is generated:\newpage
 
 \begin{verbatim}
 time_,levelSensor.fault,levelSensor.level,valveActuator.valveState
@@ -1984,15 +1984,15 @@ For example, the configuration on the picture above will generate 2 ACA
 runs for the variable ``\texttt{initial\_Position}''.
 
 \begin{itemize}
-\item 1st run: initial\_Position = {[}-1.448,-1.110{]}
+\item 1st run: \texttt{initial\_Position = {[}-1.448,-1.110{]}}
 
-\item 2nd run: initial\_Position = {[}-1.736,X*{]} - * where X is the value
-defined in the base debug configuration for initional\_Position{[}2{]}.
+\item 2nd run: \texttt{initial\_Position = {[}-1.736,X}\footnote{Where \texttt{X} is the value
+defined in the base debug configuration for \texttt{initial\_Position{[}2{]}}.}\texttt{{]}}
 \end{itemize}
 
 The values defined in the value sweep are put together according to the
 order they appear, if a for one of the indexes is missing (like in this
-case the second value of initial\_Position{[}2{]}), the value from the
+case the second value of \texttt{initial\_Position{[}2{]}}), the value from the
 original debug configuration will be used.
 
 \subsection{Scenario Tab}
@@ -2169,7 +2169,7 @@ SetSampleTime(s) ==
 Unlike 20-sim, VDM does not have a \textbf{sampletime} keyword, so it is
 necessary to explicitly tell the object what sample time to use in
 calculations. Therefore, for all control objects (except \texttt{P}) you must
-call \texttt{SetSampleTime} before the ''Output ''is used. This only needs
+call \texttt{SetSampleTime} before the ''\texttt{Output}'' is used. This only needs
 to be done once and it is recommended that it is called immediately
 after the constructor. If this is not done, the co-simulation will fail
 with a pre-condition violation the first time \emph{Output} is called.
@@ -2177,8 +2177,8 @@ with a pre-condition violation the first time \emph{Output} is called.
 \subsection{Advanced Use}
 
 All of the controller classes in the library are subclasses of a single
-class called ``DTControl'' (Discrete-Time control). This class contains
-the definitions for ``SetSampleTime'' and ``Output'' and enforces a
+class called ``\texttt{DTControl}'' (Discrete-Time control). This class contains
+the definitions for ``\texttt{SetSampleTime}'' and ``\texttt{Output}'' and enforces a
 consistent interface. It is possible to use the various controller
 classes without making reference to \texttt{DTControl}. However, if it is
 desirable to test different controllers, variables can be defined as
@@ -2279,7 +2279,7 @@ PID() == ...
 \section{DE Architecture}\label{sec:DEArch}
 
 This feature allows the selection of the hardware and deployment to be
-specified in a separate file from the VDM system class.
+specified in a separate file from the VDM \vdmkeyw{system} class.
 
 In order to do this separation, the following steps need to be done:
 
@@ -2493,7 +2493,7 @@ Figure~\ref{fig:octaveplotaca} show the ACA launch (Main Tab)
 \subsection{Invoking Octave from Crescendo}
 
 It is possible to invoke Octave from the Crescendo IDE. Right-clicking on
-an Octave (\texttt{.m}) file reveals the option ``Run Octave''. If you want to
+an Octave (\texttt{.m}) file reveals the option ``\texttt{Run Octave}''. If you want to
 use this command, be sure to tick the ``Show plot automatically when the
 script runs'' box to get the result shown in Figure~\ref{fig:octPlot}.
 
@@ -2538,8 +2538,8 @@ navigating to the Window-\textgreater{}Preferences menu as shown in Figure~\ref{
 As might be expected in such an interdisciplinary project, terms and
 concepts that are well known in one discipline may be unknown or
 understood quite differently in another. This page therefore contains
-common descriptions of core concepts agreed with the partners that are
-used consistently within the project.
+common descriptions of core concepts that are
+used with the Crescendo technology.
 
 \begin{description}
 \item[abstract class] (in object oriented programming) a class where one or more methods are defined abstractly using the text \textbf{\texttt{is subclass responsibility}} as their body.
