@@ -164,13 +164,13 @@ November& 2013 & 2       & 2.0.0 \\ \hline
 
 \begin{abstract}
 This document is the user manual for the Crescendo Integrated
-Development Environment (IDE) version 2.0.0 enabling collaborative
+Development Environment (IDE) version 2.0.0, which enables collaborative
 analysis of models written in the Discrete-Event (DE) formalism VDM
 and the Continuous-Time (CT) formalism bond graphs. The specific
-dialect of VDM is called VDM Real Time (VDM-RT) and it is supported by
+dialect of VDM is called VDM Real Time (VDM-RT) which is supported by
 the Overture tool whereas the bond graph formalism is supported by the
-tool called 20-sim.  Both the Crescendo as well as the Overture tool
-is built on top of the Eclipse platform.
+tool 20-sim.  Both Crescendo and Overture are 
+built on top of the Eclipse platform.
 \end{abstract}
 
 \mainmatter
@@ -179,7 +179,7 @@ is built on top of the Eclipse platform.
 
 \section{What is the Crescendo Tool?}\label{sec:crescendointro}
 
-The Crescendo tool was originally called the DESTECS tool since it was produced in the European research project called DESTECS (see Section~\ref{sec:destecs} below). It supports collaborative modelling and simulation called \emph{co-simulation}. 
+The Crescendo tool was originally called the DESTECS tool since it was produced in the European research project called DESTECS (see Section~\ref{sec:destecs} below). It supports a method of collaborative modelling and simulation called \emph{co-simulation}. 
 
 \section{What was the DESTECS Project?}\label{sec:destecs}
 
@@ -206,7 +206,7 @@ systems and software
 group of mathematically well-founded languages for expressing system
 models during early design stages, before expensive implementation
 commitments are made. VDM has a strong record of industrial
-application, in many cases has been used
+application, in many cases having been used
 by practitioners who were not specialists in
 the underlying formalism or logic
 \cite{Larsen&96b,Clement&99,Kurita&09}. Experience with the method
@@ -260,7 +260,7 @@ co-simulation.
 
 \section{Related Tools}\label{sec:toolsIntro}
 
-The Crescendo tool is one in a family of tools with common shared code.
+The Crescendo tool is one of a family of tools with common shared code.
 
 \subsection{Overture}
 
@@ -272,14 +272,14 @@ The \textbf{Crescendo} tool (\url{www.crescendotool.org}) is a \emph{gradual inc
 
 \subsection{Symphony}
 
-The \textbf{Symphony} tool (\url{www.symphonytool.org}) is an \emph,{extended musical composition} carried out by a large band (i.e.\ a System of Systems). This tool is developed in the COMPASS project\footnote{This is an acronym for ``Comprehensive Modelling for Advanced Systems of Systems'' project number 287829 under the EU FP7 programme.} and it supports the COMPASS Modelling Language (CML). CML is a combination of VDM and CSP/Circus. This tool provides validation using execution of an executable subset and test automation using the RT Tester tool but also formal verification using model checking (partially supported by the FORMULA model checker) and theorem proving (partially supported by the Isabelle theorem prover). Users who are interested in modelling and analysis of Systems of Systems should use this.
+The \textbf{Symphony} tool (\url{www.symphonytool.org}) is an \emph{extended musical composition} carried out by a large band (i.e.\ a System of Systems). This tool is developed in the COMPASS project\footnote{This is an acronym for ``Comprehensive Modelling for Advanced Systems of Systems'' project number 287829 under the EU FP7 programme.} and it supports the COMPASS Modelling Language (CML). Symphony is also an extension of the Overture tool in the sense that it has all the support present inside Overture. CML is a combination of VDM and CSP/Circus. This tool provides validation using execution of an executable subset and test automation using the RT Tester tool as well as formal verification using model checking (partially supported by the FORMULA model checker) and theorem proving (partially supported by the Isabelle theorem prover). Users who are interested in modelling and analysis of Systems of Systems should use this.
 
 \section{Structure of this User Manual}\label{sec:structure}
 
 This user manual explains how to use the Crescendo IDE for developing collaborating models
- (co-models) and analyse them. In essence it is structured in 2 parts: The first part provides the basics for getting started using the Crescendo tool and the second part act as a reference manual for the Crescendo tool. The first part contains Chapter~\ref{chap:introconcepts} introducing the basic Crescendo concepts\footnote{Appendix~\ref{app:Glossary} provides a complete list of the Crescendo common concepts.};
-Chapter~\ref{chap:getting} explaning how to get hold of the software; and finally
-Chapter~\ref{chap:gettingstarted} with information about how to quickly get started using the Crescendo tool with existing models that can be imported directly. Afterwards the second part also contains four chapters explaining the main possibilities in the Crescendo tool. Chapter~\ref{chap:basic} explains the different views in the Crescendo tool, its editors and its way of handling projects. Afterwards, Chapter~\ref{chap:cosim} explains the co-simulation possibilities. This is followed by Chapter~\ref{chap:DSE} which provides information about how co-simulation can be extended with exploring the candidate design space. Finally this part is completed in Chapter~\ref{chap:postana} explaining the post-analysis possibilities in particular relevant in an exploration setting.
+ (co-models) and analysing them. In essence it is structured in 2 parts: The first part provides the basics for getting started using the Crescendo tool and the second part acts as a reference manual for the Crescendo tool. The first part contains Chapter~\ref{chap:introconcepts} introducing the basic Crescendo concepts\footnote{Appendix~\ref{app:Glossary} provides a complete list of the Crescendo common concepts.};
+Chapter~\ref{chap:getting} explans how to get hold of the software; and finally
+Chapter~\ref{chap:gettingstarted} explains how to quickly get started using the Crescendo tool with existing models that can be imported directly. Afterwards the second part also contains four chapters explaining the main possibilities in the Crescendo tool. Chapter~\ref{chap:basic} explains the different views in the Crescendo tool, its editors and its way of handling projects. Afterwards, Chapter~\ref{chap:cosim} explains the co-simulation possibilities. This is followed by Chapter~\ref{chap:DSE} which provides information about how co-simulation can be extended with exploring the candidate design space. Finally this part is completed in Chapter~\ref{chap:postana} explaining the post-analysis possibilities in particular relevant in an exploration setting.
 
 \chapter{Basic Crescendo Concepts}\label{chap:introconcepts}
 
@@ -287,7 +287,7 @@ The Crescendo tool allows you to define and run a co-simulation. To get a
 basic understanding of the tool we first need to define some concepts.
 We will use a popular description of these concepts that might not
 be completely correct but will, hopefully, enhance the understanding of
-beginning Crescendo users.
+users who are new to Crescendo.
 
 \section{Models}
 
@@ -311,10 +311,10 @@ Continuous-Time simulation is therefore always characterized by the
 accuracy of the simulation and the time steps taken.~Discrete-Event
 models can be created and simulated in Overture/VDM. This tool will simulate
 Discrete-Event models with predetermined discrete time steps. This is
-called a \emph{Discrete-Event simulation}. There is no accuracy issues
+called a \emph{Discrete-Event simulation}. There are no accuracy issues
 involved and therefore no backstepping is required.
 
-The properties of a model~that affects its behaviour, but which remains
+The properties of a model~that affects its behaviour, but which remain
 constant during a simulation are called \emph{parameters}. Examples of
 parameters are the \texttt{height} of a watertank with varying waterlevel or
 the \texttt{mass} of a car with varying~speed. A \emph{variable} is a
@@ -368,7 +368,7 @@ full installation for Overture/VDM, 20-sim and the
 Crescendo tools. Overture/VDM and the Crescendo tools are open source tools and
 will run on any computer. However, 20-sim is a commerical tool that will run as a
 viewer on any computer. If you want to build your own models in 20-sim
-and store them, you will need a license (see Section~\ref{sec:install}). In order to install to package of the Crescendo package you need to have:
+and store them, you will need a licence (see Section~\ref{sec:install}). In order to install to package of the Crescendo package you need to have:
 
 \begin{itemize}
 \item
@@ -397,16 +397,16 @@ During installation the main installer will pause. A second installer
 will then guide you through the installation of 20-sim. Once 20-sim is
 installed, the Crescendo installer will continue. Both the Overture/VDM
 tool as well as the Crescendo tool are released as open source under the 
-GNU General Public License v3.0. 
+GNU General Public Licence v3.0. 
 
-\subsection{License}
+\subsection{Licence}
 
 Both VDM and the Crescendo tools are open source and do not require an
-additional license. 20-sim is a commercial tool that will run in
+additional licence. 20-sim is a commercial tool that will run in
 Viewer mode on any computer. This means that you
 can only run and edit models! If you want to save model changes, you will need
-a license. You can send an email to
-Controllab \url{mailto://info@controllab.nl} to get a trial license.
+a licence. You can send an email to
+Controllab \url{mailto://info@controllab.nl} to get a trial licence.
 
 \subsection{Manuals}
 
@@ -425,12 +425,12 @@ Controllab \url{mailto://info@controllab.nl} to get a trial license.
 The Crescendo installer will install the 20-sim Viewer on your computer.
 The 20-sim Viewer will allow you to run and edit all the Crescendo example
 models, but does not allow you to save them. When 20-sim is openened,
-the license dialog will be opened.
+the licence dialog will be opened.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.4\textwidth]{images/20simLicense.png}
-\caption{License for 20-sim.}
+\caption{Licence for 20-sim.}
 \end{figure}
 
 \begin{itemize}
@@ -438,13 +438,13 @@ the license dialog will be opened.
   You have to click the \emph{Close} button to continue.
 \end{itemize}
 
-Unless you have purchased a license during model editing and
+Unless you have purchased a licence during model editing and
 simulation, the 20-sim Viewer will annoy you with a message:
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/20simViewer.png}
-\caption{Message if you do not have a license for 20-sim.}
+\caption{Message if you do not have a licence for 20-sim.}
 \end{figure}
 
 \begin{itemize}
@@ -453,7 +453,7 @@ simulation, the 20-sim Viewer will annoy you with a message:
 \end{itemize}
 
 If you feel the Viewer is too annoying or want to store models, you have
-to ask Controllab for trial license.
+to ask Controllab for trial licence.
 
 \chapter{Quick Start with Crescendo} \label{chap:gettingstarted}
 
@@ -1179,7 +1179,7 @@ this moment is not possible to static check if the variables exist in
 the 20-sim model.
 
 
-\chapter{Co-Simulation Possibilities}\label{chap:cosim}
+\chapter{Co-Simulation}\label{chap:cosim}
 
 \section{Debug Configuration}\label{sec:DebugConfigIntro}
 
@@ -1817,7 +1817,7 @@ opening this format.
 %% This is definitely a valuable collection of data, since it can be
 %% exported as data files for analysis by~external tools.
 
-\chapter{Design Space Exploration Posibilities}\label{chap:DSE}
+\chapter{Design Space Exploration}\label{chap:DSE}
 
 In order to support Design Space Exploration (DSE), the Automated
 Co-model Analysis (ACA) feature enables automatically running many different
@@ -2393,7 +2393,7 @@ equations
 
 \subsection{Events in DE}
 
-The scheduler in VDM do not schedule events in the same way as for
+The scheduler in VDM does not schedule events in the same way as for
 instance a micro controller would do where the current executing job is
 suspended in favour of the interrupt routine. However, it is possible to
 get a similar behaviour by creating and deploying an object to a CPU
@@ -2436,7 +2436,7 @@ priority defined how many expressions/statements a thread can execute
 at a time. A thread will always continue executing until it is blocked
 or finished the allowed number of expressions/statements.}
 
-\chapter{Post-Analysis Possibilities}\label{chap:postana}
+\chapter{Post-Analysis}\label{chap:postana}
 
 \section{Octave}\label{sec:octave}
 
