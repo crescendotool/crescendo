@@ -2450,6 +2450,7 @@ non-interactive programs. The Octave language is quite similar to Matlab
 so that most programs are easily portable.
 \url{http://www.gnu.org/software/octave/}
 
+The Octave project on Source Forge provides an easy installable Windows installer for Octave: \url{http://octave.sourceforge.net/}. Furthermore a Octave GUI is provided by \url{http://www.gnu.org/software/octave/} which provides a workspace and editor that can be used to assist the user of Crescendo in creating custom scripts.
 \subsection{Octave Version}
 
 It is very important that the correct version of Octave is used to run
@@ -2464,7 +2465,9 @@ produced by both VDM and 20-sim during the run.
 
 \subsection{Show Plot Automatically when Script is Run}
 
-There is one option available in the debug configuration that affects
+The Octave script will contain the necessary code to interpret the logged variables and functions to generate a plot. However, it will not contain the command to display the plot. This setting will insert the plot commend in the script and automatically show a plot when executed by Ocatve. If the script is to be included in a custom script written by the user simply as data access this option should be disabled.
+
+The option is available in the debug configuration that affects
 the script. This option appears in two places both in the normal Crescendo
 run and in ACA. If enabled, when the script is executed, a plot (or
 several, depending on the amount of variables selected) will
