@@ -1,48 +1,99 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.destecs</groupId>
     <artifactId>root</artifactId>
     <version>2.0.0-SNAPSHOT<!--Replaceable: Main Version--></version>
   </parent>
+
+  <packaging>pom</packaging>
+
   <groupId>org.destecs</groupId>
   <artifactId>ide</artifactId>
-  <packaging>pom</packaging>
   <name>DESTECS IDE Top-level</name>
   <description>Super POM for all IDE (Eclipse) artifacts.</description>
+
   <properties>
     <maven.test.skip>true</maven.test.skip>
-    <tycho.version>0.16.0</tycho.version>
+    <tycho.version>0.19.0</tycho.version>
   </properties>
+
   <modules>
-    <!-- Put all child Eclipse Plugin projects(modules) here -->
     <module>core</module>
     <module>ui</module>
     <module>simeng</module>
     <module>debug</module>
-    <!--module>build</module-->
     <module>vdmmetadatabuilder</module>
     <module>libraries</module>
     <module>platform</module>
     <module>features</module>
     <module>product</module>
   </modules>
-  <reporting>
+
+  <repositories>
+    <repository>
+      <id>overture.au.dk Eclipse P2 repo for overture crescendo development</id>
+      <url>http://overture.au.dk/p2/crescendo-overture-development/</url>
+      <layout>p2</layout>
+    </repository>
+
+    <!-- <repository> -->
+    <!--   <id>eclipse-kepler-cu.be</id> -->
+    <!--   <layout>p2</layout> -->
+    <!--   <url>http://eclipse.cu.be/releases/kepler</url> -->
+    <!-- </repository> -->
+
+    <repository>
+      <id>eclipse-kepler</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/releases/kepler</url>
+    </repository>
+  </repositories>
+
+
+  <build>
     <plugins>
+      <plugin>
+	<groupId>org.eclipse.tycho</groupId>
+	<artifactId>tycho-maven-plugin</artifactId>
+	<extensions>true</extensions>
+      </plugin>
+      <plugin>
+	<groupId>org.eclipse.tycho</groupId>
+	<artifactId>target-platform-configuration</artifactId>
+	<configuration>
+	  <environments>
+	    <environment>
+	      <os>win32</os>
+	      <ws>win32</ws>
+	      <arch>x86</arch>
+	    </environment>
+	    <environment>
+	      <os>win32</os>
+	      <ws>win32</ws>
+	      <arch>x86_64</arch>
+	    </environment>
+	  </environments>
+	</configuration>
+      </plugin>
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-javadoc-plugin</artifactId>
-	<version>2.9</version>
+	<executions>
+	  <execution>
+	    <id>attach-javadocs</id>
+	    <goals>
+	      <goal>jar</goal>
+	    </goals>
+	  </execution>
+	</executions>
 	<configuration>
-	  <failOnError>false</failOnError>
-	  <excludePackageNames>*org.eclipse.*</excludePackageNames>
-	  <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
-	  <show>public</show>
+	  <skip>true</skip>
 	</configuration>
       </plugin>
     </plugins>
-  </reporting>
-  <build>
+
     <pluginManagement>
       <plugins>
 	<plugin>
@@ -97,50 +148,8 @@
 	</plugin>
       </plugins>
     </pluginManagement>
-    <plugins>
-      <plugin>
-	<groupId>org.eclipse.tycho</groupId>
-	<artifactId>tycho-maven-plugin</artifactId>
-	<extensions>true</extensions>
-      </plugin>
-      <plugin>
-	<groupId>org.eclipse.tycho</groupId>
-	<artifactId>target-platform-configuration</artifactId>
-      </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-javadoc-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <id>attach-javadocs</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-	<configuration>
-	  <skip>true</skip>
-	</configuration>
-      </plugin>
-    </plugins>
   </build>
-  <repositories>
 
-
-    <repository>
-      <id>eclipse-kepler-cu.be</id>
-      <layout>p2</layout>
-      <url>http://eclipse.cu.be/releases/kepler</url>
-    </repository>
-
-    <!--repository>
-	<id>eclipse-kepler</id>
-	<layout>p2</layout>
-	<url>http://download.eclipse.org/releases/kepler</url>
-	</repository-->
-
-
-  </repositories>
   <profiles>
     <profile>
       <id>all-platforms</id>
@@ -182,41 +191,21 @@
 	</plugins>
       </build>
     </profile>
-
-    <profile>
-      <id>buildserver</id>
-      <!-- This section contains repositories for DESTECS and the depended project Overture -->
-      <repositories>
-	<repository>
-	  <id>overture.iha.dk-p2</id>
-	  <url>http://build.overturetool.org/builds/destecs-overture-p2repo/</url>
-	  <layout>p2</layout>
-	</repository>
-      </repositories>
-
-      <build>
-	<plugins>
-	  <plugin>
-	    <groupId>org.eclipse.tycho</groupId>
-	    <artifactId>target-platform-configuration</artifactId>
-	    <configuration>
-	      <environments>
-		<environment>
-		  <os>win32</os>
-		  <ws>win32</ws>
-		  <arch>x86</arch>
-		</environment>
-		<environment>
-		  <os>win32</os>
-		  <ws>win32</ws>
-		  <arch>x86_64</arch>
-		</environment>
-	      </environments>
-	    </configuration>
-	  </plugin>
-	</plugins>
-      </build>
-    </profile>
-
   </profiles>
+
+  <reporting>
+    <plugins>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-javadoc-plugin</artifactId>
+	<version>2.9</version>
+	<configuration>
+	  <failOnError>false</failOnError>
+	  <excludePackageNames>*org.eclipse.*</excludePackageNames>
+	  <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
+	  <show>public</show>
+	</configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>

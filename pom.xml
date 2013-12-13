@@ -1,284 +1,202 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.destecs</groupId>
-	<artifactId>root</artifactId>
-	<packaging>pom</packaging>
-	<version>2.0.0-SNAPSHOT<!--Replaceable: Main Version--></version>
-	<name>DESTECS</name>
-	<modules>
-		<module>core</module>
-		<module>tools</module>
-		<module>ide</module>
-	</modules>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<overture.version>2.0.1-SNAPSHOT</overture.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<build>
-		<defaultGoal>install</defaultGoal>
-		<!-- Configuration of plugins for inheriting pom.xml files should be in the pluginManagement tag -->
-		<pluginManagement>
-			<plugins>
-				<!-- Configure the compiler for all Overture Projects -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.0</version>
-					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
-					</configuration>
-				</plugin>
-				<!-- Attatch sources to all installed jars -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.2.1</version>
-					<!-- <executions> --><!--   <execution> --><!--     <id>attach-sources</id> --><!--     <goals> --><!--       <goal>jar</goal> --><!--     </goals> --><!--   </execution> --><!-- </executions> --><configuration>
-						<attach>true</attach>
-					</configuration>
-				</plugin>
-				<!-- Enable JavaDoc but dont fail on error. This must be disabled for  the Eclipse project in the IDE -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<failOnError>false</failOnError>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.6</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.13</version>
-					<configuration>
-						<testFailureIgnore>true</testFailureIgnore>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.6</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.4</version>
-					<configuration>
-						<descriptorRefs>
-							<descriptorRef>jar-with-dependencies</descriptorRef>
-						</descriptorRefs>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>2.5</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>1.7</version>
-				</plugin>
-				<plugin>
-					<groupId>pl.project13.maven</groupId>
-					<artifactId>git-commit-id-plugin</artifactId>
-					<version>2.1.4</version>
-					<configuration>
-						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-					</configuration>
-				</plugin>
-				<!-- Apparently maven-site-plugin doesn't work with Maven 3 as it did in Maven 2.  Do not re-enable this until the necessary configuration has been updated per http://maven.apache.org/plugins/maven-site-plugin/maven-3.html -jwc/28Feb2013 -->
-				<!-- <plugin> --><!--    <groupId>org.apache.maven.plugins</groupId> --><!--    <artifactId>maven-site-plugin</artifactId> --><!--    <version>2.0.1</version> --><!-- </plugin> --><!-- I would love to be using this, but we're more sensitive to version numbering than just the pom files. -jwc/28Feb2013 -->
-				<!-- <plugin> --><!--    <groupId>org.apache.maven.plugins</groupId> --><!--    <artifactId>maven-release-plugin</artifactId> --><!--    <version>2.4</version> --><!--    <configuration> --><!--      <tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase> --><!--    </configuration> --><!-- </plugin> --></plugins>
-		</pluginManagement>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>2.4</version>
-			</extension>
-		</extensions>
-	</build>
-	<distributionManagement>
-		<repository>
-			<id>destecs.sourceforge.net</id>
-			<name>Destecs Repo af SF.Net</name>
-			<url>sftp://web.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/repo</url>
-		</repository>
-		<snapshotRepository>
-			<id>destecs.sourceforge.net</id>
-			<name>Destecs Snapshot Repo af SF.Net</name>
-			<url>sftp://web.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/snapshotrepo</url>
-		</snapshotRepository>
-		<site>
-			<id>destecs.sourceforge.net</id>
-			<url>scp://shell.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/doc</url>
-		</site>
-	</distributionManagement>
-	<!--scm><connection>scm:svn:https://overture.svn.sourceforge.net/svnroot/overture/trunk</connection><developerConnection>scm:svn:https://overture.svn.sourceforge.net/svnroot/overture/trunk</developerConnection><url>svn:https://overture.svn.sourceforge.net/svnroot/overture/trunk</url></scm><issueManagement><system>sourceforge</system><url>http://sourceforge.net/tracker/?group_id=141350</url></issueManagement-->
-	<organization>
-		<name>DESTECS</name>
-		<url>http://www.destecs.org</url>
-	</organization>
-	<repositories>
-		<repository>
-			<id>OvertureMT4Em2Repo</id>
-			<name>Overture Project's MT4E-generated Maven Repository of Eclipse 3.7.2 files</name>
-			<url>http://build.overturetool.org/builds/mt4e-m2repo-eclipse3.7.2/</url>
-			<layout>default</layout>
-		</repository>
-	</repositories>
-	<profiles>
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<!-- This section contains repositories for DESTECS and the depended project Overture -->
-			<repositories>
-				<!-- overture.sf.net repos -->
-				<repository>
-					<id>overture.sf.net</id>
-					<name>Overture SF Snapshots</name>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</snapshots>
-					<url>http://overture.sourceforge.net/maven/repo</url>
-					<layout>default</layout>
-				</repository>
-				<!-- destecs repos -->
-				<repository>
-					<id>destecs.org</id>
-					<name>DESTECS Snapshots</name>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</snapshots>
-					<url>http://destecs.sourceforge.net/maven/repo</url>
-					<layout>default</layout>
-				</repository>
-			</repositories>
-			<!-- overture.sf.net repos -->
-			<pluginRepositories>
-				<pluginRepository>
-					<id>overturetool.org</id>
-					<name>OvertureTool Snapshots</name>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</snapshots>
-					<url>http://overture.sourceforge.net/maven/repo</url>
-					<layout>default</layout>
-				</pluginRepository>
-				<!-- destecs repos -->
-				<pluginRepository>
-					<id>destecs.org</id>
-					<name>DESTECS Snapshots</name>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</snapshots>
-					<url>http://destecs.sourceforge.net/maven/repo</url>
-					<layout>default</layout>
-				</pluginRepository>
-			</pluginRepositories>
-		</profile>
-		<profile>
-			<id>buildserver</id>
-			<properties>
-				<java.version>1.5</java.version>
-			</properties>
-			<!-- This section contains repositories for DESTECS and the depended project Overture -->
-			<repositories>
-				<!-- Build server: overture pre-build -->
-				<repository>
-					<id>overture.iha.dk</id>
-					<name>Local build</name>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</snapshots>
-					<url>http://build.overturetool.org/builds/destecs-overture-m2repo/</url>
-					<layout>default</layout>
-				</repository>
-			</repositories>
-			<!-- Build server: overture pre-build -->
-			<pluginRepositories>
-				<pluginRepository>
-					<id>overture.iha.dk</id>
-					<name>OvertureTool Snapshots</name>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</snapshots>
-					<url>http://build.overturetool.org/builds/destecs-overture-m2repo/</url>
-					<layout>default</layout>
-				</pluginRepository>
-			</pluginRepositories>
-		</profile>
-	</profiles>
+  <modelVersion>4.0.0</modelVersion>
+
+  <packaging>pom</packaging>
+
+  <groupId>org.destecs</groupId>
+  <artifactId>root</artifactId>
+  <version>2.0.0-SNAPSHOT<!--Replaceable: Main Version--></version>
+  <name>DESTECS</name>
+
+  <modules>
+    <module>core</module>
+    <module>tools</module>
+    <module>ide</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <overture.version>2.0.1-SNAPSHOT</overture.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>overture.au.dk-overture-crescendo</id>
+      <name>Overture/Crescendo Buildserver Repository at AU</name>
+      <releases>
+	<enabled>false</enabled>
+	<updatePolicy>daily</updatePolicy>
+	<checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+	<updatePolicy>always</updatePolicy>
+	<checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <url>http://overture.au.dk/maven/crescendo-overture-development/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>overture.iha.dk-overture-crescendo-plugins</id>
+      <name>Overture/Crescendo Buildserver Repository at AU (Plugins)</name>
+      <releases>
+	<enabled>true</enabled>
+	<updatePolicy>daily</updatePolicy>
+	<checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+	<updatePolicy>daily</updatePolicy>
+	<checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <url>http://overture.au.dk/maven/crescendo-overture-development/</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <pluginManagement>
+      <plugins>
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-compiler-plugin</artifactId>
+	  <version>3.0</version>
+	  <configuration>
+	    <source>1.6</source>
+	    <target>1.6</target>
+	  </configuration>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-source-plugin</artifactId>
+	  <version>2.2.1</version>
+          <configuration>
+	    <attach>true</attach>
+	  </configuration>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-javadoc-plugin</artifactId>
+	  <version>2.9</version>
+	  <executions>
+	    <execution>
+	      <id>attach-javadocs</id>
+	      <goals>
+		<goal>jar</goal>
+	      </goals>
+	    </execution>
+	  </executions>
+	  <configuration>
+	    <failOnError>false</failOnError>
+	  </configuration>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-resources-plugin</artifactId>
+	  <version>2.6</version>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-surefire-plugin</artifactId>
+	  <version>2.13</version>
+	  <configuration>
+	    <testFailureIgnore>true</testFailureIgnore>
+	  </configuration>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-dependency-plugin</artifactId>
+	  <version>2.6</version>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-assembly-plugin</artifactId>
+	  <version>2.4</version>
+	  <configuration>
+	    <descriptorRefs>
+	      <descriptorRef>jar-with-dependencies</descriptorRef>
+	    </descriptorRefs>
+	  </configuration>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-jar-plugin</artifactId>
+	  <version>2.4</version>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-clean-plugin</artifactId>
+	  <version>2.5</version>
+	</plugin>
+
+	<plugin>
+	  <groupId>org.codehaus.mojo</groupId>
+	  <artifactId>build-helper-maven-plugin</artifactId>
+	  <version>1.7</version>
+	</plugin>
+
+	<plugin>
+	  <groupId>pl.project13.maven</groupId>
+	  <artifactId>git-commit-id-plugin</artifactId>
+	  <version>2.1.4</version>
+	  <configuration>
+	    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+	  </configuration>
+	</plugin>
+      </plugins>
+    </pluginManagement>
+
+    <extensions>
+      <extension>
+	<groupId>org.apache.maven.wagon</groupId>
+	<artifactId>wagon-ssh</artifactId>
+	<version>2.4</version>
+      </extension>
+    </extensions>
+  </build>
+
+  <!-- none of this is correct any more -jwc/13Dec2013
+  <distributionManagement>
+    <repository>
+      <id>destecs.sourceforge.net</id>
+      <name>Destecs Repo af SF.Net</name>
+      <url>sftp://web.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/repo</url>
+    </repository>
+    <snapshotRepository>
+      <id>destecs.sourceforge.net</id>
+      <name>Destecs Snapshot Repo af SF.Net</name>
+      <url>sftp://web.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/snapshotrepo</url>
+    </snapshotRepository>
+    <site>
+      <id>destecs.sourceforge.net</id>
+      <url>scp://shell.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/doc</url>
+    </site>
+  </distributionManagement>
+  -->
+
+  <organization>
+    <name>DESTECS</name>
+    <url>http://www.destecs.org</url>
+  </organization>
 </project>
