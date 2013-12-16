@@ -1,0 +1,31 @@
+system System
+
+instance variables 
+
+-- sensors and actuators, controller
+private static io: IOFactory := new IOFactory();
+private static controller: [AbstractModalController] := nil;
+
+-- thread to call io, controller
+public static mainthread: [Thread] := nil;
+
+-- cpu
+cpu: CPU := new CPU(<FP>, 1E6)
+
+operations
+
+public System: () ==> System
+System() == (
+	-- controller
+	controller := new LineFollower(io);
+    
+    -- thread to call io, controller
+    mainthread := new Thread(25, io, controller);
+    
+	-- deployment
+	cpu.deploy(io);
+	cpu.deploy(controller);
+	cpu.deploy(mainthread)
+)
+
+end System

@@ -1,0 +1,96 @@
+--
+-- Controller
+--
+-- This class is the controller for the pid_pinch. It has a 1kHz 
+-- control cycle realised by a periodic thread that calls the Step 
+-- operation. The setpoints are motor speed in the plant and are 
+-- provided by a SetpointProfile object. The controller integrates
+-- the setpoints and compares this value to the value measured by 
+-- the encoder to calculate the contorl action.
+--
+class Controller
+
+instance variables
+
+-- sensor and actuator interfaces
+private enc: ISensorInt;
+private pwm: IActuatorPWM;
+
+-- PID controller
+private pid: DTControl;
+
+-- setpoint profile
+private spp: SetpointProfile;
+
+-- local variables (current setpoint, actual revolutions, target 
+-- revolutions, error, output value) 
+private sp: real;
+private rev: real;
+private ref: real;
+private err: real;
+private out: real;
+
+values
+
+-- constants for the PID controller
+-- values tuned by Ken Pierce with Z-G oscillation method
+-- Gu = 4.0
+-- Pu = 0.0255
+KP: real = 2.4;
+KI: real = 78.431372549;
+KD: real = 0.0031875;
+BETA: real = 0.1;
+
+operations
+
+-- constructor for Controller
+public Controller : ISensorInt * IActuatorPWM ==> Controller
+Controller(e,p) ==
+(
+	-- sensor and actuator
+	enc := e;
+	pwm := p;
+	
+	-- create PID controller
+	pid := new PID(KP, KI, KD, BETA);
+	pid.SetSampleTime(SAMPLE_TIME);
+
+	-- setpoints
+	spp := World`SETPOINTS;
+
+	-- initialise local variables
+	sp := 0.0;
+	rev := 0.0;
+	ref := 0.0;
+	err := 0.0;
+	out := 0.0;
+);
+
+-- perform control step
+public Step: () ==> ()
+Step() == 
+duration(0)(
+	rev := enc.GetValue() * ENC_GAIN; -- read shared variable
+	sp := spp.GetSetpoint();          -- get setpoint
+	ref := ref + (sp * SAMPLE_TIME);  -- integrate setpoint
+	err := ref - rev;                 -- calculate error (SP - MV)
+	out := pid.Output(err);			  -- calculate PWM
+	pwm.Write(limit(out));            -- write shared variable
+);
+
+-- 1000Hz control loop
+values SAMPLE_TIME = 0.001;
+thread periodic(1E6, 0, 0, 0)(Step);
+
+functions
+
+-- limit a real value between -1 and 1
+private limit: real -> real
+limit(x) ==
+  if x < -1 then -1 else if x > 1 then 1 else x
+
+values
+
+ENC_GAIN = 0.0005
+		 
+end Controller

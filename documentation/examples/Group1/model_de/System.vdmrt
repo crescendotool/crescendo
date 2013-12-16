@@ -1,0 +1,33 @@
+system System       
+
+instance variables 
+-- The instance variables are linked to the contract
+
+-- sensors (as interface types)
+public static leftLineSensor : Sensor := new Sensor();
+public static rightLineSensor: Sensor := new Sensor();
+public static leftEncoder : Sensor := new Sensor();
+public static rightEncoder: Sensor := new Sensor();
+
+-- actuators (as interface types)
+public static leftPWM:  Actuator := new Actuator();
+public static rightPWM: Actuator := new Actuator(); 
+
+-- controller
+-- Constructor assigns the sensors and actuators in the System to the correponding variables in modal controller
+public static controller: ModalController := new ModalController(leftLineSensor, rightLineSensor, leftEncoder, rightEncoder, leftPWM, rightPWM);
+
+-- cpu
+-- cpu clock speed is overwritten by thread
+cpu: CPU := new CPU(<FP>, 1E6)
+
+operations
+
+public System: () ==> System
+System() == (
+
+	-- deployment
+	cpu.deploy(controller)
+);
+
+end System

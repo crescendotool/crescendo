@@ -1,0 +1,37 @@
+class EncoderDE is subclass of ISensorInt
+
+-- class representing an encoder
+-- this sensor yields a single integer value
+-- this class is designed to used in a DE-only simulation
+
+types
+
+public Type = <ENCL> | <ENCM>
+
+instance variables
+
+-- environment model to access
+env: Environment;
+
+-- used to distinguish the encoders
+type: Type;
+
+operations
+
+-- constructor for MotorDE
+public EncoderDE: Environment * Type ==> EncoderDE
+EncoderDE(e, t) == (
+  env := e;
+  type := t
+);
+
+-- read the current value of this sensor
+public Read: () ==> int
+Read() == 
+  cases type:
+    <ENCM> -> return env.GetEncM(),
+    <ENCL> -> return env.GetEncL(),
+    others -> error  
+  end
+  
+end EncoderDE

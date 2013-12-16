@@ -1,0 +1,22 @@
+system Demo
+
+instance variables
+  -- shared variables for co-simulation
+  public static counts : [ISensorReal] := nil;
+  public static rev : [IActuatorReal] := nil;
+
+instance variables
+  -- the CPU on which the controller will be deployed
+  -- CPU performance is 1 MIPS, causing a 2 microsecond
+  -- thread start overhead penalty
+  public cpu : CPU := new CPU(<FP>, 1E6);
+
+instance variables
+  -- the controller instance
+  public static ctrl : Controller := new Controller()
+
+operations
+  public Demo: () ==> Demo
+  Demo () == cpu.deploy(ctrl)
+
+end Demo

@@ -1,0 +1,14 @@
+
+#DESTECS
+.metadata
+
+# Latex #
+###################
+*.aux
+*.idx
+*.out
+*.toc
+*.bbl
+*.blg
+*.ilg
+*.ind

@@ -1,0 +1,88 @@
+class ComputeSpeedAlg2 is subclass of AbstractComputeSpeed	
+	
+	instance variables
+		private state : int := 0; -- 0= on the box, 1= between box and line, 2= line
+		private history : map SensorVision`colour to SensorVision`colour := {|->};
+		
+	operations
+		public calculateSpeed: SensorVision * SensorVision *  SensorRotation * SensorRotation ==> ()
+			calculateSpeed(sviLeft, sviRight, sveLeft, sveRight) == (
+
+				dcl colourLeft : SensorVision`colour := sviLeft.getColour();
+				dcl colourRight : SensorVision`colour := sviRight.getColour();
+
+				IO`print("Get from environment: "); IO`print(colourLeft); IO`print(" ----- "); IO`print(colourRight); IO`print("\n");
+
+				if colourLeft = <UNDEF> or colourRight = <UNDEF>
+				then return;
+				
+				cases state:
+					-- we are in state zero (box mode) and leave the box (switch to state 1)
+    				0 -> ( 
+    				
+	    				-- start robot
+						setSpeedLeft(1); 
+						setSpeedRight(1);
+	    				
+	    				if colourLeft=<WHITE> and colourRight=<WHITE> then state := 1;
+	    				 
+	    			),
+    				-- we are in state 1 (empty mode) and enter the line (switch to state 2)
+    				1 -> ( if colourLeft=<BLACK> or colourRight=<BLACK> then state := 2; startCounter(); ),
+    				-- we are in state 2 (standard mode)
+    				2 -> (
+   
+   		    			if colourLeft = <WHITE>
+						then -- WHITE 1
+						(
+							if colourRight = <WHITE>
+							then (
+							
+								dcl dd : real := Distance`getDistance();
+								dcl tt : real := 0.1;
+								
+								if Distance`getDistance() <= (dd+tt)
+								then (
+									IO`print("END OF LINE");
+									stopRobot();
+								);
+									
+							) -- WHITE/WHITE
+							else (setSpeedLeft(0.5); setSpeedRight(-0.5)); -- WHITE/BLACK
+							
+						) 
+						else -- BLACK 0
+						(
+							if colourRight = <WHITE>
+							then (setSpeedLeft(-0.5); setSpeedRight(0.5)) -- BLACK/WHITE
+							else (setSpeedLeft(1); setSpeedRight(1)); -- BLACK/BLACK
+						)
+    																
+    				),
+    				others -> skip
+    			end;								
+				
+			);
+			
+		public getState: () ==> real
+		getState() == return state;
+		
+		
+		private stopRobot: () ==> ()
+		stopRobot() == (		
+			-- stop the robot
+			setSpeedLeft(0); 
+			setSpeedRight(0);
+			Distance`setEndDistance();
+			Timer`stopTimer();
+			state := 3;
+		);
+		
+		private startCounter: () ==> ()
+		startCounter() == (		
+			-- start the robot
+			Timer`startTimer(); 
+			Distance`setStartDistance();
+		);
+		
+end ComputeSpeedAlg2

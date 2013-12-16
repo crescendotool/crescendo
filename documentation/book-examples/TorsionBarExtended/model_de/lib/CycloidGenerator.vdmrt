@@ -1,0 +1,71 @@
+class CycloidGenerator
+
+instance variables
+
+base: real;
+amplitude: real;
+start_time: real;
+stop_time: real;
+
+tDelta: real := 0;
+cycl: real := 0;
+
+operations
+
+-- constructor for CycloidGenerator
+public CycloidGenerator: real * real * real * real ==> CycloidGenerator
+CycloidGenerator(b, amp, start_t, stop_t) == (
+	-- set instance variables
+	base := b;
+	amplitude := amp;
+	start_time := start_t;
+	stop_time := stop_t;
+);
+
+-- constructor for CycloidGenerator
+public CycloidGenerator: real * real * real ==> CycloidGenerator
+CycloidGenerator(amp, start_t, stop_t) == (
+	-- set instance variables
+	base := 0;
+	amplitude := amp;
+	start_time := start_t;
+	stop_time := stop_t
+);
+
+-- constructor for CycloidGenerator
+public CycloidGenerator: real * real ==> CycloidGenerator
+CycloidGenerator(start_t, stop_t) == (
+	-- set instance variables
+	base := 0;
+	amplitude := 1;
+	start_time := start_t;
+	stop_time := stop_t
+);
+
+-- constructor for CycloidGenerator
+public CycloidGenerator: () ==> CycloidGenerator
+CycloidGenerator() == (
+	-- set instance variables
+	base := 0;
+	amplitude := 1;
+	start_time := 1;
+	stop_time := 2
+);
+
+-- calculates output
+public Output: () ==> real
+Output() == (
+	-- calculate CycloidGenerator signal
+	tDelta := TAU * (time/1e9 - start_time) / (stop_time - start_time);
+	cycl := amplitude * (tDelta - MATH`sin(tDelta)) / TAU;
+	-- return value
+	if tDelta < 0 then return base
+	elseif tDelta >= 0 and tDelta <= TAU then return cycl + base
+	else return amplitude + base
+)
+
+values
+
+TAU : real = 2 * MATH`pi 
+
+end CycloidGenerator

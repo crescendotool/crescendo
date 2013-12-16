@@ -1,0 +1,26 @@
+class IOFactoryDE is subclass of AbstractIOFactory
+
+instance variables
+
+-- sensors (two encoders)
+private encMotor: EncoderDE := new EncoderDE(TorsionBar`env, <ENCM>);
+private encLoad: EncoderDE := new EncoderDE(TorsionBar`env, <ENCL>);
+
+-- actuators (one motor)
+private motor: MotorDE := new MotorDE(TorsionBar`env);
+
+operations
+
+-- getter for encMotor
+public GetEncMotor: () ==> ISensorInt
+GetEncMotor() == return encMotor;
+
+-- getter for encMotor
+public GetEncLoad: () ==> ISensorInt
+GetEncLoad() == return encLoad;
+
+-- getter for motor
+public GetMotor: () ==> IActuatorPWM
+GetMotor() == return motor;
+
+end IOFactoryDE

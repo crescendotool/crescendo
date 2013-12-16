@@ -1,0 +1,15 @@
+class LossyEther is subclass of Ether
+
+operations
+
+-- receive a message to broadcast
+public Broadcast: IListener * Message ==> ()
+Broadcast(sender, message) ==
+(
+	-- add message to queues
+	for all l in set dom listeners \ {sender} do (
+		if MATH`rand(2) = 0 then listeners(l).push(DELAY, message)
+	);
+);
+
+end LossyEther

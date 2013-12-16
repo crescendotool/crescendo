@@ -1,0 +1,98 @@
+class PathCounter
+	
+	values
+		wheelRadius=0.03325;
+		distanceBetweenWheels=0.084;
+	instance variables
+		private wheelPosLeft: AbstractSensorReal;
+		private wheelPosRight: AbstractSensorReal;
+		private previousWheelPosLeft: real;
+		private previousWheelPosRight: real;
+		private heading:real;
+		private x:real;
+		private y:real;
+		private lenght:real;
+		private wheelLenght:real;
+		private resetLenght:real;
+		private resetX:real;
+		private resetY:real;
+		private resetHeading:real;
+		private resetTime:real;
+		
+	operations
+		public PathCounter: AbstractSensorReal* AbstractSensorReal ==> PathCounter
+			PathCounter (theWheelPosLeft,theWheelPosRight) == (
+				wheelPosLeft := theWheelPosLeft;
+				wheelPosRight:= theWheelPosRight;
+				wheelLenght:=wheelRadius;
+				heading:=0;
+				x:=0;
+				y:=0;
+				lenght:=0;
+				previousWheelPosLeft:=0;
+				previousWheelPosRight:=0;
+			);
+	
+		public step: () ==>()
+		step()== (
+		 --dcl dL:real;
+		 --dcl dR:real;
+		 --dcl dv:real;
+		 --dcl dtheta:real;
+		 --dcl dx:real;
+		 --dcl dy:real;
+		 --dL:=wheelLenght*(wheelPosLeft.read()-previousWheelPosLeft);
+		 --dR:=wheelLenght*(wheelPosRight.read()-previousWheelPosRight);
+		 --dv:=(dL+dR)/2;
+		 --heading:=MATH`atan(wheelLenght*(wheelPosLeft.read()-wheelPosRight.read())/2/distanceBetweenWheels);
+		 --dx:=MATH`sin(heading)*dv;
+		 --dy:=MATH`cos(heading)*dv;
+		 --x:=x+dx;
+		 --y:=y+dy;
+		 lenght:=wheelLenght*(wheelPosLeft.read()+wheelPosRight.read())/2;
+		 --previousWheelPosLeft:=wheelPosLeft.read();
+		 --previousWheelPosRight:=wheelPosRight.read();
+		-- IO`printf("time %s, x %s, y %s, heading %s,lenght %s \n",[time/1E9,x,y,heading,lenght])
+		);
+		public reset:()==>()
+		reset()==
+		(
+				resetHeading:=heading;
+				resetX:=x;
+				resetY:=y;
+				resetLenght:=lenght;
+				resetTime := time;
+		);
+		public reset: real*real*real*real==>()
+		reset(theheading,thex,they,thelenght)==
+		(
+				resetHeading:=theheading;
+				resetX:=thex;
+				resetY:=they;
+				resetLenght:=thelenght;
+				resetTime := time;
+		);
+		public getLastX: () ==>real
+		getLastX()== ( 
+			return x-resetX;
+		);
+		public getLastY: () ==>real
+		getLastY()== ( 
+			return y-resetY;
+		);
+		public getLastHeading: () ==>real
+		getLastHeading()== ( 
+			return heading-resetHeading;
+		);
+		public getLastLength: () ==>real
+		getLastLength()== ( 
+			return lenght-resetLenght;
+		);
+		
+		public getLastTime: () ==>real
+		getLastTime() == (
+			return time - resetTime;
+		);
+
+		
+end PathCounter

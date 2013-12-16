@@ -1,0 +1,13 @@
+class Actuator
+
+	instance variables
+		protected value: real := 0;		
+
+	operations
+		public setValue: real ==> ()
+		setValue(val) == value := val;
+		
+		public getValue: () ==> real
+			getValue() == return value;
+
+end Actuator

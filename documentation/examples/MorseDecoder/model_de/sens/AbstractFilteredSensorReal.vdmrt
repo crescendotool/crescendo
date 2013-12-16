@@ -1,0 +1,21 @@
+class AbstractFilteredSensorReal is subclass of SensorReal
+	
+	instance variables
+		protected sampleSequence : seq of real;
+	
+	operations
+	
+		public AbstractFilteredSensorReal : int ==> AbstractFilteredSensorReal
+			AbstractFilteredSensorReal (initialSampleSize) == is subclass responsibility;
+			
+			
+		public setSampleSize : int ==> ()
+			setSampleSize (newSampleSize) == is subclass responsibility;
+			
+		public updateSampleSequenceForNewValue: () ==> ()
+			updateSampleSequenceForNewValue() == is subclass responsibility;
+		
+		public readFiltered: () ==> real
+			readFiltered () == is subclass responsibility;
+
+end AbstractFilteredSensorReal

@@ -1,0 +1,117 @@
+-- provides the concrete implementation of the abstract
+-- controller.  This class uses the Modal Controller pattern.
+class ModalController is subclass of AbstractMorseReader
+
+	types
+		-- we have a variety of "modes" of operation:
+		-- analysing signal noise; calibration (determine
+		-- lengths of dots and dashes); reading a message; idle
+		modes = <A> | <B> | <C> | <D>;
+
+	instance variables
+		-- a sensor to read the tape (abstract)
+		protected morseSensor: AbstractFilteredSensorReal;
+		
+		-- an actuator to power the motor that moves the tape (abstract)
+		protected motorVoltage : AbstractActuatorReal;
+		
+		-- this variable contains a class that provides functionality needed
+		-- during operation.  The functionality requirements change over time
+		-- so the concrete implementation of this class also changes over time
+		protected controllerMode : AbstractControllerMode;
+		
+		public signalNoiseScale : real;
+		public meanDotLength : real;
+		public meanDashLength : real;
+		
+		private modeSequence : seq of modes;
+
+	operations
+		public ModalController: AbstractSensorReal * AbstractActuatorReal ==> ModalController
+		ModalController(sens1, act1) == (
+			morseSensor := sens1;
+			motorVoltage := act1;
+			
+			signalNoiseScale := 0;
+			meanDotLength := 0;
+			meanDashLength := 0;
+			
+			modeSequence := [<B>, <C>, <D>];
+			controllerMode := new ControllerModeMeasureSignalNoise(self,100);
+
+		);
+		
+		-- needed for a controller class
+		public Step : () ==> ()
+		Step () == (
+			morseSensor.updateSampleSequenceForNewValue();
+			
+			controllerMode.step();
+			
+		);
+		
+		
+		public controllerModeFinished : () ==> ()
+			controllerModeFinished () == (
+			
+			-- first mode of operation - analyse signal noise
+			if hd modeSequence = <A> then
+				controllerMode := new ControllerModeMeasureSignalNoise(self,10);
+				
+			-- second mode of operation - determine lengths of dots 
+			-- and dashes in this message
+			if hd modeSequence = <B> then
+				controllerMode := new ControllerModeMeasureDotDashLength(self);
+				
+			-- third mode of operation - read the message
+			if hd modeSequence = <C> then
+				controllerMode := new ControllerModeReadMessage(self);
+				
+			-- final mode - idle
+			if hd modeSequence = <D> then
+				controllerMode := new ControllerModeIdle(self);
+				
+			modeSequence := tl modeSequence;
+			
+		);	
+		
+		
+		public setMotorVoltage : real ==> () 
+			setMotorVoltage (newVoltage) == (
+			
+				motorVoltage.setValue(newVoltage);
+		
+		);
+		
+		public getMotorVoltage : () ==> real 
+			getMotorVoltage () == (
+			
+				return motorVoltage.getValue();
+		
+		);
+		
+		public getMorseSignalRaw: () ==> real
+			getMorseSignalRaw () == (
+			
+				return morseSensor.read();
+			
+		);
+		
+		public getMorseSignalFiltered: () ==> real
+			getMorseSignalFiltered () == (
+			
+				return morseSensor.readFiltered();
+				
+		);
+		
+		public setMorseSensorFilterLevel: int ==> ()
+			setMorseSensorFilterLevel (newLevel) == (
+							
+				morseSensor.setSampleSize(newLevel);			
+				
+		);
+
+
+
+
+end ModalController

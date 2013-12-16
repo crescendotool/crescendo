@@ -1,0 +1,17 @@
+class AbstractSensorReal
+
+-- An abstract sensor that yields a single real value.
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected value: real := 0
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> real
+Read() ==
+    is subclass responsibility;
+
+end AbstractSensorReal

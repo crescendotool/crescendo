@@ -1,0 +1,38 @@
+class Timer
+
+	instance variables
+		private static startTime : real := 0;
+		private static endTime : real := 0;
+		private static neededTime : real := 0;
+		
+	operations
+
+		public static startTimer : () ==> ()
+		startTimer() == (
+			startTime := time;
+		);
+		
+		public static stopTimer : () ==> ()
+		stopTimer() == (
+			endTime := time;
+		);
+		
+		public static getNeededTime : () ==> real
+		getNeededTime () == (
+			neededTime := endTime - startTime;
+			return neededTime;	
+		);
+		
+		public static getNeededTimeSec : () ==> real
+		getNeededTimeSec () == (
+			return getNeededTime()/(1000000000);
+		);
+		
+		public static resetTimer : () ==> ()
+		resetTimer() == (
+			startTime := 0;
+			endTime := 0;
+			neededTime := 0;
+		);
+				
+end Timer

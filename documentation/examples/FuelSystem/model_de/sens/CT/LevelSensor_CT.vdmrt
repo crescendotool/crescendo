@@ -1,0 +1,13 @@
+class LevelSensor_CT is subclass of AbstractSensorReal
+
+-- Class representing a fuel tank level sensor.
+-- This sensor yields a single real value.
+-- This class is designed to be connected to a co-simulation.
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> real
+Read() == return value;
+
+end LevelSensor_CT

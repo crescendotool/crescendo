@@ -1,0 +1,60 @@
+class IOFactory
+
+types
+
+-- distinguish left and right
+public Side = <LEFT> | <RIGHT>
+
+instance variables
+
+-- encoders (as concrete classes)
+private static encLeft: Encoder := new Encoder();
+private static encRight: Encoder := new Encoder(true);
+
+-- line-following sensors (as concrete classes)
+private static lfLeft: IRSensor := new IRSensor();
+private static lfRight: IRSensor := new IRSensor();
+
+-- servos (as concrete classes)
+private static servoLeft: SpeedServo := new SpeedServo();
+private static servoRight: SpeedServo := new SpeedServo(true);
+
+operations
+
+-- synchronize local copies of shared variables
+public Sync: () ==> ()
+Sync() == (
+	cycles(20) (
+		-- sync actuators
+		servoLeft.Sync();
+		servoRight.Sync();
+		-- sync sensors
+		encLeft.Sync();
+		encRight.Sync();
+		lfLeft.Sync();
+		lfRight.Sync();
+    );	
+);
+
+-- access encoders
+public EncoderFactory: Side ==> ISensorReal
+EncoderFactory(side) ==
+	if side = <LEFT> 
+	then return encLeft
+	else return encRight;
+
+-- access line-following sensors
+public IRSensorFactory: Side ==> ISensorInt8
+IRSensorFactory(side) ==
+	if side = <LEFT> 
+	then return lfLeft
+	else return lfRight;
+
+-- access line-following sensors
+public ServoFactory: Side ==> IActuatorRealPercent
+ServoFactory(side) ==
+	if side = <LEFT> 
+	then return servoLeft
+	else return servoRight;
+
+end IOFactory

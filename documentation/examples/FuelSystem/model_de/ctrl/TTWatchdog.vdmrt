@@ -1,0 +1,45 @@
+class TTWatchdog
+
+instance variables
+
+-- controller and monitored sensor
+private ctrl: Controller;
+private TT: AbstractSensorReal;
+
+private count: nat;
+
+operations
+
+-- constructor for TTWatchdog
+public TTWatchdog: Controller * AbstractSensorReal ==> TTWatchdog
+TTWatchdog(c, tt) ==
+(
+    -- initialise instance variables
+    ctrl := c;
+    TT := tt;
+    count := 0
+);
+
+-- monitor loop
+public Step: () ==> ()
+Step() == --cycles(2) 
+(
+    -- 9e18 represents a 'missing' signal
+    if TT.Read() = 9e18 
+    then count := count+1
+    else count := 0;
+
+    if count = MAX_COUNT then (ctrl.TTErrorDetected())
+)
+
+-- 20Hz control loop
+values SAMPLE_TIME = 0.05;
+thread periodic(50E6, 0 , 0, 0)(Step);
+
+values
+
+-- number of missing readings before error is raised
+MAX_COUNT = 2;
+
+
+end TTWatchdog

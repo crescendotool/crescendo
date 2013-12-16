@@ -56,7 +56,7 @@
             <launchMode 
                   mode="debug"
                   perspective="org.eclipse.debug.ui.DebugPerspective"
-                  description="%localDestecsApplicationTabGroupDescription.debug">
+                  description="%localApplicationTabGroupDescription.debug">
             </launchMode>
       </launchConfigurationTabGroup>
       <launchConfigurationTabGroup

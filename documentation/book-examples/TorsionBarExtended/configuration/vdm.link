@@ -1,0 +1,13 @@
+-- linking of the monitored variables
+input enc_motor = TorsionBar.ctio.encMotor.val;
+input enc_load = TorsionBar.ctio.encLoad.val;
+
+-- linking of the controlled variables
+output pwm_amp = TorsionBar.ctio.motor.val;
+
+-- linking of shared design parameters
+sdp USE_SCRIPT = World.USE_SCRIPT;
+sdp DE_ONLY = World.DE_ONLY;
+
+-- allow script to access trigger variable in User
+model input_trigger = TorsionBar.user.trigger;

@@ -1,0 +1,30 @@
+-- SDP
+sdp pidGain = SDP.gain;
+sdp sdpSlip = SDP.slip;
+
+-- inpust from the plant (CT model)
+input poleAngle = System.gyroInstance.angle;
+input rmsVelocityError = System.velocityErrorInstance.rmsVE;
+--input velHigh = System.velocitySensorInstance.high;
+
+-- test event
+--event velGT = System.velocitySensorInstance.highEvent;
+
+-- outputs to the plant
+output pwmSettingL = System.pidInstanceL.pwm_k;
+output pwmSettingR = System.pidInstanceR.pwm_k;
+output safetySwitchL = System.safetySwitchInstanceL.realState;
+output safetySwitchR = System.safetySwitchInstanceR.realState;
+output controlModeL = System.rtControlInstanceL.modeReal;
+output monitorModeL = System.monitorL.modeReal;
+output controlModeR = System.rtControlInstanceR.modeReal;
+output monitorModeR = System.monitorR.modeReal;
+output gyroError = System.gyroInstance.errorCode;
+output safetyKey = System.safetyKeyInstance.realState;
+
+-- input from scenario
+model safetyKeyEnabled = System.safetyKeyInstance.realState;
+model ignitionSwitch = System.ignitionInstance.realState;
+model gyroError = System.gyroInstance.errorCode;
+-- output to scenario
+model poleAngle = System.gyroInstance.angle;

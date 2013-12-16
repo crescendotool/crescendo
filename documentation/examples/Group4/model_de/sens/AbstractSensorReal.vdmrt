@@ -1,0 +1,11 @@
+class AbstractSensorReal
+
+
+	instance variables
+		protected value: real := 0;
+
+	operations
+		public read: () ==> real
+		read() == is subclass responsibility;
+
+end AbstractSensorReal

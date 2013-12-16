@@ -1,0 +1,45 @@
+class Encoder is subclass of ISensorReal
+
+-- class representing an encoder
+-- this sensor yields a single real value
+-- this sensor converts to metres
+-- this class can reverse its output
+-- this class is designed to be connected to a co-simulation
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected val: real := 0;
+
+-- local copy of the shared variable
+protected local_val: real := 0;
+
+-- true if the servo is reversed, false otherwise
+protected reversed: bool;
+
+operations
+
+-- constructor for Encoder
+public Encoder: bool ==> Encoder
+Encoder(rev) == reversed := rev;
+
+-- default constructor for Encoder
+public Encoder: () ==> Encoder
+Encoder() == reversed := false;
+
+-- read the current value of this sensor
+public Read: () ==> real
+Read() == return local_val;
+
+-- read shared variable to local variable
+public Sync: () ==> ()
+Sync() == local_val := CountToDistance(if reversed then -val else val);
+
+functions 
+
+-- convert encoder count to wheel distance
+protected CountToDistance: int -> real
+CountToDistance(c) ==
+	(c / 44) * MATH`pi * World`wheel_radius * 2;
+
+end Encoder

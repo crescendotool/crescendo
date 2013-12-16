@@ -1,0 +1,33 @@
+class Ignition
+	types
+
+	public IgnitionType = <ON> | <OFF>; 
+
+	values
+-- TODO Define values here
+
+	instance variables
+
+    public static realState : real := 1.0;
+	private mode : IgnitionType := <ON>;
+
+	operations
+
+    public getMode : () ==> IgnitionType
+    getMode() == (
+      if realState = 0.0 
+      then (
+        mode := <OFF>; 
+        return mode
+        )
+      else (
+        mode := <ON>;
+        return mode;
+      );
+    );
+
+	functions 
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end Ignition

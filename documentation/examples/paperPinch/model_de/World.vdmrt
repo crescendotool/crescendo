@@ -1,0 +1,80 @@
+--
+-- World
+--
+-- This class is the entry-point for the VDM controller model, 
+-- because run() is called to start the system. This class also sets
+-- up the sensors, actuators and fault tolerance mechanisms and 
+-- setpoints for the model and can be used to alter the configuration
+-- of the co-simulation.
+--
+class World
+
+types
+
+-- the four modes of FT that are implemented
+Mode = <NO_FT> | <KERNEL> | <VOTER> | <BOTH>
+
+values
+
+MODE: Mode = <NO_FT>; -- select FT mechanisms
+LIMIT = 0.2;          -- safety kernel limit
+DEFAULT_ENC = 3;      -- default encoder if vote fails
+
+-- controller setpoints at (time,speed) pairs
+public SETPOINTS = new SetpointProfile([mk_(0.2,15.0), mk_(1,-10)])
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() ==
+(
+	start(System`controller);
+	block();
+);
+
+-- setup co-simulation
+public static setup: () ==> ()
+setup() ==
+(
+	-- instantiate encoders
+	System`enc1 := new Encoder();
+	System`enc2 := new Encoder();
+	System`enc3 := new Encoder();
+
+	-- instantiate actuator
+	System`pwm := new PWM();
+ 
+	-- instantiate controller
+	if MODE = <NO_FT> then
+	(
+		-- enc1 only is used; no safety kernel
+		System`controller := new Controller(System`enc1, System`pwm);
+	)
+	else if MODE = <KERNEL> then
+	(
+		-- enc1 only is used; safety kernel
+		dcl kernel: IActuatorPWM := new SafetyKernel(System`pwm, LIMIT);
+		System`controller := new Controller(System`enc1, kernel);		
+	)
+	else if MODE = <VOTER> then
+	(
+		-- three encoders and voter; no safety kernel
+		dcl voter: ISensorInt := new Voter([System`enc1, System`enc2, System`enc3], DEFAULT_ENC);
+		System`controller := new Controller(voter, System`pwm);		
+	)
+	else if MODE = <BOTH> then
+	(
+		-- three encoders and voter; no safety kernel
+		dcl kernel: IActuatorPWM := new SafetyKernel(System`pwm, LIMIT);	
+		dcl voter: ISensorInt := new Voter([System`enc1, System`enc2, System`enc3], DEFAULT_ENC);
+		System`controller := new Controller(voter, kernel);
+	)
+);
+
+-- wait for simulation to finish
+block: () ==>()
+block() == skip;
+sync per block => false;
+
+end World

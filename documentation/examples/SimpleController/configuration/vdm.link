@@ -1,0 +1,2 @@
+output rev = Demo.rev.value;
+input counts = Demo.counts.value; 

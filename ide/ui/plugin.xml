@@ -334,7 +334,7 @@
             name="%org.destecs.ide.contracteditor.editor.core.VdmLinkEditor.name">
 		</editor>
 
-		<editor
+		<!--editor
             class="org.destecs.ide.ui.editor.impl.ScenarioEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
@@ -342,13 +342,13 @@
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScenarioEditor"
             name="%org.destecs.ide.contracteditor.editor.core.ScenarioEditor.name">
-		</editor>
+		</editor-->
 
 		<editor
             class="org.destecs.ide.ui.editor.impl.ScriptEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
-            extensions="script2"
+            extensions="script"
             icon="icons/cview16/contract_file_tsk.gif"
             id="org.destecs.ide.contracteditor.editor.core.ScriptEditor"
             name="%org.destecs.ide.contracteditor.editor.core.ScriptEditor.name">
@@ -395,6 +395,11 @@
             id="org.destecs.ide.ui.projectUpgradeCommand"
             name="%org.destecs.ide.ui.projectUpgradeCommand.name">
 		</command>
+		 <command
+          defaultHandler="org.destecs.ide.ui.handlers.ReportBugHandler"
+          id="org.destecs.ide.ui.commandReportBug"
+          name="%org.destecs.ide.ui.commandReportBug.name">
+    </command>
 	</extension>
 	<extension
          point="org.eclipse.ui.handlers">
@@ -433,6 +438,16 @@
     </visibleWhen>
 			</menu>
 		</menuContribution>
+		
+		 <menuContribution
+          allPopups="false"
+          locationURI="menu:help?after=intro">
+       <command
+             commandId="org.destecs.ide.ui.commandReportBug"
+             label="%org.destecs.ide.ui.commandReportBug.label"
+             style="push">
+       </command>
+    </menuContribution>
 	</extension>
 
 	<extension

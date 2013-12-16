@@ -1,0 +1,74 @@
+%
+
+\section{The event detector}
+
+The \verb+EventDetector+ class is an auxiliary class that enables us 
+to deploy the detection of an event to a specific CPU on the system, 
+if required. It is nothing more that a dispatcher that calls the 
+appropriate event handler of the \verb+Supervisor+. The 
+\verb+Trigger+ operations are coupled to events in the 
+\textsc{20-sim} continuous time model. Note that extra bus traffic 
+is generated if the \verb+EventDetector+ and \verb+Supervisor+ are 
+not deployed on the same node. 
+
+\begin{vdm_al}
+class EventDetector
+
+instance variables
+  static private hlctrl  : [Supervisor] := nil;
+
+  public feed_sheet : real := 1.0
+
+operations
+  static public setSupervisor: Supervisor ==> ()
+  setSupervisor (phlc) == hlctrl := phlc;
+
+instance variables
+  static pimup     : nat := 0;
+  static pimdown   : nat := 0;
+  static aligndown : nat := 0;
+  static corrdown  : nat := 0;
+  static fuseup    : nat := 0
+  
+operations
+  async static public pimUp: () ==> ()
+  pimUp () == 
+	( pimup := pimup + 1;
+	  IO`println("pimUpEvent");
+	  if hlctrl <> nil then hlctrl.pimUpEvent(pimup, Time`getTime()) );
+  
+  async static public pimDown: () ==> ()
+  pimDown () ==
+	( pimdown := pimdown + 1;
+	  IO`println("pimDownEvent" );
+	  if hlctrl <> nil then hlctrl.pimDownEvent(pimdown, Time`getTime()) );
+
+  async static public alignUp: () ==> ()
+  alignUp () == IO`println("alignUpEvent");
+  
+  async static public alignDown: () ==> ()
+  alignDown () ==
+	( aligndown := aligndown + 1;
+	  IO`println("alignDownEvent");
+	  if hlctrl <> nil then hlctrl.alignDownEvent(aligndown, Time`getTime()) );
+  
+  async static public corrUp: () ==> ()
+  corrUp () == IO`println("corrUpEvent");
+
+  async static public corrDown: () ==> ()
+  corrDown () ==
+	( corrdown := corrdown + 1;
+	  IO`println("corrDownEvent");
+	  if hlctrl <> nil then hlctrl.corrDownEvent(corrdown, Time`getTime()) );
+  
+  async static public fuseUp: () ==> ()
+  fuseUp () ==
+	( fuseup := fuseup + 1;
+	  IO`println("fuseUpEvent");
+	  if hlctrl <> nil then hlctrl.fuseUpEvent(fuseup, Time`getTime()) );
+  
+  async static public fuseDown: () ==> ()
+  fuseDown () == IO`println("fuseDownEvent")
+  
+end EventDetector
+\end{vdm_al}

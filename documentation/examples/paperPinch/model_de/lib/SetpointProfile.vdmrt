@@ -1,0 +1,45 @@
+class SetpointProfile
+
+instance variables
+
+-- current setpoint and upcoming setpoints
+private setpoints: seq of (real * real);
+private setpoint: real
+
+operations
+
+-- constructor for SetpointProfile
+public SetpointProfile: real * seq of (real * real) ==> SetpointProfile
+SetpointProfile(init, sps) ==
+(
+	setpoint := init;
+	setpoints := sps
+)
+pre forall i in set inds sps & i <> len sps => 
+	sps(i).#1 < sps(i+1).#1;
+
+-- constructor for SetpointProfile
+public SetpointProfile: seq of (real * real) ==> SetpointProfile
+SetpointProfile(sps) ==
+	SetpointProfile(0.0, sps)
+pre forall i in set inds sps & i <> len sps => 
+	sps(i).#1 < sps(i+1).#1;
+
+-- return the value of the current setpoint
+public GetSetpoint: () ==> real
+GetSetpoint() ==
+(
+	-- update setpoint if necessary
+	if len setpoints > 0 then
+		let mk_(t,sp) = hd setpoints in
+			if time / 1.0E9 >= t then 
+			(
+				setpoint := sp;
+				setpoints := tl setpoints
+			);
+
+	-- return current setpoint
+	return setpoint
+)
+
+end SetpointProfile

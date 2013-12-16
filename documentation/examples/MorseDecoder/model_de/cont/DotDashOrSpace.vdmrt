@@ -1,0 +1,109 @@
+class DotDashOrSpace	
+	-- a class containing operations for translating information
+	-- about the tape into dots and dashes
+	types
+		public morseStringCharacter = MorseLookup`morseCharacter | <INTER_CHARACTER_GAP> | <CHARACTER_GAP> | <WORD_GAP> | <PENDING>;
+		
+	values
+		interCharacterGap : int = 1;
+		characterGap : int = 3;
+		wordGap : int = 7;	
+	
+	instance variables
+		protected meanDotLength: real;
+		protected meanDashLength: real;
+		protected previousState: SignalState`signalState;
+		protected clockCounter: int;
+
+
+	operations
+
+	public DotDashOrSpace : real * real ==> DotDashOrSpace
+		DotDashOrSpace(dotLength, dashLength) == (
+			previousState := <UNDEFINED>;
+			clockCounter := 0;
+			meanDotLength := dotLength;
+			meanDashLength := dashLength;
+			
+			IO`printf("mean dot %s mean dash %s \n", [meanDotLength, meanDashLength]);
+		);
+		
+	-- extra long spaces indicate gaps between characters or words
+	public veryLongSpaceCheck : () ==> bool
+		veryLongSpaceCheck () == (
+		
+			if clockCounter > (8 * meanDotLength) then
+			(
+				clockCounter := 0;
+				return true;
+			)
+			else
+			(
+				return false;
+			);
+		);
+		
+		
+	public updateState : SignalState`signalState ==> (morseStringCharacter)
+		updateState(readState) == (
+			
+			
+			dcl toReturn : morseStringCharacter := <PENDING>;
+			
+			clockCounter := clockCounter + 1;
+			
+			
+			if readState = <ON> and previousState = <OFF> then
+			(
+				--debug
+				--IO`printf("morse State changed to %s from %s , it was %s clockcycles long :  ", [readState, previousState, clockCounter]);
+				
+				-- space between dot and dash withing a character is 1 dot long
+				-- space between characters is 3 dots long
+				-- space between words is 7 dots long
+				-- if statements work down the list from biggest to smallest
+				
+				
+				toReturn := <WORD_GAP>;
+				
+				--if clockCounter < 6 * meanDotLength then
+				if clockCounter < ((wordGap + characterGap) * meanDotLength)/2 then
+				(
+					toReturn := <CHARACTER_GAP>;
+				);
+
+				if clockCounter < ((characterGap + interCharacterGap) * meanDotLength)/2 then
+				(
+					toReturn := <INTER_CHARACTER_GAP>;	
+				);
+				
+				clockCounter := 0;
+			);
+			
+			if readState = <OFF> and previousState = <ON> then
+			(
+				--debug
+				--IO`printf("morse State changed to %s from %s , it was %s clockcycles long :  ", [readState, previousState, clockCounter]);
+				
+				if clockCounter < ((meanDotLength + meanDashLength)/2) then
+				(
+					toReturn := <DOT>;	
+				)
+				else
+				(
+					toReturn := <DASH>;
+				);
+				clockCounter := 0;
+			);
+			
+			-- debug
+			--if toReturn <> <PENDING> then(
+				--IO`printf("returning %s \n  ", [toReturn]);
+			--);
+			
+			previousState := readState;
+
+			return toReturn;	
+			
+		);
+end DotDashOrSpace

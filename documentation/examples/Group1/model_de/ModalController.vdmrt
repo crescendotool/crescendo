@@ -1,0 +1,142 @@
+class ModalController
+
+	types
+		modes = <START> | <INITIAL> | <LINE_FOLLOW> | <DISTANCE_CALC> | <LOST> | <END>;
+	
+	-- The different modes of the controller: 
+	-- <START>   		Turns both motors on at the same speed 
+	-- <INITIAL> 		Waits until the robot has left the starting block
+	-- <LINE_FOLLOW> 	Follows the line by adjusting the left and right motors as appropriate
+	-- <DISTANCE_CALC> 	Calculates the distance travelled after line following
+	-- <LOST>			Continues running but calculates an offset for the encoder values
+	-- <END> 			Stops both motors from running
+	
+	instance variables
+		public leftPWM  : Actuator;
+		public rightPWM : Actuator;
+		public leftLS  :  Sensor;
+		public rightLS :  Sensor;
+		public leftEncoder : Sensor;
+		public rightEncoder : Sensor;
+
+		private distanceTotal: real := 0;
+		private exitCount : real := 0;
+		private currentMode : modes := <START>;
+		
+		private lostLeftEncoder : real := 0;
+		private lostRightEncoder: real := 0;
+		private leftEncoderOffset : real := 0;
+		private rightEncoderOffset: real := 0;
+
+	values
+	   private revolution = 44;		-- The number of encoder counts per revolution
+	   private diameter = 0.0665;	-- Diameter of the wheel
+	   private maxExitCount = 100;	-- Threshold for the exit condition
+	   private lsThreshold = 0.5;	-- Threshold for the line sensor
+	   
+	   private fullSpeed = 60;		
+	   private slowSpeed = 40;
+
+	operations
+		-- Constructor
+		public ModalController : Sensor * Sensor * Sensor * Sensor * Actuator * Actuator ==> ModalController
+		ModalController (lLS, rLS, lE, rE, lPWM, rPWM) == (
+			leftLS := lLS;
+			rightLS := rLS;
+			leftEncoder := lE;
+			rightEncoder := rE;
+			leftPWM := lPWM;
+			rightPWM := rPWM;
+		);
+		
+		public controllerMode : () ==> ()
+		controllerMode() == cycles(20) (
+		
+			-- At the start, set both motors to the same speed
+			-- Go to the initial, calibrating mode
+			if  currentMode = <START> then (
+				IO`printf("%s \t Start \n", [time/1E9]);
+				leftPWM.setValue(fullSpeed); 
+				rightPWM.setValue(fullSpeed); 
+				currentMode := <INITIAL>; 
+			
+			-- Change to line follow mode only if both light sensors record white
+			) elseif currentMode = <INITIAL> then (
+				IO`printf("%s \t Initial \n", [time/1E9]);
+				if (leftLS.read() > lsThreshold and rightLS.read() > lsThreshold) then (
+					currentMode := <LINE_FOLLOW>;
+					
+				)
+			
+			-- During the line follow mode, keep both sensors black
+			) elseif currentMode = <LINE_FOLLOW> then (
+				
+				-- Case 1: If left = black and right = white, then turn left (counter-clockwise)
+				if ((leftLS.read() < lsThreshold) and (rightLS.read() > lsThreshold)) then (
+					IO`printf("%s \t Left \n", [time/1E9]);
+					leftPWM.setValue(slowSpeed);
+					rightPWM.setValue(fullSpeed);
+					
+				-- Case 2: If left = white and right = black, then turn right (clockwise)
+				) elseif ((leftLS.read() > lsThreshold) and (rightLS.read() < lsThreshold)) then (
+					IO`printf("%s \t Right \n", [time/1E9]);
+					leftPWM.setValue(fullSpeed);
+					rightPWM.setValue(slowSpeed);			
+				
+				-- Case 3: If left = black and right = black, then keep straight
+				) elseif ((leftLS.read() < lsThreshold) and (rightLS.read() < lsThreshold)) then (
+					IO`printf("%s \t Straight \n", [time/1E9]);
+					leftPWM.setValue(fullSpeed);
+					rightPWM.setValue(fullSpeed);				
+				
+				-- Case 4: If left = white and right = white, then keep previous motor settings
+			    -- Update exit counter and check the exit condition
+				) elseif ((leftLS.read() > lsThreshold) and (rightLS.read() > lsThreshold)) then (
+					IO`printf("%s \t Lost \n", [time/1E9]);
+					currentMode := <LOST>;
+					lostLeftEncoder := leftEncoder.read();
+					lostRightEncoder := rightEncoder.read();
+				)
+
+			-- Compute the offset for the encoder readings
+			) elseif currentMode = <LOST> then (
+				IO`printf("%s \t Lost \n", [time/1E9]);
+				exitCount := exitCount + 1;				
+				
+				if leftLS.read() <> rightLS.read() then (
+					exitCount := 0;
+					currentMode := <LINE_FOLLOW>;
+					leftEncoderOffset := leftEncoderOffset + leftEncoder.read() - lostLeftEncoder;
+					rightEncoderOffset := rightEncoderOffset + rightEncoder.read() - lostRightEncoder;					
+					
+				) elseif exitCount = maxExitCount then (	
+					currentMode := <DISTANCE_CALC>;
+					leftEncoderOffset := leftEncoderOffset + leftEncoder.read() - lostLeftEncoder;
+					rightEncoderOffset := rightEncoderOffset + rightEncoder.read() - lostRightEncoder;
+				)
+
+			
+			-- Calculate the distance travelled by using the encoder readings
+			) elseif currentMode = <DISTANCE_CALC> then (
+				IO`printf("%s \t Exit \n", [time/1E9]);
+				distanceTotal := (if (leftEncoder.read() - leftEncoderOffset) < (rightEncoder.read() - rightEncoderOffset)
+				                 then (leftEncoder.read() - leftEncoderOffset) * MATH`pi * diameter / revolution
+				                 else (rightEncoder.read() - rightEncoderOffset) * MATH`pi * diameter / revolution);
+			    currentMode := <END>; 
+			    
+			    IO`print("\n");
+			    IO`printf("Total time /s: %s \n", [time/1E9]);
+			    IO`printf("Total distance /m: %s \n", [distanceTotal]);
+			
+			-- Stop the line follower
+			) elseif currentMode = <END> then (
+				leftPWM.setValue(0); 
+				rightPWM.setValue(0);
+			)
+		);
+			
+			
+		thread
+		periodic(4E7,0,200,0)(controllerMode);
+			
+end ModalController

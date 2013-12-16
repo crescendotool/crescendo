@@ -1,0 +1,2068 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+ <Model version="4.3" build="4.1.3.2">
+  <Sidops><![CDATA[model 128 184
+ description '<Information>
+ <Description>
+    <Version>4.3</Version>
+<IsMainModel>0</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>D:\Work\DESTECS\Subversion\trunk\WP3\Deliverable_3.4\D3.4aExamplesCompendium\exampleModels\SimpleController\SimpleController\model_ct\DestecsPattern.emx</LibraryPath>
+  <TimeStamp>2012-12-5 15:46:35</TimeStamp>
+</Description>
+</Information>';
+ type Mainmodel
+ end;
+ implementation bg
+  submodels
+   Controller 216 184
+			specifications active 'cosim'
+				specification 'CT'
+ description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Submodel
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg
+  figures
+   rectangle 182 162 250 206 fill 14013909;
+   text 'name' 216 184 16;
+  terminals
+   input 248 192 fixed;
+   output 248 176 fixed;
+ end;
+ implementation bg
+  submodels
+   Attenuate 240 304
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Block Diagram\Attenuate.emx</LibraryPath>
+  <TimeStamp>2007-10-31 13:47:6</TimeStamp>
+</Description>';
+    type Attenuate
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 224 288 256 320 fill 15132390;
+      text 'K' 247.5 310.4 color 16711680 16 bold;
+      text '1' 233.6 298.7 color 16711680 16 bold;
+      line 233.6 314.7 247.5 295.5 color 16711680 width 2;
+    end;
+    implementation eq
+parameters
+	real K = 2000;		// attenuation (divison parameter) 
+equations
+	output = input / K;
+       implementation_end;
+   plug input 416 304;
+   plug output 408 152;
+   P 232 152
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Control\PID Control\Discrete\P.emx</LibraryPath>
+ <TimeStamp>2007-9-27 14:46:32</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type P
+     ports
+      signal in error;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 216 136 248 168 fill 15132390;
+      text 'P' 232.5 152.1 color 1336868 18 bold;
+    end;
+    implementation eq
+parameters
+	real kp = 2.0 {};			// Proportional gain
+equations
+	output = kp * error;
+       implementation_end;
+   PlusMinus1 160 152
+    description '<Description><Version>4.0</Version><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Block Diagram\PlusMinus.emx</LibraryPath>
+  <TimeStamp>2007-9-27 10:15:13</TimeStamp>
+</Description>';
+    knot PlusMinus
+     ports
+      signal knot duplicatable in plus [1];
+      signal knot duplicatable in minus [1];
+      signal knot out output [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 152 144 168 160 fill 16777215;
+    end;
+    implementation eq
+equations
+    output = sum (collect (plus)) - sum (collect (minus));
+    implementation_end;
+   Step 48 152
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Sources\SignalGenerator-Step.emx</LibraryPath>
+ <TimeStamp>2007-9-27 16:2:44</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type 'SignalGenerator-Step'
+     ports
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      group
+       rectangle 32 136 64 168 fill 15132390;
+       line 41.6 148.8 58.6 148.8 color 16711680 width 2;
+       line 34.9 160 61.1 160;
+       line 37.1 160.1 41.7 160.1 41.7 148.7 color 16711680 width 2;
+       line 37.1 144 37.1 162.2;
+      end;
+    end;
+    implementation eq
+parameters
+	real amplitude = 1;
+	real start_time = 1.0 {s};
+variables
+	boolean hidden change;
+equations
+	"calculate at least at the start time"
+	change = timeevent (start_time);
+	
+	"calculate the step signal"
+	output = amplitude * step (start_time);     implementation_end;
+  end;
+  connections
+   P\output -> output;
+   Attenuate\input <- input;
+   PlusMinus1\output -> P\error;
+   Step\output -> PlusMinus1\plus;
+   Attenuate\output -> PlusMinus1\minus 160 304;
+  end;
+  figures
+   text 'counts' 296 288 color 32768 15 italic;
+   text 'rev' 192 296 color 32768 15 italic;
+   text 'rev' 88 136 color 32768 15 italic;
+   text 'V' 280 136 color 32768 15 italic;
+   text 'rev' 184 136 color 32768 15 italic;
+   text 'Controller' 160 408 20 bold;
+ implementation_end;
+specification_end;
+				specification 'cosim'
+ description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Submodel
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg
+  figures
+   rectangle 182 162 250 206 fill 14013909;
+   text 'name' 216 184 16;
+  terminals
+   input 248 192 fixed;
+   output 253 176 fixed;
+ end;
+ implementation bg
+  submodels
+   Destecs_export 144 280
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram\Gain.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:15:12</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Destecs_export
+     ports
+      signal in input;
+    end;
+    icon bg bottom
+     figures
+      rectangle 120 264 167.9 296 fill 15132390;
+      text 'export' 142.9 280 color 16711680 16 bold;
+    end;
+    implementation eq
+externals
+	real global export counts;
+code
+	// the exported variable
+	counts = input;    implementation_end;
+   Destecs_import 144 144
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram\Gain.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:15:12</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Destecs_import
+     ports
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 120 128 167.9 160 fill 15132390;
+      text 'import' 143.9 144 color 16711680 16 bold;
+    end;
+    implementation eq
+externals
+	real global import rev;
+code
+	// the imported variable
+	output = rev;implementation_end;
+   plug input 312 280;
+   plug output 320 144;
+  end;
+  connections
+   input -> Destecs_export\input;
+   Destecs_import\output -> output;
+  end;
+  figures
+   text 'counts' 224 264 color 32768 15 italic;
+   text 'rev' 216 128 color 32768 15 italic;
+ implementation_end;
+specification_end;
+			end;
+   IO 336 184
+			specifications active 'CT'
+				specification 'CT'
+ description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Submodel
+  ports
+   signal in input;
+   signal out output;
+   signal out voltage_O;
+   signal in input_rad;
+ end;
+ icon bg
+  figures
+   rectangle 299 162 373 206 fill 14013909;
+   text 'name' 336 184 16;
+  terminals
+   input 296 176 fixed;
+   output 296 192 fixed;
+   voltage_O 376 176 fixed;
+   input_rad 376 192 fixed;
+ end;
+ implementation bg
+  submodels
+   DA 440 136
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Discrete\DA.emx</LibraryPath>
+ <TimeStamp>2008-1-16 15:11:15</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type DA
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 424 120 456 152 fill 15132390;
+      spline 430.4 145.3 448 127.7 color 16711680;
+      text 'A' 446.2 141.5 color 16711680 14;
+      text 'D' 433.2 130.8 color 16711680 14;
+    end;
+    implementation eq
+parameters
+	real bits = 12;			// Quantization levels (bits)
+	real minimum = -10;		// Minimum output value
+	real maximum = 10;		// Minimum output value.
+variables
+	real windowed_signal, quantisized_signal, rounded_signal;
+	real lsb, half_lsb;
+equations
+	lsb = (maximum - minimum) / (exp2 (bits) -1);
+	half_lsb = lsb / 2;
+	windowed_signal = if input <= minimum then
+		minimum+ half_lsb
+	else
+		if input >= maximum then 
+			maximum - half_lsb
+		else 
+			input
+		end
+	end;
+	quantisized_signal = if windowed_signal < 0.0 then
+		windowed_signal - half_lsb
+	else
+		 windowed_signal + half_lsb
+	end;
+
+	rounded_signal =  quantisized_signal - (quantisized_signal mod lsb);
+	output = hold (rounded_signal);
+      implementation_end;
+   Delay 384 136
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Discrete\Delay.emx</LibraryPath>
+ <TimeStamp>2007-9-27 15:17:3</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Delay
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 368 120 400 152 fill 15132390;
+      text 'Z' 382.7 136 color 16711680 14 bold;
+      text '-1' 390.4 129 color 16711680 10 bold;
+    end;
+    implementation eq
+equations
+	output = previous (input);
+   implementation_end;
+   plug input 167.9 136;
+   plug output 168 280;
+   plug voltage_O 630 136;
+   plug input_rad 632 280;
+  end;
+  connections
+   input -> Delay\input;
+   DA\output -> voltage_O;
+   Delay\output -> DA\input;
+   input_rad -> output;
+  end;
+  figures
+   text 'Interface' 408 328 20 bold;
+ implementation_end;
+specification_end;
+				specification 'cosim'
+description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Submodel
+  ports
+   signal in input;
+   signal out output;
+   signal out voltage_O;
+   signal in input_rad;
+ end;
+ icon bg
+  figures
+   rectangle 299 162 373 206 fill 14013909;
+   text 'name' 336 184 16;
+  terminals
+   input 296 176 fixed;
+   output 296 192 fixed;
+   voltage_O 376 176 fixed;
+   input_rad 376 192 fixed;
+ end;
+ implementation bg
+  submodels
+   DA 408 136
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram\Gain.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:15:12</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Gain
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 392.1 120 423.9 152 fill 15132390;
+      text 'K' 408 136 color 16711680 16 bold;
+    end;
+    implementation eq
+parameters
+	real K = 1;		// gain
+equations
+	output = K * input;
+    implementation_end;
+   plug input 167.9 136;
+   plug output 168 280;
+   plug voltage_O 630 136;
+   plug input_rad 632 280;
+   RadToCounts 448 280
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram\Gain.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:15:12</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Gain
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 432.1 264 463.9 296 fill 15132390;
+      text 'K' 448 280 color 16711680 16 bold;
+    end;
+    implementation eq
+parameters
+	real K = 2000;		// counts per revolution
+equations
+	output = K * input / 2 / pi;
+    implementation_end;
+   Round 344 280
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Discrete\Quantize-Round.emx</LibraryPath>
+ <TimeStamp>2007-9-27 15:18:34</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type 'Quantize-Round'
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 328 264 360 296 fill 15132390;
+      group
+       line 354.3 270.1 354.3 273.1 color 16711680;
+       line 354.3 273.1 350.8 273.1 color 16711680;
+       line 350.8 273.1 350.8 275.9 color 16711680;
+       line 350.8 275.9 347.3 275.9 color 16711680;
+       line 347.3 275.9 347.3 278.8 color 16711680;
+       line 347.3 278.8 343.7 278.8 color 16711680;
+       line 343.7 278.8 343.7 281.7 color 16711680;
+       line 343.7 281.7 340.2 281.7 color 16711680;
+       line 340.2 281.7 340.2 284.6 color 16711680;
+       line 340.2 284.6 336.6 284.6 color 16711680;
+       line 336.6 284.6 336.6 287.5 color 16711680;
+       line 336.6 287.5 333 287.5 color 16711680;
+       line 333 290.3 333 287.5 color 16711680;
+      end;
+    end;
+    implementation eq
+parameters
+	real lsb = 0.00977;		// Least significant bit (-10V - 10V, 12 bits -> 20/2^(12-1) = 
+variables
+	real q, half_lsb;
+equations
+	half_lsb = lsb / 2;
+	q = if input < 0.0 then 
+		input - half_lsb
+	else
+		input + half_lsb
+	end;
+	output =  q - (q mod lsb);
+    implementation_end;
+  end;
+  connections
+   RadToCounts\output -> Round\input;
+   input -> DA\input;
+   DA\output -> voltage_O;
+   Round\output -> output;
+   RadToCounts\input <- input_rad;
+  end;
+  figures
+   text 'Interface' 416 360 20 bold;
+   text 'rad' 483 257 color 32768 15 italic;
+   text 'V' 472 120 color 32768 15 italic;
+   text 'counts' 384 256 color 32768 15 italic;
+ implementation_end;
+specification_end;
+			end;
+   Plant 504 184
+			specifications active 'CT'
+				specification 'CT'
+ description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Submodel
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg
+  figures
+   rectangle 467 162 541 206 fill 14013909;
+   text 'name' 504 184 16;
+  terminals
+   input 464 176 fixed;
+   output 464 192 fixed;
+ end;
+ implementation bg
+  submodels
+   Amplifier 200 144
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram\Gain.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:15:12</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Gain
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 184.1 128 215.9 160 fill 15132390;
+      text 'K' 200 144 color 16711680 16 bold;
+    end;
+    implementation eq
+parameters
+	real K = 0.5;		// gain
+equations
+	output = K * input;
+    implementation_end;
+   Bearing 392 202
+			specifications active 'V'
+				specification 'CV'
+description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Bearing.emx</LibraryPath>
+ <TimeStamp>2008-2-26 12:26:02</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Bearing
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality preferred out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 372.8 326 376.5 321.9;
+    line 376.5 326 380.4 321.9;
+    line 380.4 326 384.1 321.9;
+    line 384.1 326 388.1 321.9;
+    line 388.1 326 391.8 321.9;
+    line 374.4 322.2 394.1 322.2 width 2;
+   end;
+   group
+    group
+     line 376.9 305.1 381.3 309.9;
+     line 376.9 309.9 381.3 305.1;
+     line 385.8 305.1 390.3 309.9;
+     line 385.8 309.9 390.3 305.1;
+     line 381.3 305.1 385.8 309.9;
+     line 381.1 309.9 385.8 305.1;
+    end;
+    group
+     line 376.9 314.1 381.3 318.9;
+     line 376.9 318.9 381.3 314.1;
+     line 385.8 314.1 390.3 318.9;
+     line 385.8 318.9 390.3 314.1;
+     line 381.3 314.1 385.8 318.7;
+     line 381.1 318.9 385.9 314;
+    end;
+   end;
+   line 368 312 400 312;
+   group
+    line 393 302.1 374 302.1 width 2;
+    line 394.6 298 390.7 302.1;
+    line 390.7 298 387 302.1;
+    line 387 298 383 302.1;
+    line 383 298 379.3 302.1;
+    line 379.3 298 375.6 302.1;
+   end;
+  terminals
+   p 368 312;
+   p 384 312;
+ end;
+ implementation eq
+parameters
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real slope = 1000.0 {s/rad};	// steepness of coulomb friction curve
+equations
+	p.T = Tc * tanh( slope * p.v ) + d * p.v;implementation_end;
+specification_end;
+				specification 'C'
+description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Bearing.emx</LibraryPath>
+ <TimeStamp>2008-2-26 12:26:02</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Bearing
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality preferred out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 372.8 326 376.5 321.9;
+    line 376.5 326 380.4 321.9;
+    line 380.4 326 384.1 321.9;
+    line 384.1 326 388.1 321.9;
+    line 388.1 326 391.8 321.9;
+    line 374.4 322.2 394.1 322.2 width 2;
+   end;
+   group
+    group
+     line 376.9 305.1 381.3 309.9;
+     line 376.9 309.9 381.3 305.1;
+     line 385.8 305.1 390.3 309.9;
+     line 385.8 309.9 390.3 305.1;
+     line 381.3 305.1 385.8 309.9;
+     line 381.1 309.9 385.8 305.1;
+    end;
+    group
+     line 376.9 314.1 381.3 318.9;
+     line 376.9 318.9 381.3 314.1;
+     line 385.8 314.1 390.3 318.9;
+     line 385.8 318.9 390.3 314.1;
+     line 381.3 314.1 385.8 318.7;
+     line 381.1 318.9 385.9 314;
+    end;
+   end;
+   line 368 312 400 312;
+   group
+    line 393 302.1 374 302.1 width 2;
+    line 394.6 298 390.7 302.1;
+    line 390.7 298 387 302.1;
+    line 387 298 383 302.1;
+    line 383 298 379.3 302.1;
+    line 379.3 298 375.6 302.1;
+   end;
+  terminals
+   p 384 312;
+   p 368 312;
+ end;
+ implementation eq
+parameters
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real slope = 1000.0 {s/rad};	// steepness of coulomb friction curve
+equations
+	p.T = Tc * tanh( slope * p.v );implementation_end;
+specification_end;
+				specification 'LuGre'
+description '<Description>
+   <Version>4.1</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Friction.emx</LibraryPath>
+  <TimeStamp>2010-10-6 11:01:51</TimeStamp>
+<AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Friction
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality fixed out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 372.8 326 376.5 321.9;
+    line 376.5 326 380.4 321.9;
+    line 380.4 326 384.1 321.9;
+    line 384.1 326 388.1 321.9;
+    line 388.1 326 391.8 321.9;
+    line 374.4 322.2 394.1 322.2 width 2;
+   end;
+   group
+    group
+     line 376.9 305.1 381.3 309.9;
+     line 376.9 309.9 381.3 305.1;
+     line 385.8 305.1 390.3 309.9;
+     line 385.8 309.9 390.3 305.1;
+     line 381.3 305.1 385.8 309.9;
+     line 381.1 309.9 385.8 305.1;
+    end;
+    group
+     line 376.9 314.1 381.3 318.9;
+     line 376.9 318.9 381.3 314.1;
+     line 385.8 314.1 390.3 318.9;
+     line 385.8 318.9 390.3 314.1;
+     line 381.3 314.1 385.8 318.7;
+     line 381.1 318.9 385.9 314;
+    end;
+   end;
+   line 368 312 400 312;
+   group
+    line 393 302.1 374 302.1 width 2;
+    line 394.6 298 390.7 302.1;
+    line 390.7 298 387 302.1;
+    line 387 298 383 302.1;
+    line 383 298 379.3 302.1;
+    line 379.3 298 375.6 302.1;
+   end;
+  terminals
+   p 368 312;
+ end;
+ implementation eq
+parameters
+	real c = 1e5 {N.m/rad};			// rotational stiffness at zero speed
+	real Tst = 2.0 {N.m};				// static friction coefficient
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real v_st = 0.02 {rad/s} ;		// characteristic Stribeck velocity
+variables
+	real hidden v;						// overall velocity
+	real hidden mu_d;					// the damping coefficient at zero speed
+	real hidden g;						// the Stribeck function
+	real hidden z;						// z is the average deflection of the bristles, the state of the model
+	real hidden ddtz;					// ddtz is the average velocity of the bristles
+equations
+	v = p.omega;
+	z = int(ddtz,0);
+	ddtz = v - c * abs(v) * z / g;
+	g = Tc + (Tst - Tc)*exp( -((v / v_st)^2) );
+	mu_d = 2*sqrt(c)*exp( -(( 2* v / v_st)^2) );
+	p.T = c*z + mu_d*ddtz + d * v;implementation_end;
+specification_end;
+				specification 'SCVS'
+description '<Description>
+   <Version>4.1</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Friction.emx</LibraryPath>
+  <TimeStamp>2010-10-6 11:03:14</TimeStamp>
+<AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Friction
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality fixed out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 548.8 326 552.5 321.9;
+    line 552.5 326 556.4 321.9;
+    line 556.4 326 560.1 321.9;
+    line 560.1 326 564.1 321.9;
+    line 564.1 326 567.8 321.9;
+    line 550.4 322.2 570.1 322.2 width 2;
+   end;
+   group
+    group
+     line 552.9 305.1 557.3 309.9;
+     line 552.9 309.9 557.3 305.1;
+     line 561.8 305.1 566.3 309.9;
+     line 561.8 309.9 566.3 305.1;
+     line 557.3 305.1 561.8 309.9;
+     line 557.1 309.9 561.8 305.1;
+    end;
+    group
+     line 552.9 314.1 557.3 318.9;
+     line 552.9 318.9 557.3 314.1;
+     line 561.8 314.1 566.3 318.9;
+     line 561.8 318.9 566.3 314.1;
+     line 557.3 314.1 561.8 318.7;
+     line 557.1 318.9 561.9 314;
+    end;
+   end;
+   line 544 312 576 312;
+   group
+    line 569 302.1 550 302.1 width 2;
+    line 570.6 298 566.7 302.1;
+    line 566.7 298 563 302.1;
+    line 563 298 559 302.1;
+    line 559 298 555.3 302.1;
+    line 555.3 298 551.6 302.1;
+   end;
+  terminals
+   p 560 312;
+ end;
+ implementation eq
+parameters
+	real Tst = 2.0 {N.m};				// static friction coefficient
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real slope = 1000.0 {s/rad};		// steepness of coulomb friction curve
+	real v_st = 0.02 {rad/s} ;		// characteristic Stribeck velocity
+equations
+	p.T = (( Tc + (Tst*abs(tanh( slope*p.v )) - Tc) * exp( -((p.v / v_st)^2 )) ) *  sign(p.v) + d * p.v);implementation_end;
+specification_end;
+				specification 'V'
+ description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Bearing.emx</LibraryPath>
+ <TimeStamp>2008-2-26 12:26:02</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Bearing
+  ports
+   rotation psi duplicatable in p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 380.8 216 384.5 211.9;
+    line 384.5 216 388.4 211.9;
+    line 388.4 216 392.1 211.9;
+    line 392.1 216 396.1 211.9;
+    line 396.1 216 399.8 211.9;
+    line 382.4 212.2 402.1 212.2 width 2;
+   end;
+   group
+    group
+     line 384.9 195.1 389.3 199.9;
+     line 384.9 199.9 389.3 195.1;
+     line 393.8 195.1 398.3 199.9;
+     line 393.8 199.9 398.3 195.1;
+     line 389.3 195.1 393.8 199.9;
+     line 389.1 199.9 393.8 195.1;
+    end;
+    group
+     line 384.9 204.1 389.3 208.9;
+     line 384.9 208.9 389.3 204.1;
+     line 393.8 204.1 398.3 208.9;
+     line 393.8 208.9 398.3 204.1;
+     line 389.3 204.1 393.8 208.7;
+     line 389.1 208.9 393.9 204;
+    end;
+   end;
+   line 376 202 408 202;
+   group
+    line 401 192.1 382 192.1 width 2;
+    line 402.6 188 398.7 192.1;
+    line 398.7 188 395 192.1;
+    line 395 188 391 192.1;
+    line 391 188 387.3 192.1;
+    line 387.3 188 383.6 192.1;
+   end;
+  terminals
+   p 376 202;
+   p 376 202;
+   p 408 202;
+ end;
+ implementation eq
+parameters
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+equations
+	p.T = d * p.omega;implementation_end;
+specification_end;
+			end;
+   EncoderAbsolute 205.5 240.3
+			specifications active 'Absolute'
+				specification 'Incremental'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Sensors\Encoder.emx</LibraryPath>
+  <TimeStamp>2007-9-25 16:57:25</TimeStamp>
+</Description>';
+ type Encoder
+  ports
+   rotation in p;
+   signal out output;
+  restrictions
+   causality fixed out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    rectangle 370.1 284.3 386.6 308.3 fill 13421772;
+    rectangle 386.6 293.4 393 299.8 fill 9211020;
+   end;
+  terminals
+   p 371.1 296 fixed;
+   output 394.6 296 fixed;
+ end;
+ implementation eq
+parameters
+	real bits = 12 {};			// resolution in amount of bits
+	real counts = 2000.0 {};	// pulses per revolution
+variables
+	real hidden hold_signal, quantisized_signal,holdinput,rounded_signal;
+	real turns {rev};
+	real hidden exp2bits;
+equations
+	p.T = 0;
+	turns = int (p.omega) / (2*pi);
+	holdinput = turns * counts;
+	hold_signal = sample ( holdinput );
+	if hold_signal < 0.0 then
+		quantisized_signal = hold_signal - 0.5;
+	else
+		 quantisized_signal = hold_signal + 0.5;
+	end;
+	rounded_signal =  quantisized_signal - (quantisized_signal mod 1); 
+	exp2bits = exp2 (bits);
+	output = ( ( rounded_signal + 2.5 * exp2bits ) mod exp2bits ) - 0.5 * exp2bits;
+implementation_end;
+specification_end;
+				specification 'Ideal'
+description '<Description>
+   <Version>4.0</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Sensors\Encoder.emx</LibraryPath>
+  <TimeStamp>2008-8-6 11:16:21</TimeStamp>
+<AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Encoder
+  ports
+   rotation in p;
+   signal out output;
+  restrictions
+   causality fixed out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    rectangle 230.9 324.2 247.4 348.2 fill 13421772;
+    rectangle 247.4 333.3 253.8 339.7 fill 9211020;
+   end;
+  terminals
+   p 231.9 335.9 fixed;
+   output 255.4 335.9 fixed;
+ end;
+ implementation eq
+variables
+	real phi {rad};	// encoder position
+equations
+	p.T = 0;
+	phi = int (p.omega);
+	output = sample ( phi );
+             implementation_end;
+specification_end;
+				specification 'Absolute'
+ description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Sensors\Encoder.emx</LibraryPath>
+ <TimeStamp>2007-9-25 16:57:25</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Encoder
+  ports
+   rotation in p;
+   signal out output;
+  restrictions
+   causality fixed out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    rectangle 200.4 228.3 216.9 252.3 fill 13421772;
+    rectangle 194 237.4 200.4 243.8 fill 9211020;
+   end;
+  terminals
+   p 215.9 240 fixed;
+   output 192.4 240 fixed;
+ end;
+ implementation eq
+parameters
+	real counts = 2000.0 {};	// pulses per revolution
+variables
+	real hidden hold_signal, quantisized_signal,holdinput;
+	real turns {};
+equations
+	p.T = 0;
+	turns = int (p.omega) / (2*pi);
+	holdinput = turns * counts;
+	hold_signal = sample ( holdinput );
+	if hold_signal < 0.0 then
+		quantisized_signal = hold_signal - 0.5;
+	else
+		 quantisized_signal = hold_signal + 0.5;
+	end;
+	output = quantisized_signal - (quantisized_signal mod 1); 
+            implementation_end;
+specification_end;
+			end;
+   Inertia 456 202
+    description '<Description>
+   <Version>4.0</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Inertia.emx</LibraryPath>
+  <TimeStamp>2008-2-26 12:21:36</TimeStamp>
+</Description>';
+    type Inertia
+     ports
+      rotation psi duplicatable in p;
+     restrictions
+      causality preferred in p;
+    end;
+    icon ipm bottom
+     figures
+      rectangle 440 186 472 218 fill 13421772;
+      text 'J' 456 202 15 italic;
+     terminals
+      p 440 202;
+      p 440 202;
+    end;
+    implementation eq
+parameters
+	real J = 1.0 {kg.m2/rad};
+variables
+	real interesting phi {rad};
+	real alpha {rad/s2};
+equations
+	alpha = p.T / J;
+	p.omega = int (alpha);
+	phi = int (p.omega); implementation_end;
+   plug input 103.9 144;
+   plug output 96 240;
+   Node1 343.9 201.9
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>C:\Program Files\20-sim 4.0\System\Node.emx</LibraryPath>
+  <TimeStamp>2007-10-31 11:27:14</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Node
+     ports
+      rotation knot psi duplicatable none p [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 340.7 198.7 347.1 205.1 color -1 fill 0;
+      ellipse 339.6 197.6 348.1 206.1 color -1;
+     terminals
+      p 343.9 201.9 fixed;
+      p 343.9 201.9 fixed;
+      p 343.9 201.9 fixed;
+      p 343.9 201.9 fixed;
+    end;
+    implementation eq
+equations
+	sum (direct (p.t)) = 0;
+	equal (collect (p.a));
+  implementation_end;
+   Torque 287.2 202.2
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Actuators\TorqueActuator.emx</LibraryPath>
+ <TimeStamp>2007-9-25 10:54:31</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type TorqueActuator
+     ports
+      rotation psi out p;
+      signal in T {N.m} ;
+     restrictions
+      causality fixed out p;
+    end;
+    icon ipm top
+     figures
+      line 296.6 201.3 310.4 201.3 end open;
+      line 296.6 201.3 306.2 201.3 end open;
+      text 'T' 289.6 201.3 14;
+      line 269.9 190.6 269.9 217.3 width 2;
+      line 264 188.5 269.9 193.8 fill 2005303;
+      line 264 193.8 269.9 199.1 fill 2005303;
+      line 264 199.1 269.9 204.5 fill 2005303;
+      line 264 204.5 269.9 209.8 fill 2005303;
+      line 264 209.8 269.9 215.1 fill 2005303;
+      line 282.7 201.3 271 201.3 end open;
+      line 282.7 201.3 275.2 201.3 end open;
+      line 287.5 194.3 287.5 187;
+     terminals
+      p 312 201.9 fixed;
+      T 287.5 187 fixed;
+    end;
+    implementation eq
+variables
+	real hidden omega {rad/s};
+equations
+	p.T = T;
+	omega = p.omega;implementation_end;
+  end;
+  connections
+   Torque\p => Node1\p;
+   Node1\p => Bearing\p;
+   Bearing\p => Inertia\p;
+   EncoderAbsolute\p <= Node1\p 344 240;
+   Amplifier\output -> Torque\T 288 144;
+   input -> Amplifier\input;
+   EncoderAbsolute\output -> output;
+  end;
+  figures
+   text 'rad' 157 230 color 32768 15 italic;
+   text 'Nm' 312 152 color 32768 15 italic;
+   text 'V' 248 136 color 32768 15 italic;
+ implementation_end;
+specification_end;
+				specification 'cosim'
+description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Submodel
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg
+  figures
+   rectangle 467 162 541 206 fill 14013909;
+   text 'name' 504 184 16;
+  terminals
+   input 464 176 fixed;
+   output 464 192 fixed;
+ end;
+ implementation bg
+  submodels
+   Amplifier 704 144
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram\Gain.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:15:12</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Gain
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 688.1 128 719.9 160 fill 15132390;
+      text 'K' 704 144 color 16711680 16 bold;
+    end;
+    implementation eq
+parameters
+	real K = 0.5;		// gain
+equations
+	output = K * input;
+    implementation_end;
+   Bearing 896 202
+			specifications active 'V'
+				specification 'C'
+description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Bearing.emx</LibraryPath>
+ <TimeStamp>2008-2-26 12:26:02</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Bearing
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality preferred out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 372.8 326 376.5 321.9;
+    line 376.5 326 380.4 321.9;
+    line 380.4 326 384.1 321.9;
+    line 384.1 326 388.1 321.9;
+    line 388.1 326 391.8 321.9;
+    line 374.4 322.2 394.1 322.2 width 2;
+   end;
+   group
+    group
+     line 376.9 305.1 381.3 309.9;
+     line 376.9 309.9 381.3 305.1;
+     line 385.8 305.1 390.3 309.9;
+     line 385.8 309.9 390.3 305.1;
+     line 381.3 305.1 385.8 309.9;
+     line 381.1 309.9 385.8 305.1;
+    end;
+    group
+     line 376.9 314.1 381.3 318.9;
+     line 376.9 318.9 381.3 314.1;
+     line 385.8 314.1 390.3 318.9;
+     line 385.8 318.9 390.3 314.1;
+     line 381.3 314.1 385.8 318.7;
+     line 381.1 318.9 385.9 314;
+    end;
+   end;
+   line 368 312 400 312;
+   group
+    line 393 302.1 374 302.1 width 2;
+    line 394.6 298 390.7 302.1;
+    line 390.7 298 387 302.1;
+    line 387 298 383 302.1;
+    line 383 298 379.3 302.1;
+    line 379.3 298 375.6 302.1;
+   end;
+  terminals
+   p 384 312;
+   p 368 312;
+ end;
+ implementation eq
+parameters
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real slope = 1000.0 {s/rad};	// steepness of coulomb friction curve
+equations
+	p.T = Tc * tanh( slope * p.v );implementation_end;
+specification_end;
+				specification 'SCVS'
+description '<Description>
+   <Version>4.1</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Friction.emx</LibraryPath>
+  <TimeStamp>2010-10-6 11:03:14</TimeStamp>
+<AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Friction
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality fixed out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 548.8 326 552.5 321.9;
+    line 552.5 326 556.4 321.9;
+    line 556.4 326 560.1 321.9;
+    line 560.1 326 564.1 321.9;
+    line 564.1 326 567.8 321.9;
+    line 550.4 322.2 570.1 322.2 width 2;
+   end;
+   group
+    group
+     line 552.9 305.1 557.3 309.9;
+     line 552.9 309.9 557.3 305.1;
+     line 561.8 305.1 566.3 309.9;
+     line 561.8 309.9 566.3 305.1;
+     line 557.3 305.1 561.8 309.9;
+     line 557.1 309.9 561.8 305.1;
+    end;
+    group
+     line 552.9 314.1 557.3 318.9;
+     line 552.9 318.9 557.3 314.1;
+     line 561.8 314.1 566.3 318.9;
+     line 561.8 318.9 566.3 314.1;
+     line 557.3 314.1 561.8 318.7;
+     line 557.1 318.9 561.9 314;
+    end;
+   end;
+   line 544 312 576 312;
+   group
+    line 569 302.1 550 302.1 width 2;
+    line 570.6 298 566.7 302.1;
+    line 566.7 298 563 302.1;
+    line 563 298 559 302.1;
+    line 559 298 555.3 302.1;
+    line 555.3 298 551.6 302.1;
+   end;
+  terminals
+   p 560 312;
+ end;
+ implementation eq
+parameters
+	real Tst = 2.0 {N.m};				// static friction coefficient
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real slope = 1000.0 {s/rad};		// steepness of coulomb friction curve
+	real v_st = 0.02 {rad/s} ;		// characteristic Stribeck velocity
+equations
+	p.T = (( Tc + (Tst*abs(tanh( slope*p.v )) - Tc) * exp( -((p.v / v_st)^2 )) ) *  sign(p.v) + d * p.v);implementation_end;
+specification_end;
+				specification 'LuGre'
+description '<Description>
+   <Version>4.1</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Friction.emx</LibraryPath>
+  <TimeStamp>2010-10-6 11:01:51</TimeStamp>
+<AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Friction
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality fixed out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 372.8 326 376.5 321.9;
+    line 376.5 326 380.4 321.9;
+    line 380.4 326 384.1 321.9;
+    line 384.1 326 388.1 321.9;
+    line 388.1 326 391.8 321.9;
+    line 374.4 322.2 394.1 322.2 width 2;
+   end;
+   group
+    group
+     line 376.9 305.1 381.3 309.9;
+     line 376.9 309.9 381.3 305.1;
+     line 385.8 305.1 390.3 309.9;
+     line 385.8 309.9 390.3 305.1;
+     line 381.3 305.1 385.8 309.9;
+     line 381.1 309.9 385.8 305.1;
+    end;
+    group
+     line 376.9 314.1 381.3 318.9;
+     line 376.9 318.9 381.3 314.1;
+     line 385.8 314.1 390.3 318.9;
+     line 385.8 318.9 390.3 314.1;
+     line 381.3 314.1 385.8 318.7;
+     line 381.1 318.9 385.9 314;
+    end;
+   end;
+   line 368 312 400 312;
+   group
+    line 393 302.1 374 302.1 width 2;
+    line 394.6 298 390.7 302.1;
+    line 390.7 298 387 302.1;
+    line 387 298 383 302.1;
+    line 383 298 379.3 302.1;
+    line 379.3 298 375.6 302.1;
+   end;
+  terminals
+   p 368 312;
+ end;
+ implementation eq
+parameters
+	real c = 1e5 {N.m/rad};			// rotational stiffness at zero speed
+	real Tst = 2.0 {N.m};				// static friction coefficient
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real v_st = 0.02 {rad/s} ;		// characteristic Stribeck velocity
+variables
+	real hidden v;						// overall velocity
+	real hidden mu_d;					// the damping coefficient at zero speed
+	real hidden g;						// the Stribeck function
+	real hidden z;						// z is the average deflection of the bristles, the state of the model
+	real hidden ddtz;					// ddtz is the average velocity of the bristles
+equations
+	v = p.omega;
+	z = int(ddtz,0);
+	ddtz = v - c * abs(v) * z / g;
+	g = Tc + (Tst - Tc)*exp( -((v / v_st)^2) );
+	mu_d = 2*sqrt(c)*exp( -(( 2* v / v_st)^2) );
+	p.T = c*z + mu_d*ddtz + d * v;implementation_end;
+specification_end;
+				specification 'V'
+ description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Bearing.emx</LibraryPath>
+ <TimeStamp>2008-2-26 12:26:02</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Bearing
+  ports
+   rotation psi duplicatable in p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 884.8 216 888.5 211.9;
+    line 888.5 216 892.4 211.9;
+    line 892.4 216 896.1 211.9;
+    line 896.1 216 900.1 211.9;
+    line 900.1 216 903.8 211.9;
+    line 886.4 212.2 906.1 212.2 width 2;
+   end;
+   group
+    group
+     line 888.9 195.1 893.3 199.9;
+     line 888.9 199.9 893.3 195.1;
+     line 897.8 195.1 902.3 199.9;
+     line 897.8 199.9 902.3 195.1;
+     line 893.3 195.1 897.8 199.9;
+     line 893.1 199.9 897.8 195.1;
+    end;
+    group
+     line 888.9 204.1 893.3 208.9;
+     line 888.9 208.9 893.3 204.1;
+     line 897.8 204.1 902.3 208.9;
+     line 897.8 208.9 902.3 204.1;
+     line 893.3 204.1 897.8 208.7;
+     line 893.1 208.9 897.9 204;
+    end;
+   end;
+   line 880 202 912 202;
+   group
+    line 905 192.1 886 192.1 width 2;
+    line 906.6 188 902.7 192.1;
+    line 902.7 188 899 192.1;
+    line 899 188 895 192.1;
+    line 895 188 891.3 192.1;
+    line 891.3 188 887.6 192.1;
+   end;
+  terminals
+   p 880 202;
+   p 880 202;
+   p 912 202;
+ end;
+ implementation eq
+parameters
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+equations
+	p.T = d * p.omega;implementation_end;
+specification_end;
+				specification 'CV'
+description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Bearing.emx</LibraryPath>
+ <TimeStamp>2008-2-26 12:26:02</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type Bearing
+  ports
+   rotation psi duplicatable in p;
+  restrictions
+   causality preferred out p;
+ end;
+ icon bg bottom
+  figures
+   group
+    line 372.8 326 376.5 321.9;
+    line 376.5 326 380.4 321.9;
+    line 380.4 326 384.1 321.9;
+    line 384.1 326 388.1 321.9;
+    line 388.1 326 391.8 321.9;
+    line 374.4 322.2 394.1 322.2 width 2;
+   end;
+   group
+    group
+     line 376.9 305.1 381.3 309.9;
+     line 376.9 309.9 381.3 305.1;
+     line 385.8 305.1 390.3 309.9;
+     line 385.8 309.9 390.3 305.1;
+     line 381.3 305.1 385.8 309.9;
+     line 381.1 309.9 385.8 305.1;
+    end;
+    group
+     line 376.9 314.1 381.3 318.9;
+     line 376.9 318.9 381.3 314.1;
+     line 385.8 314.1 390.3 318.9;
+     line 385.8 318.9 390.3 314.1;
+     line 381.3 314.1 385.8 318.7;
+     line 381.1 318.9 385.9 314;
+    end;
+   end;
+   line 368 312 400 312;
+   group
+    line 393 302.1 374 302.1 width 2;
+    line 394.6 298 390.7 302.1;
+    line 390.7 298 387 302.1;
+    line 387 298 383 302.1;
+    line 383 298 379.3 302.1;
+    line 379.3 298 375.6 302.1;
+   end;
+  terminals
+   p 368 312;
+   p 384 312;
+ end;
+ implementation eq
+parameters
+	real d = 1.0 {N.m.s/rad};		// viscous friction
+	real Tc = 1.0 {N.m};				// coulomb coefficient
+	real slope = 1000.0 {s/rad};	// steepness of coulomb friction curve
+equations
+	p.T = Tc * tanh( slope * p.v ) + d * p.v;implementation_end;
+specification_end;
+			end;
+   Inertia 960 202
+    description '<Description>
+   <Version>4.0</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Components\Inertia.emx</LibraryPath>
+  <TimeStamp>2008-2-26 12:21:36</TimeStamp>
+</Description>';
+    type Inertia
+     ports
+      rotation psi duplicatable in p;
+     restrictions
+      causality preferred in p;
+    end;
+    icon ipm bottom
+     figures
+      rectangle 944 186 976 218 fill 13421772;
+      text 'J' 960 202 15 italic;
+     terminals
+      p 944 202;
+      p 944 202;
+    end;
+    implementation eq
+parameters
+	real J = 1.0 {kg.m2/rad};
+variables
+	real interesting phi {rad};
+	real alpha {rad/s2};
+equations
+	alpha = p.T / J;
+	p.omega = int (alpha);
+	phi = int (p.omega); implementation_end;
+   plug input 607.9 144;
+   plug output 601 288;
+   Node1 847.9 201.9
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>C:\Program Files\20-sim 4.0\System\Node.emx</LibraryPath>
+  <TimeStamp>2007-10-31 11:27:14</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Node
+     ports
+      rotation knot psi duplicatable none p [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 844.7 198.7 851.1 205.1 color -1 fill 0;
+      ellipse 843.6 197.6 852.1 206.1 color -1;
+     terminals
+      p 847.9 201.9 fixed;
+      p 847.9 201.9 fixed;
+      p 847.9 201.9 fixed;
+      p 847.9 201.9 fixed;
+    end;
+    implementation eq
+equations
+	sum (direct (p.t)) = 0;
+	equal (collect (p.a));
+  implementation_end;
+   PositionSensor 776 281.9
+    description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Sensors\PositionSensor-Absolute.emx</LibraryPath>
+  <TimeStamp>2007-9-25 16:59:15</TimeStamp>
+</Description>';
+    type 'PositionSensor-Absolute'
+     ports
+      rotation psi in p;
+      signal out phi {rad} ;
+     restrictions
+      causality fixed out p;
+    end;
+    icon bg bottom
+     figures
+      line 776 264 775.5 288;
+      ellipse 764.8 277.4 787.2 299.8 fill 16777215;
+      text 'P' 776 288.6 15;
+     terminals
+      p 776 264 fixed;
+      phi 776 288 fixed;
+    end;
+    implementation eq
+equations
+	p.T = 0;
+	phi = int (p.omega);             implementation_end;
+   Torque 791.2 202.2
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Iconic Diagrams\Mechanical\Rotation\Actuators\TorqueActuator.emx</LibraryPath>
+ <TimeStamp>2007-9-25 10:54:31</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type TorqueActuator
+     ports
+      rotation psi out p;
+      signal in T {N.m} ;
+     restrictions
+      causality fixed out p;
+    end;
+    icon ipm bottom
+     figures
+      line 800.6 201.3 814.4 201.3 end open;
+      line 800.6 201.3 810.2 201.3 end open;
+      text 'T' 793.6 201.3 14;
+      line 773.9 190.6 773.9 217.3 width 2;
+      line 768 188.5 773.9 193.8 fill 2005303;
+      line 768 193.8 773.9 199.1 fill 2005303;
+      line 768 199.1 773.9 204.5 fill 2005303;
+      line 768 204.5 773.9 209.8 fill 2005303;
+      line 768 209.8 773.9 215.1 fill 2005303;
+      line 786.7 201.3 775 201.3 end open;
+      line 786.7 201.3 779.2 201.3 end open;
+      line 791.5 194.3 791.5 187;
+     terminals
+      p 816 201.9 fixed;
+      T 791.5 187 fixed;
+    end;
+    implementation eq
+variables
+	real hidden omega {rad/s};
+equations
+	p.T = T;
+	omega = p.omega;implementation_end;
+  end;
+  connections
+   Torque\p => Node1\p;
+   Node1\p => Bearing\p;
+   Bearing\p => Inertia\p;
+   Node1\p => PositionSensor\p 848 264;
+   Amplifier\output -> Torque\T 792 144;
+   input -> Amplifier\input;
+   PositionSensor\phi -> output 624 288;
+  end;
+  figures
+   text 'rad' 720 280 color 32768 15 italic;
+   text 'Nm' 816 152 color 32768 15 italic;
+   text 'V' 752 136 color 32768 15 italic;
+ implementation_end;
+specification_end;
+			end;
+  end;
+  connections
+   IO\voltage_O -> Plant\input;
+   Controller\output -> IO\input;
+   IO\output -> Controller\input;
+   Plant\output -> IO\input_rad;
+  end;
+  figures
+   rectangle 144 128 320 256 fill 13959039;
+   rectangle 321 128 575 256 fill 6008319;
+ implementation_end;
+]]>
+</Sidops>
+ </Model>
+ <Experiments>
+     <DefaultExperiment><![CDATA[Experiment 1]]>
+</DefaultExperiment>
+  <Experiment>
+    <Name>Experiment 1</Name>
+    <CreatedBy></CreatedBy>
+    <Info></Info>
+<ExpData>
+  <VersionNumber>4.3</VersionNumber>
+  <ModelProperties>
+  </ModelProperties>
+  <Variables>
+   <Constants>
+   </Constants>
+   <Parameters>
+   </Parameters>
+   <Initials>
+    <Variable>
+     <Name>Plant\EncoderAbsolute\p.omega_int_initial</Name>
+     <Unit>rad</Unit>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Plant\Inertia\p.omega_initial</Name>
+     <Unit>rad/s</Unit>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Plant\Inertia\phi_initial</Name>
+     <Unit>rad</Unit>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>IO\Delay\output_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>u_2_initial</Name>
+     <Value>0</Value>
+    </Variable>
+   </Initials>
+  </Variables>
+  <PlotSpecs>
+   <VarNames>
+    <VarName>time</VarName>
+    <VarName>Controller\Step\output</VarName>
+    <VarName>IO\voltage_O</VarName>
+    <VarName>Plant\input</VarName>
+   </VarNames>
+   <Plots>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>1</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>15790320</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>model</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>10</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>250</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>time</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>-1.5</Minimum>
+       <Maximum>3.5</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>SP {rev}</Label>
+      </Axis>
+      <Axis>
+       <Minimum>-1500</Minimum>
+       <Maximum>3500</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>load {rev}</Label>
+      </Axis>
+      <Axis>
+       <Minimum>-1500</Minimum>
+       <Maximum>3500</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>output</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>21760</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711935</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>2</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Controller\Step\output</VarName>
+       </YCurveData>
+      </Curve>
+      <Curve>
+       <LineColor>16711935</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711935</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>2</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>IO\voltage_O</VarName>
+       </YCurveData>
+      </Curve>
+      <Curve>
+       <LineColor>255</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>255</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>2</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Plant\input</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+   </Plots>
+   <PlotPanels>
+    <PlotPanel>
+     <PlotPanelId>1</PlotPanelId>
+     <PlotPanelVisible>true</PlotPanelVisible>
+     <Name>Window 1</Name>
+     <Tiling>0</Tiling>
+     <PlotIds>
+       <PlotId>1</PlotId>
+     </PlotIds>
+     <ToggleState>Base</ToggleState>
+    </PlotPanel>
+   </PlotPanels>
+   <WindowRectangles virtualDesktopWidth="1920" virtualDesktopHeight="1080">
+     <WindowRectangle monitor="0" left="0" top="0" right="1920" bottom="1080" plotpanelid="1">
+0.131771 0.0916667 0.848958 0.780556
+     </WindowRectangle>
+   </WindowRectangles>
+  </PlotSpecs>
+  <RunSpecs>
+   <SimulatorSettings>
+    <StartTime>0</StartTime>
+    <FinishTime>250</FinishTime>
+    <Warp>false</Warp>
+    <UseOutputAfterEach>false</UseOutputAfterEach>
+    <OutputAfterEach>0.1</OutputAfterEach>
+    <EventEpsilon>1e-006</EventEpsilon>
+    <AlgebraicTolerance>1e-007</AlgebraicTolerance>
+    <SteadyStateAnalysis>false</SteadyStateAnalysis>
+    <UpdateHoldInstructions>false</UpdateHoldInstructions>
+    <DiscreteSystems>
+     <DiscreteSystem>
+      <DiscreteID>IO\EncoderAbsolute\hold_signal</DiscreteID>
+      <TimeInterval>1</TimeInterval>
+      <InitialSampleTimeDelay>0</InitialSampleTimeDelay>
+      <FixedSampleTimeDelay>0</FixedSampleTimeDelay>
+      <VariableTimeDelayMin>0</VariableTimeDelayMin>
+      <VariableTimeDelayMax>0</VariableTimeDelayMax>
+      <VariableTimeDelayMean>0</VariableTimeDelayMean>
+      <VariableTimeDelayDeviation>0</VariableTimeDelayDeviation>
+      <UseVariableTimeDelay>false</UseVariableTimeDelay>
+      <UniformVariableTimeDelay>false</UniformVariableTimeDelay>
+      <UseGlobalTime>true</UseGlobalTime>
+      <HoldTimeDelay>0</HoldTimeDelay>
+      <ActionOnSampleMissed>0</ActionOnSampleMissed>
+     </DiscreteSystem>
+     <DiscreteSystem>
+      <DiscreteID>Plant\EncoderAbsolute\hold_signal</DiscreteID>
+      <TimeInterval>1</TimeInterval>
+      <InitialSampleTimeDelay>0</InitialSampleTimeDelay>
+      <FixedSampleTimeDelay>0</FixedSampleTimeDelay>
+      <VariableTimeDelayMin>0</VariableTimeDelayMin>
+      <VariableTimeDelayMax>0</VariableTimeDelayMax>
+      <VariableTimeDelayMean>0</VariableTimeDelayMean>
+      <VariableTimeDelayDeviation>0</VariableTimeDelayDeviation>
+      <UseVariableTimeDelay>false</UseVariableTimeDelay>
+      <UniformVariableTimeDelay>false</UniformVariableTimeDelay>
+      <UseGlobalTime>true</UseGlobalTime>
+      <HoldTimeDelay>0</HoldTimeDelay>
+      <ActionOnSampleMissed>0</ActionOnSampleMissed>
+     </DiscreteSystem>
+    </DiscreteSystems>
+   </SimulatorSettings>
+   <IntegrationMethods>
+    <IntegrationMethod>
+     <Name>Euler</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BackwardEuler</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <StepSize>0.01</StepSize>
+     <Alpha>1</Alpha>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>AdamsBashforth</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta2</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta4</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta8</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <SafetyFactor>0.9</SafetyFactor>
+     <Factor1>0.33</Factor1>
+     <Factor2>6</Factor2>
+     <Beta>0</Beta>
+     <UseMaxNrSteps>false</UseMaxNrSteps>
+     <MaxNrSteps>100000</MaxNrSteps>
+     <UseStiffDetection>false</UseStiffDetection>
+     <MaxNrStiffnessSteps>1000</MaxNrStiffnessSteps>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKuttaFehlberg</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>VodeAdams</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <VodeUseBDF>true</VodeUseBDF>
+     <VodeUseNewton>true</VodeUseNewton>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BDFMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>MeBDFiMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <SelectedIntegrationMethod>0</SelectedIntegrationMethod>
+   </IntegrationMethods>
+  </RunSpecs>
+  <MultipleRun>
+   <NrSteps>10</NrSteps>
+   <CopyFromStates>false</CopyFromStates>
+   <JoinParameterVariation>true</JoinParameterVariation>
+   <ClearAfterRun>true</ClearAfterRun>
+   <RedrawAfterRun>false</RedrawAfterRun>
+   <DrawDuringSimulation>true</DrawDuringSimulation>
+   <ActionBeforeOptimization>0</ActionBeforeOptimization>
+   <CompareValue>0</CompareValue>
+   <UseCompareValue>true</UseCompareValue>
+   <MultipleRunType>MultipleRun</MultipleRunType>
+   <Minimize>true</Minimize>
+   <OptimizationVariable></OptimizationVariable>
+   <ResulVarUsage>UseEndValue</ResulVarUsage>
+   <Tolerance>0.001</Tolerance>
+   <OptimizationMethod>BroydonFletcherGoldfarbShanno</OptimizationMethod>
+   <MultipleRunVariables>
+   </MultipleRunVariables>
+  </MultipleRun>
+  <ExportData>
+   <WriteAsText>true</WriteAsText>
+   <ReadAsText>true</ReadAsText>
+   <WriteHeader>true</WriteHeader>
+   <ReadHeader>true</ReadHeader>
+   <ReadFilename></ReadFilename>
+   <WriteFilename></WriteFilename>
+   <DoWrite>false</DoWrite>
+   <ExportVariables>
+   </ExportVariables>
+   <ImportVariables>
+   </ImportVariables>
+  </ExportData>
+  <BreakPoints>
+  </BreakPoints>
+</ExpData>
+  </Experiment>
+</Experiments>
+</Document>

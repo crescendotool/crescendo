@@ -1,0 +1,53 @@
+-- DESTECS (Design Support and Tooling for Embedded Control Software)
+-- Grant Agreement Number: INFSO-ICT-248134
+-- Seventh Framework Programme
+-- WaterTank project: introductory project to the DESTECS tool.
+-- More details can be found at DESTECS User Manual, chapter 6.
+
+-- File Controller.vdmrt: model of a controller to supervise the watertank
+-- operation.
+
+class Controller
+
+values
+    -- the value of minLevel and maxLevel can be found in Shared Design 
+    -- Parameters in Debug Configurations
+	public minLevel : real = 0.0; -- {m}
+	public maxLevel : real = 0.0; -- {m}
+
+instance variables
+	levelSensor   : LevelSensor;
+	valveActuator : ValveActuator;
+
+operations
+
+-- constructor
+public Controller : LevelSensor * ValveActuator ==> Controller
+Controller(l,v)==
+(
+	levelSensor   := l;
+	valveActuator := v;
+);
+
+-- open valve action
+public openValve : () ==> ()
+openValve() ==
+(
+	valveActuator.setValveState(ValveActuator`on);
+);
+
+-- close valve action
+public closeValve : () ==> ()
+closeValve() ==
+(
+	valveActuator.setValveState(ValveActuator`off);
+);
+
+private op : () ==> ()
+op() == skip;
+
+thread
+-- execute the control loop every 50 milisecond
+periodic(50E6,0,0,0)(op);
+		 
+end Controller

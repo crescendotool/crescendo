@@ -1,0 +1,26 @@
+class IActuatorPWM
+
+-- An interface to a pulse-width modulation (PWM) actuator.
+
+instance variables
+
+-- this value will be set through the co-simulation
+public value: IActuatorPWM`PWM := 0
+
+types
+
+-- a PWM value is restricted to -1 (-100%) and +1 (+100%)
+public PWM = real
+inv p == -1 <= p and p <= 1;
+
+operations
+
+-- write a value to this actuator
+public Write: PWM ==> ()
+Write(value) == is subclass responsibility;
+
+-- read the value written to this actuator
+public Read: () ==> IActuatorPWM`PWM
+Read() == is subclass responsibility;
+
+end IActuatorPWM

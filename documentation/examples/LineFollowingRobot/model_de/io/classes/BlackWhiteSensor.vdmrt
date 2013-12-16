@@ -1,0 +1,53 @@
+class BlackWhiteSensor
+
+instance variables
+
+-- sensor to read
+sensor: ISensorInt8;
+
+-- calibration for light levels
+private MIN: ISensorInt8`Int8 := 0;
+private MAX: ISensorInt8`Int8 := 255;
+
+operations
+
+-- constructor for BlackWhiteSensor
+public BlackWhiteSensor: ISensorInt8 ==> BlackWhiteSensor
+BlackWhiteSensor(s) == sensor := s;
+
+-- set minimum and maximum readings
+public Calibrate: int * int ==> ()
+Calibrate(min, max) == (
+	MIN := min;
+	MAX := max	
+)
+pre 0 <= min and min <= 255 and
+    0 <= max and max <= 255 and
+	MIN <= MAX;
+
+-- return the LF sensor that his encapsulates
+public GetSensor: () ==> ISensorInt8
+GetSensor() == return sensor;
+
+-- return true if black is detected, false otherwise
+public IsBlack: () ==> bool
+IsBlack() == return Scale() < THRESHOLD;
+
+-- return true if white is detected, false otherwise
+public IsWhite: () ==> bool
+IsWhite() == return Scale() > THRESHOLD;
+
+-- scales the sensor reading based on calibration
+private Scale: () ==> real
+Scale() == 
+	let v = sensor.Read() in return 
+		if v < MIN then 0 
+	    else if v > MAX then 1
+	    else (v - MIN) / (MAX - MIN)
+
+values
+
+-- threshold below which black is detected
+THRESHOLD = 0.5
+
+end BlackWhiteSensor

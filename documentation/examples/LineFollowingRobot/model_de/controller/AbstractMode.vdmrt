@@ -1,0 +1,34 @@
+class AbstractMode is subclass of IMode
+
+instance variables
+
+-- this allows the mode to access sensors and actuators
+protected con: AbstractModalController
+
+operations
+
+-- constructor for AbstractDurativeMode
+public AbstractMode: AbstractModalController ==> AbstractMode
+AbstractMode(c) == con := c;
+
+-- perform control action in this mode
+-- can be overriden
+public Step: () ==> [AbstractModalController`Mode]
+Step() == return nil;
+
+-- called when we enter this mode
+-- can be overriden
+public Enter: () ==> ()
+Enter() == skip;
+
+-- called when we exit this mode
+-- can be overriden
+public Exit: () ==> ()
+Exit() == skip;
+
+-- return true if this mode has finished, false otherwise
+-- default is false (durative mode)
+public Done: () ==> bool
+Done() == return false;
+
+end AbstractMode

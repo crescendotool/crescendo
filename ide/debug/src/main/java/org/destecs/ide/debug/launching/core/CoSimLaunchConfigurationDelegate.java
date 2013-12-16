@@ -34,11 +34,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import org.destecs.core.parsers.ScenarioParserWrapper;
 import org.destecs.core.parsers.ScriptParserWrapper;
 import org.destecs.core.parsers.SdpParserWrapper;
 import org.destecs.core.scenario.Action;
-import org.destecs.core.scenario.Scenario;
 import org.destecs.core.simulationengine.ScenarioSimulationEngine;
 import org.destecs.core.simulationengine.ScriptSimulationEngine;
 import org.destecs.core.simulationengine.SimulationEngine;
@@ -449,7 +447,8 @@ public class CoSimLaunchConfigurationDelegate extends
 				// engine.setCtSimulationLauncher(new
 				// Clp20SimProgramLauncher(ctFile));
 				engine.setCtSimulationLauncher(selectClp20SimLauncher(engine, ctFile));
-				engine.setCtEndpoint(new URL(IDebugConstants.DEFAULT_CT_ENDPOINT));
+				// engine.setCtEndpoint(new URL(IDebugConstants.DEFAULT_CT_ENDPOINT));
+				engine.setCtEndpoint(ctUrl);
 			} else
 			{
 				engine.setCtSimulationLauncher(new DummyLauncher("CT simulator"));
@@ -848,27 +847,27 @@ public class CoSimLaunchConfigurationDelegate extends
 
 		if (scenarioFile != null)
 		{
-			if (scenarioFile.getName().endsWith("script2"))
+			// if (scenarioFile.getName().endsWith("script2"))
+			// {
+			ScriptParserWrapper parser = new ScriptParserWrapper();
+			List<INode> script = parser.parse(scenarioFile);
+
+			if (script.contains(null))
 			{
-				ScriptParserWrapper parser = new ScriptParserWrapper();
-				List<INode> script = parser.parse(scenarioFile);
-
-				if (script.contains(null))
-				{
-					throw new Exception("Failed to parse script file");
-				}
-
-				script = expandScript(script, scenarioFile, null);
-				return new ScriptSimulationEngine(contractFile, script);
+				throw new Exception("Failed to parse script file");
 			}
 
-			Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
-			if (scenario == null)
-			{
-				throw new Exception("Scenario not parse correct: "
-						+ scenarioFile);
-			}
-			return new ScenarioSimulationEngine(contractFile, scenario);
+			script = expandScript(script, scenarioFile, null);
+			return new ScriptSimulationEngine(contractFile, script);
+			// }
+
+			// Scenario scenario = new ScenarioParserWrapper().parse(scenarioFile);
+			// if (scenario == null)
+			// {
+			// throw new Exception("Scenario not parse correct: "
+			// + scenarioFile);
+			// }
+			// return new ScenarioSimulationEngine(contractFile, scenario);
 
 		} else
 		{

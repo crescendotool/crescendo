@@ -55,7 +55,7 @@ public interface IDebugConstants {
 	public static final String SIMULATION_VIEW_ID = "org.destecs.ide.simeng.ui.views.SimulationView";
 
 	public static final String DEFAULT_DE_ENDPOINT = "http://127.0.0.1:PORT/xmlrpc";
-	public static final String DEFAULT_CT_ENDPOINT = "http://localhost:1580";
+	public static final String DEFAULT_CT_ENDPOINT = "http://localhost:5580";
 
 	public static final String VDMRT_CONTENT_TYPE_ID = "org.overture.ide.vdmrt.core.content-type";
 

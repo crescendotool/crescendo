@@ -1,0 +1,51 @@
+class SafetyKernel is subclass of IActuatorPWM
+
+-- A safety kernel that implements the IActuatorPWM interface
+-- This class limits a PWM value (set in the constructor)
+
+instance variables
+
+-- actuator
+pwm: IActuatorPWM;
+
+-- limit of pwm value
+limit: real;
+inv limit > 0.0 and limit < 1.0
+
+values
+
+operations
+
+-- constructor for SafetyKernel
+public SafetyKernel: IActuatorPWM * real ==> SafetyKernel
+SafetyKernel(p,l) ==
+(  
+	pwm := p;
+    limit := l
+)
+pre l >= 0 and l < 1;
+
+-- set actuator value
+public Write: PWM ==> ()
+Write(v) ==
+(
+    if abs(v) <= limit 
+	then
+	(
+		-- take no action
+		pwm.Write(v);
+	)
+	else
+	(
+		-- limit value
+		if v < 0 
+		then pwm.Write(-limit) 
+		else pwm.Write(limit);
+	)
+);
+
+-- read the value written to this actuator
+public Read: () ==> IActuatorPWM`PWM
+Read() == return pwm.Read();
+
+end SafetyKernel

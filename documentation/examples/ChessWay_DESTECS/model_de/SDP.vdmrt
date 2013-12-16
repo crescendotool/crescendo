@@ -1,0 +1,17 @@
+class SDP
+	types
+-- TODO Define types here
+	values
+-- TODO Define values here
+	public slip : real = 100.0;
+	public gain : real = -130.0;
+	
+	instance variables
+-- TODO Define instance variables here
+	operations
+-- TODO Define operations here
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end SDP

@@ -1,0 +1,6730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+ <Model version="4.1" build="4.1.2.4">
+  <Sidops><![CDATA[model 0 0
+ description '<Description>
+   <LibraryPath>D:\Documents\Dropbox\Projects\destecs_workspace\ChesswaySimple\model_ct\Model_Self-balancing scooter.emx</LibraryPath>
+  <TimeStamp>2011-5-22 20:06:22</TimeStamp>
+  <Version>4.1</Version>
+</Description>';
+ type 'Mainmodel-2'
+ end;
+ implementation bg
+  submodels
+   Cosim 97 153
+    description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+   <Description></Description>
+</Description>';
+    type 'Submodel-Equation'
+     ports
+      signal in FB_velocity;
+      signal in FB_acceleration;
+      signal out ControlOutput_velocity;
+      signal out ControlOutput_acceleration;
+    end;
+    icon bg
+     figures
+      rectangle 66 114 128 192 fill 14013909;
+      text 'name' 96 152;
+     terminals
+      FB_velocity 128 144 fixed;
+      FB_acceleration 128 128 fixed;
+      ControlOutput_velocity 128 176 fixed;
+      ControlOutput_acceleration 128 160 fixed;
+    end;
+    implementation eq
+externals
+	// output
+	real global export v_in;
+   real global export a_in;
+
+	// input
+	real global import v_out;
+   real global import a_out;
+
+equations
+	// the export for this model
+	v_in = FB_velocity;
+   a_in = FB_acceleration;
+
+	// IN BETWEEN HERE THE VDM/DESTECS WILL CALCULATE THE NEW VALVE CONTROL VALUE
+
+	// and import the control 
+	ControlOutput_velocity = v_out + (0 * v_in);
+   ControlOutput_acceleration = a_out + (0 * a_in);
+implementation_end;
+   IO 346.2 159.5
+    type Submodel
+     ports
+      signal in Velocity;
+      signal in Acceleration;
+      signal in ControllerInput_Velocity;
+      signal in ControllerInput_Acceleration;
+      signal out Velocity_Discrete;
+      signal out Acceleration_Discrete;
+      signal out ControllerOutput_Velocity;
+      signal out ControllerOutput_Acceleration;
+    end;
+    icon bg
+     figures
+      image 'b:\back-up\Modeling&Simulations\IO.JPG' 254 90 184 139;
+      text 'name' 322.3 210 16;
+     terminals
+      Velocity 440.6 198.3 fixed;
+      Acceleration 440.6 198.3 fixed;
+      ControllerInput_Velocity 259.3 202.5 fixed;
+      ControllerInput_Acceleration 259.3 202.5 fixed;
+      Velocity_Discrete 258.3 119.3 fixed;
+      Acceleration_Discrete 258.3 119.3 fixed;
+      ControllerOutput_Velocity 439.6 118.3 fixed;
+      ControllerOutput_Acceleration 439.6 118.2 fixed;
+    end;
+    implementation bg
+     submodels
+      AD1 250.7 475.7
+       type AD
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real minimum = -10.0;
+         real maximum = 10.0;
+         real bits = 12.0;
+       end;
+       icon bg
+        figures
+         rectangle 234.7 459.7 266.7 491.7 fill 15132390;
+         spline 241.1 485 258.7 467.4 color 16711680;
+         text 'A' 243.7 469.9 color 16711680 14;
+         text 'D' 257.1 481.1 color 16711680 14;
+       end;
+       implementation eq
+parameters
+	real initial = 0.0;
+variables
+	real hold_signal, windowed_signal, quantisized_signal;
+	real lsb, half_lsb;
+equations
+	lsb = (maximum - minimum) / (exp2 (bits) - 1);
+	half_lsb = lsb / 2;
+	hold_signal = sample (input,initial);
+	windowed_signal = if hold_signal <= minimum then
+		 minimum + half_lsb
+	else
+		if hold_signal >= maximum then 
+			maximum -half_lsb
+		else 
+			hold_signal
+		end
+	end;
+	quantisized_signal = if windowed_signal < 0.0 then
+		windowed_signal - half_lsb
+	else
+		 windowed_signal + half_lsb
+	end;
+
+	output =  quantisized_signal - (quantisized_signal mod lsb);
+    implementation_end;
+      AD2 246.9 553.1
+       type AD
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real minimum = -10.0;
+         real maximum = 10.0;
+         real bits = 12.0;
+       end;
+       icon bg
+        figures
+         rectangle 230.9 537.1 262.9 569.1 fill 15132390;
+         spline 237.3 562.3 254.9 544.7 color 16711680;
+         text 'A' 240 547.2 color 16711680 14;
+         text 'D' 253.3 558.4 color 16711680 14;
+       end;
+       implementation eq
+parameters
+	real initial = 0.0;
+variables
+	real hold_signal, windowed_signal, quantisized_signal;
+	real lsb, half_lsb;
+equations
+	lsb = (maximum - minimum) / (exp2 (bits) - 1);
+	half_lsb = lsb / 2;
+	hold_signal = sample (input,initial);
+	windowed_signal = if hold_signal <= minimum then
+		 minimum + half_lsb
+	else
+		if hold_signal >= maximum then 
+			maximum -half_lsb
+		else 
+			hold_signal
+		end
+	end;
+	quantisized_signal = if windowed_signal < 0.0 then
+		windowed_signal - half_lsb
+	else
+		 windowed_signal + half_lsb
+	end;
+
+	output =  quantisized_signal - (quantisized_signal mod lsb);
+    implementation_end;
+      Attenuate1 323.2 475.7
+       type Attenuate
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 1.0;
+       end;
+       icon bg
+        figures
+         rectangle 307.2 459.7 339.2 491.7 fill 15132390;
+         text 'K' 330.7 482.1 color 16711680 16 bold;
+         text '1' 316.8 470.4 color 16711680 16 bold;
+         line 316.8 486.4 330.7 467.2 color 16711680 width 2;
+       end;
+       implementation eq
+equations
+	output = input / K;
+       implementation_end;
+      Attenuate2 318.4 426.1
+       type Attenuate
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 9.81;
+       end;
+       icon bg
+        figures
+         rectangle 302.4 410.1 334.4 442.1 fill 15132390;
+         text 'K' 325.9 432.5 color 16711680 16 bold;
+         text '1' 312 420.8 color 16711680 16 bold;
+         line 312 436.8 325.9 417.6 color 16711680 width 2;
+       end;
+       implementation eq
+equations
+	output = input / K;
+       implementation_end;
+      Attenuate3 130.1 426.7
+       type Attenuate
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 1.0;
+       end;
+       icon bg
+        figures
+         rectangle 114.1 410.7 146.1 442.7 fill 15132390;
+         text 'K' 137.6 433.1 color 16711680 16 bold;
+         text '1' 123.7 421.3 color 16711680 16 bold;
+         line 123.7 437.3 137.6 418.1 color 16711680 width 2;
+       end;
+       implementation eq
+equations
+	output = input / K;
+       implementation_end;
+      DA1 338.1 160
+       type DA
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real minimum = -10.0;
+         real maximum = 10.0;
+         real bits = 12.0;
+       end;
+       icon bg
+        figures
+         rectangle 322.1 144 354.1 176 fill 15132390;
+         spline 328.5 169.3 346.1 151.7 color 16711680;
+         text 'A' 344.3 165.5 color 16711680 14;
+         text 'D' 331.3 154.8 color 16711680 14;
+       end;
+       implementation eq
+variables
+	real windowed_signal, quantisized_signal, rounded_signal;
+	real lsb, half_lsb;
+equations
+	lsb = (maximum - minimum) / (exp2 (bits) -1);
+	half_lsb = lsb / 2;
+	windowed_signal = if input <= minimum then
+		minimum+ half_lsb
+	else
+		if input >= maximum then 
+			maximum - half_lsb
+		else 
+			input
+		end
+	end;
+	quantisized_signal = if windowed_signal < 0.0 then
+		windowed_signal - half_lsb
+	else
+		 windowed_signal + half_lsb
+	end;
+
+	rounded_signal =  quantisized_signal - (quantisized_signal mod lsb);
+	output = hold (rounded_signal);
+      implementation_end;
+      DA2 345.1 85.9
+       type DA
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real minimum = -10.0;
+         real maximum = 10.0;
+         real bits = 12.0;
+       end;
+       icon bg
+        figures
+         rectangle 329.1 69.9 361.1 101.9 fill 15132390;
+         spline 335.5 95.1 353.1 77.5 color 16711680;
+         text 'A' 351.3 91.4 color 16711680 14;
+         text 'D' 338.2 80.6 color 16711680 14;
+       end;
+       implementation eq
+variables
+	real windowed_signal, quantisized_signal, rounded_signal;
+	real lsb, half_lsb;
+equations
+	lsb = (maximum - minimum) / (exp2 (bits) -1);
+	half_lsb = lsb / 2;
+	windowed_signal = if input <= minimum then
+		minimum+ half_lsb
+	else
+		if input >= maximum then 
+			maximum - half_lsb
+		else 
+			input
+		end
+	end;
+	quantisized_signal = if windowed_signal < 0.0 then
+		windowed_signal - half_lsb
+	else
+		 windowed_signal + half_lsb
+	end;
+
+	rounded_signal =  quantisized_signal - (quantisized_signal mod lsb);
+	output = hold (rounded_signal);
+      implementation_end;
+      EncoderInceremental 250.7 426.7
+       type Encoder
+        ports
+         signal in p;
+         signal out output;
+        parameters
+         real counts = 1300.0; "resolution in amount of pulses per revolution"
+         real bits = 12.0; "resolution in amount of bits"
+       end;
+       icon bg bottom
+        figures
+         group
+          rectangle 245.6 414.9 262.1 438.4 fill 13421772;
+          rectangle 239.2 423.5 245.6 429.9 fill 9211020;
+         end;
+        terminals
+         p 262.1 426.7 fixed;
+         output 238.1 426.7 fixed;
+       end;
+       implementation eq
+variables
+	real hidden hold_signal, quantisized_signal,holdinput,rounded_signal;
+	real turns {rev};
+	real hidden exp2bits;
+equations
+	holdinput = p * counts;
+	hold_signal = sample ( holdinput );
+	if hold_signal < 0.0 then
+		quantisized_signal = hold_signal - 0.5;
+	else
+		 quantisized_signal = hold_signal + 0.5;
+	end;
+	rounded_signal =  quantisized_signal - (quantisized_signal mod 1); 
+	exp2bits = exp2 (bits);
+	output = ( ( rounded_signal + 2.5 * exp2bits ) mod exp2bits ) - 0.5 * exp2bits;
+implementation_end;
+      Filter2 496 474.7
+       type Filter
+        ports
+         signal in u;
+         signal out y;
+        parameters
+         real K = 1.0;
+         real f = 50.0 {Hz};
+       end;
+       icon bg bottom
+        figures
+         rectangle 469.3 458.7 522.7 490.7 fill 15132390;
+         text 'LP-1' 496 469.3 color 16711680 14 bold;
+         text 'filter' 496 482.1;
+       end;
+       implementation eq
+// 20-sim Filter Editor
+// 'Low Pass First Order Filter' 1 50
+variables
+	real hidden n[2], d[2];
+initialequations
+	// create numerator and denominator coefficients
+	n = [0; K];
+	d = [1 / (2 * pi * f); 1];
+equations
+	// the actual dynamic equations
+	y = (1/d[1]) * (n[1] * u + int (n[2] * u - d[2] * y));
+implementation_end;
+      Filter4 497.6 554.1
+       type Filter
+        ports
+         signal in u;
+         signal out y;
+        parameters
+         real K = 1.0;
+         real f = 25.0 {Hz};
+       end;
+       icon bg bottom
+        figures
+         rectangle 470.9 538.1 524.3 570.1 fill 15132390;
+         text 'LP-1' 497.6 548.8 color 16711680 14 bold;
+         text 'filter' 497.6 561.6;
+       end;
+       implementation eq
+// 20-sim Filter Editor
+// 'Low Pass First Order Filter' 1 25
+variables
+	real hidden n[2], d[2];
+initialequations
+	// create numerator and denominator coefficients
+	n = [0; K];
+	d = [1 / (2 * pi * f); 1];
+equations
+	// the actual dynamic equations
+	y = (1/d[1]) * (n[1] * u + int (n[2] * u - d[2] * y));
+implementation_end;
+      plug ControllerInput_Acceleration 115.2 160;
+      plug Acceleration 643.8 474.7;
+      plug Velocity 643.8 554.7;
+      plug ControllerOutput_Acceleration 625.6 159.6;
+      plug ControllerOutput_Velocity 629.9 85.9;
+      plug Acceleration_Discrete 10.5 426.7;
+      plug ControllerInput_Velocity 111.4 86.4;
+      plug Velocity_Discrete 71.7 553.6;
+      PlusMinus1 382.9 474.7
+       knot PlusMinus
+        ports
+         signal knot duplicatable in plus [1];
+         signal knot duplicatable in minus [1];
+         signal knot out output [1];
+       end;
+       icon bg ellipse
+        figures
+         ellipse 374.9 466.7 390.9 482.7 fill 16777215;
+       end;
+       implementation eq
+equations
+    output = sum (collect (plus)) - sum (collect (minus));
+    implementation_end;
+      PlusMinus2 385.1 553.6
+       knot PlusMinus
+        ports
+         signal knot duplicatable in plus [1];
+         signal knot duplicatable in minus [1];
+         signal knot out output [1];
+       end;
+       icon bg ellipse
+        figures
+         ellipse 377.1 545.6 393.1 561.6 fill 16777215;
+       end;
+       implementation eq
+equations
+    output = sum (collect (plus)) - sum (collect (minus));
+    implementation_end;
+      SignalGenerator2 384.5 612.8
+       type SignalGenerator
+        ports
+         signal out output;
+       end;
+       icon bg
+        figures
+         rectangle 368.5 596.8 400.5 628.8 fill 15132390;
+         line 373 603.2 373 622.4;
+         line 398.6 612.8 369.8 612.8;
+         line 372.8 608.7 374.6 603.2 376.5 611.4 378.3 602.7 380.3 622.6 381.9 616 382.9 610.1 385.3 604.8 387.4 625.1 388.8 621.5 389.5 608 391.1 611.7 392 601.8 393.6 604.8 395.4 601.3 396.5 611.4 color 16711680;
+       end;
+       implementation eq
+parameters
+	real amplitude = 0.0;
+	real seed = 0.0;
+equations
+	output = amplitude*gauss (1,seed);
+        implementation_end;
+      SignalGenerator3 382.9 390.4
+       type SignalGenerator
+        ports
+         signal out output;
+       end;
+       icon bg
+        figures
+         rectangle 366.9 374.4 398.9 406.4 fill 15132390;
+         line 371.4 380.8 371.4 400;
+         line 397 390.4 368.2 390.4;
+         line 371.2 386.3 373 380.8 374.9 389 376.7 380.3 378.7 400.2 380.3 393.6 381.3 387.7 383.7 382.4 385.8 402.7 387.2 399.1 387.9 385.6 389.5 389.3 390.4 379.4 392 382.4 393.8 378.9 394.9 389 color 16711680;
+       end;
+       implementation eq
+parameters
+	real amplitude = 0.0;
+	real seed = 0.0;
+equations
+	output = amplitude*gauss (1,seed);
+        implementation_end;
+      SignalLimiter4 427.7 474.7
+       type SignalLimiter
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real minimum = -2.0;
+         real maximum = 2.0;
+       end;
+       icon bg bottom
+        figures
+         group
+          rectangle 411.7 458.7 443.7 490.7 fill 15132390;
+          line 427.6 463.1 427.6 487.7 fill 15132390;
+          line 414.7 474.9 440.4 474.9 fill 15132390;
+          spline 421.7 481.8 433.6 468.1 color 16711680 fill 15132390 width 2;
+          spline 433.1 468.9 441.6 468.5 color 16711680 fill 15132390 width 2;
+          spline 414.7 482.2 421.7 481.8 color 16711680 fill 15132390 width 2;
+         end;
+       end;
+       implementation eq
+equations
+	output = limit (input, minimum, maximum);
+  implementation_end;
+      Splitter1 354.2 474.7
+       knot Splitter
+        ports
+         signal knot duplicatable out output [1];
+         signal knot in input [1];
+       end;
+       icon bg ellipse
+        figures
+         ellipse 350.9 471.5 357.3 477.9 color -1 fill 0;
+         ellipse 349.9 470.4 358.4 478.9 color -1;
+        terminals
+         input 354.1 474.7 fixed;
+         output 354.1 474.7 fixed;
+       end;
+       implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+      VoltageGain 404.3 160
+       type Gain
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 24.0;
+       end;
+       icon bg
+        figures
+         rectangle 388.4 144 420.2 176 fill 15132390;
+         text 'K' 404.3 160 color 16711680 16 bold;
+       end;
+       implementation eq
+equations
+	output = K * input;
+    implementation_end;
+     end;
+     connections
+      DA1\output -> VoltageGain\input;
+      Attenuate2\output -> EncoderInceremental\p;
+      Filter2\y -> SignalLimiter4\input;
+      PlusMinus1\output -> Splitter1\input;
+      SignalGenerator3\output -> PlusMinus1\plus;
+      SignalLimiter4\output -> PlusMinus1\plus;
+      PlusMinus2\output -> AD2\input;
+      Acceleration -> Filter2\u;
+      SignalGenerator2\output -> PlusMinus2\plus;
+      Velocity -> Filter4\u;
+      DA2\output -> ControllerOutput_Velocity;
+      Attenuate3\output -> Acceleration_Discrete;
+      ControllerInput_Velocity -> DA2\input;
+      VoltageGain\output -> ControllerOutput_Acceleration;
+      EncoderInceremental\output -> Attenuate3\input;
+      ControllerInput_Acceleration -> DA1\input;
+      Attenuate1\output -> AD1\input;
+      AD2\output -> Velocity_Discrete;
+      Splitter1\output -> Attenuate1\input;
+      Filter4\y -> PlusMinus2\plus;
+      Splitter1\output -> Attenuate2\input 354.1 426.7;
+     end;
+    implementation_end;
+   plant 580.8 169.1
+    type Submodel
+     ports
+      signal out Acceleration_out;
+      signal in ControllerOutput_acceleration_in;
+      signal out velocity_x_out;
+      signal in ControllerOutput_velocity_in;
+      signal out vHall1;
+      signal out vHall2;
+      signal out vHall3;
+    end;
+    icon bg
+     figures
+      text 'name' 569.5 84.9 16;
+      image 'b:\back-up\Modeling&Simulations\plant.JPG' 523 45 116 248;
+     terminals
+      Acceleration_out 520.4 205.9 fixed;
+      ControllerOutput_acceleration_in 521.5 126.6 fixed;
+      velocity_x_out 520.4 205.9 fixed;
+      ControllerOutput_velocity_in 522.5 126.6 fixed;
+      vHall1 523.6 147.8 fixed;
+      vHall2 523.6 148.9 fixed;
+      vHall3 522.5 148.9 fixed;
+    end;
+    implementation bg
+     submodels
+      Axis 355.7 369.8
+       type Submodel
+        ports
+         signal in Controller_Angle;
+         signal in Controller_Velocity;
+         power in ROT_in;
+         power in V_in_Z;
+         power in V_in_x;
+         power out ROT_out;
+         power out V_out_Z;
+         power out V_out_X;
+       end;
+       icon bg ellipse
+        figures
+         ellipse 324.6 340.7 386.8 398.8 fill 12895428;
+         text 'name' 354.5 368.9 16;
+        terminals
+         Controller_Angle 368 335.9 fixed;
+         Controller_Velocity 347.9 335.9 fixed;
+         ROT_in 319.5 358.8 fixed;
+         V_in_Z 322.5 384.4 fixed;
+         V_in_x 319.3 371.5 fixed;
+         ROT_out 393.9 361.5 fixed;
+         V_out_Z 393.9 386.2 fixed;
+         V_out_X 395 372.8 fixed;
+       end;
+       implementation bg
+        submodels
+         C_PersonWheel_X 493.2 367.2
+          type C
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred out p;
+           parameters
+            real c = 1.0e-4;
+          end;
+          icon bg top
+           figures
+            text 'C' 493.2 367.2 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.f);
+    p.e = state / c;
+                 implementation_end;
+         C_PersonWheel_Z 492.1 572.8
+          type C
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred out p;
+           parameters
+            real c = 1.0e-5;
+          end;
+          icon bg top
+           figures
+            text 'C' 492.1 572.8 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.f);
+    p.e = state / c;
+                 implementation_end;
+         Engine 625.1 90.2
+          type GY
+           ports
+            power in p1;
+            power out p2;
+           restrictions
+            causality constraint equal p1 p2;
+           parameters
+            real r = 1.47;
+          end;
+          icon bg top
+           figures
+            text 'GY' 625.1 90.2 18 bold;
+          end;
+          implementation eq
+equations
+	p1.e = r * p2.f;
+	p2.e = r * p1.f;     implementation_end;
+         Filter3 872.6 91.7
+          type 'Filter-LowPass1'
+           ports
+            signal in u;
+            signal out y;
+           parameters
+            real K = 1.0;
+            real f = 500.0 {Hz};
+          end;
+          icon bg bottom
+           figures
+            rectangle 845.9 75.7 899.2 107.7 fill 15132390;
+            text 'LP-1' 872.5 86.4 color 16711680 14 bold;
+            text 'filter' 872.5 99.2;
+          end;
+          implementation eq
+// 20-sim Filter Editor
+// 'Low Pass First Order Filter' 1 50
+variables
+	real hidden n[2], d[2];
+initialequations
+	// create numerator and denominator coefficients
+	n = [0; K];
+	d = [1 / (2 * pi * f); 1];
+equations
+	// the actual dynamic equations
+	y = (1/d[1]) * (n[1] * u + int (n[2] * u - d[2] * y));
+implementation_end;
+         ForceX 539 431.2
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg
+           figures
+            text '0' 539 431.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+         ForceZ 541.7 490.2
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg
+           figures
+            text '0' 541.7 490.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+         Force_omega 539.8 170.7
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg
+           figures
+            text '0' 539.8 170.7 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+         friction 465.1 89.6
+          type R
+           ports
+            power in p;
+           parameters
+            real r = 0.3;
+          end;
+          icon bg top
+           figures
+            text 'R' 465.1 89.6 18 bold;
+          end;
+          implementation eq
+equations					
+	p.e = r * p.f;    implementation_end;
+         MSf2 769.1 91.8
+          type MSf
+           ports
+            power out p;
+            signal in flow;
+           restrictions
+            causality fixed in p;
+          end;
+          icon bg top
+           figures
+            text 'MSf' 769.1 91.8 18 bold;
+          end;
+          implementation eq
+variables
+	real effort;
+equations
+	p.f = flow; 
+	effort = p.e;    implementation_end;
+         MSf3 704.8 36.8
+          type MSf
+           ports
+            power out p;
+            signal in flow;
+           restrictions
+            causality fixed in p;
+          end;
+          icon bg top
+           figures
+            text 'MSf' 704.8 36.8 18 bold;
+          end;
+          implementation eq
+variables
+	real effort;
+equations
+	p.f = flow; 
+	effort = p.e;    implementation_end;
+         plug V_in_Z 262.2 489.7;
+         plug Controller_Velocity 531.2 36.8;
+         plug Controller_Angle 987.2 91;
+         plug V_out_X 864.2 430.8;
+         plug V_out_Z 864.2 489.4;
+         plug ROT_out 856.7 170.3;
+         plug ROT_in 258.2 170.9;
+         plug V_in_x 262.2 430.5;
+         OneJunction14 540.6 366.6
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 540.6 366.6 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         OneJunction15 541.7 573.4
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 541.7 573.4 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         OneJunction8 539.8 89.6
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 539.8 89.6 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         PowerSensor3 581.3 89.6
+          knot PowerSensor
+           ports
+            power knot in p1 [1];
+            power knot out p2 [1];
+            signal knot out P [1] {W} ;
+           restrictions
+            causality constraint not_equal p1 p2;
+          end;
+          icon bg ellipse
+           figures
+            ellipse 574.3 82.9 588.2 96.8 fill 16777215;
+            text 'P' 581.2 89.3;
+          end;
+          implementation eq
+equations
+	p2.e = p1.e;
+	p1.f = p2.f;
+	P = p1.e .* p1.f;
+     implementation_end;
+         R_PersonWheel_X 590.8 366.6
+          type R
+           ports
+            power in p;
+           parameters
+            real r = 30.0;
+          end;
+          icon bg top
+           figures
+            text 'R' 590.8 366.6 18 bold;
+          end;
+          implementation eq
+equations					
+	p.e = r * p.f;    implementation_end;
+         R_PersonWheel_Z 591.8 573.4
+          type R
+           ports
+            power in p;
+           parameters
+            real r = 300.0;
+          end;
+          icon bg top
+           figures
+            text 'R' 591.8 573.4 18 bold;
+          end;
+          implementation eq
+equations					
+	p.e = r * p.f;    implementation_end;
+         ZeroJunction8 705.1 91.2
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg bottom
+           figures
+            text '0' 705.1 91.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+        end;
+        connections
+         OneJunction8\p => friction\p;
+         OneJunction14\p => ForceX\p;
+         OneJunction15\p => ForceZ\p;
+         OneJunction8\p => Force_omega\p;
+         MSf2\p => ZeroJunction8\p;
+         MSf3\p => ZeroJunction8\p;
+         Engine\p2 => PowerSensor3\p1;
+         PowerSensor3\p2 => OneJunction8\p;
+         ZeroJunction8\p => Engine\p1;
+         ROT_in => Force_omega\p;
+         V_in_Z => ForceZ\p;
+         V_in_x => ForceX\p;
+         Force_omega\p => ROT_out;
+         ForceZ\p => V_out_Z;
+         ForceX\p => V_out_X;
+         C_PersonWheel_X\p <= OneJunction14\p;
+         R_PersonWheel_X\p <= OneJunction14\p;
+         C_PersonWheel_Z\p <= OneJunction15\p;
+         R_PersonWheel_Z\p <= OneJunction15\p;
+         Filter3\y -> MSf2\flow;
+         Controller_Angle -> Filter3\u;
+         Controller_Velocity -> MSf3\flow;
+        end;
+       implementation_end;
+      plug Acceleration_out 744 72;
+      plug ControllerOutput_acceleration_in 450.4 264;
+      plug velocity_x_out 744 56;
+      plug ControllerOutput_velocity_in 306.5 238.4;
+      plug vHall1 152.9 279.5;
+      plug vHall2 119.8 292.3;
+      plug vHall3 95.3 310.4;
+      Person_Frame 557.3 217
+       type Submodel
+        ports
+         power in V_in_Z;
+         power in V_in_X;
+         power in ROT_in;
+         signal out Vx;
+         signal out Ax;
+       end;
+       icon bg
+        figures
+         text 'name' 571.7 346.6 16;
+         rectangle 472 374.9 642.6 389.8 fill 12895428;
+         rectangle 624.5 44.2 642.6 374.9 fill 12895428;
+         ellipse 540.8 376 554.6 389.8 fill 0;
+        terminals
+         V_in_Z 464 384 fixed;
+         V_in_X 464 372.2 fixed;
+         ROT_in 464 360.3 fixed;
+         Vx 655.1 55.4 fixed;
+         Ax 656.9 70.4 fixed;
+       end;
+       implementation bg
+        submodels
+         AngularVelocityPerson 439 119
+          knot OneJunction
+           ports
+            rotation knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 439 119 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         Differentiate4 465.1 586.5
+          type 'Differentiate-Default'
+           ports
+            signal in input;
+            signal out output;
+           parameters
+            real initial = 0.0;
+          end;
+          icon bg
+           figures
+            group
+             rectangle 449.1 570.5 481.1 602.5 fill 15132390;
+             text 'd/dt' 465.1 586.5 color 16711680 13 bold;
+            end;
+          end;
+          implementation eq
+equations
+	output = ddt (input, initial);
+    implementation_end;
+         Foot 440 173.4
+          type TF
+           ports
+            power in p1;
+            power out p2;
+           restrictions
+            causality constraint not_equal p1 p2;
+           parameters
+            real r = 1.0;
+          end;
+          icon bg
+           figures
+            text 'TF' 440 173.4 18 bold;
+          end;
+          implementation eq
+equations					
+	p1.e = r * p2.e;
+	p2.f = r * p1.f;       implementation_end;
+         FzPerson 578.9 529.7
+          type Se
+           ports
+            power out p;
+           restrictions
+            causality fixed out p;
+           parameters
+            real effort = 900.0;
+          end;
+          icon bg
+           figures
+            text 'Se' 578.9 529.7 18 bold;
+          end;
+          implementation eq
+variables
+	real flow;
+equations
+	p.e = effort;
+	flow = p.f;    implementation_end;
+         JPerson 439.5 58.2
+          type I
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 0.5;
+          end;
+          icon bg top
+           figures
+            text 'I' 439.5 58.2 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         mPersX 528 597.5
+          type I
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 90.0;
+          end;
+          icon bg bottom
+           figures
+            text 'I' 528 597.5 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         mPersZ 634.7 596.3
+          type I
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 90.0;
+          end;
+          icon bg bottom
+           figures
+            text 'I' 634.7 596.3 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         MTF_1 204.5 303
+          type Submodel
+           ports
+            power in p1;
+            signal in r;
+            power in p11;
+            power in p12;
+            power in p13;
+            power out p;
+            power out p2;
+          end;
+          icon bg
+           figures
+            text 'MTF' 204.5 303 18 bold;
+           terminals
+            p1 226.3 288.8 fixed;
+            p11 226.3 317 fixed;
+            p12 226.3 317 fixed;
+            p13 226.3 288.8 fixed;
+            p 181.5 318.4 fixed;
+            p2 181.5 287.9 fixed;
+          end;
+          implementation bg
+           submodels
+            MTF10 299.2 406.2
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 299.2 406.2 18 bold;
+             end;
+             implementation eq
+equations					
+	p1.e =cos(r) * p2.e;
+	p2.f = cos(r) * p1.f;     implementation_end;
+            MTF11 299.2 329.4
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 299.2 329.4 18 bold;
+             end;
+             implementation eq
+equations					
+	p1.e =sin(r) * p2.e;
+	p2.f =sin(r) * p1.f;     implementation_end;
+            MTF12 299.2 377.4
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 299.2 377.4 18 bold;
+             end;
+             implementation eq
+equations					
+	p1.e =-sin(r) * p2.e;
+	p2.f = -sin(r) * p1.f;     implementation_end;
+            MTF9 299.2 291.6
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 299.2 291.6 18 bold;
+             end;
+             implementation eq
+equations					
+	p1.e = cos(r) * p2.e;
+	p2.f =  cos(r) * p1.f;     implementation_end;
+            plug r 509.4 342.8;
+            plug p11 437.4 399.2;
+            plug p12 437.4 404.7;
+            plug p13 392.5 291.5;
+            plug p 153.1 408.5;
+            plug p2 133.9 289.6;
+            plug p1 392.5 300.4;
+            Splitter1 465.1 343.5
+             knot Splitter
+              ports
+               signal knot duplicatable out output [1];
+               signal knot in input [1];
+             end;
+             icon bg ellipse
+              figures
+               ellipse 461.9 340.3 468.3 346.7 color -1 fill 0;
+               ellipse 460.8 339.2 469.3 347.7 color -1;
+              terminals
+               input 465.1 343.5 fixed;
+               output 465.1 343.5 fixed;
+             end;
+             implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+            ZeroJunction11 203.2 291
+             knot ZeroJunction
+              ports
+               power knot duplicatable none p [1];
+               signal knot out effort [1];
+              restrictions
+               causality constraint one_in p;
+             end;
+             icon bg bottom
+              figures
+               text '0' 203.2 291 18 bold;
+             end;
+             implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+            ZeroJunction12 217.1 410
+             knot ZeroJunction
+              ports
+               power knot duplicatable none p [1];
+               signal knot out effort [1];
+              restrictions
+               causality constraint one_in p;
+             end;
+             icon bg bottom
+              figures
+               text '0' 217.1 410 18 bold;
+             end;
+             implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+           end;
+           connections
+            MTF12\p2 => ZeroJunction12\p;
+            p11 => MTF11\p1;
+            p12 => MTF10\p1;
+            p13 => MTF9\p1;
+            ZeroJunction12\p => p;
+            ZeroJunction11\p => p2;
+            MTF10\p2 => ZeroJunction12\p;
+            MTF9\p2 => ZeroJunction11\p;
+            MTF11\p2 => ZeroJunction11\p;
+            p1 => MTF12\p1;
+            r -> Splitter1\input;
+            Splitter1\output -> MTF12\r;
+            Splitter1\output -> MTF11\r;
+            Splitter1\output -> MTF9\r;
+            Splitter1\output -> MTF10\r;
+           end;
+          implementation_end;
+         MTF_2 568.2 445.2
+          type Submodel
+           ports
+            signal in input;
+            power in p1;
+            power in p11;
+            power in p12;
+            power in p13;
+            power out p;
+            power out p2;
+          end;
+          icon bg
+           figures
+            text 'MTF' 568.2 445.2 18 bold;
+           terminals
+            input 567.9 428.2 fixed;
+            p 584.1 428.2 fixed;
+            p2 553.4 428.2 fixed;
+          end;
+          implementation bg
+           submodels
+            MTF1 530.1 584.4
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 530.1 584.4 18 bold;
+             end;
+             implementation eq
+variables
+	real position_z;
+equations					
+	p1.e = cos(r) * p2.e;
+	p2.f =  cos(r) * p1.f;     
+	position_z = cos(r);implementation_end;
+            MTF2 738.6 584.4
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 738.6 584.4 18 bold;
+             end;
+             implementation eq
+equations					
+	p1.e =cos(r) * p2.e;
+	p2.f = cos(r) * p1.f;     implementation_end;
+            MTF3 666.6 585.4
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 666.6 585.4 18 bold;
+             end;
+             implementation eq
+variables
+	real position_x;
+equations					
+	p1.e = sin(r) * p2.e;
+	p2.f =  sin(r) * p1.f;     
+	position_x = sin(r);implementation_end;
+            MTF4 602.6 585.4
+             type MTF
+              ports
+               power in p1;
+               power out p2;
+               signal in r;
+              restrictions
+               causality constraint not_equal p1 p2;
+             end;
+             icon bg
+              figures
+               text 'MTF' 602.6 585.4 18 bold;
+             end;
+             implementation eq
+equations					
+	p1.e = -sin(r) * p2.e;
+	p2.f = -sin(r) * p1.f;     implementation_end;
+            plug p1 727.9 688.7;
+            plug p11 540.2 688.7;
+            plug p12 738.6 682.5;
+            plug p13 529.5 682.5;
+            plug p 737.8 418.5;
+            plug p2 530.6 308;
+            plug input 628.8 353.4;
+            Splitter2 629.3 520.4
+             knot Splitter
+              ports
+               signal knot duplicatable out output [1];
+               signal knot in input [1];
+             end;
+             icon bg ellipse
+              figures
+               ellipse 626 517.1 632.4 523.5 color -1 fill 0;
+               ellipse 625 516.1 633.5 524.6 color -1;
+              terminals
+               input 629.2 520.3 fixed;
+               output 629.2 520.3 fixed;
+             end;
+             implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+            ZeroJunction10 738.6 481.4
+             knot ZeroJunction
+              ports
+               power knot duplicatable none p [1];
+               signal knot out effort [1];
+              restrictions
+               causality constraint one_in p;
+             end;
+             icon bg bottom
+              figures
+               text '0' 738.6 481.4 18 bold;
+             end;
+             implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+            ZeroJunction9 530.6 481.4
+             knot ZeroJunction
+              ports
+               power knot duplicatable none p [1];
+               signal knot out effort [1];
+              restrictions
+               causality constraint one_in p;
+             end;
+             icon bg bottom
+              figures
+               text '0' 530.6 481.4 18 bold;
+             end;
+             implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+           end;
+           connections
+            MTF1\p2 => ZeroJunction9\p;
+            p11 => MTF3\p1;
+            p12 => MTF2\p1;
+            p13 => MTF1\p1;
+            ZeroJunction10\p => p;
+            ZeroJunction9\p => p2;
+            MTF2\p2 => ZeroJunction10\p;
+            MTF4\p2 => ZeroJunction9\p;
+            MTF3\p2 => ZeroJunction10\p;
+            p1 => MTF4\p1;
+            Splitter2\output -> MTF2\r;
+            Splitter2\output -> MTF4\r;
+            Splitter2\output -> MTF3\r;
+            Splitter2\output -> MTF1\r;
+            input -> Splitter2\input;
+           end;
+          implementation_end;
+         plug Ax 216.2 586.3;
+         plug Vx 220 522.5;
+         plug ROT_in 59.7 119.2;
+         plug V_in_X 52.3 247.6;
+         plug V_in_Z 48.6 353.5;
+         PositionPersonX 465.1 474.5
+          type Integrate
+           ports
+            signal in input;
+            signal out output;
+           parameters
+            real initial = 0.0;
+          end;
+          icon bg
+           figures
+            rectangle 449.1 458.5 481.1 490.5 fill 15132390;
+            text 'ò' 465.1 471.8 color 16711680 'SymbolProp BT' 21 symbol;
+          end;
+          implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+         PositionPersonZ 694.1 529.1
+          type Integrate
+           ports
+            signal in input;
+            signal out output;
+           parameters
+            real initial = -1.0;
+          end;
+          icon bg
+           figures
+            rectangle 678.1 513.1 710.1 545.1 fill 15132390;
+            text 'ò' 694.1 526.4 color 16711680 'SymbolProp BT' 21 symbol;
+          end;
+          implementation eq
+equations
+	output = -1*int (input, initial);
+     implementation_end;
+         Sensor 567.7 119.5
+          type Integrate
+           ports
+            signal in input;
+            signal out output;
+           parameters
+            real initial = 0.0;
+          end;
+          icon bg
+           figures
+            rectangle 551.7 103.5 583.7 135.5 fill 15132390;
+            text 'ò' 567.7 116.8 color 16711680 'SymbolProp BT' 21 symbol;
+          end;
+          implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+         Splitter3 567 302.5
+          knot Splitter
+           ports
+            signal knot duplicatable out output [1];
+            signal knot in input [1];
+          end;
+          icon bg ellipse
+           figures
+            ellipse 563.7 299.3 570.1 305.7 color -1 fill 0;
+            ellipse 562.7 298.2 571.2 306.8 color -1;
+           terminals
+            input 566.9 302.5 fixed;
+            output 566.9 302.5 fixed;
+          end;
+          implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+         Splitter5 465.1 522.5
+          knot Splitter
+           ports
+            signal knot duplicatable out output [1];
+            signal knot in input [1];
+          end;
+          icon bg ellipse
+           figures
+            ellipse 461.9 519.3 468.3 525.7 color -1 fill 0;
+            ellipse 460.8 518.2 469.3 526.7 color -1;
+           terminals
+            input 465.1 522.5 fixed;
+            output 465.1 522.5 fixed;
+          end;
+          implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+         VcomX 519.2 243.3
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg top
+           figures
+            text '1' 519.2 243.3 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VcomZ 631.7 355.6
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg top
+           figures
+            text '1' 631.7 355.6 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VelocityPersonX 528 522.5
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 528 522.5 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VelocityPersonZ 634.7 529.6
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 634.7 529.6 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VhingePersonX 337.8 243.2
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg bottom
+           figures
+            text '1' 337.8 243.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VhingepersonZ 342.9 354.8
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg bottom
+           figures
+            text '1' 342.9 354.8 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VhingeWheelX 123.2 249.2
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg bottom
+           figures
+            text '1' 123.2 249.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VhingeWheelZ 128.2 354.3
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg bottom
+           figures
+            text '1' 128.2 354.3 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         ZeroJunction5 510.4 355.8
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg
+           figures
+            text '0' 510.4 355.8 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+         ZeroJunction6 441.1 243.8
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg
+           figures
+            text '0' 441.1 243.8 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+        end;
+        connections
+         AngularVelocityPerson\p => Foot\p1 color 3344939;
+         MTF_2\p2 => VcomX\p;
+         VelocityPersonX\p => MTF_2\p13;
+         VelocityPersonZ\p <= FzPerson\p;
+         VelocityPersonZ\p => MTF_2\p12;
+         VelocityPersonZ\p => MTF_2\p1;
+         VelocityPersonX\p => MTF_2\p11;
+         V_in_Z => VhingeWheelZ\p;
+         V_in_X => VhingeWheelX\p;
+         ROT_in => AngularVelocityPerson\p;
+         Foot\p2 => ZeroJunction6\p;
+         VhingepersonZ\p => MTF_1\p12;
+         ZeroJunction6\p => VhingePersonX\p;
+         VcomX\p => ZeroJunction6\p;
+         VcomZ\p => ZeroJunction5\p;
+         ZeroJunction5\p => VhingepersonZ\p;
+         VhingePersonX\p => MTF_1\p1;
+         MTF_1\p => VhingeWheelZ\p;
+         MTF_1\p2 => VhingeWheelX\p;
+         VhingepersonZ\p => MTF_1\p11;
+         VhingePersonX\p => MTF_1\p13;
+         AngularVelocityPerson\p => JPerson\p;
+         VelocityPersonZ\p => mPersZ\p;
+         VelocityPersonX\p => mPersX\p;
+         MTF_2\p => VcomZ\p;
+         Splitter3\output -> MTF_2\input;
+         Splitter5\output -> Differentiate4\input;
+         Sensor\output -> Splitter3\input;
+         Splitter3\output -> MTF_1\r;
+         Splitter5\output -> Vx;
+         Differentiate4\output -> Ax;
+         AngularVelocityPerson\flow -> Sensor\input;
+         VelocityPersonX\flow -> Splitter5\input;
+         Splitter5\output -> PositionPersonX\input;
+         PositionPersonZ\input <- VelocityPersonZ\flow;
+        end;
+       implementation_end;
+      Wheel 191.3 378.1
+       type Submodel
+        ports
+         signal out vHall1;
+         signal out vHall2;
+         signal out vHall3;
+         power out V_in_Z;
+         power out V_in_X;
+         power out ROT_in;
+       end;
+       icon bg ellipse
+        figures
+         text 'name' 190.8 435.7 16;
+         ellipse 132.6 311.5 250 426.7 fill 12895428;
+         ellipse 149.2 327.5 234 410.1 fill 16777215;
+         ellipse 158.2 334.9 227.6 404.3 fill 0;
+         rectangle 149.7 368 160.4 373.3 fill 0;
+         rectangle 222.8 368.5 233.4 373.9 fill 0;
+         rectangle 189.2 397.9 194.5 408.5 fill 0;
+         rectangle 189.7 328 195 338.7 fill 0;
+         line 174.2 387.2 163.6 395.7 fill 0 width 6;
+         line 211.6 345.6 219 339.2 fill 0 width 6;
+         line 210.5 387.2 218 395.7 fill 0 width 6;
+         line 175.3 348.8 163.6 338.1 fill 0 width 6;
+         line 173.5 389.3 162.5 397.2 fill 0 width 6;
+         line 211.9 345.6 220.1 338.1 fill 0 width 6;
+         line 213.3 390.1 220.1 396.8 fill 0 width 6;
+         line 174.2 385.1 161.8 397.9 fill 0 width 6;
+         line 203.7 376.5 209.4 386.9 fill 0 width 6;
+         line 189.8 363.4 221.5 398.9 fill 0 width 6;
+         line 223.6 376.2 225.4 372.7 fill 0 width 6;
+         line 222.9 355.9 223.6 364.2 fill 0 width 6;
+         line 192 394.3 191.6 407.9 fill 0 width 6;
+         line 190.2 395.4 191.6 408.5 fill 0 width 6;
+         line 191.3 410.7 191.3 398.9 fill 0 width 6;
+        terminals
+         vHall1 160 312 fixed;
+         vHall2 152.7 315.9 fixed;
+         vHall3 146.8 319.9 fixed;
+         V_in_Z 254.8 387.1 fixed;
+         V_in_X 254.8 373.8 fixed;
+         ROT_in 255.1 361.6 fixed;
+       end;
+       implementation bg
+        submodels
+         AngleWheel 93.3 178.1
+          type Integrate
+           ports
+            signal in input;
+            signal out output;
+           parameters
+            real initial = 0.0;
+          end;
+          icon bg
+           figures
+            rectangle 77.3 162.1 109.3 194.1 fill 15132390;
+            text 'ò' 93.3 175.5 color 16711680 'SymbolProp BT' 21 symbol;
+          end;
+          implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+         AngularVelocityWheel 134.4 178.2
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 134.4 178.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         Code 92.1 40.9
+          type Submodel
+           ports
+            signal in Angle;
+            signal out vHall1;
+            signal out vHall2;
+            signal out vHall3;
+          end;
+          implementation eq
+parameters
+	real p = 16.0;
+variables
+	real x {degrees};
+code
+	if  Angle >= 0 then
+		x = (Angle/(2*pi))*360 - (360/p)*floor((Angle/(2*pi/p))*(360/p)/(360/p));
+	else
+		x = (Angle/(2*pi))*360 - (360/p)*ceil((Angle/(2*pi/p))*(360/p)/(360/p));
+	end;
+
+	if x  >=  (1/p) and x <= (59/p) or ( x > (-359/p) and x <= (-301/p))  then
+		vHall1 = 1;
+		vHall2 = 0;
+		vHall3 = 1;
+	end;
+	if x  >  (61/p) and x <= (119/p) or ( x > (-299/p) and x <= (-241/p))  then
+		vHall1 = 1;
+		vHall2 = 0;
+		vHall3 = 0;
+	end;
+	if x > (121/p) and x <= (179/p) or ( x > (-239/p) and x <= (-181/p))  then
+		vHall1 = 1;
+		vHall2 = 1;
+		vHall3 = 0;
+	end;
+	if x > (181/p) and x <= (239/p) or ( x > (-179/p) and x <= (-121/p))   then
+		vHall1 = 0;
+		vHall2 = 1;
+		vHall3 = 0;
+	end;
+	if x > (241/p) and x <= (299/p) or (x > (-119/p) and x <= (-61/p))   then
+		vHall1 = 0;
+		vHall2 = 1;
+		vHall3 = 1;
+	end;
+	if x > (301/p) and x <= (359/p) or (x > (-59/p) and x < 1)  then
+		vHall1 = 0;
+		vHall2 = 0;
+		vHall3 = 1;
+	end;
+
+
+
+implementation_end;
+         C_Wheel_X 80 400
+          type C
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred out p;
+           parameters
+            real c = 1.0e-6;
+          end;
+          icon bg left
+           figures
+            text 'C' 80 400 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.f);
+    p.e = state / c;
+                 implementation_end;
+         C_Wheel_Z 201.1 544
+          type C
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred out p;
+           parameters
+            real c = 1.0e-5;
+          end;
+          icon bg left
+           figures
+            text 'C' 201.1 544 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.f);
+    p.e = state / c;
+                 implementation_end;
+         FzWheel 322.1 385.1
+          type Se
+           ports
+            power out p;
+           restrictions
+            causality fixed out p;
+           parameters
+            real effort = 90.0;
+          end;
+          icon bg top
+           figures
+            text 'Se' 322.1 385.1 18 bold;
+          end;
+          implementation eq
+variables
+	real flow;
+equations
+	p.e = effort;
+	flow = p.f;    implementation_end;
+         JWheel 133.9 120
+          type I
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 0.05;
+          end;
+          icon bg top
+           figures
+            text 'I' 133.9 120 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         mWheelx 202.6 384
+          type I
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 9.0;
+          end;
+          icon bg bottom
+           figures
+            text 'I' 202.6 384 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         mWheelz 321 496
+          type I
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 9.0;
+          end;
+          icon bg bottom
+           figures
+            text 'I' 321 496 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         plug ROT_in 416 178.4;
+         plug V_in_X 406.4 322.7;
+         plug V_in_Z 439 433.4;
+         plug vHall3 208.2 86.4;
+         plug vHall2 208.9 63;
+         plug vHall1 210.2 40.5;
+         OneJunction16 136.6 367
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 136.6 367 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         OneJunction17 248 504
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 248 504 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         PositionWheelX 236.8 349.3
+          type Integrate
+           ports
+            signal in input;
+            signal out output;
+           parameters
+            real initial = 0.0;
+          end;
+          icon bg
+           figures
+            rectangle 220.8 333.3 252.8 365.3 fill 15132390;
+            text 'ò' 236.8 346.7 color 16711680 'SymbolProp BT' 21 symbol;
+          end;
+          implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+         PositionWheelZ 376 480
+          type Integrate
+           ports
+            signal in input;
+            signal out output;
+           parameters
+            real initial = 0.0;
+          end;
+          icon bg
+           figures
+            rectangle 360 464 392 496 fill 15132390;
+            text 'ò' 376 477.3 color 16711680 'SymbolProp BT' 21 symbol;
+          end;
+          implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+         R_Wheel_X 136 426.7
+          type R
+           ports
+            power in p;
+           parameters
+            real r = 300.0;
+          end;
+          icon bg bottom
+           figures
+            text 'R' 136 426.7 18 bold;
+          end;
+          implementation eq
+equations					
+	p.e = r * p.f;    implementation_end;
+         R_Wheel_Z 288 544
+          type R
+           ports
+            power in p;
+           parameters
+            real r = 3000.0;
+          end;
+          icon bg bottom
+           figures
+            text 'R' 288 544 18 bold;
+          end;
+          implementation eq
+equations					
+	p.e = r * p.f;    implementation_end;
+         Sf1 65.1 320
+          type Sf
+           ports
+            power out p;
+           restrictions
+            causality fixed in p;
+           parameters
+            real flow = 0.0;
+          end;
+          icon bg
+           figures
+            text 'Sf' 65.1 320 18 bold;
+          end;
+          implementation eq
+variables
+	real effort;
+equations
+	p.f = flow;
+	effort = p.e;
+     implementation_end;
+         Sf2 192 433.1
+          type Sf
+           ports
+            power out p;
+           restrictions
+            causality fixed in p;
+           parameters
+            real flow = 0.0;
+          end;
+          icon bg
+           figures
+            text 'Sf' 192 433.1 18 bold;
+          end;
+          implementation eq
+variables
+	real effort;
+equations
+	p.f = flow;
+	effort = p.e;
+     implementation_end;
+         TF2 134.4 231.5
+          type TF
+           ports
+            power in p1;
+            power out p2;
+           restrictions
+            causality constraint not_equal p1 p2;
+           parameters
+            real r = 0.15;
+          end;
+          icon bg
+           figures
+            text 'TF' 134.4 231.5 18 bold;
+          end;
+          implementation eq
+equations					
+	p1.e = r * p2.e;
+	p2.f = r * p1.f;       implementation_end;
+         VelocityWheelX 202.6 322.2
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 202.6 322.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         VelocityWheelZ 321.6 434.7
+          knot OneJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 321.6 434.7 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         ZeroJunction1 134.4 322.2
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg
+           figures
+            text '0' 134.4 322.2 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+         ZeroJunction4 249.1 433.6
+          knot ZeroJunction
+           ports
+            power knot duplicatable none p [1];
+            signal knot out effort [1];
+           restrictions
+            causality constraint one_in p;
+          end;
+          icon bg
+           figures
+            text '0' 249.1 433.6 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+    implementation_end;
+        end;
+        connections
+         JWheel\p <= AngularVelocityWheel\p;
+         FzWheel\p => VelocityWheelZ\p;
+         VelocityWheelX\p => ZeroJunction1\p;
+         C_Wheel_X\p <= OneJunction16\p;
+         R_Wheel_X\p <= OneJunction16\p;
+         ZeroJunction1\p => OneJunction16\p;
+         C_Wheel_Z\p <= OneJunction17\p;
+         R_Wheel_Z\p <= OneJunction17\p;
+         Sf2\p => ZeroJunction4\p;
+         ZeroJunction4\p => VelocityWheelZ\p;
+         OneJunction17\p => ZeroJunction4\p;
+         Sf1\p => ZeroJunction1\p 120 320;
+         VelocityWheelZ\p => V_in_Z;
+         VelocityWheelX\p => V_in_X;
+         AngularVelocityWheel\p => ROT_in;
+         AngularVelocityWheel\p => TF2\p1;
+         TF2\p2 => ZeroJunction1\p;
+         VelocityWheelX\p => mWheelx\p;
+         VelocityWheelZ\p => mWheelz\p;
+         VelocityWheelZ\flow -> PositionWheelZ\input;
+         VelocityWheelX\flow -> PositionWheelX\input;
+         AngularVelocityWheel\flow -> AngleWheel\input;
+         AngleWheel\output -> Code\Angle;
+         Code\vHall1 -> vHall1;
+         Code\vHall2 -> vHall2;
+         Code\vHall3 -> vHall3;
+        end;
+       implementation_end;
+     end;
+     connections
+      Wheel\V_in_X => Axis\V_in_x;
+      Wheel\V_in_Z => Axis\V_in_Z;
+      Wheel\ROT_in => Axis\ROT_in;
+      Axis\ROT_out => Person_Frame\ROT_in;
+      Axis\V_out_X => Person_Frame\V_in_X;
+      Axis\V_out_Z => Person_Frame\V_in_Z;
+      Wheel\vHall1 -> vHall1;
+      Wheel\vHall2 -> vHall2;
+      Wheel\vHall3 -> vHall3;
+      ControllerOutput_velocity_in -> Axis\Controller_Velocity;
+      Person_Frame\Ax -> Acceleration_out;
+      ControllerOutput_acceleration_in -> Axis\Controller_Angle;
+      Person_Frame\Vx -> velocity_x_out;
+     end;
+    implementation_end;
+   Splitter1 200 144
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 196.8 140.8 203.2 147.2 color -1 fill 0;
+      ellipse 195.7 139.8 204.3 148.3 color -1;
+     terminals
+      input 200 144 fixed;
+      output 200 144 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+   Splitter10 200 160
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>Signal\Block Diagram\Splitter.emx</LibraryPath>
+  <TimeStamp>2008-01-17 11:28:29</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 196.8 156.8 203.2 163.2 color -1 fill 0;
+      ellipse 195.7 155.7 204.3 164.3 color -1;
+     terminals
+      input 200 160 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+implementation_end;
+   Splitter3 200 128
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 196.8 124.8 203.2 131.2 color -1 fill 0;
+      ellipse 195.8 123.8 204.3 132.3 color -1;
+     terminals
+      input 200 128 fixed;
+      output 200 128 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+   Splitter8 200 176
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>Signal\Block Diagram\Splitter.emx</LibraryPath>
+  <TimeStamp>2008-01-17 11:28:29</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 196.8 172.8 203.2 179.2 color -1 fill 0;
+      ellipse 195.7 171.7 204.3 180.3 color -1;
+     terminals
+      input 200 176 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+implementation_end;
+  end;
+  connections
+   plant\Acceleration_out -> IO\Acceleration;
+   IO\Velocity_Discrete -> Splitter1\input;
+   IO\Acceleration_Discrete -> Splitter3\input;
+   Splitter10\output -> IO\ControllerInput_Acceleration;
+   Splitter8\output -> IO\ControllerInput_Velocity;
+   Splitter1\output -> Cosim\FB_velocity;
+   IO\ControllerOutput_Acceleration -> plant\ControllerOutput_acceleration_in;
+   plant\velocity_x_out -> IO\Velocity;
+   Splitter3\output -> Cosim\FB_acceleration;
+   Cosim\ControlOutput_acceleration -> Splitter10\input;
+   Cosim\ControlOutput_velocity -> Splitter8\input;
+   IO\ControllerOutput_Velocity -> plant\ControllerOutput_velocity_in;
+  end;
+  figures
+   rectangle 32 32 200 304 fill 3387135;
+   rectangle 200 32 496 304 fill 16777139;
+   rectangle 496 32 660.8 304 fill 8781619;
+ implementation_end;
+]]>
+</Sidops>
+ </Model>
+ <Experiments>
+     <DefaultExperiment><![CDATA[Converted Experiment]]>
+</DefaultExperiment>
+  <Experiment>
+    <Name>Converted Experiment</Name>
+    <CreatedBy></CreatedBy>
+    <Info></Info>
+<ExpData>
+  <VersionNumber>4.1</VersionNumber>
+  <ModelProperties>
+  </ModelProperties>
+  <Variables>
+   <Constants>
+   </Constants>
+   <Parameters>
+   </Parameters>
+   <Initials>
+    <Variable>
+     <Name>IO\Filter2\y_state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>IO\Filter4\y_state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Axis\C_PersonWheel_X\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Axis\C_PersonWheel_Z\state_initial</Name>
+     <Value>0.009</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Axis\Filter3\y_state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Person_Frame\JPerson\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Person_Frame\mPersX\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Person_Frame\mPersZ\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Wheel\C_Wheel_X\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Wheel\C_Wheel_Z\state_initial</Name>
+     <Value>0.0099</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Wheel\JWheel\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Wheel\mWheelx\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>plant\Wheel\mWheelz\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+   </Initials>
+  </Variables>
+  <PlotSpecs>
+   <VarNames>
+    <VarName>time</VarName>
+    <VarName>plant\Person_Frame\Sensor\output</VarName>
+    <VarName>plant\Axis\Controller_Angle</VarName>
+    <VarName>Cosim\ControlOutput_acceleration</VarName>
+    <VarName>plant\Wheel\PositionWheelX\output</VarName>
+    <VarName>plant\Wheel\PositionWheelZ\output</VarName>
+    <VarName>plant\Wheel\AngleWheel\output</VarName>
+    <VarName>Cosim\ControlOutput_velocity</VarName>
+   </VarNames>
+   <Plots>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>Acceleration Output</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>11</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>11</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>11</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>8</Maximum>
+       <Linear>true</Linear>
+       <Scaling>2</Scaling>
+       <Label>time</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>ControlOutput_acceleration</Label>
+      </Axis>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>ControlOutput_velocity</Label>
+      </Axis>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>Controller_Angle</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>16711935</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711935</TickColor>
+       <TickStyle>0</TickStyle>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Cosim\ControlOutput_acceleration</VarName>
+       </YCurveData>
+      </Curve>
+      <Curve>
+       <LineColor>255</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>255</TickColor>
+       <TickStyle>0</TickStyle>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Cosim\ControlOutput_velocity</VarName>
+       </YCurveData>
+      </Curve>
+      <Curve>
+       <LineColor>65280</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>65280</TickColor>
+       <TickStyle>0</TickStyle>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>plant\Axis\Controller_Angle</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+     <StripChartPlots>
+      <DistributState>2</DistributState>
+      <StripChartPlot>
+       <Legenda>
+        <ShowLegenda>true</ShowLegenda>
+       </Legenda>
+      </StripChartPlot>
+      <StripChartPlot>
+       <Legenda>
+        <ShowLegenda>true</ShowLegenda>
+       </Legenda>
+      </StripChartPlot>
+      <StripChartPlot>
+       <Legenda>
+        <ShowLegenda>true</ShowLegenda>
+       </Legenda>
+      </StripChartPlot>
+     </StripChartPlots>
+    </Plot>
+    <Plot>
+     <PlotType>D3DPlot</PlotType>
+     <BasePlot>
+       <UseWindowsBGColor>false</UseWindowsBGColor>
+       <BGColor>14215660</BGColor>
+     </BasePlot>
+     <RenderQuality>137</RenderQuality>
+     <ShowGrid>false</ShowGrid>
+     <BackgroundColor>4282417280</BackgroundColor>
+     <FrameScale>1</FrameScale>
+     <FrameThickness>1</FrameThickness>
+     <MainFrame>
+      <Frame>
+       <ScaleValue>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Reference Frame</Name>
+       <Position>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+        <Frame>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Default Lights and Cameras</Name>
+         <Position>
+         </Position>
+         <Orientation>
+     <Angles>
+     </Angles>
+     <OrientationType>Bryant</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Ambient Light</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>0</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.494117647058824</Value>
+        </X>
+        <Y>
+         <Value>0.494117647058824</Value>
+        </Y>
+        <Z>
+         <Value>0.494117647058824</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <AmbientLight>
+       <Color>
+        <X>
+         <Value>0.494117647058824</Value>
+        </X>
+        <Y>
+         <Value>0.494117647058824</Value>
+        </Y>
+        <Z>
+         <Value>0.494117647058824</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </AmbientLight>
+      <AmbientOn>true</AmbientOn>
+      <DiffuseOn>false</DiffuseOn>
+      <SpecularOn>false</SpecularOn>
+     </Light>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Directional Light</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.206284057762329</Value>
+        </X>
+        <Y>
+         <Value>-0.928279259930761</Value>
+        </Y>
+        <Z>
+         <Value>-0.309426086643494</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.237755196032163</Value>
+        </X>
+        <Y>
+         <Value>0.354301436242708</Value>
+        </Y>
+        <Z>
+         <Value>-0.904401989734688</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>3</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.501961</Value>
+        </X>
+        <Y>
+         <Value>0.501961</Value>
+        </Y>
+        <Z>
+         <Value>0.501961</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <Attenuation>
+       <Constant>
+        <Value>1</Value>
+       </Constant>
+       <Linear>
+        <Value>0</Value>
+       </Linear>
+       <Quadratic>
+        <Value>0</Value>
+       </Quadratic>
+      </Attenuation>
+      <DiffuseLight>
+       <Color>
+        <X>
+         <Value>0.501961</Value>
+        </X>
+        <Y>
+         <Value>0.501961</Value>
+        </Y>
+        <Z>
+         <Value>0.501961</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </DiffuseLight>
+      <SpecularLight>
+       <Color>
+        <X>
+         <Value>0.501961</Value>
+        </X>
+        <Y>
+         <Value>0.501961</Value>
+        </Y>
+        <Z>
+         <Value>0.501961</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </SpecularLight>
+      <AmbientOn>false</AmbientOn>
+      <DiffuseOn>true</DiffuseOn>
+      <SpecularOn>true</SpecularOn>
+     </Light>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Camera Looking At Origin</Name>
+      <Position>
+       <X>
+        <Value>9</Value>
+       </X>
+       <Y>
+        <Value>12</Value>
+       </Y>
+       <Z>
+        <Value>7</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>-0.712451236261568</Value>
+        </X>
+        <Y>
+         <Value>-0.430528252516636</Value>
+        </Y>
+        <Z>
+         <Value>-0.554128739314553</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>-0.474261186542681</Value>
+        </X>
+        <Y>
+         <Value>-0.286592021301123</Value>
+        </Y>
+        <Z>
+         <Value>0.832430982283615</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>0.00133517687777566</Field>
+      <Fieldy>15.3</Fieldy>
+      <PlaneLeft>-0.5</PlaneLeft>
+      <PlaneRight>0.5</PlaneRight>
+      <PlaneTop>0.5</PlaneTop>
+      <PlaneBottom>-0.5</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+       <Y>
+        <VariableName>plant\Wheel\PositionWheelX\output</VariableName>
+        <Value>0</Value>
+       </Y>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>true</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Front(XY)-Camera</Name>
+      <Position>
+       <Z>
+        <Value>10</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.0102959961919745</Value>
+        </X>
+        <Y>
+         <Value>-0.99982142981987</Value>
+        </Y>
+        <Z>
+         <Value>-0.0158461646894534</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.544741844476396</Value>
+        </X>
+        <Y>
+         <Value>0.0188973139083425</Value>
+        </Y>
+        <Z>
+         <Value>-0.838390848234583</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>4.86666666666667</Field>
+      <Fieldy>572.957795130823</Fieldy>
+      <PlaneLeft>-4.86666666666667</PlaneLeft>
+      <PlaneRight>4.86666666666667</PlaneRight>
+      <PlaneTop>4.86666666666667</PlaneTop>
+      <PlaneBottom>-4.86666666666667</PlaneBottom>
+      <UseLookatPosition>false</UseLookatPosition>
+      <LookatPosition>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>false</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Side(YZ)-Camera</Name>
+      <Position>
+       <X>
+        <Value>10</Value>
+       </X>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>-1</Value>
+        </X>
+       </ZAxis>
+       <YAxis>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>4.93333333333333</Field>
+      <Fieldy>572.957795130823</Fieldy>
+      <PlaneLeft>-4.93333333333333</PlaneLeft>
+      <PlaneRight>4.93333333333333</PlaneRight>
+      <PlaneTop>4.93333333333333</PlaneTop>
+      <PlaneBottom>-4.93333333333333</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>false</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Top(XZ)-Camera</Name>
+      <Position>
+       <Y>
+        <Value>10</Value>
+       </Y>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <Y>
+         <Value>-1</Value>
+        </Y>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>1</Value>
+        </X>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>5</Field>
+      <Fieldy>572.957795130823</Fieldy>
+      <PlaneLeft>-5</PlaneLeft>
+      <PlaneRight>5</PlaneRight>
+      <PlaneTop>5</PlaneTop>
+      <PlaneBottom>-5</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <X>
+        <Value>1</Value>
+       </X>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>false</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+         </Childs>
+        </Frame>
+        <Frame>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Scenery</Name>
+         <Position>
+         </Position>
+         <Orientation>
+     <Angles>
+     </Angles>
+     <OrientationType>Bryant</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+     <Frame>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>ChessWay</Name>
+      <Position>
+       <Y>
+        <VariableName>plant\Wheel\PositionWheelX\output</VariableName>
+        <Value>0</Value>
+       </Y>
+       <Z>
+        <VariableName>plant\Wheel\PositionWheelZ\output</VariableName>
+        <Value>0</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+       <Frame>
+        <ScaleValue>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </ScaleValue>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Wheel</Name>
+        <Position>
+         <Z>
+     <Value>0.15</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <X>
+      <VariableName>plant\Wheel\AngleWheel\output</VariableName>
+      <Value>0</Value>
+     </X>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+         <Cylinder>
+     <CircleElements>16</CircleElements>
+     <LowerRadius>0.5</LowerRadius>
+     <UpperRadius>0.5</UpperRadius>
+     <Height>0.1</Height>
+     <Closed>true</Closed>
+     <LowerClosed>true</LowerClosed>
+     <UpperClosed>true</UpperClosed>
+     <CenterInOrigin>true</CenterInOrigin>
+     <ShowInnerSide>false</ShowInnerSide>
+     <ShowOuterSide>true</ShowOuterSide>
+     <ScaleValue>
+      <X>
+       <Value>0.3</Value>
+      </X>
+      <Y>
+       <Value>0.3</Value>
+      </Y>
+      <Z>
+       <Value>0.4</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>0.0313725490196078</Value>
+      </X>
+      <Y>
+       <Value>0.0313725490196078</Value>
+      </Y>
+      <Z>
+       <Value>0.0313725490196078</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.752941176470588</Value>
+      </X>
+      <Y>
+       <Value>0.752941176470588</Value>
+      </Y>
+      <Z>
+       <Value>0.752941176470588</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+      <X>
+       <Value>0.113725490196078</Value>
+      </X>
+      <Y>
+       <Value>0.113725490196078</Value>
+      </Y>
+      <Z>
+       <Value>0.113725490196078</Value>
+      </Z>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>6.1798095703125</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <Texture>
+      <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+      <WrapStyle>3</WrapStyle>
+      <YWrap>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </YWrap>
+      <ZWrap>
+       <Z>
+        <Value>-1</Value>
+       </Z>
+      </ZWrap>
+      <XOrigin>
+       <Value>0.5</Value>
+      </XOrigin>
+      <YOrigin>
+       <Value>0.5</Value>
+      </YOrigin>
+     </Texture>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Right Wheel</Name>
+     <Position>
+      <X>
+       <Value>0.23</Value>
+      </X>
+     </Position>
+     <Orientation>
+      <Angles>
+       <Y>
+        <Value>1.57</Value>
+       </Y>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>false</LockX>
+     <LockY>false</LockY>
+     <LockZ>false</LockZ>
+     <LockXPitch>false</LockXPitch>
+     <LockYYaw>false</LockYYaw>
+     <LockZRoll>false</LockZRoll>
+     <Childs>
+     </Childs>
+         </Cylinder>
+         <Cylinder>
+     <CircleElements>16</CircleElements>
+     <LowerRadius>0.5</LowerRadius>
+     <UpperRadius>0.5</UpperRadius>
+     <Height>0.1</Height>
+     <Closed>true</Closed>
+     <LowerClosed>true</LowerClosed>
+     <UpperClosed>true</UpperClosed>
+     <CenterInOrigin>true</CenterInOrigin>
+     <ShowInnerSide>false</ShowInnerSide>
+     <ShowOuterSide>true</ShowOuterSide>
+     <ScaleValue>
+      <X>
+       <Value>0.07</Value>
+      </X>
+      <Y>
+       <Value>0.07</Value>
+      </Y>
+      <Z>
+       <Value>0.07</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>0</Value>
+      </Y>
+      <Z>
+       <Value>0</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.498039215686275</Value>
+      </X>
+      <Y>
+       <Value>0.498039215686275</Value>
+      </Y>
+      <Z>
+       <Value>0.498039215686275</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>22.6298909187317</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <Texture>
+      <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+      <WrapStyle>0</WrapStyle>
+      <YWrap>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </YWrap>
+      <ZWrap>
+       <Z>
+        <Value>-1</Value>
+       </Z>
+      </ZWrap>
+      <XOrigin>
+       <Value>0.5</Value>
+      </XOrigin>
+      <YOrigin>
+       <Value>0.5</Value>
+      </YOrigin>
+     </Texture>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Indicator</Name>
+     <Position>
+      <X>
+       <Value>0.254</Value>
+      </X>
+      <Z>
+       <Value>0.08</Value>
+      </Z>
+     </Position>
+     <Orientation>
+      <Angles>
+       <Y>
+        <Value>1.57</Value>
+       </Y>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>false</LockX>
+     <LockY>false</LockY>
+     <LockZ>false</LockZ>
+     <LockXPitch>false</LockXPitch>
+     <LockYYaw>false</LockYYaw>
+     <LockZRoll>false</LockZRoll>
+     <Childs>
+     </Childs>
+         </Cylinder>
+         <Cylinder>
+     <CircleElements>16</CircleElements>
+     <LowerRadius>0.5</LowerRadius>
+     <UpperRadius>0.5</UpperRadius>
+     <Height>0.1</Height>
+     <Closed>true</Closed>
+     <LowerClosed>true</LowerClosed>
+     <UpperClosed>true</UpperClosed>
+     <CenterInOrigin>true</CenterInOrigin>
+     <ShowInnerSide>false</ShowInnerSide>
+     <ShowOuterSide>true</ShowOuterSide>
+     <ScaleValue>
+      <X>
+       <Value>0.3</Value>
+      </X>
+      <Y>
+       <Value>0.3</Value>
+      </Y>
+      <Z>
+       <Value>0.4</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>0.0313725490196078</Value>
+      </X>
+      <Y>
+       <Value>0.0313725490196078</Value>
+      </Y>
+      <Z>
+       <Value>0.0313725490196078</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.752941176470588</Value>
+      </X>
+      <Y>
+       <Value>0.752941176470588</Value>
+      </Y>
+      <Z>
+       <Value>0.752941176470588</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+      <X>
+       <Value>0.113725490196078</Value>
+      </X>
+      <Y>
+       <Value>0.113725490196078</Value>
+      </Y>
+      <Z>
+       <Value>0.113725490196078</Value>
+      </Z>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>6.1798095703125</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <Texture>
+      <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+      <WrapStyle>3</WrapStyle>
+      <YWrap>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </YWrap>
+      <ZWrap>
+       <Z>
+        <Value>-1</Value>
+       </Z>
+      </ZWrap>
+      <XOrigin>
+       <Value>0.5</Value>
+      </XOrigin>
+      <YOrigin>
+       <Value>0.5</Value>
+      </YOrigin>
+     </Texture>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Left Wheel</Name>
+     <Position>
+      <X>
+       <Value>-0.23</Value>
+      </X>
+     </Position>
+     <Orientation>
+      <Angles>
+       <Y>
+        <Value>1.57</Value>
+       </Y>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>false</LockX>
+     <LockY>false</LockY>
+     <LockZ>false</LockZ>
+     <LockXPitch>false</LockXPitch>
+     <LockYYaw>false</LockYYaw>
+     <LockZRoll>false</LockZRoll>
+     <Childs>
+     </Childs>
+         </Cylinder>
+        </Childs>
+       </Frame>
+       <Frame>
+        <ScaleValue>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </ScaleValue>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Frame</Name>
+        <Position>
+         <Z>
+     <Value>0.15</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <Z>
+      <VariableName>plant\Person_Frame\Sensor\output</VariableName>
+      <Value>0</Value>
+     </Z>
+         </Angles>
+         <OrientationType>Euler</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+         <Cube>
+     <Center>Center</Center>
+     <RibLength>1</RibLength>
+     <ShowInnerSide>false</ShowInnerSide>
+     <Accuracy>4</Accuracy>
+     <ScaleValue>
+      <X>
+       <Value>0.4</Value>
+      </X>
+      <Y>
+       <Value>0.2</Value>
+      </Y>
+      <Z>
+       <Value>0.05</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>0.752941176470588</Value>
+      </X>
+      <Y>
+       <Value>0.752941176470588</Value>
+      </Y>
+      <Z>
+       <Value>0.752941176470588</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.752941176470588</Value>
+      </X>
+      <Y>
+       <Value>0.752941176470588</Value>
+      </Y>
+      <Z>
+       <Value>0.752941176470588</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>18.5728459358215</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <Texture>
+      <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+      <WrapStyle>0</WrapStyle>
+      <YWrap>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </YWrap>
+      <ZWrap>
+       <Z>
+        <Value>-1</Value>
+       </Z>
+      </ZWrap>
+      <XOrigin>
+       <Value>0.5</Value>
+      </XOrigin>
+      <YOrigin>
+       <Value>0.5</Value>
+      </YOrigin>
+     </Texture>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Cube</Name>
+     <Position>
+     </Position>
+     <Orientation>
+      <Angles>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>false</LockX>
+     <LockY>false</LockY>
+     <LockZ>false</LockZ>
+     <LockXPitch>false</LockXPitch>
+     <LockYYaw>false</LockYYaw>
+     <LockZRoll>false</LockZRoll>
+     <Childs>
+     </Childs>
+         </Cube>
+         <VectorArrow>
+     <CircleElements>16</CircleElements>
+     <CylinderDiameter>8.9406967163086e-010</CylinderDiameter>
+     <ConeDiameter>0.05</ConeDiameter>
+     <ConeHeight>0.05</ConeHeight>
+     <VectorOffset>0</VectorOffset>
+     <VectorScale>-5</VectorScale>
+     <VectorValue>
+      <VariableName>plant\Person_Frame\Sensor\output</VariableName>
+      <Value>0</Value>
+     </VectorValue>
+     <Cylinder>
+      <CircleElements>16</CircleElements>
+      <LowerRadius>8.9406967163086e-010</LowerRadius>
+      <UpperRadius>8.9406967163086e-010</UpperRadius>
+      <Height>1</Height>
+      <Closed>true</Closed>
+      <LowerClosed>true</LowerClosed>
+      <UpperClosed>true</UpperClosed>
+      <CenterInOrigin>false</CenterInOrigin>
+      <ShowInnerSide>false</ShowInnerSide>
+      <ShowOuterSide>true</ShowOuterSide>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.5</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.5</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>15</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Cylinder</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Cylinder>
+     <Cone>
+      <CircleElements>16</CircleElements>
+      <LowerRadius>0.025</LowerRadius>
+      <UpperRadius>0</UpperRadius>
+      <Height>0.05</Height>
+      <Closed>true</Closed>
+      <LowerClosed>true</LowerClosed>
+      <UpperClosed>true</UpperClosed>
+      <CenterInOrigin>false</CenterInOrigin>
+      <ShowInnerSide>false</ShowInnerSide>
+      <ShowOuterSide>true</ShowOuterSide>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.5</Value>
+       </X>
+       <Y>
+        <Value>0.5</Value>
+       </Y>
+       <Z>
+        <Value>0.5</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>15</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Cylinder</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Cone>
+     <ScaleValue>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.5</Value>
+      </X>
+      <Y>
+       <Value>0.5</Value>
+      </Y>
+      <Z>
+       <Value>0.5</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>15</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Acceleration</Name>
+     <Position>
+      <Y>
+       <Value>0.15</Value>
+      </Y>
+      <Z>
+       <Value>1.1</Value>
+      </Z>
+     </Position>
+     <Orientation>
+      <Angles>
+       <X>
+        <Value>-1.57</Value>
+       </X>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>false</LockX>
+     <LockY>false</LockY>
+     <LockZ>false</LockZ>
+     <LockXPitch>false</LockXPitch>
+     <LockYYaw>false</LockYYaw>
+     <LockZRoll>false</LockZRoll>
+     <Childs>
+     </Childs>
+         </VectorArrow>
+         <Frame>
+     <ScaleValue>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ScaleValue>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Handle</Name>
+     <Position>
+      <Y>
+       <Value>0.07</Value>
+      </Y>
+      <Z>
+       <Value>0.5</Value>
+      </Z>
+     </Position>
+     <Orientation>
+      <Angles>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>false</LockX>
+     <LockY>false</LockY>
+     <LockZ>false</LockZ>
+     <LockXPitch>false</LockXPitch>
+     <LockYYaw>false</LockYYaw>
+     <LockZRoll>false</LockZRoll>
+     <Childs>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>0.015</Value>
+        </X>
+        <Y>
+         <Value>0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cylinder>
+       <CircleElements>16</CircleElements>
+       <LowerRadius>0.5</LowerRadius>
+       <UpperRadius>0.5</UpperRadius>
+       <Height>1</Height>
+       <Closed>true</Closed>
+       <LowerClosed>true</LowerClosed>
+       <UpperClosed>true</UpperClosed>
+       <CenterInOrigin>true</CenterInOrigin>
+       <ShowInnerSide>false</ShowInnerSide>
+       <ShowOuterSide>true</ShowOuterSide>
+       <ScaleValue>
+        <X>
+         <Value>0.025</Value>
+        </X>
+        <Y>
+         <Value>0.025</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Cylinder</Name>
+       <Position>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cylinder>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>-0.015</Value>
+        </X>
+        <Y>
+         <Value>0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>0.015</Value>
+        </X>
+        <Y>
+         <Value>-0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>-0.015</Value>
+        </X>
+        <Y>
+         <Value>-0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+     </Childs>
+         </Frame>
+         <Frame>
+     <ScaleValue>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>0.3</Value>
+      </Z>
+     </ScaleValue>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Hand Grip</Name>
+     <Position>
+      <Y>
+       <Value>0.07</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </Position>
+     <Orientation>
+      <ZAxis>
+       <X>
+        <Value>1</Value>
+       </X>
+      </ZAxis>
+      <YAxis>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </YAxis>
+      <OrientationType>Direct3D</OrientationType>
+     </Orientation>
+     <LockX>false</LockX>
+     <LockY>false</LockY>
+     <LockZ>false</LockZ>
+     <LockXPitch>false</LockXPitch>
+     <LockYYaw>false</LockYYaw>
+     <LockZRoll>false</LockZRoll>
+     <Childs>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>0.015</Value>
+        </X>
+        <Y>
+         <Value>0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cylinder>
+       <CircleElements>16</CircleElements>
+       <LowerRadius>0.5</LowerRadius>
+       <UpperRadius>0.5</UpperRadius>
+       <Height>1</Height>
+       <Closed>true</Closed>
+       <LowerClosed>true</LowerClosed>
+       <UpperClosed>true</UpperClosed>
+       <CenterInOrigin>true</CenterInOrigin>
+       <ShowInnerSide>false</ShowInnerSide>
+       <ShowOuterSide>true</ShowOuterSide>
+       <ScaleValue>
+        <X>
+         <Value>0.025</Value>
+        </X>
+        <Y>
+         <Value>0.025</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Cylinder</Name>
+       <Position>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cylinder>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>-0.015</Value>
+        </X>
+        <Y>
+         <Value>0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>0.015</Value>
+        </X>
+        <Y>
+         <Value>-0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cylinder>
+       <CircleElements>16</CircleElements>
+       <LowerRadius>0.5</LowerRadius>
+       <UpperRadius>0.5</UpperRadius>
+       <Height>1</Height>
+       <Closed>true</Closed>
+       <LowerClosed>true</LowerClosed>
+       <UpperClosed>true</UpperClosed>
+       <CenterInOrigin>true</CenterInOrigin>
+       <ShowInnerSide>false</ShowInnerSide>
+       <ShowOuterSide>true</ShowOuterSide>
+       <ScaleValue>
+        <X>
+         <Value>0.025</Value>
+        </X>
+        <Y>
+         <Value>0.025</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Right Grip</Name>
+       <Position>
+        <Z>
+         <Value>0.7</Value>
+        </Z>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cylinder>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.05</Value>
+        </X>
+        <Y>
+         <Value>0.05</Value>
+        </Y>
+        <Z>
+         <Value>0.02</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>0</Value>
+        </Y>
+        <Z>
+         <Value>0</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.498039215686275</Value>
+        </X>
+        <Y>
+         <Value>0.498039215686275</Value>
+        </Y>
+        <Z>
+         <Value>0.498039215686275</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>14.298713684082</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Right Grip End</Name>
+       <Position>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.02</Value>
+        </X>
+        <Y>
+         <Value>0.02</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Block</Name>
+       <Position>
+        <X>
+         <Value>-0.015</Value>
+        </X>
+        <Y>
+         <Value>-0.015</Value>
+        </Y>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+      <Cylinder>
+       <CircleElements>16</CircleElements>
+       <LowerRadius>0.5</LowerRadius>
+       <UpperRadius>0.5</UpperRadius>
+       <Height>1</Height>
+       <Closed>true</Closed>
+       <LowerClosed>true</LowerClosed>
+       <UpperClosed>true</UpperClosed>
+       <CenterInOrigin>true</CenterInOrigin>
+       <ShowInnerSide>false</ShowInnerSide>
+       <ShowOuterSide>true</ShowOuterSide>
+       <ScaleValue>
+        <X>
+         <Value>0.025</Value>
+        </X>
+        <Y>
+         <Value>0.025</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Left Grip</Name>
+       <Position>
+        <Z>
+         <Value>-0.7</Value>
+        </Z>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cylinder>
+      <Cube>
+       <Center>Center</Center>
+       <RibLength>1</RibLength>
+       <ShowInnerSide>true</ShowInnerSide>
+       <Accuracy>4</Accuracy>
+       <ScaleValue>
+        <X>
+         <Value>0.05</Value>
+        </X>
+        <Y>
+         <Value>0.05</Value>
+        </Y>
+        <Z>
+         <Value>0.02</Value>
+        </Z>
+       </ScaleValue>
+       <OverrideColor>true</OverrideColor>
+       <MeshColor>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>0</Value>
+        </Y>
+        <Z>
+         <Value>0</Value>
+        </Z>
+       </MeshColor>
+       <Alpha>1</Alpha>
+       <MeshColorMultipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </MeshColorMultipliers>
+       <MeshColorOffsets>
+       </MeshColorOffsets>
+       <Direct3DColorRange>true</Direct3DColorRange>
+       <SpecularColor>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </SpecularColor>
+       <EmissiveColor>
+       </EmissiveColor>
+       <ShininessPower>
+        <Value>15</Value>
+       </ShininessPower>
+       <OverrideQuality>false</OverrideQuality>
+       <Texture>
+        <Filename><![CDATA[brushed-metal.jpg]]>
+</Filename>
+        <WrapStyle>0</WrapStyle>
+        <YWrap>
+         <Y>
+     <Value>1</Value>
+         </Y>
+        </YWrap>
+        <ZWrap>
+         <Z>
+     <Value>-1</Value>
+         </Z>
+        </ZWrap>
+        <XOrigin>
+         <Value>0.5</Value>
+        </XOrigin>
+        <YOrigin>
+         <Value>0.5</Value>
+        </YOrigin>
+       </Texture>
+       <ShowReferenceFrame>false</ShowReferenceFrame>
+       <Name>Left Grip End</Name>
+       <Position>
+        <Z>
+         <Value>-0.5</Value>
+        </Z>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+       </Childs>
+      </Cube>
+     </Childs>
+         </Frame>
+        </Childs>
+       </Frame>
+       <VectorArrow>
+        <CircleElements>16</CircleElements>
+        <CylinderDiameter>8.9406967163086e-010</CylinderDiameter>
+        <ConeDiameter>0.05</ConeDiameter>
+        <ConeHeight>0.05</ConeHeight>
+        <VectorOffset>0</VectorOffset>
+        <VectorScale>-0.01</VectorScale>
+        <VectorValue>
+         <VariableName>plant\Axis\Controller_Angle</VariableName>
+         <Value>0</Value>
+        </VectorValue>
+        <Cylinder>
+         <CircleElements>16</CircleElements>
+         <LowerRadius>8.9406967163086e-010</LowerRadius>
+         <UpperRadius>8.9406967163086e-010</UpperRadius>
+         <Height>1</Height>
+         <Closed>true</Closed>
+         <LowerClosed>true</LowerClosed>
+         <UpperClosed>true</UpperClosed>
+         <CenterInOrigin>false</CenterInOrigin>
+         <ShowInnerSide>false</ShowInnerSide>
+         <ShowOuterSide>true</ShowOuterSide>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+         </ScaleValue>
+         <OverrideColor>true</OverrideColor>
+         <MeshColor>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </MeshColor>
+         <Alpha>1</Alpha>
+         <MeshColorMultipliers>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </MeshColorMultipliers>
+         <MeshColorOffsets>
+         </MeshColorOffsets>
+         <Direct3DColorRange>true</Direct3DColorRange>
+         <SpecularColor>
+     <X>
+      <Value>0.5</Value>
+     </X>
+     <Y>
+      <Value>0.5</Value>
+     </Y>
+     <Z>
+      <Value>0.5</Value>
+     </Z>
+         </SpecularColor>
+         <EmissiveColor>
+         </EmissiveColor>
+         <ShininessPower>
+     <Value>15</Value>
+         </ShininessPower>
+         <OverrideQuality>false</OverrideQuality>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Cylinder</Name>
+         <Position>
+         </Position>
+         <Orientation>
+     <ZAxis>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ZAxis>
+     <YAxis>
+      <Y>
+       <Value>1</Value>
+      </Y>
+     </YAxis>
+     <OrientationType>Direct3D</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+         </Childs>
+        </Cylinder>
+        <Cone>
+         <CircleElements>16</CircleElements>
+         <LowerRadius>0.025</LowerRadius>
+         <UpperRadius>0</UpperRadius>
+         <Height>0.05</Height>
+         <Closed>true</Closed>
+         <LowerClosed>true</LowerClosed>
+         <UpperClosed>true</UpperClosed>
+         <CenterInOrigin>false</CenterInOrigin>
+         <ShowInnerSide>false</ShowInnerSide>
+         <ShowOuterSide>true</ShowOuterSide>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <OverrideColor>true</OverrideColor>
+         <MeshColor>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </MeshColor>
+         <Alpha>1</Alpha>
+         <MeshColorMultipliers>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </MeshColorMultipliers>
+         <MeshColorOffsets>
+         </MeshColorOffsets>
+         <Direct3DColorRange>true</Direct3DColorRange>
+         <SpecularColor>
+     <X>
+      <Value>0.5</Value>
+     </X>
+     <Y>
+      <Value>0.5</Value>
+     </Y>
+     <Z>
+      <Value>0.5</Value>
+     </Z>
+         </SpecularColor>
+         <EmissiveColor>
+         </EmissiveColor>
+         <ShininessPower>
+     <Value>15</Value>
+         </ShininessPower>
+         <OverrideQuality>false</OverrideQuality>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Cylinder</Name>
+         <Position>
+         </Position>
+         <Orientation>
+     <ZAxis>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ZAxis>
+     <YAxis>
+      <Y>
+       <Value>1</Value>
+      </Y>
+     </YAxis>
+     <OrientationType>Direct3D</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+         </Childs>
+        </Cone>
+        <ScaleValue>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.5</Value>
+         </X>
+         <Y>
+     <Value>0.5</Value>
+         </Y>
+         <Z>
+     <Value>0.5</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>15</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Velocity</Name>
+        <Position>
+         <X>
+     <Value>0.4</Value>
+         </X>
+         <Z>
+     <Value>0.1</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <X>
+      <Value>1.57</Value>
+     </X>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </VectorArrow>
+       <Camera>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Perspective Camera</Name>
+        <Position>
+         <X>
+     <Value>0.996213489312584</Value>
+         </X>
+         <Y>
+     <Value>0.717719755202841</Value>
+         </Y>
+         <Z>
+     <Value>1.23468807168472</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <EulerParameter>
+     <X>
+      <Value>-0.748905971463809</Value>
+     </X>
+     <Y>
+      <Value>0.395890306894996</Value>
+     </Y>
+     <Z>
+      <Value>0.235658040833075</Value>
+     </Z>
+         </EulerParameter>
+         <EulParRotation>
+     <Value>0.476315008359573</Value>
+         </EulParRotation>
+         <OrientationType>EulerParameters</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+        <FrontPlane>0.01</FrontPlane>
+        <BackPlane>100</BackPlane>
+        <AutoFrontBack>true</AutoFrontBack>
+        <Field>0.00598647933434055</Field>
+        <Fieldy>68.6</Fieldy>
+        <PlaneLeft>-19.9777777777778</PlaneLeft>
+        <PlaneRight>19.9777777777778</PlaneRight>
+        <PlaneTop>19.9777777777778</PlaneTop>
+        <PlaneBottom>-19.9777777777778</PlaneBottom>
+        <UseLookatPosition>false</UseLookatPosition>
+        <LookatPosition>
+         <X>
+     <VariableName>plant\Wheel\PositionWheelX\output</VariableName>
+     <Value>0.265338464825184</Value>
+         </X>
+         <Y>
+     <Value>8.70931747523883</Value>
+         </Y>
+         <Z>
+     <VariableName>plant\Wheel\PositionWheelZ\output</VariableName>
+     <Value>-3.66207831683972e-005</Value>
+         </Z>
+        </LookatPosition>
+        <UseAlwaysLookUp>true</UseAlwaysLookUp>
+        <LookUpVector>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </LookUpVector>
+        <RightHand>true</RightHand>
+        <Perspective>true</Perspective>
+        <IsSelectedCamera>true</IsSelectedCamera>
+       </Camera>
+       <Camera>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Side(YZ)-Close Up</Name>
+        <Position>
+         <X>
+     <Value>10</Value>
+         </X>
+         <Y>
+     <Value>-2.52575738102223e-015</Value>
+         </Y>
+         <Z>
+     <Value>0.6</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <ZAxis>
+     <X>
+      <Value>-1</Value>
+     </X>
+         </ZAxis>
+         <YAxis>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </YAxis>
+         <OrientationType>Direct3D</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+        <FrontPlane>0.01</FrontPlane>
+        <BackPlane>100</BackPlane>
+        <AutoFrontBack>true</AutoFrontBack>
+        <Field>0.681911429497478</Field>
+        <Fieldy>572.957795130823</Fieldy>
+        <PlaneLeft>-0.681911429497478</PlaneLeft>
+        <PlaneRight>0.681911429497478</PlaneRight>
+        <PlaneTop>0.681911429497478</PlaneTop>
+        <PlaneBottom>-0.681911429497478</PlaneBottom>
+        <UseLookatPosition>true</UseLookatPosition>
+        <LookatPosition>
+         <Y>
+     <Value>-2.52575738102223e-015</Value>
+         </Y>
+         <Z>
+     <Value>0.6</Value>
+         </Z>
+        </LookatPosition>
+        <UseAlwaysLookUp>true</UseAlwaysLookUp>
+        <LookUpVector>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </LookUpVector>
+        <RightHand>true</RightHand>
+        <Perspective>false</Perspective>
+        <IsSelectedCamera>false</IsSelectedCamera>
+       </Camera>
+      </Childs>
+     </Frame>
+     <Square>
+      <CornerInOrigin>false</CornerInOrigin>
+      <XLength>1</XLength>
+      <YLength>1</YLength>
+      <BothSides>true</BothSides>
+      <Accuracy>4</Accuracy>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>14.298713684082</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <Texture>
+       <Filename><![CDATA[asphalt_01.jpg]]>
+</Filename>
+       <WrapStyle>0</WrapStyle>
+       <YWrap>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YWrap>
+       <ZWrap>
+        <Z>
+         <Value>-1</Value>
+        </Z>
+       </ZWrap>
+       <XOrigin>
+        <Value>0</Value>
+       </XOrigin>
+       <YOrigin>
+        <Value>0</Value>
+       </YOrigin>
+      </Texture>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Ashphalt</Name>
+      <Position>
+       <Y>
+        <Value>-1</Value>
+       </Y>
+      </Position>
+      <Orientation>
+       <EulerParameter>
+       </EulerParameter>
+       <EulParRotation>
+        <Value>1</Value>
+       </EulParRotation>
+       <OrientationType>EulerParameters</OrientationType>
+      </Orientation>
+      <HasDuplicates>true</HasDuplicates>
+      <NrDuplicates>20</NrDuplicates>
+      <DuplPosOffset>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </DuplPosOffset>
+      <DuplOriOffset>
+      </DuplOriOffset>
+      <DuplScaleOffset>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </DuplScaleOffset>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Square>
+     <Square>
+      <CornerInOrigin>false</CornerInOrigin>
+      <XLength>1</XLength>
+      <YLength>1</YLength>
+      <BothSides>true</BothSides>
+      <Accuracy>4</Accuracy>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>13.5413365364075</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <Texture>
+       <Filename><![CDATA[grass.jpg]]>
+</Filename>
+       <WrapStyle>0</WrapStyle>
+       <YWrap>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YWrap>
+       <ZWrap>
+        <Z>
+         <Value>-1</Value>
+        </Z>
+       </ZWrap>
+       <XOrigin>
+        <Value>0.5</Value>
+       </XOrigin>
+       <YOrigin>
+        <Value>0.5</Value>
+       </YOrigin>
+      </Texture>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Grass</Name>
+      <Position>
+       <X>
+        <Value>-1</Value>
+       </X>
+       <Y>
+        <Value>-2</Value>
+       </Y>
+       <Z>
+        <Value>-0.01</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <HasDuplicates>true</HasDuplicates>
+      <NrDuplicates>22</NrDuplicates>
+      <DuplPosOffset>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </DuplPosOffset>
+      <DuplOriOffset>
+      </DuplOriOffset>
+      <DuplScaleOffset>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </DuplScaleOffset>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Square>
+     <Square>
+      <CornerInOrigin>false</CornerInOrigin>
+      <XLength>1</XLength>
+      <YLength>1</YLength>
+      <BothSides>true</BothSides>
+      <Accuracy>4</Accuracy>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>13.5413365364075</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <Texture>
+       <Filename><![CDATA[grass.jpg]]>
+</Filename>
+       <WrapStyle>0</WrapStyle>
+       <YWrap>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YWrap>
+       <ZWrap>
+        <Z>
+         <Value>-1</Value>
+        </Z>
+       </ZWrap>
+       <XOrigin>
+        <Value>0.5</Value>
+       </XOrigin>
+       <YOrigin>
+        <Value>0.5</Value>
+       </YOrigin>
+      </Texture>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Grass</Name>
+      <Position>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>-2</Value>
+       </Y>
+       <Z>
+        <Value>-0.01</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <HasDuplicates>true</HasDuplicates>
+      <NrDuplicates>22</NrDuplicates>
+      <DuplPosOffset>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </DuplPosOffset>
+      <DuplOriOffset>
+      </DuplOriOffset>
+      <DuplScaleOffset>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </DuplScaleOffset>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Square>
+     <Square>
+      <CornerInOrigin>false</CornerInOrigin>
+      <XLength>1</XLength>
+      <YLength>1</YLength>
+      <BothSides>true</BothSides>
+      <Accuracy>4</Accuracy>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>13.5413365364075</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <Texture>
+       <Filename><![CDATA[grass.jpg]]>
+</Filename>
+       <WrapStyle>0</WrapStyle>
+       <YWrap>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YWrap>
+       <ZWrap>
+        <Z>
+         <Value>-1</Value>
+        </Z>
+       </ZWrap>
+       <XOrigin>
+        <Value>0.5</Value>
+       </XOrigin>
+       <YOrigin>
+        <Value>0.5</Value>
+       </YOrigin>
+      </Texture>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Grass</Name>
+      <Position>
+       <Y>
+        <Value>-2</Value>
+       </Y>
+       <Z>
+        <Value>-0.01</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <HasDuplicates>true</HasDuplicates>
+      <NrDuplicates>22</NrDuplicates>
+      <DuplPosOffset>
+       <Y>
+        <Value>1</Value>
+       </Y>
+      </DuplPosOffset>
+      <DuplOriOffset>
+      </DuplOriOffset>
+      <DuplScaleOffset>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </DuplScaleOffset>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Square>
+         </Childs>
+        </Frame>
+       </Childs>
+      </Frame>
+     </MainFrame>
+    </Plot>
+   </Plots>
+   <WindowRectangles virtualDesktopWidth="3286" virtualDesktopHeight="1080">
+     <WindowRectangle monitor="0" left="0" top="0" right="1920" bottom="1080">
+0.0661458 0.102778 0.338542 0.680556
+     </WindowRectangle>
+     <WindowRectangle monitor="0" left="0" top="0" right="1920" bottom="1080">
+0.350521 0.105556 0.625521 0.638889
+     </WindowRectangle>
+   </WindowRectangles>
+  </PlotSpecs>
+  <RunSpecs>
+   <SimulatorSettings>
+    <StartTime>0</StartTime>
+    <FinishTime>20</FinishTime>
+    <Warp>false</Warp>
+    <UseOutputAfterEach>true</UseOutputAfterEach>
+    <OutputAfterEach>0.01</OutputAfterEach>
+    <EventEpsilon>1e-006</EventEpsilon>
+    <AlgebraicTolerance>1e-007</AlgebraicTolerance>
+    <SteadyStateAnalysis>false</SteadyStateAnalysis>
+    <DiscreteSystems>
+     <DiscreteSystem>
+      <DiscreteID>IO\EncoderInceremental\hold_signal</DiscreteID>
+      <TimeInterval>0.001</TimeInterval>
+      <InitialSampleTimeDelay>0</InitialSampleTimeDelay>
+      <FixedSampleTimeDelay>0</FixedSampleTimeDelay>
+      <VariableTimeDelayMin>0</VariableTimeDelayMin>
+      <VariableTimeDelayMax>0</VariableTimeDelayMax>
+      <VariableTimeDelayMean>0</VariableTimeDelayMean>
+      <VariableTimeDelayDeviation>0</VariableTimeDelayDeviation>
+      <UseVariableTimeDelay>false</UseVariableTimeDelay>
+      <UniformVariableTimeDelay>false</UniformVariableTimeDelay>
+      <UseGlobalTime>true</UseGlobalTime>
+      <HoldTimeDelay>0</HoldTimeDelay>
+      <ActionOnSampleMissed>0</ActionOnSampleMissed>
+     </DiscreteSystem>
+     <DiscreteSystem>
+      <DiscreteID>IO\AD2\hold_signal</DiscreteID>
+      <TimeInterval>0.001</TimeInterval>
+      <InitialSampleTimeDelay>0</InitialSampleTimeDelay>
+      <FixedSampleTimeDelay>0</FixedSampleTimeDelay>
+      <VariableTimeDelayMin>0</VariableTimeDelayMin>
+      <VariableTimeDelayMax>0</VariableTimeDelayMax>
+      <VariableTimeDelayMean>0</VariableTimeDelayMean>
+      <VariableTimeDelayDeviation>0</VariableTimeDelayDeviation>
+      <UseVariableTimeDelay>false</UseVariableTimeDelay>
+      <UniformVariableTimeDelay>false</UniformVariableTimeDelay>
+      <UseGlobalTime>true</UseGlobalTime>
+      <HoldTimeDelay>0</HoldTimeDelay>
+      <ActionOnSampleMissed>0</ActionOnSampleMissed>
+     </DiscreteSystem>
+     <DiscreteSystem>
+      <DiscreteID>IO\AD1\hold_signal</DiscreteID>
+      <TimeInterval>0.001</TimeInterval>
+      <InitialSampleTimeDelay>0</InitialSampleTimeDelay>
+      <FixedSampleTimeDelay>0</FixedSampleTimeDelay>
+      <VariableTimeDelayMin>0</VariableTimeDelayMin>
+      <VariableTimeDelayMax>0</VariableTimeDelayMax>
+      <VariableTimeDelayMean>0</VariableTimeDelayMean>
+      <VariableTimeDelayDeviation>0</VariableTimeDelayDeviation>
+      <UseVariableTimeDelay>false</UseVariableTimeDelay>
+      <UniformVariableTimeDelay>false</UniformVariableTimeDelay>
+      <UseGlobalTime>true</UseGlobalTime>
+      <HoldTimeDelay>0</HoldTimeDelay>
+      <ActionOnSampleMissed>0</ActionOnSampleMissed>
+     </DiscreteSystem>
+    </DiscreteSystems>
+   </SimulatorSettings>
+   <IntegrationMethods>
+    <IntegrationMethod>
+     <Name>Euler</Name>
+     <StepSize>0.001</StepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BackwardEuler</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <StepSize>0.01</StepSize>
+     <Alpha>1</Alpha>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>AdamsBashforth</Name>
+     <StepSize>0.01</StepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta2</Name>
+     <StepSize>0.01</StepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta4</Name>
+     <StepSize>0.001</StepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta8</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <SafetyFactor>0.9</SafetyFactor>
+     <Factor1>0.33</Factor1>
+     <Factor2>6</Factor2>
+     <Beta>0</Beta>
+     <UseMaxNrSteps>false</UseMaxNrSteps>
+     <MaxNrSteps>100000</MaxNrSteps>
+     <UseStiffDetection>false</UseStiffDetection>
+     <MaxNrStiffnessSteps>1000</MaxNrStiffnessSteps>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKuttaFehlberg</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>VodeAdams</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BDFMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>MeBDFiMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <SelectedIntegrationMethod>8</SelectedIntegrationMethod>
+   </IntegrationMethods>
+  </RunSpecs>
+  <MultipleRun>
+   <NrSteps>500</NrSteps>
+   <CopyFromStates>false</CopyFromStates>
+   <JoinParameterVariation>true</JoinParameterVariation>
+   <ClearAfterRun>true</ClearAfterRun>
+   <RedrawAfterRun>false</RedrawAfterRun>
+   <DrawDuringSimulation>false</DrawDuringSimulation>
+   <ActionBeforeOptimization>1</ActionBeforeOptimization>
+   <CompareValue>0</CompareValue>
+   <UseCompareValue>true</UseCompareValue>
+   <MultipleRunType>Optimization</MultipleRunType>
+   <Minimize>true</Minimize>
+   <OptimizationVariable>Stepje\Angle_out</OptimizationVariable>
+   <ResulVarUsage>UseEndValue</ResulVarUsage>
+   <Tolerance>1e-006</Tolerance>
+   <OptimizationMethod>BroydonFletcherGoldfarbShanno</OptimizationMethod>
+   <MultipleRunVariables>
+   </MultipleRunVariables>
+  </MultipleRun>
+  <ExportData>
+   <WriteAsText>true</WriteAsText>
+   <ReadAsText>true</ReadAsText>
+   <WriteHeader>true</WriteHeader>
+   <ReadHeader>true</ReadHeader>
+   <ReadFilename></ReadFilename>
+   <WriteFilename></WriteFilename>
+   <DoWrite>false</DoWrite>
+   <ExportVariables>
+   </ExportVariables>
+   <ImportVariables>
+   </ImportVariables>
+  </ExportData>
+  <BreakPoints>
+  </BreakPoints>
+  <AnimationPlayback>
+   <PlaybackSpeed>1</PlaybackSpeed>
+  </AnimationPlayback>
+</ExpData>
+  </Experiment>
+</Experiments>
+</Document>

@@ -1,0 +1,4 @@
+when time > 5 and ct real servo_right = 0 and ct real servo_left = 0 do 
+(
+    quit;
+);

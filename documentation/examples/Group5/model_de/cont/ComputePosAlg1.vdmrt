@@ -1,0 +1,56 @@
+class ComputePosAlg1
+
+	instance variables
+		private x   : real := 0;  -- x position of the robot
+		private y   : real := 0;  -- y position of the robot
+		private ang : real := 0;  -- rotation angle of the robot
+	    private distTravelled : real := 0;
+		
+		private leftMotorOld  : real := 0;  -- previous position of the left motor sensor in wheel rotations since lifetime
+		private rightMotorOld : real := 0;  -- previous position of the right motor sensor in wheel rotations since lifetime
+		
+		private m : MATH := new MATH();
+			
+	operations
+		public getX : () ==> real
+		getX () == (
+			return x;
+		);
+
+		public getY : () ==> real
+		getY () == (
+			return y;
+		);
+		
+		public getAng : () ==> real
+		getAng () == (
+			return ang;
+		);
+		
+		public getDistance : () ==> real
+		getDistance() == (
+			return distTravelled;
+		);
+	
+		public update : real * real ==> ()
+		update ( leftWheelTick,          -- value of left motor sensor. Eg 0=no movement, 1=one rotation forward, -1 one rotation backwards.
+				 rightWheelTick )        -- value of right motor sensor. Eg 0=no movement, 1=one rotation forward, -1 one rotation backwards.
+		== (
+			dcl angleL     : real := (leftWheelTick-leftMotorOld); 
+			dcl angleR     : real := (rightWheelTick-rightMotorOld); 
+			dcl angle      : real := ((angleL+angleR)*(m.pi))/44; 
+			dcl deltaDist  : real := angle * 0.03325; -- put radius of wheel here
+			
+			distTravelled := distTravelled + deltaDist;
+			
+			--dcl xNew     : real =: x + dist * sin (ang)  
+			--dcl yNew     : real =: y + dist * cos (ang)
+
+			--x:= xNew;
+			--y:= yNew;
+			
+			leftMotorOld  := leftWheelTick;
+			rightMotorOld := rightWheelTick;
+		);
+		
+end ComputePosAlg1

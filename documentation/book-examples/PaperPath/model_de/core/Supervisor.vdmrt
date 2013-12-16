@@ -1,0 +1,273 @@
+\section{The supervisor controller}
+
+The \verb+Supervisor+ class is the top-level tier of the paper path 
+controller. It receives all sensor events and takes appropriate 
+actions accordingly. First we declare several constants.
+
+\begin{vdm_al}
+class Supervisor
+
+values
+  -- the width of an A4 sheet in mm
+  A4PAPER : real = 210;
+  -- the maximum paper speed in mm/sec
+  VP_MAX : real = 2000;
+  -- the maximum paper acceleration in mm/sec^2
+  AP_MAX : real = 20000;
+  -- the maximum motor speed in rev/sec
+  VREV_MAX : real = 47;
+  -- the maximum motor acceleration in rev/sec^2
+  AREV_MAX : real = 470;
+  -- the pinch radius in mm
+  PINCH_RADIUS : real = 13.9;
+  -- the number of cogs on the motor
+  MOTOR_WHEEL_COGS : nat = 18;
+  -- the number of cogs on the pinch
+  PINCH_WHEEL_COGS : nat = 37;
+  -- the position of the pinches on the path
+  pinches : seq of real = [0, 175, 350, 525];
+  -- the position of the sensors on the path
+  sensors : seq of real = [12, 186, 361, 537];
+  -- distance sheet leading edge in pim to pinch 2
+  offset : real = 86
+\end{vdm_al}
+
+A \verb+SequenceController+ is created for each motor. Instance 
+variables are declared to keep track of them.
+
+\begin{vdm_al}
+instance variables
+  public ejectSeqCtrl : [SequenceController] := nil;
+  public pimSeqCtrl   : [SequenceController] := nil;
+  public alignSeqCtrl : [SequenceController] := nil;
+  public corrSeqCtrl  : [SequenceController] := nil;
+  public fuseSeqCtrl  : [SequenceController] := nil
+
+operations
+  public setEjectSeqCtrl: SequenceController ==> ()
+  setEjectSeqCtrl (psc) == ejectSeqCtrl := psc;
+  
+  public setPimSeqCtrl: SequenceController ==> ()
+  setPimSeqCtrl (psc) == pimSeqCtrl := psc;
+  
+  public setAlignSeqCtrl: SequenceController ==> ()
+  setAlignSeqCtrl (psc) == alignSeqCtrl := psc;
+  
+  public setCorrSeqCtrl: SequenceController ==> ()
+  setCorrSeqCtrl (psc) == corrSeqCtrl := psc;
+  
+  public setFuseSeqCtrl: SequenceController ==> ()
+  setFuseSeqCtrl (psc) == fuseSeqCtrl := psc
+\end{vdm_al}
+
+The \verb+init+ operation is used to bring the model in the required 
+default state. The motor of the paper input module is programmed to 
+release ten sheets intermittently, one every $1.5$ seconds, starting 
+after $3.5$ seconds. All the other motors are told to ramp up to the 
+nominal paper path speed.
+
+\begin{vdm_al}  
+operations
+  public init: () ==> ()
+  init () ==
+    -- convert the paper speed to motor revolutions
+    def vpinch = v_nom_pinch;
+        -- use a moderate ramp-up rate
+        apinch = v_nom_pinch * 25;
+        -- calculate the alignment time
+        talign = 2 * vpinch / apinch + alignment_time;
+        -- calculate the time offset between two sheets
+        tsheet = (inter_sheet_distance + A4PAPER) / v_nom_paper in
+    if talign >= tsheet
+    then skip
+    else ( -- initialize the paper input module
+           ejectSeqCtrl.initPeak(tsheet);
+           -- initialize the other motors
+           pimSeqCtrl.initNominal(vpinch, apinch);
+           alignSeqCtrl.initNominal(vpinch, apinch);
+           corrSeqCtrl.initNominal(vpinch, apinch);
+           fuseSeqCtrl.initNominal(vpinch, apinch) )
+\end{vdm_al}
+
+The constructor of the \verb+Supervisor+ class takes three 
+parameters: the number of pages per minute, the inter sheet distance 
+and the alignment time.
+
+\begin{vdm_al}
+instance variables
+  -- the number of pages per minute
+  public pages_per_minute : nat;
+  -- the inter sheet distance in mm
+  public inter_sheet_distance : real;
+  -- the alignment time in msec
+  public alignment_time : real;
+  -- the nominal paper speed in mm/sec
+  public v_nom_paper : real;
+  -- the nominal speed of the pinch in revs/sec
+  public v_nom_pinch : real;
+  -- the maximal speed of a pinch in mm/sec
+  public v_max_pinch : real;
+  -- the maximal acceleration of a pinch in mm/sec
+  public a_max_pinch : real;
+  -- the maximum speed and acceleration on the paper path
+  public v_max_path : real;
+  public a_max_path : real;
+  -- conversion between paper speed and motor revs
+  public trans2rot : real;
+  -- the time to travel from the PIM sensor to the fuse sensor
+  public t_pim_fuse_sensor : real;
+  -- the time to travel from the PIM sensor to 10 mm before the fuse pinch
+  public t_pim_fuse_pinch : real
+  
+operations
+  public Supervisor: nat * real * real ==> Supervisor
+  Supervisor (pppm, pisd, palignt) ==
+    ( -- initialize the instance variables
+      pages_per_minute := pppm;
+      inter_sheet_distance := pisd;
+      alignment_time := palignt;
+      -- pre-compute some common values, first the nominal sheet speed
+      v_nom_paper :=  (A4PAPER + inter_sheet_distance) * pages_per_minute / 60;
+      def circumference = 2 * MATH`pi * PINCH_RADIUS;
+          gear_ratio = MOTOR_WHEEL_COGS / PINCH_WHEEL_COGS in
+        -- calculate the maximum speed and acceleration at the pinch
+        ( v_max_pinch := VREV_MAX * gear_ratio * circumference;
+          a_max_pinch := AREV_MAX * gear_ratio * circumference;
+          -- truncate the calculated values (for safety)
+          v_max_pinch := floor v_max_pinch;
+          a_max_pinch := floor a_max_pinch;
+          -- calculate the conversion factor
+          trans2rot := 1 / gear_ratio / circumference;
+          -- calculate the nominal pinch speed
+          v_nom_pinch := v_nom_paper * trans2rot );
+      -- calculate the valid maxima for speed and acceleration aka
+      -- the pinch maxima truncated by the allowed sheet maxima
+      if v_max_pinch > VP_MAX
+      then v_max_path := VP_MAX
+      else v_max_path := v_max_pinch;
+      if a_max_pinch > AP_MAX
+      then a_max_path := AP_MAX
+      else a_max_path := a_max_pinch;
+      -- calculate the travel time from PIM sensor to fuse sensor
+      t_pim_fuse_sensor := (sensors(4) - sensors(1)) / v_nom_paper;
+      t_pim_fuse_pinch := (pinches(4) - sensors(1) - 10) / v_nom_paper )
+\end{vdm_al}
+
+The asynchronous operation \verb+pimUpEvent+ occurs when the leading 
+edge of a sheet is in the first (paper input module) pinch. This 
+event may arrive with a certain amount of jitter because of the 
+mechanical tolerances in the paper separation mechanism. We predict 
+the due time of all sheets based on the arrival time of the first 
+sheet. The goal is to deliver all sheets with the right speed and 
+inter sheet distance at the fuse pinch, counting from this event.
+
+\begin{vdm_al}
+instance variables
+  first_sheet : [real] := nil
+  
+operations
+  async public pimUpEvent: nat * real ==> ()
+  pimUpEvent (ppue, pwhen) == if ppue = 1 then first_sheet := pwhen
+\end{vdm_al}
+
+The asynchronous operation \verb+pimDownEvent+ occurs when the 
+trailing edge of the sheet is detected. The sheet has left the first 
+(paper input module) pinch and is now under full control of the 
+second (alignment) pinch. The time between the \verb+pimUpEvent+ and 
+\verb+pimDownEvent+, in relation to the current speed profile and 
+the paper size, can be used to check whether or not a single sheet 
+was separated (not considered here). 
+
+\begin{vdm_al}
+operations
+  async public pimDownEvent: nat * real ==> ()
+  pimDownEvent (-, -) ==
+    -- start decelerating over 10 msec
+    def dectime = Time`getTime() + 0.01 in
+    -- calculate the pinch acceleration to use
+    def acc = v_nom_pinch * 10 in
+      -- generate the required speed profile
+      alignSeqCtrl.setStopProfile(dectime, v_nom_pinch, acc, alignment_time);
+\end{vdm_al}
+
+The asynchronous operation \verb+alignDownEvent+ occurs when the 
+trailing edge of the sheet has left the alignment pinch. The sheet 
+is now under full control of the correction pinch. The speed of the 
+correction pinch is changed such that the leading edge of the sheet 
+arrives at the right time (determined by the required inter sheet 
+distance) and with the right speed at the fuse pinch.
+  
+\begin{vdm_al}
+operations    
+  async public alignDownEvent: nat * real ==> ()
+  alignDownEvent (pade, pwhen) ==
+    ( dcl reached : real;
+      if first_sheet = nil
+      then reached := 0
+      else -- calculate the time between two sheet leading edges
+           def tsheet = (A4PAPER + inter_sheet_distance) / v_nom_paper in
+           -- calculate the due time of the leading edge of this sheet
+           def tdue = first_sheet + t_pim_fuse_pinch + (pade-1) * tsheet in
+           -- calculate the start time of the correction profile
+           def tstart = Time`getTime() + 0.01 in
+             if tstart > tdue
+             then reached := 0
+             else -- how much did the paper move at tstart
+                  def xmoved = (tstart - pwhen) * v_nom_paper in
+                  -- where is the leading edge of the sheet at tstart
+                  def xlead = sensors(2) + A4PAPER + xmoved in
+                  -- calculate the distance to cover
+                  def dist = (pinches(4) - 10 - xlead) * trans2rot in
+                    if dist < 0
+                    then reached := 0
+                    else reached := corrSeqCtrl.makeDistanceProfile (tstart,
+                      tdue, v_nom_pinch, VREV_MAX, AREV_MAX, dist) )
+\end{vdm_al}
+
+The operation \verb+corrDownEvent+ occurs when the trailing edge of 
+the sheet has left the correction pinch. The sheet is under full 
+control of the fuse pinch. The fuse pinch is temporarily accelerated  
+to deliver the sheet to the output tray.
+
+\begin{vdm_al}
+operations 
+  async public corrDownEvent: nat * real ==> ()
+  corrDownEvent (-, ptime) ==
+    def dist = pinches(4) - sensors(3) in
+    def tstart = Time`getTime() + 0.1 in
+    def dx = (tstart - ptime) * v_nom_paper in
+    def drest = dist - dx + inter_sheet_distance in
+    def vpnom = v_nom_paper * trans2rot in
+    def vpmax = v_max_path * trans2rot in
+    def apmax = a_max_path * trans2rot in
+    def revs = drest * trans2rot in
+      fuseSeqCtrl.setBeginAtProfile(tstart, vpnom, vpmax, apmax, revs)
+\end{vdm_al}
+
+The operation \verb+fuseUpEvent+ occurs when the leading edge of a 
+sheet has just passed the fuse pinch. The time between this event 
+and the previous event should correspond exactly to the inter sheet 
+distance of $50~mm$. The fuse pinch is accelerated to deliver the 
+paper to the output tray.  
+
+\begin{vdm_al}
+instance variables
+  -- register the arrival time of each sheet
+  fuse_error : map nat to real := {|->}
+  
+operations
+  async public fuseUpEvent: nat * real ==> ()
+  fuseUpEvent (pfue, pwhen) ==
+    if first_sheet = nil
+    then skip
+    else -- calculate the time between two sheet leading edges
+         def tsheet = (A4PAPER + inter_sheet_distance) / v_nom_paper in
+         -- calculate the due time of the leading edge of this sheet
+         def tdue = first_sheet + t_pim_fuse_sensor + (pfue-1) * tsheet in
+           fuse_error := fuse_error ++ {pfue |-> pwhen - tdue}     
+--    post forall sheet in set dom fuse_error &           
+--           abs(fuse_error(sheet)) <= 1 / v_nom_paper
+
+end Supervisor
+\end{vdm_al}
+

@@ -34,6 +34,8 @@ import org.overture.ast.lex.LexNameToken;
 import org.overture.ast.typechecker.NameScope;
 import org.overture.ast.types.AClassType;
 import org.overture.interpreter.runtime.ValueException;
+import org.overture.interpreter.runtime.VdmRuntime;
+import org.overture.interpreter.runtime.state.SClassDefinitionRuntime;
 import org.overture.interpreter.util.ClassListInterpreter;
 import org.overture.interpreter.values.BooleanValue;
 import org.overture.interpreter.values.CPUValue;
@@ -153,35 +155,40 @@ public class VDMClassHelper
 			// https://chessforge.chess-it.com/gf/project/destecs/tracker/?action=TrackerItemEdit&tracker_item_id=54536&start=0
 			try
 			{
-				for (Field fi : objVal.type.getClassdef().getClass().getDeclaredFields())
-				{
-					if (fi.getName().equals("privateStaticValues"))
-					{
-						fi.setAccessible(true);
-						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.getClassdef());
+				
+				SClassDefinitionRuntime runtimeState = VdmRuntime.getNodeState(objVal.type.getClassdef());
+				
+				
+				
+//				for (Field fi : objVal.type.getClassdef().getClass().getDeclaredFields())
+//				{
+//					if (fi.getName().equals("privateStaticValues"))
+//					{
+//						fi.setAccessible(true);
+//						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.getClassdef());
 
-						for (NameValuePair child : privateStaticValues.asList())
+						for (NameValuePair child : runtimeState.privateStaticValues.asList())
 						{
 							if (!existingFields.contains(child.name.getName()))
 							{
 								values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 							}
 						}
-					}
-					if (fi.getName().equals("publicStaticValues"))
-					{
-						fi.setAccessible(true);
-						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.getClassdef());
+//					}
+//					if (fi.getName().equals("publicStaticValues"))
+//					{
+//						fi.setAccessible(true);
+//						NameValuePairMap privateStaticValues = (NameValuePairMap) fi.get(objVal.type.getClassdef());
 
-						for (NameValuePair child : privateStaticValues.asList())
+						for (NameValuePair child : runtimeState.publicStaticValues.asList())
 						{
 							if (!existingFields.contains(child.name.getName()))
 							{
 								values.add(createValue(child.name, objVal.type.getClassdef(), child.value, objVal.getCPU()));
 							}
 						}
-					}
-				}
+//					}
+//				}
 
 			} catch (Exception e)
 			{

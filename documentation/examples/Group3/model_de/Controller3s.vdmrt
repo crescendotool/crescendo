@@ -1,0 +1,196 @@
+-- Controller for a robot with 3 sensors, two in front, one in the middle
+class Controller3s
+
+	thread periodic(40E6, 0 ,0, 0)(Step);
+
+	types
+		public State = <CALIBRATING> | <SEARCHING> | <POSITIONING_ON_LINE> | <FOLLOWING> | <TURNING_TO_LINE> | <DONE> | <SECURE> | <SECURELEFT> | <SECURERIGHT>;
+	
+	instance variables
+		protected state : State;
+
+		protected sensorLeft : Sensor;
+		protected sensorRight: Sensor;
+		protected sensorMiddle: Sensor;
+		
+		protected wheelLeft : Wheel;
+		protected wheelRight: Wheel;
+		
+		protected motorVoltages : seq of real;
+		
+		protected lineDetectionTime : [real] := nil;
+		protected lineDetectionMotors : [real] := nil;
+		protected steps : real := 0;
+		
+		protected recognitionValue : real := 0.3;
+		protected recognitionValueStart : real := 0.6;
+		
+		protected turnCounter : real := 0;
+		protected secureTurnStart : real := 0;
+		
+	operations
+		public Controller3s: Sensor * Sensor * Sensor * Wheel * Wheel * seq of real ==> Controller3s
+		Controller3s(sL, sR, sM, wL, wR, mVs) == (
+			sensorLeft  := sL;
+			sensorRight := sR;
+			sensorMiddle := sM;
+			wheelLeft  := wL;
+			wheelRight := wR;
+			motorVoltages  := mVs;
+	
+			state := <CALIBRATING>;
+		);
+		
+		public Step : () ==> ()
+		Step () == (
+			if state = <CALIBRATING> then
+				Calibrate()
+			else if state = <SEARCHING> then
+				Search()
+			else if state = <POSITIONING_ON_LINE> then
+				PositionOnLine()
+			else if state = <FOLLOWING> then
+				Follow()
+			else if state = <TURNING_TO_LINE> then
+				TurnToLine()
+			else if state = <DONE> then
+				Done()
+			else if state = <SECURE> then
+				SecureStep()
+			else if state = <SECURELEFT> then
+				SecureLeft()
+			else
+				SecureRight();
+			
+			steps := steps + 1;
+		);
+		
+		Calibrate : () ==> ()
+		Calibrate () == (
+			SetSpeed(1, 1);
+			if sensorLeft.Read() < recognitionValue and sensorRight.Read() < recognitionValue then (
+				state := <SEARCHING>; -- left calibration square
+				IO`println("Leaving calibration square.");
+			);
+		);
+		
+		Search : () ==> ()
+		Search () == (
+			SetSpeed(1, 1);
+			if sensorLeft.Read() > recognitionValue or sensorRight.Read() > recognitionValue then (
+				state := <POSITIONING_ON_LINE>; -- found line
+				IO`println("Found the line, driving towards it now.");
+			)
+		);
+		
+		PositionOnLine : () ==> ()
+		PositionOnLine () == (
+			SetSpeed(0.5, 0.5);
+			if sensorMiddle.Read() > recognitionValueStart then (
+				state := <TURNING_TO_LINE>; -- found line
+				lineDetectionTime := time;
+				lineDetectionMotors := wheelLeft.Read() + wheelRight.Read();
+				steps := 0;
+				IO`printf("Found the line (left wheel at %s and right wheel at %s).\n", [wheelLeft.Read(), wheelRight.Read()]);
+			)
+		);
+		
+		Follow : () ==> ()
+		Follow () == (
+			SetSpeed(1.0, 1.0);
+			if sensorMiddle.Read() < recognitionValue then (
+				state := <DONE>; -- at then end of the line
+				IO`printf("Done (left wheel at %s and right wheel at %s).\n", [wheelLeft.Read(), wheelRight.Read()]);
+				PrintLineLength();
+			) else if sensorLeft.Read() > recognitionValue or sensorRight.Read() > recognitionValue then (
+				state := <TURNING_TO_LINE>; -- found line
+				IO`println("At the edge of the line.");
+			)
+		);
+		
+		TurnToLine : () ==> ()
+		TurnToLine () == (
+--			if turnCounter > 4 then (
+--				turnCounter := 0;
+--				SetSpeed(0.3, 0.3);
+--				IO`println("I'm just moving forward.");
+--			) else
+			if sensorLeft.Read() < recognitionValue and sensorRight.Read() < recognitionValue then (
+				state := <FOLLOWING>; -- found line
+				IO`println("On the line.");
+			) else if sensorLeft.Read() > recognitionValue then (
+				SetSpeed(-0.0, 0.2); -- turn left
+			) else if sensorRight.Read() > recognitionValue then (
+				SetSpeed(0.2, -0.0); -- turn right
+			) else if (sensorMiddle.Read() < recognitionValue) then (
+				state := <DONE>;
+				IO`println("Lost the line.");
+				PrintLineLength();
+			) else (
+				IO`println("Don't know what to do, I'm just turning arbitrarily.");
+				turnCounter := turnCounter + 1;
+			);
+		);
+		
+		Done : () ==> ()
+		Done () == (
+			SetSpeed(0, 0);
+			state := <SECURE>;
+		);
+		
+		SecureStep : () ==> ()
+		SecureStep () == (
+			if sensorMiddle.Read() < recognitionValue then (
+				SetSpeed(-0.5, -0.5);
+			) else if sensorMiddle.Read() > recognitionValue then (
+				SetSpeed(0, 0);
+				if sensorLeft.Read() > recognitionValue or sensorRight.Read() > recognitionValue then (
+					state := <TURNING_TO_LINE>; -- found line
+					IO`println("At the edge of the line.");
+				) else (
+					state := <SECURELEFT>;
+					SetSpeed(-0.5,0.5);
+					secureTurnStart := wheelLeft.Read();
+					IO`println("Secure turn left.");
+				)
+			)
+		);
+		
+		SecureLeft : () ==> ()
+		SecureLeft () == (
+			if sensorLeft.Read() > recognitionValue or sensorRight.Read() > recognitionValue then (
+				state := <TURNING_TO_LINE>; -- found line
+				IO`println("At the edge of the line.");
+			) else if (secureTurnStart - wheelLeft.Read()) > (0.084 * MATH`sin(1.5) * 44 / (2 * MATH`pi * World`world.r_wheel)) then (
+				state := <SECURERIGHT>;
+				SetSpeed(0.5,-0.5);
+				secureTurnStart := wheelRight.Read();
+				IO`println("Secure turn right.");
+			);
+		);
+		
+		SecureRight : () ==> ()
+		SecureRight () == (
+			if sensorLeft.Read() > recognitionValue or sensorRight.Read() > recognitionValue then (
+				state := <TURNING_TO_LINE>; -- found line
+				IO`println("At the edge of the line.");
+			) else if (secureTurnStart - wheelRight.Read()) > 2*(0.084 * MATH`sin(1.5) * 44 / (2 * MATH`pi * World`world.r_wheel)) then (
+				SetSpeed(0, 0);
+				IO`println("I am sure now that I am done.");
+				PrintLineLength();
+			);
+		);
+		
+		PrintLineLength: () ==> ()
+		PrintLineLength() == (
+			let lineLengthInTicks = (wheelLeft.Read() + wheelRight.Read() - lineDetectionMotors) / 2 in
+			let lineLength = lineLengthInTicks / World`world.encoder_resolution * 2 * MATH`pi * World`world.r_wheel in
+			IO`printf("Detected %sm of line in %ss (%ss).\n", [lineLength, (time - lineDetectionTime) / 1e9, steps / 25]);
+		);
+		
+		SetSpeed : real * real ==> ()
+		SetSpeed(l, r) == (
+			motorVoltages := [l, r];
+		);
+
+end Controller3s

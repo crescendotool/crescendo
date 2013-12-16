@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.destecs.ide.debug.launchDSEConfigurationType">
+<stringAttribute key="DESTECS_ACA_20SIM_SETTINGS" value=""/>
+<stringAttribute key="destecs_aca_20sim_implementations" value=""/>
+<stringAttribute key="destecs_aca_architectures" value="Two_cpu.arch"/>
+<stringAttribute key="destecs_aca_base_config" value="ChessWay_DESTECS_CoSIM_2D_PIDinCT"/>
+<stringAttribute key="destecs_aca_incremental_sdps" value=""/>
+<stringAttribute key="destecs_aca_scenarios" value="scenario2.script"/>
+<stringAttribute key="destecs_aca_valueset_sdps" value="pidGain|-225;-150;-75"/>
+<stringAttribute key="destecs_launch_config_de_architecture" value="dse"/>
+<booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>
+<booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.destecs.ide.debug.launchGroup"/>
+</listAttribute>
+</launchConfiguration>

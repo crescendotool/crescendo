@@ -1,0 +1,73 @@
+class Ether
+
+types
+
+
+--public Message = real;
+-- desired for the chessway
+public Message = Definitions`Controllers * Definitions`ControlType * real * real;
+
+instance variables
+
+-- listeners and their associated queues
+protected listeners: map IListener to DeltaQueue := {|->};
+
+-- track time steps
+private prev_time: nat := 0;
+private dt: nat := 0;
+
+operations
+
+-- register a listener
+public Register: IListener ==> ()
+Register(l) ==
+(
+	listeners := listeners munion {l |-> new DeltaQueue()};
+);
+
+-- receive a message to broadcast
+public Broadcast: IListener * Message ==> ()
+Broadcast(sender, message) ==
+(
+	-- add message to queues
+	for all l in set dom listeners \ {sender} do 
+		listeners(l).push(DELAY, message)
+);
+
+-- perform an ether step
+private Step: () ==> ()
+Step() ==
+(
+	-- update time
+	let t = time in
+	(
+		dt := t - prev_time; 
+		prev_time := t
+	);
+
+	-- add message to listening queues
+	for all l in set dom listeners do
+	(
+		let msgs = listeners(l).pop(dt) in
+		(
+			if msgs <> [] then
+			( 
+				--IO`println(msgs);
+				l.Receive(msgs)
+			)
+		);
+    );
+
+	--IO`println("Ether`Step")
+)
+
+-- 100Hz
+thread 
+	--periodic(10E6,0,0,0)(Step);
+	periodic(10E6,0,0,0)(Step);
+
+values
+
+protected DELAY: nat1 = 2E6
+
+end Ether

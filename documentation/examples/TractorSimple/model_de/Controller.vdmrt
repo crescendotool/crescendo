@@ -1,0 +1,196 @@
+class Controller
+
+types 
+	private cir_states = <START>|<TURNING>|<DONE>;
+
+values
+
+
+
+
+private static drivePower: real = (20/100); -- power of the drive motor
+private static turnPower: real = (65/100); -- power of the turn motor
+
+private static backWheelRadius: real = 0.0408;
+private static diffGearing: real = (28/20);
+private static DEGREE_RAD : real = (3.14/180);
+private static turn_pos : real = 580;
+
+instance variables
+public drivingControl: real; 
+public steeringControl: real;
+public rotations: real;
+public sterringrotations : real;
+public ImuOrientation: real;
+
+
+private P: real;
+private fullMotorPower: real;
+private rot_temp: real;
+private circle_state: cir_states;
+
+private route : Route;
+private cf : Route`curve_function;
+private route_segment_done : bool;
+
+
+operations
+
+-- constructor for controller
+public Controller:Route*real*real ==> Controller
+Controller(r,P_k,fmp) ==
+(
+  route := r;
+  P := P_k;
+  fullMotorPower := fmp;
+  
+  route_segment_done := true; -- no current route segment
+  
+  drivingControl := 0.0;
+  steeringControl := 0.0;
+  rotations := 0.0;
+  sterringrotations := 0.0;
+  ImuOrientation := 0.0;
+  
+  rot_temp := 0.0;
+  circle_state := <START>; -- starting state for circle turn.
+  
+);
+
+--turn front wheels to turn position using bang-bang control
+private Front_wheels_turn_pos:real ==> bool 
+Front_wheels_turn_pos(angle) ==
+(
+	dcl finished: bool := false;
+	
+	if ((abs sterringrotations) > turn_pos*DEGREE_RAD) then
+	(
+		steeringControl := 0.0;
+		finished := true;
+	);
+	if ((abs sterringrotations) < turn_pos*DEGREE_RAD) then
+	(
+		-- determine if turn should be clock-wise or counter clock-wise
+		if((angle-ImuOrientation) < 0) then 
+		(
+			steeringControl := -fullMotorPower*(turnPower);
+		)else
+		(
+			steeringControl := fullMotorPower*(turnPower);
+		);
+		
+	);
+	return finished;
+);
+
+--turn front wheels to forward position using bang-bang control
+private Front_wheels_forward_pos:() ==> bool 
+Front_wheels_forward_pos() ==
+(
+	dcl finished: bool := false;
+	
+	if ((sterringrotations) > 1*DEGREE_RAD) then
+	(
+  		steeringControl := (-fullMotorPower*(turnPower));
+  	);
+    if ((sterringrotations) < (-1*DEGREE_RAD)) then
+	(
+  		steeringControl := (fullMotorPower*(turnPower));
+  	);
+	if ((abs sterringrotations) < (1*DEGREE_RAD)) then
+	(
+		steeringControl := 0.0;
+		rot_temp := rotations;
+		finished := true;
+	);
+	return finished;
+);
+
+private Turn_drive:real ==> bool
+Turn_drive(angle) ==
+(
+	dcl finished: bool := false;
+	     if ((abs ((abs ImuOrientation)-(abs angle)))>0.5*DEGREE_RAD) then
+		 (
+		 	drivingControl := -fullMotorPower*drivePower;
+		 )else
+		 (
+		 	drivingControl := 0;
+		 	finished := true;
+		 );
+	return finished;		 
+);
+
+
+private Cirle_drive:real ==> bool
+Cirle_drive(angle) ==
+(
+	dcl finished: bool := false;
+	cases circle_state:
+	--turn front wheels into position
+	<START>   -> if(Front_wheels_turn_pos(angle)) then(circle_state:= <TURNING>),
+	
+	-- make turn 
+	<TURNING> -> if(Turn_drive(angle)) then(circle_state:= <DONE>), 
+	
+	--finish turning and reset
+	<DONE>    -> if(Front_wheels_forward_pos()) then(finished := true; circle_state:= <START>),
+	others -> exit
+	end;
+	return finished;
+);
+
+
+private AB_line_drive:real*real ==> bool
+AB_line_drive(distance, angle) ==
+(
+	 dcl finished: bool := false;
+	 drivingControl := (-fullMotorPower*drivePower);
+   
+	 if ((abs (rotations-rot_temp)) > (distance/backWheelRadius)*diffGearing) then 
+	 (
+	 	-- distance measure meter
+	   	drivingControl := 0.0;
+	  	rot_temp := rotations;
+	   	finished := true;
+	 );
+	 
+	 if ((abs (ImuOrientation-angle)) > (0.01)*DEGREE_RAD) then
+	 (
+	 	steeringControl := -fullMotorPower*(turnPower)*P*(ImuOrientation-angle);
+	 );
+	return finished;
+);
+
+	 
+-- do control step
+public ControlStep: () ==> ()
+ControlStep() == 
+duration(0)(
+drivingControl := 0.0;
+steeringControl := 0.0; 
+
+-- check if there is still more of the route to be completed
+if(not route.IsRouteDone() and route_segment_done) then
+(
+	cf := route.NextRouteElement();
+	route_segment_done := false;
+	
+	IO`println(cf);
+);
+-- if we haven't completed, take the next route element and 
+-- proceed
+if(not route.IsRouteDone() or not route_segment_done) then
+(
+	cases cf.type:
+	<LINE> -> route_segment_done := AB_line_drive(cf.distance,cf.orientation*DEGREE_RAD),
+	<CIRCLE> -> route_segment_done := Cirle_drive(cf.orientation*DEGREE_RAD),
+	others -> exit
+	end;
+	);
+	
+);
+
+thread periodic(10E6,0,0,0)(ControlStep);
+		 
+end Controller

@@ -1,0 +1,20 @@
+class AbstractActuatorBool
+
+-- An abstract boolean actuator (switch).
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected open: bool := false
+
+operations
+
+-- write to this actuator
+public Write: bool ==> ()
+Write(value) == is subclass responsibility;
+
+-- read the value written to this actuator
+public Read: () ==> bool
+Read() == is subclass responsibility;
+
+end AbstractActuatorBool

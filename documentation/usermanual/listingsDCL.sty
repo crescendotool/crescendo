@@ -1,0 +1,53 @@
+%\RequirePackage[final]{listings}
+\RequirePackage{listings}
+\RequirePackage{xcolor}
+
+% keywords, strings etc.
+\lstdefinelanguage{DCL}{
+    morekeywords={when, after, revert, ct, de, print, error, quit, include,
+	time, real, bool, do, true, false, for, monitored, controlled, sdp,
+        global, import, export, parameters, externals, model, boolean, code,
+        input, output, once, variables, event, equations, eventup, shared,
+        matrix, array},
+    morecomment=[l]//,
+    morecomment=[s]{/*}{*/},
+	morecomment=[l]--,
+	escapeinside=!!	
+}
+
+% colours
+\definecolor{dclkwc}{RGB}{0,0,139}
+\definecolor{dclsc}{RGB}{47,79,79}
+\definecolor{dclcom}{RGB}{0,128,128}
+
+% typeset inline DCL
+\newcommand{\dclkw}[1]{\textcolor{dclkwc}{\textbf{\texttt{#1}}}}
+\newcommand{\dcls}[1]{\textcolor{dclsc}{\textit{\texttt{#1}}}}
+\newcommand{\dclph}[1]{\textit{\texttt{#1}}}
+
+% style
+\lstdefinestyle{styleDCL}{
+	language=DCL,
+	basicstyle=\ttfamily\footnotesize,
+	aboveskip=5mm,
+	belowskip=5mm,
+	framexleftmargin=0mm,
+	framexrightmargin=0mm,
+	xleftmargin=0.1\textwidth,
+	keywordstyle=\color{dclkwc}\bfseries,
+	stringstyle=\color{dclsc}\itshape,
+	commentstyle=\color{dclcom}\itshape,
+	linewidth=0.85\textwidth,
+	frameround=ffff,
+	framesep=6pt,
+	showstringspaces=false,
+	tabsize=4,
+	frame=single
+}
+
+% an evnrionment
+\lstnewenvironment{dcl}{%
+	\lstset{style=styleDCL}%
+	\lstset{language=DCL}%
+}
+{} 

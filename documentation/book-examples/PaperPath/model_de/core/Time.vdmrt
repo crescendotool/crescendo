@@ -1,0 +1,11 @@
+%
+
+\begin{vdm_al}
+class Time
+
+operations
+  static public getTime: () ==> real
+  getTime () == return time / 1E9;
+    
+end Time
+\end{vdm_al}

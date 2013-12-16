@@ -1,0 +1,28 @@
+class AbstractComputeSpeed
+
+	instance variables
+		private speedLeft: real:= 0;
+		private speedRight: real:= 0;
+
+	operations
+		
+		public calculateSpeed: SensorVision * SensorVision *  SensorRotation * SensorRotation ==> ()
+		calculateSpeed(sviLeft, sviRight, sveLeft, sveRight) == is subclass responsibility;
+		
+		public getSpeedLeft : () ==> real
+		getSpeedLeft () == (
+			return speedLeft;
+		);
+
+		public getSpeedRight : () ==> real
+		getSpeedRight () == (
+			return speedRight;
+		);
+		
+		protected setSpeedRight: real ==> ()
+		setSpeedRight(val) == speedRight := val;
+
+		protected setSpeedLeft: real ==> ()
+		setSpeedLeft(val) == speedLeft := val;
+		
+end AbstractComputeSpeed

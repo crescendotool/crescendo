@@ -1,0 +1,20 @@
+% top-level system definition
+
+\begin{vdm_al}
+system TorsionBar
+
+instance variables
+
+	-- architecture definition
+	cpu : CPU := new CPU(<FP>, 200E6);
+
+	-- deployable objects
+	static public ctrl : TorsionBarController := new TorsionBarController()
+	
+operations
+
+	public TorsionBar : () ==> TorsionBar
+	TorsionBar () == cpu.deploy(ctrl, "TorsionBarController")
+	
+end TorsionBar
+\end{vdm_al}

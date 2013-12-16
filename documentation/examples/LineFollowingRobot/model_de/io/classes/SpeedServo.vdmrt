@@ -1,0 +1,41 @@
+class SpeedServo is subclass of IActuatorRealPercent
+
+-- class representing a speed-controlled servo actuator
+-- this actuator accepts a real number in the range (-1,1)
+-- this class is designed to be connected to a co-simulation
+-- this class can reverse its output
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected val: real := 0;
+
+-- local copy of the shared variable
+protected local_val: real := 0;
+
+-- true if the servo is reversed, false otherwise
+protected reversed: bool;
+
+operations
+
+-- constructor for SpeedServo
+public SpeedServo: bool ==> SpeedServo
+SpeedServo(rev) == reversed := rev;
+
+-- default constructor for SpeedServo
+public SpeedServo: () ==> SpeedServo
+SpeedServo() == reversed := false;
+
+-- write a value to this actuator
+public Write: Percent ==> ()
+Write(v) == local_val := if reversed then -v else v;
+
+-- read the value written to this actuator
+public Read: () ==> Percent
+Read() == return local_val;
+
+-- write local variable to shared variable
+public Sync: () ==> ()
+Sync() == val := local_val; 
+
+end SpeedServo

@@ -1,0 +1,14 @@
+class EncoderSensor is subclass of AbstractSensorReal
+ 	values
+ 		encoderResolution:real=44;	
+	operations
+
+		public read: () ==> real
+		read() == 
+		(
+			dcl angle:real;
+			angle:=2*MATH`pi*value/encoderResolution;
+			return angle;
+		);
+
+end EncoderSensor

@@ -1,0 +1,12 @@
+-- ## Architecture ## --
+instance variables
+cpu : CPU := new CPU(<FP>, 1e6);  
+	
+		
+-- ## Deployment ## --
+cpu.deploy(monitorL,"Monitor L");
+cpu.deploy(rtControlInstanceL,"Chessway controller L");
+cpu.deploy(pidInstanceL,"Chessway pid L");
+cpu.deploy(monitorR,"Monitor R");
+cpu.deploy(rtControlInstanceR,"Chessway controller R");
+cpu.deploy(pidInstanceR,"Chessway pid R");	

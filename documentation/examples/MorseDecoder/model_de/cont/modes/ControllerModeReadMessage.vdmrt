@@ -1,0 +1,94 @@
+class ControllerModeReadMessage is subclass of AbstractControllerMode
+	-- provides functionality needed for "reading a message" mode
+
+	instance variables
+		private signalState : SignalState;
+		private dotDashOrSpace : DotDashOrSpace;
+		private morseLookup : MorseLookup; 
+		
+		morseCharacterSequence : seq of DotDashOrSpace`morseStringCharacter;
+
+	operations
+	
+	public ControllerModeReadMessage: ModalController ==> ControllerModeReadMessage
+		ControllerModeReadMessage (theController) == (
+		
+			let - = AbstractControllerMode(theController) in skip;
+			
+			--mainController := theController;			
+			--mainController.setMotorVoltage(0);
+			
+			signalState := new SignalState();
+			dotDashOrSpace := new DotDashOrSpace(mainController.meanDotLength, mainController.meanDashLength);
+			morseLookup := new MorseLookup();
+			
+			morseCharacterSequence := [];
+			
+		);
+	
+	-- all controllers require a step() operation
+	public step: () ==> ()
+		step () == (
+		
+			-- other classes provide functionality for determining
+			-- whether we see a dot or a dash or a space
+			dcl currentMorseCharacter : DotDashOrSpace`morseStringCharacter;
+			dcl decodedMorseSequence : MorseLookup`morseResponseType;
+			
+			
+			--mainController.setMotorVoltage(0.005);
+			
+			currentMorseCharacter := dotDashOrSpace.updateState(signalState.getState(mainController.getMorseSignalFiltered()));
+			
+			-- cache all characters until we've completed a whole character
+			if currentMorseCharacter = <DOT> or currentMorseCharacter = <DASH> then
+			(
+				morseCharacterSequence := morseCharacterSequence ^ [currentMorseCharacter];
+			);
+			
+			-- when we see a space indicating new character or new word,
+			-- we can take the cached dots and dashes and translate them into
+			-- a single ASCII character
+			if (currentMorseCharacter = <WORD_GAP> or currentMorseCharacter = <CHARACTER_GAP>) or (currentMorseCharacter = <PENDING> and dotDashOrSpace.veryLongSpaceCheck()) then
+				(
+					if len morseCharacterSequence > 0 then
+					(
+					
+						-- functionality for looking up a character
+						-- is provided elsewhere
+						decodedMorseSequence := morseLookup.getChar(morseCharacterSequence); 
+						
+						-- if we see the standard "end of work" sequence
+						-- we can change to idle mode
+						if decodedMorseSequence = <END_OF_WORK> then 
+						(
+							mainController.controllerModeFinished();
+						)
+						else if decodedMorseSequence = <UNRECOGNISED_SEQUENCE> then
+						(
+							IO`print('*');
+						)
+						else
+						(	
+							IO`print(decodedMorseSequence);
+						);
+						
+						morseCharacterSequence := [];
+					);
+					if currentMorseCharacter = <WORD_GAP> or currentMorseCharacter = <PENDING> then 
+					(
+						IO`print(" ");
+					);
+				); 
+			
+			
+			
+			
+			
+			
+			
+		);
+		
+		
+
+end ControllerModeReadMessage

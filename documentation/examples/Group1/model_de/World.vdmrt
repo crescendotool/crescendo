@@ -1,0 +1,35 @@
+class World
+
+
+values
+-- Shared Design Parameters
+-- The constants are required for the contract, but not for the DE model
+-- The System class only permits class instantiations
+
+encoder_resolution : real=0;
+linefollow_lateral_offset : real = 0;
+linefollow_longitudinal_offset : real = 0;
+initial_Position : seq of real = [];
+initial_Angle : real = 0;
+
+operations
+
+-- run a simulation
+-- At first, a System class is instantiated (automatically)
+-- Then the thread in the System class is started
+
+public run: () ==> ()
+run() ==
+(
+	IO`print("t /s \t State \n");
+	start(System`controller);
+	block();
+);
+
+-- wait for simulation to finish
+-- Block basically never runs
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+end World

@@ -1,0 +1,50 @@
+% top-level application
+
+\begin{vdm_al}
+class TorsionBarController
+
+values
+	-- the names of the actuator and sensors
+	public ACTUATOR_PWM	= "PWM";
+	public SENSOR_ENCM	= "EncMotor";
+	public SENSOR_ENCL	= "EncLoad"
+	
+types
+	-- controller strategies
+	public TorsionBarStrategy = <ABSTRACT> | <SIMPLE> | <ADVANCED>
+
+instance variables
+	-- PWM controlled shared variable declaration
+	public PWM : ActuatorReal := Environment`createActuatorReal(ACTUATOR_PWM);
+	
+	-- motor encoder monitored shared variable declaration
+	public EncMotor : SensorReal := Environment`createSensorReal(SENSOR_ENCM);
+	
+	-- load encoder monitored shared variable declaration
+	public EncLoad : SensorReal := Environment`createSensorReal(SENSOR_ENCL);
+	
+	-- link to the controller strategy
+	private strategy : [ControlStrategy] := nil;
+	
+	public mode : real := 0;
+operations
+	public startUp: TorsionBarStrategy ==> ()
+	startUp (ptbs) == (
+		-- instantiate the control stategy
+		cases (ptbs) :
+			<ABSTRACT>	-> strategy := new AbstractControl(),
+			<SIMPLE>	-> strategy := new SimpleControl(),
+			<ADVANCED>	-> strategy := new AdvancedControl()
+		end;
+		-- add the sensor to the strategy
+		strategy.addSensor(EncMotor);
+		strategy.addSensor(EncLoad);
+		-- add the actuator to the strategy
+		strategy.addActuator(PWM);
+		-- initialize and start the control strategy
+		strategy.init();
+	)
+	pre strategy = nil
+
+end TorsionBarController
+\end{vdm_al}

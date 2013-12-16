@@ -1,0 +1,83 @@
+%
+
+\begin{vdm_al}
+class World
+
+instance variables
+	-- keep track of the simulation environment
+	private env : [Environment] := nil;
+	
+	-- variable used to block the high-prio simulation user thread 
+	static public done : bool := false;
+	
+operations
+	-- entry point for VDM_RT simulation
+	public run_de: () ==> ()
+	run_de() == (
+		-- create the environment instance
+		env := new AbstractDeEnvironment();
+		
+		-- call the generic simulation entry point
+		run_exec()
+	);
+	
+	-- entry point for DESTECS co-simulation
+	public run: () ==> ()
+	run () == (
+		-- create the environment instance
+		env := new Environment();
+		
+		-- call the generic simulation entry point
+		run_exec()
+	);
+	
+	public run_exec: () ==> ()
+	run_exec () == (
+		-- hook up the detector to the supervisor
+		PaperPath`detector.setSupervisor(PaperPath`supervisor);
+		
+		-- link the three tiers
+		PaperPath`supervisor.setEjectSeqCtrl(PaperPath`sctrl1);
+		PaperPath`supervisor.setPimSeqCtrl(PaperPath`sctrl2);
+		PaperPath`supervisor.setAlignSeqCtrl(PaperPath`sctrl3);
+		PaperPath`supervisor.setCorrSeqCtrl(PaperPath`sctrl4);
+		PaperPath`supervisor.setFuseSeqCtrl(PaperPath`sctrl5);
+		
+		-- initialize the supervisor
+		PaperPath`supervisor.init();
+		
+		-- diagnostics
+		IO`println("Paper path structure initialized");
+		
+		-- diagnostics
+		IO`println("Simulation started");
+		
+		-- initialize the environment
+		env.init();
+
+		-- start the loop controller threads
+		PaperPath`lctrl1.init();
+		PaperPath`lctrl2.init();
+		PaperPath`lctrl3.init();
+		PaperPath`lctrl4.init();
+		PaperPath`lctrl5.init();
+				
+		-- wait for the simulation to terminate
+		block();
+		
+		-- diagnostics
+		IO`print("Simulation stopped at ");
+		IO`print(time / 1E9);
+		IO`println(" seconds");
+	);
+
+	-- auxiliary operation used to 
+	public block: () ==> ()
+	block () == skip
+	
+sync
+	-- the operation block is yielded until done is set to true
+	per block => done
+
+end World
+\end{vdm_al}

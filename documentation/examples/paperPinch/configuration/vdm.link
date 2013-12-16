@@ -1,0 +1,7 @@
+-- three encoders
+input enc1 = System.enc1.value;
+input enc2 = System.enc2.value;
+input enc3 = System.enc3.value;
+
+-- outputs
+output pwm = System.pwm.value;   

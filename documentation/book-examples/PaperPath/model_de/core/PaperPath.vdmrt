@@ -1,0 +1,64 @@
+% top-level specification
+
+\begin{vdm_al}
+system PaperPath
+
+instance variables
+	-- all monitored variables
+	static public enc1 : SensorReal := Environment`createSensorReal("enc1");
+	static public enc2 : SensorReal := Environment`createSensorReal("enc2");
+	static public enc3 : SensorReal := Environment`createSensorReal("enc3");
+	static public enc4 : SensorReal := Environment`createSensorReal("enc4");
+	static public enc5 : SensorReal := Environment`createSensorReal("enc5");
+	
+	-- all controlled variables
+	static public pwm1 : ActuatorReal := Environment`createActuatorReal("pwm1");
+	static public pwm2 : ActuatorReal := Environment`createActuatorReal("pwm2");
+	static public pwm3 : ActuatorReal := Environment`createActuatorReal("pwm3");
+	static public pwm4 : ActuatorReal := Environment`createActuatorReal("pwm4");
+	static public pwm5 : ActuatorReal := Environment`createActuatorReal("pwm5");
+
+	-- third tier loop controllers
+	static public lctrl1 : LoopController := new LoopController(enc1, pwm1, false, true);
+	static public lctrl2 : LoopController := new LoopController(enc2, pwm2, false, false);
+	static public lctrl3 : LoopController := new LoopController(enc3, pwm3, false, false);
+	static public lctrl4 : LoopController := new LoopController(enc4, pwm4, false, false);
+	static public lctrl5 : LoopController := new LoopController(enc5, pwm5, false, false);
+	
+	-- the second tier sequence controllers for all motors
+	static public sctrl1 : SequenceController := new SequenceController(lctrl1);
+	static public sctrl2 : SequenceController := new SequenceController(lctrl2);
+	static public sctrl3 : SequenceController := new SequenceController(lctrl3);
+	static public sctrl4 : SequenceController := new SequenceController(lctrl4);
+	static public sctrl5 : SequenceController := new SequenceController(lctrl5);
+  
+	-- the first tier supervisory controller
+	static public supervisor : Supervisor := new Supervisor(50, 100, 0.1);
+  
+	-- the event detector
+	static public detector : EventDetector := new EventDetector();
+
+	-- use a single CPU at 10 Mhz
+	cpu : CPU := new CPU(<FCFS>, 1E7);
+
+operations
+	public PaperPath: () ==> PaperPath
+	PaperPath () ==  (
+		-- deploy the loop controllers
+		cpu.deploy(lctrl1);
+		cpu.deploy(lctrl2);
+		cpu.deploy(lctrl3);
+		cpu.deploy(lctrl4);
+		cpu.deploy(lctrl5);
+		-- deploy the sequence controllers
+		cpu.deploy(sctrl1);
+		cpu.deploy(sctrl2);
+		cpu.deploy(sctrl3);
+		cpu.deploy(sctrl4);
+		cpu.deploy(sctrl5);
+		-- deploy the supervisor
+		cpu.deploy(supervisor);
+	);
+			
+end PaperPath
+\end{vdm_al}

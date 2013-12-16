@@ -1,0 +1,30 @@
+system System
+
+
+
+instance variables
+
+public static controller: [Controller] := nil;
+public static FileR : [FileReader] := nil;
+public static route : [Route] := nil;
+
+
+
+
+
+-- architecture
+cpu1: CPU := new CPU(<FP>, 1000);
+
+operations
+
+public System: () ==> System
+System () == 
+(
+
+	-- instantiate instance variables
+	World`setup();
+
+	cpu1.deploy(controller, "Controller")
+);
+
+end System

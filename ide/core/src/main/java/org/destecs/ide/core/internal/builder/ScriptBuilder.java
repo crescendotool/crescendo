@@ -43,13 +43,13 @@ public class ScriptBuilder
 				{
 					if (iFile.getName().endsWith(".script"))
 					{
-						FileUtility.deleteMarker(iFile, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
-						if(ParserUtil.getScenario(project, iFile, errorHandler)==null)
-						{
-							model.setScriptOk(false);
-						}
-					} else if (iFile.getName().endsWith(".script2"))
-					{
+//						FileUtility.deleteMarker(iFile, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
+//						if(ParserUtil.getScenario(project, iFile, errorHandler)==null)
+//						{
+//							model.setScriptOk(false);
+//						}
+//					} else if (iFile.getName().endsWith(".script2"))
+//					{
 						FileUtility.deleteMarker(iFile, IMarker.PROBLEM, IDestecsCoreConstants.PLUGIN_ID);
 						if(ParserUtil.getScript(project, iFile, errorHandler)==null)
 						{

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.overture.ide.vdmrt.debug.launchConfigurationType">
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+</listAttribute>
+<intAttribute key="vdm_debug_session_id" value="0"/>
+<booleanAttribute key="vdm_launch_config_console_entry" value="false"/>
+<booleanAttribute key="vdm_launch_config_create_coverage" value="false"/>
+<stringAttribute key="vdm_launch_config_default" value="World"/>
+<booleanAttribute key="vdm_launch_config_dtc_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_enable_logging" value="false"/>
+<booleanAttribute key="vdm_launch_config_enable_realtime_logging" value="true"/>
+<stringAttribute key="vdm_launch_config_expression" value="new World().run()"/>
+<booleanAttribute key="vdm_launch_config_inv_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_measure_checks" value="true"/>
+<stringAttribute key="vdm_launch_config_memory_option" value=""/>
+<stringAttribute key="vdm_launch_config_method" value="run()"/>
+<stringAttribute key="vdm_launch_config_module" value="World()"/>
+<booleanAttribute key="vdm_launch_config_post_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_pre_checks" value="true"/>
+<stringAttribute key="vdm_launch_config_project" value="ControllerPattern"/>
+<stringAttribute key="vdm_launch_config_remote_control_class" value=""/>
+<booleanAttribute key="vdm_launch_config_remote_debug" value="false"/>
+<booleanAttribute key="vdm_launch_config_static_method" value="false"/>
+</launchConfiguration>

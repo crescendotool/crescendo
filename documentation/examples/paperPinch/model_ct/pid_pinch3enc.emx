@@ -1,0 +1,2778 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+ <Model version="4.2" build="4.1.2.3">
+  <Sidops><![CDATA[model 0 0
+ description '<Information>
+ <Description>
+    <LibraryPath>E:\PhD\DESTECS\TortoiseSVN\trunk\WP3\Deliverable_3.4\D3.4aExamplesCompendium\exampleModels\paperPinch\model_ct\pid_pinch3enc.emx</LibraryPath>
+  <TimeStamp>2012-11-15 12:53:35</TimeStamp>
+  <Version>4.2</Version>
+</Description>
+</Information>';
+ type 'Mainmodel-21'
+ end;
+ implementation bg
+  submodels
+   Control 80 88
+			specifications active 'cosim3enc'
+				specification 'cosim3enc'
+ description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in encIn1;
+   signal out pwmOut;
+   signal in encIn2;
+   signal in encIn3;
+ end;
+ icon bg
+  figures
+   rectangle 48 64 112 112 fill 13688896;
+   text 'Cosim' 80 88;
+  terminals
+   encIn1 112 88 fixed;
+   pwmOut 112 80 fixed;
+   encIn2 112 96 fixed;
+   encIn3 112 104 fixed;
+ end;
+ implementation eq
+//There are no shared parameters
+
+externals
+	real global import pwm;
+	real global export enc1;
+	real global export enc2;
+	real global export enc3;
+
+code
+	// the export for this model
+	enc1 = encIn1;
+	enc2 = encIn2;
+	enc3 = encIn3;
+
+	// IN BETWEEN HERE THE VDM/DESTECS WILL CALCULATE THE NEW VALVE CONTROL VALUE
+
+	// and import the pwm
+	pwmOut = pwm + (0 * enc1 * enc2 * enc3);
+implementation_end;
+specification_end;
+				specification 'cosim1enc'
+description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in encIn;
+   signal out pwmOut;
+ end;
+ icon bg
+  figures
+   rectangle 48 64 112 112 fill 13959039;
+   text 'Cosim' 80 88;
+  terminals
+   encIn 112 96 fixed;
+   pwmOut 112 80 fixed;
+ end;
+ implementation eq
+//There are no shared parameters
+
+externals
+	real global import pwm;
+	real global export enc1;
+	real global export enc2;
+	real global export enc3;
+
+code
+	// the export for this model
+	enc = encIn;
+
+	// IN BETWEEN HERE THE VDM/DESTECS WILL CALCULATE THE NEW VALVE CONTROL VALUE
+
+	// and import the pwm
+	pwmOut = pwm + (0 * enc);
+implementation_end;
+specification_end;
+			end;
+   Encoder1 224 128.5
+    description '<Description>
+   <Version>4.1</Version>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <LibraryPath>D:\Documents\Dropbox\Projects\destecs_workspace\pid_pinch_FT\model_ct\rotary_encoder.emx</LibraryPath>
+  <TimeStamp>2011-10-12 17:26:22</TimeStamp>
+</Description>';
+    type Submodel
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 216 113 240 144 fill 12623485;
+      rectangle 208 120 216 136 fill 12623485;
+     terminals
+      input 240 128 fixed;
+      output 208 128 fixed;
+    end;
+    implementation bg
+     submodels
+      Gain 256 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Gain
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 2000.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 240.1 48 271.9 80 fill 15132390;
+         text 'K' 256 64 color 16711680 16 bold;
+       end;
+       implementation eq
+equations
+	output = K * input;
+    implementation_end;
+      Integrate 320 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Integrate
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real initial = 0.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 304 48 336 80 fill 15132390;
+         text 'ò' 320 61.3 color 16711680 'SymbolProp BT' 21 symbol;
+       end;
+       implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+      LatentFault 320 103.5
+						specifications active 'bitflip'
+							specification 'nofault'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64;
+   rectangle 272 113 368 143 fill 14013909;
+   line 360 64 344 64;
+   text 'NO FAULT' 320 128 color 16711680 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 9143144;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+equations
+  input_out = input_in;
+  int_out = int_in;
+ implementation_end;
+specification_end;
+							specification 'drift'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+  parameters
+   real drift_ratio = 0.95;
+   real fault_time = 0.5 {s};
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64 color 12632256;
+   rectangle 272 113 368 143 color 255 fill 65535;
+   line 360 64 344 64 color 255;
+   text 'DRIFT' 320 128 color 255 15 bold italic;
+   line 352 112 352 64 352 64 color 255;
+   line 288 112 288 64 288 64 color 12632256;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+variables
+  boolean fault;
+initialequations
+  fault = false;
+equations
+  // activate fault
+  if timeevent(fault_time) then
+    fault = true;
+  end;
+
+  // input is modified by drift
+  if(fault) then
+    input_out = input_in * drift_ratio;
+  else
+    input_out = input_in;
+  end;
+
+  // integration unaffected
+  int_out = int_in;implementation_end;
+specification_end;
+							specification 'bitflip'
+ description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+  parameters
+   real fault_time = 0.5 {s};
+   real err_mag = 0.5;
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64 color 255;
+   rectangle 272 113 368 143 color 255 fill 14745599;
+   line 360 64 344 64;
+   text 'BIT FLIP' 320 128 color 255 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 255;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+variables 
+  boolean fault;
+  real error;
+initialequations
+  fault = false;
+  error = 0;
+equations
+  // input unaffected
+  input_out = input_in;
+
+  // fault active, set error 
+  if timeevent(fault_time) then
+    fault = true;
+    error = int_in * err_mag;
+  end;
+  // integrate is modified by error
+  int_out = int_in + error;implementation_end;
+specification_end;
+						end;
+      plug input 416 64;
+      plug output 40 64;
+      Quantize 192 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Quantize
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real lsb = 1.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 176 48 208 80 fill 15132390;
+         group
+          line 202.3 54.1 202.3 57.1 color 16711680;
+          line 202.3 57.1 198.8 57.1 color 16711680;
+          line 198.8 57.1 198.8 59.9 color 16711680;
+          line 198.8 59.9 195.3 59.9 color 16711680;
+          line 195.3 59.9 195.3 62.8 color 16711680;
+          line 195.3 62.8 191.7 62.8 color 16711680;
+          line 191.7 62.8 191.7 65.7 color 16711680;
+          line 191.7 65.7 188.2 65.7 color 16711680;
+          line 188.2 65.7 188.2 68.6 color 16711680;
+          line 188.2 68.6 184.6 68.6 color 16711680;
+          line 184.6 68.6 184.6 71.5 color 16711680;
+          line 184.6 71.5 181 71.5 color 16711680;
+          line 181 74.3 181 71.5 color 16711680;
+         end;
+       end;
+       implementation eq
+variables
+	real q, half_lsb;
+equations
+	half_lsb = lsb / 2;
+	q = if input < 0.0 then 
+		input - half_lsb
+	else
+		input + half_lsb
+	end;
+	output = q - (q mod lsb);
+    implementation_end;
+      Sample 128 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Sample
+        ports
+         signal in input;
+         signal out output;
+       end;
+       icon bg bottom
+        figures
+         rectangle 112 48 144 80 fill 15132390;
+         line 114.3 54.8 117.2 54.8 117.2 50.9 121.3 50.9 121.3 54.8 125.2 54.8 125.2 50.9 127.1 50.9 color 16711680 fill 15132390;
+         line 127.5 56.4 129.7 56.4 129.7 62.4 130.6 60.9 fill 15132390;
+         line 129 61.1 129.7 62.4 fill 15132390;
+         line 115.9 67.9 123.9 67.9 136 64 fill 15132390 width 2;
+       end;
+       implementation eq
+equations
+	output = sample (input);
+      implementation_end;
+     end;
+     connections
+      LatentFault\input_out -> Integrate\input;
+      Gain\output -> Quantize\input;
+      Quantize\output -> Sample\input;
+      Integrate\output -> LatentFault\int_in;
+      Sample\output -> output;
+      input -> LatentFault\input_in;
+      LatentFault\int_out -> Gain\input;
+     end;
+     figures
+      rectangle 464 32 800 400 fill 14745599;
+      text 'This is a model of a rotary encoder. The 
+input is the speed of some shaft in 
+revolutions per second and the output is a 
+count indicating the number of rotations 
+(the gain determines the number of counts 
+per revolution). The fault block can modify 
+the value before or after the integration. 
+Three implementations are give:
+  * Bit flip (sudden large jump)
+  * Drift (subtle slow change)
+  * NoFault (does not alter the value)
+Implementations can be selected and faults
+activated from the DESTECS tool. Further 
+implementations can be created as 
+necessary.' 632 216 20;
+    implementation_end;
+   Encoder2 224 192.5
+    description '<Description>
+ <Version>4.1</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+ <LibraryPath>D:\Documents\Dropbox\Projects\destecs_workspace\pid_pinch_FT\model_ct\encoder.emx</LibraryPath>
+ <TimeStamp>2011-6-3 09:36:00</TimeStamp>
+</Description>';
+    type Submodel
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 216 177 240 208 fill 12623485;
+      rectangle 208 184 216 200 fill 12623485;
+     terminals
+      input 240 192 fixed;
+      output 208 192 fixed;
+    end;
+    implementation bg
+     submodels
+      Gain 256 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Gain
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 2000.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 240.1 48 271.9 80 fill 15132390;
+         text 'K' 256 64 color 16711680 16 bold;
+       end;
+       implementation eq
+equations
+	output = K * input;
+    implementation_end;
+      Integrate 320 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Integrate
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real initial = 0.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 304 48 336 80 fill 15132390;
+         text 'ò' 320 61.3 color 16711680 'SymbolProp BT' 21 symbol;
+       end;
+       implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+      LatentFault 320 103.5
+						specifications active 'nofault'
+							specification 'nofault'
+ description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64;
+   rectangle 272 113 368 143 fill 14013909;
+   line 360 64 344 64;
+   text 'NO FAULT' 320 128 color 16711680 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 9143144;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+equations
+  input_out = input_in;
+  int_out = int_in;
+ implementation_end;
+specification_end;
+							specification 'drift'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+  parameters
+   real drift_ratio = 0.95;
+   real fault_time = 0.5 {s};
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64 color 255;
+   rectangle 272 113 368 143 color 255 fill 65535;
+   line 360 64 344 64;
+   text 'DRIFT' 320 128 color 255 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 255;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+variables
+  boolean fault;
+initialequations
+  fault = false;
+equations
+  // activate fault
+  if timeevent(fault_time) then
+    fault = true;
+  end;
+
+  // input is modified by drift
+  if(fault) then
+    input_out = input_in * drift_ratio;
+  else
+    input_out = input_in;
+  end;
+
+  // integration unaffected
+  int_out = int_in;implementation_end;
+specification_end;
+							specification 'bitflip'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+  parameters
+   real fault_time = 0.5 {s};
+   real err_mag = 0.7;
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64 color 255;
+   rectangle 272 113 368 143 color 255 fill 14745599;
+   line 360 64 344 64;
+   text 'BIT FLIP' 320 128 color 255 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 255;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+variables 
+  boolean fault;
+  real error;
+initialequations
+  fault = false;
+  error = 0;
+equations
+  // input unaffected
+  input_out = input_in;
+
+  // fault active, set error 
+  if timeevent(fault_time) then
+    fault = true;
+    error = int_in * err_mag;
+  end;
+  // integrate is modified by error
+  int_out = int_in + error;implementation_end;
+specification_end;
+						end;
+      plug input 416 64;
+      plug output 40 64;
+      Quantize 192 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Quantize
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real lsb = 1.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 176 48 208 80 fill 15132390;
+         group
+          line 202.3 54.1 202.3 57.1 color 16711680;
+          line 202.3 57.1 198.8 57.1 color 16711680;
+          line 198.8 57.1 198.8 59.9 color 16711680;
+          line 198.8 59.9 195.3 59.9 color 16711680;
+          line 195.3 59.9 195.3 62.8 color 16711680;
+          line 195.3 62.8 191.7 62.8 color 16711680;
+          line 191.7 62.8 191.7 65.7 color 16711680;
+          line 191.7 65.7 188.2 65.7 color 16711680;
+          line 188.2 65.7 188.2 68.6 color 16711680;
+          line 188.2 68.6 184.6 68.6 color 16711680;
+          line 184.6 68.6 184.6 71.5 color 16711680;
+          line 184.6 71.5 181 71.5 color 16711680;
+          line 181 74.3 181 71.5 color 16711680;
+         end;
+       end;
+       implementation eq
+variables
+	real q, half_lsb;
+equations
+	half_lsb = lsb / 2;
+	q = if input < 0.0 then 
+		input - half_lsb
+	else
+		input + half_lsb
+	end;
+	output = q - (q mod lsb);
+    implementation_end;
+      Sample 128 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Sample
+        ports
+         signal in input;
+         signal out output;
+       end;
+       icon bg bottom
+        figures
+         rectangle 112 48 144 80 fill 15132390;
+         line 114.3 54.8 117.2 54.8 117.2 50.9 121.3 50.9 121.3 54.8 125.2 54.8 125.2 50.9 127.1 50.9 color 16711680 fill 15132390;
+         line 127.5 56.4 129.7 56.4 129.7 62.4 130.6 60.9 fill 15132390;
+         line 129 61.1 129.7 62.4 fill 15132390;
+         line 115.9 67.9 123.9 67.9 136 64 fill 15132390 width 2;
+       end;
+       implementation eq
+equations
+	output = sample (input);
+      implementation_end;
+     end;
+     connections
+      LatentFault\input_out -> Integrate\input;
+      Gain\output -> Quantize\input;
+      Quantize\output -> Sample\input;
+      Integrate\output -> LatentFault\int_in;
+      Sample\output -> output;
+      input -> LatentFault\input_in;
+      LatentFault\int_out -> Gain\input;
+     end;
+    implementation_end;
+   Encoder3 224 256.5
+    description '<Description>
+ <Version>4.1</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+ <LibraryPath>D:\Documents\Dropbox\Projects\destecs_workspace\pid_pinch_FT\model_ct\encoder.emx</LibraryPath>
+ <TimeStamp>2011-6-3 09:36:00</TimeStamp>
+</Description>';
+    type Submodel
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 216 241 240 272 fill 12623485;
+      rectangle 208 248 216 264 fill 12623485;
+     terminals
+      input 240 256 fixed;
+      output 208 256 fixed;
+    end;
+    implementation bg
+     submodels
+      Gain 256 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Gain
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 2000.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 240.1 48 271.9 80 fill 15132390;
+         text 'K' 256 64 color 16711680 16 bold;
+       end;
+       implementation eq
+equations
+	output = K * input;
+    implementation_end;
+      Integrate 320 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Integrate
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real initial = 0.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 304 48 336 80 fill 15132390;
+         text 'ò' 320 61.3 color 16711680 'SymbolProp BT' 21 symbol;
+       end;
+       implementation eq
+equations
+	output = int (input, initial);
+     implementation_end;
+      LatentFault 320 103.5
+						specifications active 'drift'
+							specification 'nofault'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64;
+   rectangle 272 113 368 143 fill 14013909;
+   line 360 64 344 64;
+   text 'NO FAULT' 320 128 color 16711680 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 9143144;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+equations
+  input_out = input_in;
+  int_out = int_in;
+ implementation_end;
+specification_end;
+							specification 'drift'
+ description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+  parameters
+   real drift_ratio = 0.95;
+   real fault_time = 1.5 {s};
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64 color 255;
+   rectangle 272 113 368 143 color 255 fill 65535;
+   line 360 64 344 64;
+   text 'DRIFT' 320 128 color 255 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 255;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+variables
+  boolean fault;
+initialequations
+  fault = false;
+equations
+  // activate fault
+  if timeevent(fault_time) then
+    fault = true;
+  end;
+
+  // input is modified by drift
+  if(fault) then
+    input_out = input_in * drift_ratio;
+  else
+    input_out = input_in;
+  end;
+
+  // integration unaffected
+  int_out = int_in;implementation_end;
+specification_end;
+							specification 'bitflip'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal in input_in;
+   signal out input_out;
+   signal in int_in;
+   signal out int_out;
+  parameters
+   real fault_time = 0.5 {s};
+   real err_mag = 0.7;
+ end;
+ icon bg bottom
+  figures
+   line 296 64 280 64 color 255;
+   rectangle 272 113 368 143 color 255 fill 14745599;
+   line 360 64 344 64;
+   text 'BIT FLIP' 320 128 color 255 15 bold italic;
+   line 352 112 352 64 352 64 color 9143144;
+   line 288 112 288 64 288 64 color 255;
+  terminals
+   input_in 360 64 fixed;
+   input_out 344 64 fixed;
+   int_in 296 64 fixed;
+   int_out 280 64 fixed;
+ end;
+ implementation eq
+variables 
+  boolean fault;
+  real error;
+initialequations
+  fault = false;
+  error = 0;
+equations
+  // input unaffected
+  input_out = input_in;
+
+  // fault active, set error 
+  if timeevent(fault_time) then
+    fault = true;
+    error = int_in * err_mag;
+  end;
+  // integrate is modified by error
+  int_out = int_in + error;implementation_end;
+specification_end;
+						end;
+      plug input 416 64;
+      plug output 40 64;
+      Quantize 192 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Quantize
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real lsb = 1.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 176 48 208 80 fill 15132390;
+         group
+          line 202.3 54.1 202.3 57.1 color 16711680;
+          line 202.3 57.1 198.8 57.1 color 16711680;
+          line 198.8 57.1 198.8 59.9 color 16711680;
+          line 198.8 59.9 195.3 59.9 color 16711680;
+          line 195.3 59.9 195.3 62.8 color 16711680;
+          line 195.3 62.8 191.7 62.8 color 16711680;
+          line 191.7 62.8 191.7 65.7 color 16711680;
+          line 191.7 65.7 188.2 65.7 color 16711680;
+          line 188.2 65.7 188.2 68.6 color 16711680;
+          line 188.2 68.6 184.6 68.6 color 16711680;
+          line 184.6 68.6 184.6 71.5 color 16711680;
+          line 184.6 71.5 181 71.5 color 16711680;
+          line 181 74.3 181 71.5 color 16711680;
+         end;
+       end;
+       implementation eq
+variables
+	real q, half_lsb;
+equations
+	half_lsb = lsb / 2;
+	q = if input < 0.0 then 
+		input - half_lsb
+	else
+		input + half_lsb
+	end;
+	output = q - (q mod lsb);
+    implementation_end;
+      Sample 128 64
+       description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+       type Sample
+        ports
+         signal in input;
+         signal out output;
+       end;
+       icon bg bottom
+        figures
+         rectangle 112 48 144 80 fill 15132390;
+         line 114.3 54.8 117.2 54.8 117.2 50.9 121.3 50.9 121.3 54.8 125.2 54.8 125.2 50.9 127.1 50.9 color 16711680 fill 15132390;
+         line 127.5 56.4 129.7 56.4 129.7 62.4 130.6 60.9 fill 15132390;
+         line 129 61.1 129.7 62.4 fill 15132390;
+         line 115.9 67.9 123.9 67.9 136 64 fill 15132390 width 2;
+       end;
+       implementation eq
+equations
+	output = sample (input);
+      implementation_end;
+     end;
+     connections
+      LatentFault\input_out -> Integrate\input;
+      Gain\output -> Quantize\input;
+      Quantize\output -> Sample\input;
+      Integrate\output -> LatentFault\int_in;
+      Sample\output -> output;
+      input -> LatentFault\input_in;
+      LatentFault\int_out -> Gain\input;
+     end;
+    implementation_end;
+   Hold 224 48
+    description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Hold
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 208 32 240 64 fill 15132390;
+      text 'ZOH' 225.1 46.9 color 16711680 14;
+    end;
+    implementation eq
+parameters
+	real initial = 0.0;
+equations
+	output = hold (input, initial);
+         implementation_end;
+   OneJunction1 432 64
+    knot OneJunction
+     ports
+      translation knot duplicatable none p [1];
+      signal knot out flow [1];
+     restrictions
+      causality constraint one_out p;
+    end;
+    icon bg
+     figures
+      text '1' 432 64 18 bold;
+    end;
+    implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+   Pinch 362.7 65.6
+    description '<Description>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+</Description>';
+    type Pinch
+     ports
+      signal in PWM;
+      signal out MotorVelocity;
+      translation out PaperPower;
+    end;
+    icon bg top
+     figures
+      ellipse 359.5 65.6 389.4 95.6 fill 12895428;
+      line 340.9 65.1 388.9 65.1;
+      ellipse 358.9 35.6 388.9 65.6 fill 12895428;
+      ellipse 371.8 47.5 376.1 51.7 fill 0;
+      ellipse 335.9 82.7 346.6 93.3 fill 12895428;
+      ellipse 364.7 70.9 383.9 90.1 fill 12895428;
+      line 340.2 82.7 373.2 70.9 fill 12895428;
+      line 342.3 93.3 375.4 90.1 fill 12895428;
+      ellipse 339.1 85.9 343.4 90.1 fill 0;
+      ellipse 372.2 78.4 376.4 82.7 fill 0;
+     terminals
+      PWM 335.9 88 fixed;
+      MotorVelocity 341.2 92.3 fixed;
+    end;
+    implementation bg
+     submodels
+      BeltDisturbance_and_Gear 406.3 111.5
+       type 'Submodel-Graphical'
+        ports
+         rotation psi in p1;
+         signal in omega;
+         rotation psi out p2;
+       end;
+       icon bg ellipse
+        figures
+         ellipse 359.3 95.5 391.3 127.5 fill 9211020;
+         ellipse 441.3 105.5 453.3 117.4 fill 9211020;
+         line 375.3 95.5 448.9 105.6;
+         line 375.3 127.5 447.3 117.9;
+         ellipse 373.8 109.3 377 112.5 fill 9211020;
+         ellipse 445.8 109.9 449 113.1 fill 9211020;
+        terminals
+         p1 359.9 111.5 fixed;
+         omega 411.7 121.6 fixed;
+         p2 453.8 111.5 fixed;
+       end;
+       implementation bg
+        submodels
+         BeltDisturbance 198.8 73.1
+          type Submodel
+           ports
+            rotation psi duplicatable in p;
+            signal in speed;
+          end;
+          icon bg ellipse top
+           figures
+            ellipse 151.8 57.1 183.8 89.1 fill 9211020;
+            ellipse 233.9 67.1 245.8 79 fill 9211020;
+            line 167.8 57.1 241.4 67.2;
+            line 167.8 89.1 239.8 79.5;
+            ellipse 166.3 70.9 169.5 74.1 fill 9211020;
+            ellipse 238.3 71.5 241.5 74.7 fill 9211020;
+           terminals
+            speed 199.9 87.5 fixed;
+            p 151.8 73;
+            p 151.8 73;
+            p 245.8 72.9;
+          end;
+          implementation eq
+parameters
+	real amplitude = 0.0025;
+
+variables
+	real pos;
+	real belt_velocity;
+
+equations
+	belt_velocity = 0.5 * speed / (90.0/37.0);
+	pos = int(belt_velocity,0);
+	p.T = amplitude * sin(pos)^2;
+ implementation_end;
+         Filter2 200 144
+          type 'Filter-Generic'
+           ports
+            signal in u;
+            signal out y;
+          end;
+          icon bg
+           figures
+            rectangle 168 128 232 160 fill 15132390;
+            text 'LP-2' 200 138.7 color 16711680 14 bold;
+            text 'Butterworth' 200 151.5;
+          end;
+          implementation eq
+// 20-sim Filter Editor
+// 'Generic Filter' 2 0.8 10 20 lp butter
+variables
+	real hidden n[3], d[3];
+initialequations
+	// create numerator and denominator coefficients
+	n = [0.0; 0.0; 25.266187266789];
+	d = [1.0; 7.1086127010534; 25.266187266789];
+equations
+	// the actual dynamic equations
+	y = (1/d[1]) * (n[1] * u + int (n[2] * u - d[2] * y + int (n[3] * u - d[3] * y)));
+implementation_end;
+         Gear 336 84.3
+          type Gear
+           ports
+            rotation psi in p_fast;
+            rotation psi out p_slow;
+           restrictions
+            orientation constraint not_equal p_fast p_slow;
+            causality constraint not_equal p_fast p_slow;
+           parameters
+            real i = -0.4863813229572; "gear ratio p_slow.omega / p_fast.omega [] "
+          end;
+          icon ipm bottom
+           figures
+            line 320 71.8 336 71.8;
+            line 336 95.8 352 95.8;
+            line 333.3 65.4 337.6 65.4 color -1;
+            line 332.8 66.5 339.2 66.5 width 2;
+            line 336 66.5 336 77.1 width 2;
+            line 332.8 77.1 339.2 77.1 width 2;
+            line 332.8 80.3 339.2 80.3 width 2;
+            line 336 80.3 336 111.3 width 2;
+            line 332.8 111.3 339.2 111.3 width 2;
+            text '1' 340.8 88.3;
+            text 'i' 328 64.3 color 16711680;
+           terminals
+            p_fast 320 71.8 fixed;
+            p_slow 352 95.8 fixed;
+          end;
+          implementation eq
+equations
+	p_fast.T = -i * p_slow.T;
+	p_slow.omega = -i * p_fast.omega;
+                 implementation_end;
+         plug p1 72 72;
+         plug omega 200 224;
+         plug p2 392 96;
+        end;
+        connections
+         p1 => BeltDisturbance\p;
+         BeltDisturbance\p => Gear\p_fast;
+         Gear\p_slow => p2;
+         omega -> Filter2\u;
+         Filter2\y -> BeltDisturbance\speed;
+        end;
+       implementation_end;
+      H_Bridge 168 112
+       type Gain
+        ports
+         signal in input;
+         signal out output;
+        parameters
+         real K = 25.0;
+       end;
+       icon bg bottom
+        figures
+         rectangle 152.1 96 183.9 128 fill 15132390;
+         text 'K' 168 112 color 16711680 16 bold;
+       end;
+       implementation eq
+equations
+	output = K * input;
+    implementation_end;
+      InternalMotorVelocity 320 177.8
+       type VelocitySensor
+        ports
+         rotation psi in p;
+         signal out omega {rad/s} ;
+         signal out trans_pos {rad} ;
+        restrictions
+         causality fixed out p;
+       end;
+       icon bg left
+        figures
+         line 320 159.9 319.5 183.9;
+         ellipse 308.8 173.3 331.2 195.7 fill 16777215;
+         text 'V' 320 184.5 15;
+        terminals
+         p 320 159.9 fixed;
+         omega 320 183.9 fixed;
+       end;
+       implementation eq
+variables
+	real motor_vel_rev_per_sec;
+	real deriv;
+
+equations
+	deriv = ddt(motor_vel_rev_per_sec,0);
+	p.T = 0;
+	omega = p.omega;
+	trans_pos = int(omega);
+      motor_vel_rev_per_sec = omega / (2 * pi);implementation_end;
+      Motor 256 112
+       type Submodel
+        ports
+         signal in electricity;
+         rotation out rotation;
+       end;
+       icon bg bottom
+        figures
+         rectangle 276.3 109.9 292.6 113.1 fill 15132390;
+         rectangle 227.9 95.7 275.9 127.7 fill 15132390;
+         line 272 96.3 272 128.3 fill 15132390;
+         rectangle 276.8 98.9 280 124.5 fill 15132390;
+         text 'DC' 249.6 113.3 color 16711680 14;
+         line 227.9 111.2 219.4 111.2 fill 15132390;
+       end;
+       implementation bg
+        submodels
+         CoulombFriction 424 200
+          type R
+           ports
+            power in p;
+           parameters
+            real r = 0.0;
+          end;
+          icon bg bottom
+           figures
+            text 'R' 424 200 18 bold;
+          end;
+          implementation eq
+parameters
+real radPs = 0.1;
+real coulomb = 0.0008118;
+equations
+
+if (abs(p.f) > radPs) then
+	p.e =  r * p.f  + coulomb * sign(p.f);
+else
+	p.e =  r * p.f ;
+end;
+implementation_end;
+         ElectricalInductance 280 56
+          type I
+           ports
+            electric in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 2.38e-4;
+          end;
+          icon bg top
+           figures
+            text 'I' 280 56 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         ElectricalResistance 280 200
+          type R
+           ports
+            power in p;
+           parameters
+            real r = 2.32;
+          end;
+          icon bg bottom
+           figures
+            text 'R' 280 200 18 bold;
+          end;
+          implementation eq
+equations					
+	p.e = r * p.f;    implementation_end;
+         InertiaMotorAxis 424 56
+          type I
+           ports
+            power in p;
+            signal out state;
+           restrictions
+            causality preferred in p;
+           parameters
+            real i = 1.07e-6;
+          end;
+          icon bg top
+           figures
+            text 'I' 424 56 18 bold;
+          end;
+          implementation eq
+equations
+    state = int(p.e);
+    p.f = state / i;
+     implementation_end;
+         MotorConstant 352 128
+          type GY
+           ports
+            power in p1;
+            power out p2;
+           restrictions
+            causality constraint equal p1 p2;
+           parameters
+            real r = 0.022;
+          end;
+          icon bg bottom
+           figures
+            text 'GY' 352 128 18 bold;
+          end;
+          implementation eq
+equations
+	p1.e = r * p2.f;
+	p2.e = r * p1.f;     implementation_end;
+         MSe1 192 128
+          type MSe
+           ports
+            power out p;
+            signal in effort {V} ;
+           restrictions
+            causality fixed out p;
+          end;
+          icon bg
+           figures
+            text 'MSe' 192 128 18 bold;
+          end;
+          implementation eq
+variables
+	real flow;
+equations
+	p.e = effort;
+	flow = p.f;     implementation_end;
+         plug electricity 96 128;
+         plug rotation 520 128;
+         OneJunction1 424 128
+          knot OneJunction
+           ports
+            rotation knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 424 128 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+         OneJunction2 280 128
+          knot OneJunction
+           ports
+            electric knot duplicatable none p [1];
+            signal knot out flow [1];
+           restrictions
+            causality constraint one_out p;
+          end;
+          icon bg
+           figures
+            text '1' 280 128 18 bold;
+          end;
+          implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+    implementation_end;
+        end;
+        connections
+         OneJunction1\p => CoulombFriction\p;
+         OneJunction2\p => ElectricalInductance\p;
+         MSe1\p => OneJunction2\p;
+         ElectricalResistance\p <= OneJunction2\p;
+         OneJunction2\p => MotorConstant\p1;
+         MotorConstant\p2 => OneJunction1\p;
+         OneJunction1\p => InertiaMotorAxis\p;
+         OneJunction1\p => rotation;
+         electricity -> MSe1\effort;
+        end;
+       implementation_end;
+      plug MotorVelocity 64 272;
+      plug PaperPower 672 96;
+      plug PWM 96 112;
+      Node3 320 112
+       knot Node
+        ports
+         rotation knot psi duplicatable none p [1];
+       end;
+       icon bg ellipse
+        figures
+         ellipse 316.8 108.8 323.2 115.2 color -1 fill 0;
+         ellipse 315.7 107.7 324.3 116.3 color -1;
+        terminals
+         p 320 112 fixed;
+         p 320 112 fixed;
+         p 320 112 fixed;
+         p 320 112 fixed;
+       end;
+       implementation eq
+equations
+	sum (direct (p.t)) = 0;
+	equal (collect (p.a));
+  implementation_end;
+      Pinch 544 112
+       type 'Submodel-Graphical'
+        ports
+         rotation psi in p_rot;
+         translation psi out p_trans;
+       end;
+       icon bg ellipse bottom
+        figures
+         ellipse 528 96 560 128;
+         line 512 112 543.5 112;
+         line 544 96 576 96;
+        terminals
+         p_rot 512 112 fixed;
+         p_trans 576 96 fixed;
+       end;
+       implementation bg
+        submodels
+         CoulombFriction 248 56
+          type Break
+           ports
+            rotation psi duplicatable in p;
+           restrictions
+            causality fixed out p;
+          end;
+          icon bg bottom
+           figures
+            line 243.7 47.5 243.7 40.5 252.3 40.5 252.3 47.5 width 2;
+            line 243.7 64.5 243.7 71.5 252.3 71.5 252.3 64.5 width 2;
+            line 248 43.2 248 68.8 width 2;
+            line 232 56 264 56;
+           terminals
+            p 248 56 fixed;
+            p 248 56 fixed;
+            p 248 56 fixed;
+            p 248 56 fixed;
+          end;
+          implementation eq
+parameters
+	real mu_c = 1.0 {rotational coulomb friction coefficient, m};	// coulomb friction coefficient
+	real slope = 1000.0 {s/rad};	// steepness of coulomb friction curve
+	real Fn = 0.0022;
+variables
+	real hidden F,v;
+equations
+	p.T = if Fn < 0 then 0 else Fn*F end;
+	v = p.omega;
+	F = mu_c*tanh( slope*v );implementation_end;
+         plug p_rot 88 56;
+         plug p_trans 512 40;
+         PichInertia 328 56
+          type Inertia
+           ports
+            rotation psi duplicatable in p;
+           restrictions
+            causality preferred in p;
+           parameters
+            real J = 3.112e-6 {kg.m2/rad}; ""
+          end;
+          icon ipm bottom
+           figures
+            rectangle 312 40 344 72 fill 13421772;
+            text 'J' 328 56 15 italic;
+           terminals
+            p 312 56;
+            p 312 56;
+            p 344 56;
+          end;
+          implementation eq
+variables
+	real interesting phi {rad};
+	real alpha {rad/s2};
+equations
+	alpha = p.T / J;
+	p.omega = int (alpha);
+	phi = int (p.omega); implementation_end;
+         Rot2Trans_Paper 424 56
+          type BeltPulley
+           ports
+            rotation psi in p_rot;
+            translation psi out p_trans;
+           restrictions
+            orientation constraint not_equal p_rot p_trans;
+            causality constraint not_equal p_rot p_trans;
+           parameters
+            real radius = 0.0139 {m}; "pulley radius"
+          end;
+          icon bg ellipse top
+           figures
+            ellipse 408 40 440 72;
+            line 392 56 423.5 56;
+            line 424 40 456 40;
+           terminals
+            p_rot 392 56 fixed;
+            p_trans 456 40 fixed;
+          end;
+          implementation eq
+equations
+	p_trans.v = radius * p_rot.omega;
+	p_rot.T = radius * p_trans.F;    implementation_end;
+         ViscousFriction 168 56
+          type Bearing
+           ports
+            rotation psi duplicatable in p;
+           parameters
+            real d = 2.5e-4 {N.m.s/rad}; ""
+          end;
+          icon bg bottom
+           figures
+            group
+             line 156.8 70 160.5 65.9;
+             line 160.5 70 164.4 65.9;
+             line 164.4 70 168.1 65.9;
+             line 168.1 70 172.1 65.9;
+             line 172.1 70 175.8 65.9;
+             line 158.4 66.2 178.1 66.2 width 2;
+            end;
+            group
+             group
+              line 160.9 49.1 165.3 53.9;
+              line 160.9 53.9 165.3 49.1;
+              line 169.8 49.1 174.3 53.9;
+              line 169.8 53.9 174.3 49.1;
+              line 165.3 49.1 169.8 53.9;
+              line 165.1 53.9 169.8 49.1;
+             end;
+             group
+              line 160.9 58.1 165.3 62.9;
+              line 160.9 62.9 165.3 58.1;
+              line 169.8 58.1 174.3 62.9;
+              line 169.8 62.9 174.3 58.1;
+              line 165.3 58.1 169.8 62.7;
+              line 165.1 62.9 169.9 58;
+             end;
+            end;
+            line 152 56 184 56;
+            group
+             line 177 46.1 158 46.1 width 2;
+             line 178.6 42 174.7 46.1;
+             line 174.7 42 171 46.1;
+             line 171 42 167 46.1;
+             line 167 42 163.3 46.1;
+             line 163.3 42 159.6 46.1;
+            end;
+           terminals
+            p 152 56;
+            p 152 56;
+            p 184 56;
+          end;
+          implementation eq
+equations
+	p.T = d * p.omega;implementation_end;
+        end;
+        connections
+         p_rot => ViscousFriction\p;
+         ViscousFriction\p => CoulombFriction\p;
+         CoulombFriction\p => PichInertia\p;
+         PichInertia\p => Rot2Trans_Paper\p_rot;
+         Rot2Trans_Paper\p_trans => p_trans;
+        end;
+       implementation_end;
+      Rad2Rev 200 272
+       type Gain
+        ports
+         signal in input;
+         signal out output;
+       end;
+       icon bg bottom
+        figures
+         rectangle 184.1 256 215.9 288 fill 15132390;
+         text 'K' 200 272 color 16711680 16 bold;
+       end;
+       implementation eq
+equations
+	output = (input/(2*pi));
+implementation_end;
+      Splitter2 320 232
+       knot Splitter
+        ports
+         signal knot duplicatable out output [1];
+         signal knot in input [1];
+       end;
+       icon bg ellipse
+        figures
+         ellipse 316.8 228.8 323.2 235.2 color -1 fill 0;
+         ellipse 315.7 227.7 324.3 236.3 color -1;
+        terminals
+         input 320 232 fixed;
+         output 320 232 fixed;
+       end;
+       implementation eq
+equations
+    collect (output) = input;
+         implementation_end;
+     end;
+     connections
+      Node3\p => InternalMotorVelocity\p;
+      Node3\p => BeltDisturbance_and_Gear\p1;
+      Motor\rotation => Node3\p;
+      BeltDisturbance_and_Gear\p2 => Pinch\p_rot;
+      Pinch\p_trans => PaperPower;
+      PWM -> H_Bridge\input;
+      Rad2Rev\output -> MotorVelocity;
+      InternalMotorVelocity\omega -> Splitter2\input;
+      Splitter2\output -> BeltDisturbance_and_Gear\omega 411.2 232.5;
+      Splitter2\output -> Rad2Rev\input 320 272;
+      H_Bridge\output -> Motor\electricity;
+     end;
+     figures
+      rectangle 128 64 344 312 color 15132390 fill 15132390;
+      rectangle 344 64 472 312 color 13421772 fill 13421772;
+      rectangle 472 64 624 312 color 15132390 fill 15132390;
+      text 'Driving' 232 320 16;
+      text 'Coupling' 408 320 16;
+      text 'Driven' 544 320 16;
+      text 'BeltDisturbance and Gear' 408 80;
+    implementation_end;
+   Splitter1 328 96
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>Signal\Block Diagram\Splitter.emx</LibraryPath>
+  <TimeStamp>2008-01-17 11:28:29</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 324.8 92.8 331.2 99.2 color -1 fill 0;
+      ellipse 323.7 91.7 332.3 100.3 color -1;
+     terminals
+      input 328 96 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+implementation_end;
+  end;
+  connections
+   Pinch\PaperPower => OneJunction1\p;
+   Hold\output -> Pinch\PWM;
+   Pinch\MotorVelocity -> Splitter1\input;
+   Control\pwmOut -> Hold\input;
+   Splitter1\output -> Encoder1\input;
+   Splitter1\output -> Encoder2\input;
+   Splitter1\output -> Encoder3\input;
+   Encoder1\output -> Control\encIn1;
+   Encoder2\output -> Control\encIn2;
+   Encoder3\output -> Control\encIn3;
+  end;
+  figures
+   rectangle 464 32 800 288 fill 14745599;
+   text 'This is a model  of a paper pinch. The goal 
+of the controller is to set the speed of a 
+motor, which turns a motor and moves 
+paper (for a larger paper path system).
+Three rotary encoders are included to show 
+fault tolerance. Each encoder has a fault 
+block, different implementations of which 
+each inject a different error behaviour.
+Implementations can be selected and faults
+activated at run-time by the DESTECS tool.' 632 160 20;
+ implementation_end;
+]]>
+</Sidops>
+ </Model>
+ <Experiments>
+     <DefaultExperiment><![CDATA[Converted Experiment]]>
+</DefaultExperiment>
+  <Experiment>
+    <Name>Converted Experiment</Name>
+    <CreatedBy></CreatedBy>
+    <Info></Info>
+<ExpData>
+  <VersionNumber>4.2</VersionNumber>
+  <ModelProperties>
+  </ModelProperties>
+  <Variables>
+   <Parameters>
+   </Parameters>
+   <Initials>
+    <Variable>
+     <Name>Pinch2\BeltDisturbance_and_Gear\Filter2\y_state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Pinch2\BeltDisturbance_and_Gear\Filter2\y_state_dot_state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Pinch2\InternalMotorVelocity\trans_pos_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Pinch2\Motor\ElectricalInductance\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Pinch2\Motor\InertiaMotorAxis\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+    <Variable>
+     <Name>Pinch2\Pinch\PichInertia\phi_initial</Name>
+     <Value>0</Value>
+    </Variable>
+   </Initials>
+  </Variables>
+  <PlotSpecs>
+   <VarNames>
+    <VarName>time</VarName>
+    <VarName>Pinch\InternalMotorVelocity\motor_vel_rev_per_sec</VarName>
+    <VarName>Control\pwmOut</VarName>
+    <VarName>Encoder1\LatentFault\fault</VarName>
+    <VarName>Encoder3\LatentFault\fault</VarName>
+    <VarName>Encoder1\output</VarName>
+    <VarName>Encoder2\output</VarName>
+    <VarName>Encoder2\LatentFault\fault</VarName>
+    <VarName>Encoder3\output</VarName>
+   </VarNames>
+   <Plots>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>1</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>model</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>time</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>pwm_output</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>16711935</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711935</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>10</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Control\pwmOut</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>2</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>pid_pinch3enc</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>X</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>motor_vel_rev_per_sec</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>0</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>0</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>10</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Pinch\InternalMotorVelocity\motor_vel_rev_per_sec</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>3</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>pid_pinch3enc</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>X</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>enc1</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>255</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>255</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Encoder1\output</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>4</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>pid_pinch3enc</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>X</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>fault1</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>65280</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>65280</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Encoder1\LatentFault\fault</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>5</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>pid_pinch3enc</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>X</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>enc2</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>10040319</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>10040319</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Encoder2\output</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>6</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>pid_pinch3enc</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>X</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>fault2</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>16763904</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16763904</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Encoder2\LatentFault\fault</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>7</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>pid_pinch3enc</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>X</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>enc3</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>26367</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>26367</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Encoder3\output</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>8</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>13160660</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>pid_pinch3enc</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>time</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>10</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>fault</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>3368448</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>3368448</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>Encoder3\LatentFault\fault</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+   </Plots>
+   <PlotPanels>
+    <PlotPanel>
+     <PlotPanelId>1</PlotPanelId>
+     <PlotPanelVisible>true</PlotPanelVisible>
+     <Name>Window 1</Name>
+     <Tiling>2</Tiling>
+     <PlotIds>
+       <PlotId>1</PlotId>
+       <PlotId>2</PlotId>
+       <PlotId>3</PlotId>
+       <PlotId>4</PlotId>
+       <PlotId>5</PlotId>
+       <PlotId>6</PlotId>
+       <PlotId>7</PlotId>
+       <PlotId>8</PlotId>
+     </PlotIds>
+    </PlotPanel>
+   </PlotPanels>
+   <WindowRectangles virtualDesktopWidth="2560" virtualDesktopHeight="1024">
+     <WindowRectangle monitor="0" left="0" top="0" right="1280" bottom="1024" plotpanelid="1">
+0.25 0.234375 0.75 0.703125
+     </WindowRectangle>
+   </WindowRectangles>
+  </PlotSpecs>
+  <RunSpecs>
+   <SimulatorSettings>
+    <StartTime>0</StartTime>
+    <FinishTime>5</FinishTime>
+    <Warp>false</Warp>
+    <UseOutputAfterEach>true</UseOutputAfterEach>
+    <OutputAfterEach>0.001</OutputAfterEach>
+    <EventEpsilon>1e-006</EventEpsilon>
+    <AlgebraicTolerance>1e-007</AlgebraicTolerance>
+    <SteadyStateAnalysis>false</SteadyStateAnalysis>
+    <UpdateHoldInstructions>false</UpdateHoldInstructions>
+    <DiscreteSystems>
+     <DiscreteSystem>
+      <DiscreteID>Encoder1\Sample1\output</DiscreteID>
+      <TimeInterval>0.001</TimeInterval>
+      <InitialSampleTimeDelay>0</InitialSampleTimeDelay>
+      <FixedSampleTimeDelay>0</FixedSampleTimeDelay>
+      <VariableTimeDelayMin>0</VariableTimeDelayMin>
+      <VariableTimeDelayMax>0</VariableTimeDelayMax>
+      <VariableTimeDelayMean>0</VariableTimeDelayMean>
+      <VariableTimeDelayDeviation>0</VariableTimeDelayDeviation>
+      <UseVariableTimeDelay>false</UseVariableTimeDelay>
+      <UniformVariableTimeDelay>false</UniformVariableTimeDelay>
+      <UseGlobalTime>true</UseGlobalTime>
+      <HoldTimeDelay>0</HoldTimeDelay>
+      <ActionOnSampleMissed>0</ActionOnSampleMissed>
+     </DiscreteSystem>
+    </DiscreteSystems>
+   </SimulatorSettings>
+   <IntegrationMethods>
+    <IntegrationMethod>
+     <Name>Euler</Name>
+     <StepSize>0.0001</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BackwardEuler</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <StepSize>0.01</StepSize>
+     <Alpha>1</Alpha>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>AdamsBashforth</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta2</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta4</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta8</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <SafetyFactor>0.9</SafetyFactor>
+     <Factor1>0.33</Factor1>
+     <Factor2>6</Factor2>
+     <Beta>0</Beta>
+     <UseMaxNrSteps>false</UseMaxNrSteps>
+     <MaxNrSteps>100000</MaxNrSteps>
+     <UseStiffDetection>false</UseStiffDetection>
+     <MaxNrStiffnessSteps>1000</MaxNrStiffnessSteps>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKuttaFehlberg</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>VodeAdams</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <VodeUseBDF>true</VodeUseBDF>
+     <VodeUseNewton>true</VodeUseNewton>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BDFMethod</Name>
+     <AbsoluteTolerance>0.001</AbsoluteTolerance>
+     <RelativeTolerance>0.001</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>0.001</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>0.001</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>MeBDFiMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <SelectedIntegrationMethod>0</SelectedIntegrationMethod>
+   </IntegrationMethods>
+  </RunSpecs>
+  <MultipleRun>
+   <NrSteps>10</NrSteps>
+   <CopyFromStates>false</CopyFromStates>
+   <JoinParameterVariation>true</JoinParameterVariation>
+   <ClearAfterRun>false</ClearAfterRun>
+   <RedrawAfterRun>false</RedrawAfterRun>
+   <DrawDuringSimulation>true</DrawDuringSimulation>
+   <ActionBeforeOptimization>0</ActionBeforeOptimization>
+   <CompareValue>0</CompareValue>
+   <UseCompareValue>true</UseCompareValue>
+   <MultipleRunType>MultipleRun</MultipleRunType>
+   <Minimize>true</Minimize>
+   <OptimizationVariable></OptimizationVariable>
+   <ResulVarUsage>UseEndValue</ResulVarUsage>
+   <Tolerance>0.001</Tolerance>
+   <OptimizationMethod>BroydonFletcherGoldfarbShanno</OptimizationMethod>
+   <MultipleRunVariables>
+   </MultipleRunVariables>
+  </MultipleRun>
+  <ExportData>
+   <WriteAsText>true</WriteAsText>
+   <ReadAsText>true</ReadAsText>
+   <WriteHeader>false</WriteHeader>
+   <ReadHeader>true</ReadHeader>
+   <ReadFilename><![CDATA[PaperPathSetupModelandControl.n]]>
+</ReadFilename>
+   <WriteFilename><![CDATA[D:\Temp\SpeedCheck\PD_sim.n]]>
+</WriteFilename>
+   <DoWrite>false</DoWrite>
+   <ExportVariables>
+   </ExportVariables>
+   <ImportVariables>
+   </ImportVariables>
+  </ExportData>
+  <BreakPoints>
+  </BreakPoints>
+  <AnimationPlayback>
+   <PlaybackSpeed>1</PlaybackSpeed>
+  </AnimationPlayback>
+</ExpData>
+  </Experiment>
+</Experiments>
+</Document>

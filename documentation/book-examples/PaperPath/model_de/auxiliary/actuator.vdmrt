@@ -1,0 +1,27 @@
+%
+
+\begin{vdm_al}
+class ActuatorReal
+	is subclass of IActuatorReal
+	
+instance variables
+	-- the name of the sensor
+	private id : seq of char;
+	
+operations
+	public ActuatorReal: seq of char ==> ActuatorReal
+	ActuatorReal (pid) == id := pid;
+	
+	public identify: () ==> seq of char
+	identify () == return id
+
+instance variables
+	-- the controlled value
+	public cvalue : real := 0.0
+	
+operations
+	public Write: real ==> ()
+	Write (pcv) == cvalue := pcv
+
+end ActuatorReal
+\end{vdm_al}

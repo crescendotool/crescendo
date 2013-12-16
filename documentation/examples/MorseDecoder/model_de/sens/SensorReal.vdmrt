@@ -1,0 +1,8 @@
+class SensorReal is subclass of AbstractSensorReal
+	
+	operations
+		public read: () ==> real
+		read() == return value;
+
+
+end SensorReal

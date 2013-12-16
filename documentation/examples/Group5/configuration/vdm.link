@@ -1,0 +1,17 @@
+-- shared design parameters 
+sdp encoder_resolution = World.encoder_resolution;
+sdp linefollow_lateral_offset = World.linefollow_lateral_offset;
+sdp linefollow_longitudinal_offset = World.linefollow_longitudinal_offset;
+sdp initial_Position = World.initial_Position;
+sdp initial_Angle = World.initial_Angle;
+
+-- inputs
+input sensorVisionLeft = System.sensorVisionLeft.value; 
+input sensorVisionRight = System.sensorVisionRight.value; 
+
+input sensorRotationSpeedLeft = System.sensorRotationSpeedLeft.value; 
+input sensorRotationSpeedRight = System.sensorRotationSpeedRight.value;
+
+-- outputs
+output actuatorWheelLeft=System.actuatorWheelLeft.value;
+output actuatorWheelRight=System.actuatorWheelRight.value;

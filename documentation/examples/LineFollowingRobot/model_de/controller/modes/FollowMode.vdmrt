@@ -1,0 +1,24 @@
+class FollowMode is subclass of AbstractMode
+
+operations
+
+-- constructor for FollowMode
+public FollowMode: AbstractModalController ==> FollowMode
+FollowMode(c) == let - = AbstractMode`AbstractMode(c) in skip;
+
+-- control loop
+public Step: () ==> [AbstractModalController`Mode]
+Step() == (
+	-- black to the right, go right
+	if con.GetLeftBW().IsWhite() and con.GetRightBW().IsBlack()
+	then con.TurnRight();
+
+	-- black to the left, go left
+	if con.GetLeftBW().IsBlack() and con.GetRightBW().IsWhite()
+	then con.TurnLeft();
+	
+	-- no internal mode change
+	return nil;	
+);
+
+end FollowMode

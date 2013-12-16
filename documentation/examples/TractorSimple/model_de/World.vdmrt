@@ -1,0 +1,39 @@
+class World
+
+values
+
+-- shared design parameters
+public P_k : real = 1.35; -- 1.35 P_k controll factor
+private Power: real = 7.4; -- 7.4 Volts input power
+private Filepath: seq of char = "route1.csv";
+
+operations
+
+public run : () ==> ()
+run() ==
+duration(0)(
+	start(System`controller);
+	block();
+);
+
+public static setup: () ==> ()
+setup() ==
+(
+	dcl finish: bool := false;
+	
+	System`route := new Route([]);
+	System`FileR := new FileReader(System`route);
+	finish := System`FileR.LoadTravlRoute(Filepath);
+	
+	--controller := new Controller();
+	System`controller := new Controller(System`route,P_k,Power);
+
+);
+
+block: () ==>()
+block() == skip;
+sync per block => false;
+
+
+
+end World

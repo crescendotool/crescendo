@@ -1,0 +1,28 @@
+class VelocitySensor
+	types
+-- TODO Define types here
+	values
+-- TODO Define values here
+	instance variables
+    public static high : real := 0.0;
+
+	operations
+-- TODO Define operations here
+	public async highEvent : () ==> ()
+	highEvent() == ( 
+		IO`println("==> Velocity too high");
+		high := 1.0;
+	);
+
+	public getVelSenHigh : () ==> bool
+	getVelSenHigh() == (
+		--IO`print("high: ");
+ 		--IO`println(high);
+		if high <> 0.0 then return true else return false;
+	);
+
+	functions
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end VelocitySensor

@@ -1,0 +1,78 @@
+class Controller
+
+instance variables
+
+-- sensors
+private acc_in: ISensorReal;
+private vel_in: ISensorReal;
+
+-- actuators
+private acc_out: IActuatorReal;
+private vel_out: IActuatorReal;
+
+-- PID controller
+private pid1: DTControl;
+private pid2: DTControl;
+
+-- setpoint profile
+private spp: SetpointProfileCSV;
+
+values
+
+-- values for pid2 (acceleration)
+KP1: real = 0.01166667;
+--KI1: real = 8.69565217391;
+KD1: real = 0.1;
+BETA1: real = 0.1;
+
+-- values for pid2 (velocity)
+KP2: real = 20;
+--KI2: real = 78.431372549;
+KD2: real = 0.2;
+BETA2: real = 0.1;
+
+-- user input (i.e. leaning forward)
+SETPOINT_FILE = "steeringsignal1.csv";
+
+operations
+
+-- constructor for Controller
+public Controller : () ==> Controller
+Controller () == 
+(
+	-- sensors
+	acc_in := new Sensor();
+    System`acc_in := acc_in;
+	vel_in := new Sensor(); 
+    System`vel_in := vel_in;
+
+	-- actuators
+	acc_out := new Actuator();
+    System`acc_out := acc_out;
+	vel_out := new Actuator();
+    System`vel_out := vel_out;
+
+	-- controller
+	pid1 := new PD(KP1,KD1,BETA1);
+	pid2 := new PD(KP2,KD2,BETA2);
+	pid1.SetSampleTime(SAMPLE_TIME);
+	pid2.SetSampleTime(SAMPLE_TIME);
+
+	-- setpoints
+	spp := new SetpointProfileCSV(SETPOINT_FILE);
+);
+
+-- perform control step
+public Step : () ==> ()
+Step() == 
+duration(0)(
+	dcl err: real := vel_in.GetValue() - spp.GetSetpoint();
+	vel_out.SetValue(pid2.Output(err));
+	acc_out.SetValue(pid1.Output(acc_in.GetValue()));
+);
+
+-- 1000Hz
+values SAMPLE_TIME = 0.001;
+thread periodic(1E6,0,0,0)(Step);
+		 
+end Controller

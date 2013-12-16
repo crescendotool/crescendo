@@ -1,0 +1,13 @@
+-- this class is the main abstract Controller
+class AbstractMorseReader
+	values
+		protected SAMPLE_TIME = 0.02;
+
+-- TODO Define instance variables here
+	operations
+		protected Step: () ==> ()
+		Step() == is subclass responsibility;
+
+	thread periodic(40E6, 0 ,0, 0)(Step);
+
+end AbstractMorseReader

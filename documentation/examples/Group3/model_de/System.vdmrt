@@ -1,0 +1,30 @@
+system System
+
+instance variables 
+
+
+-- robot
+public static sensorLeft : Sensor := new Sensor();
+public static sensorRight: Sensor := new Sensor();
+public static sensorMiddle: Sensor := new Sensor();
+
+public static wheelLeft : Wheel := new Wheel();
+public static wheelRight: Wheel := new Wheel();
+
+
+
+public static controller: Controller := new Controller(sensorLeft, sensorRight, sensorMiddle, wheelLeft, wheelRight, wheelLeft.motorVoltages);
+
+-- cpu
+cpu: CPU := new CPU(<FP>, 1E6)
+
+operations
+
+public System: () ==> System
+System() ==
+(
+	-- deployment
+	cpu.deploy(controller);
+)
+
+end System

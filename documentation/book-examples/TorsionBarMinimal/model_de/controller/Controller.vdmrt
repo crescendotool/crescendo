@@ -1,0 +1,61 @@
+class Controller
+
+instance variables
+
+-- shared variables: monitored
+private enc_motor: real := 0;
+private enc_load: real := 0;
+
+-- shared variable: controlled
+private pwm_motor: real := 0;
+
+-- signal generator (start_time, stop_time, amplitude)
+private sp_gen: CycloidGenerator := new CycloidGenerator(1, 0, 1);
+
+-- PID controller (k, tauI, tauD)
+private pid: PID := new PID(1, 2e3, 0.05);
+
+-- store sensor and hold values
+private hold_pwm: real := 0.0;
+
+operations
+
+public Controller: () ==> Controller
+Controller() == (
+	pid.SetSampleTime(0.02)
+);
+
+-- periodic operation
+public Step: () ==> ()
+Step() == (
+	-- write held value to actuator
+	pwm_motor := hold_pwm;
+	
+	-- calculate new hold value
+	let err = sp_gen.Output() - enc2rot(enc_motor)
+	in hold_pwm := limit(pid.Output(err), -1, 1);
+)
+
+-- define periodic thread
+thread periodic(20e6, 0, 0, 0)(Step)
+
+functions 
+
+-- function to compute rotation from encoder signal
+enc2rot: real -> real
+enc2rot (penc) == penc / ENC_RESOLUTION / BELT_RATIO;
+
+-- limit x between min and max
+private limit: real * real * real -> real
+limit(x, min, max) ==
+	if x < min then min
+	elseif x > max then max
+	else x;
+
+values
+
+-- conversion constants used
+ENC_RESOLUTION : real = 2000.0;
+BELT_RATIO : real = 3.75;
+
+end Controller

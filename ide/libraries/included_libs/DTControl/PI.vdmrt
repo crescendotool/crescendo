@@ -3,12 +3,19 @@ class PI is subclass of DTControl
 instance variables
 
 -- design parameters
-protected k: real;
-protected tauI: real;
+protected k: real; -- Proportional gain factor
+protected tauI: real; -- Integral time factor
+inv InvDPs(tauI);
 
 -- variables
 protected uP: real;
 protected uI: real;
+
+functions
+
+InvDPs: real -> bool
+InvDPs(tauI_) ==
+  tauI_ > 0
 
 operations
 
@@ -16,28 +23,33 @@ operations
 public PI: real * real ==> PI
 PI(k_, tauI_) ==
 (
-    k := k_;
-	tauI := tauI_;
-	-- initial values
-	uP := 0;
-    uI := 0
-);
+  k := k_;
+  tauI := tauI_;
+  -- initial values
+  uP := 0;
+  uI := 0
+)
+pre InvDPs(tauI_);
 
 -- default constructor for PI
 public PI: () ==> PI
 PI() ==
-    PI(DEF_K, DEF_TAUI);
+    PI(DEF_K, DEF_TAUI)
+pre InvDPs(DEF_TAUI);
 
 -- calculates output, based on the error
 public Output: real ==> real
 Output(err) == 
 (
-	dcl bi: real := k * sampletime / tauI;
-	uP := k * err;
-	uI := uI + bi* err;
-	return uP + uI;
+  dcl bi: real := k * sampletime / tauI;
+  uP := k * err;
+  uI := uI + bi* err;
+  return uP + uI;
 )
-pre sampletime <> nil;
+pre sampletime <> nil and
+    sampletime > 0; 
+-- sampletime must have a positive value, 
+-- since we are moving forward in time and using time dependent factors
 
 values
 

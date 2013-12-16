@@ -1,0 +1,80 @@
+class Pid
+
+	types
+-- TODO Define types here
+	values
+	public gain : real = -140.0;	
+		
+	instance variables
+	gyro : Gyro;
+    control : RTControl;
+	public pwm : real := 0.0;
+	errm1 : real := 0.0;
+	uD : real := 0.0;
+	uDm1 : real := 0.0;
+	factor : real := 0.0;
+	sampletime : real := 0.001;
+	tauD : real := 0.1;
+	beta : real := 0.1;
+	kp : real := gain;
+	pwm_k : real := 0.0;
+	pwm_k_plus_1 : real := 0.0;
+	angle_k : real := 0.0;
+
+	operations
+
+	public Pid : RTControl * Gyro ==> Pid
+	Pid(c, g) ==
+	(
+		control := c;
+		gyro := g;
+	);
+
+	public getPwm : () ==> real
+	getPwm() ==
+		if control.mode = <DRIVE> 
+		then return pwm_k
+		else return 0.0;
+
+	public setPwm : real ==> real
+	setPwm(err) == 
+	(
+		if control.mode = <DRIVE> 
+		then (
+			factor := 1.0 / ( sampletime + tauD * beta);
+			uD := factor * ( tauD * uDm1 * beta + tauD * kp * ( err - errm1) + sampletime * kp * err );
+			uDm1 := uD;
+			errm1 := err;
+			return uD;
+		)
+		else (
+		 	return 0.0;
+		);
+	);
+
+	private pidloop : () ==> ()
+	pidloop() == (
+		duration(3e5) (
+			-- change pwm outout k to k+1 at the sample time
+			pwm_k := pwm_k_plus_1;  
+			-- read angle senstor at the sample time
+			angle_k := gyro.getAngle();
+			--IO`print("time, angle, pwm_k = ");
+			--IO`print(time);
+			--IO`print(",  ");
+			--IO`print(angle_k);
+			--IO`print(",  ");
+			--IO`println(pwm_k);
+			pwm_k_plus_1 := setPwm(angle_k); 
+		); 
+	);
+
+	thread 
+	-- 1000 Hz = 1 millisecond = 1,000,000 nanoseconds
+	periodic(1e6, 0, 0, 0) (pidloop);
+	--periodic(100e6, 0, 0, 0) (pidloop);
+
+-- TODO Define functiones here
+	traces
+-- TODO Define Combinatorial Test Traces here
+end Pid

@@ -1,0 +1,22 @@
+class AbstractFaultySensorReal is subclass of AbstractSensorReal
+
+-- An abstract sensor that yields a single real value.
+-- This sensor can exhibit a (signalled) fail silent.
+
+instance variables
+
+-- this value will be set through the co-simulation
+protected value: real := 0
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> real
+Read() == is subclass responsibility;
+    
+-- true if an error in reading has occurred, false otherwise
+public Error: () ==> bool
+Error() == is subclass responsibility;
+ 
+
+end AbstractFaultySensorReal

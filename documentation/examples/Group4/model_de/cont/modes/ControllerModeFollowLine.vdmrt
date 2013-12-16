@@ -1,0 +1,106 @@
+-- this class provides functionality needed whilst the robot is following the line
+
+class ControllerModeFollowLine is subclass of AbstractControllerMode
+
+
+	instance variables
+
+
+	operations
+	
+	public ControllerModeFollowLine: LineFollowerController ==> ControllerModeFollowLine
+		ControllerModeFollowLine (theController) == (
+		
+			
+			let - = AbstractControllerMode(theController) in skip;		
+		);
+	
+	public step: () ==> ()
+		step () ==
+		let leftSensor = mainController.getLineSignalLeft(),
+			centerSensor = mainController.getLineSignalCenter(),
+			rightSensor = mainController.getLineSignalRight()
+		in
+		(
+			--IO`printf("Leftsensor %s, Centersensor %s, Rightsensor %s\n",[leftSensor,centerSensor,rightSensor]);
+				if 	leftSensor > 0.5 and
+					centerSensor > 0.5 and
+					rightSensor > 0.5 then--end of line - stop
+					(
+						mainController.stop();
+						showResults();
+						--IO`print("STOP!\n");
+						mainController.controllerModeFinished();
+					)
+				else if leftSensor > 0.5 and
+						centerSensor < 0.5 and
+						rightSensor > 0.5 then--go forward
+					(
+						mainController.goForward();
+						--IO`print("FORWARD!\n");
+					)
+				else if leftSensor > 0.5 and
+						centerSensor < 0.5 and
+						rightSensor < 0.5 then--turn right
+					(
+						mainController.turnLeft();
+						--IO`print("LEFT!\n");
+					)
+				else if leftSensor < 0.5 and
+						centerSensor < 0.5 and
+						rightSensor > 0.5 then-- turn left
+					(
+						mainController.turnRight();
+						--IO`print("RIGHT!\n");
+					)
+				else if leftSensor < ControllerModeCalibration`Black and
+					centerSensor < ControllerModeCalibration`Black and
+					rightSensor < ControllerModeCalibration`Black then-- ignore
+					(
+						skip;
+					)
+				else
+					(
+						skip;
+					);
+			);
+			
+		public showResults: () ==> ()
+		showResults () ==duration(0)
+		(
+			IO`printf("RESULTS! Distance traveled: %s, time: %s\n", [mainController.getDistanceTraveled(), mainController.getTimeTraveled()]);
+			IO`printf("Left distance: %s\n", [mainController.getDistanceTraveledLeftWheel()]);
+			IO`printf("Right distance: %s\n", [mainController.getDistanceTraveledRightWheel()]);
+			--System`a.score := getScore();
+			logScore();
+			IO`printf("Score is: %s", [getScore()]);
+		);
+		
+		public logScore: () ==> ()
+		logScore () ==
+			let success = IO`fwriteval[(real)]("output.txt", getScore(), <append>),
+				suc = IO`fwriteval[(seq of char)]("output.txt", "\n", <append>) 
+				in if not success and suc then IO`println("Failed to write to file.");
+		
+		public getScore: () ==> real
+		getScore () ==
+			let T = mainController.getTimeTraveled(),
+				Lestimate = mainController.getDistanceTraveled()
+			in
+				return  Lactual/(T * (1 + abs((Lestimate - Lactual)/Lactual)));
+			
+			--(
+								
+				--IO`print("ControllerReading!\n");
+				--mainController.setMotorControlLeft(5.0);
+				--mainController.setMotorControlRight(5.0); 
+			
+		--		skip;
+				--if ControllerModeCalibration`White 
+			--);
+		values
+			Lactual : real = 1.002; --Actual length  1002
+			
+					
+
+end ControllerModeFollowLine

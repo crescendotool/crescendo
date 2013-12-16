@@ -1,0 +1,26 @@
+-- shared design parameters 
+sdp wheel_radius = World.wheel_radius;
+sdp encoder_resolution = World.encoder_resolution;
+sdp line_follow_x = World.line_follow_x;
+sdp line_follow_y = World.line_follow_y;
+sdp initial_position = World.initial_position;
+
+-- TEMP FOR TUNING
+sdp fast_wheel_speed = World.fast_wheel_speed;
+sdp slow_wheel_ratio = World.slow_wheel_ratio;
+
+-- encoders
+input encoder_left = System.io.encLeft.val;
+input encoder_right = System.io.encRight.val;
+
+-- line-following sensors
+input lf_left = System.io.lfLeft.val;
+input lf_right = System.io.lfRight.val;
+
+-- line-following sensor fail flags
+input lf_left_fail_flag = System.io.lfLeft.failed;
+input lf_right_fail_flag = System.io.lfRight.failed;
+
+-- servos
+output servo_left = System.io.servoLeft.val;
+output servo_right = System.io.servoRight.val;

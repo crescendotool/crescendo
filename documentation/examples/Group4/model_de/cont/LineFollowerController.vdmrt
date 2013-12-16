@@ -1,0 +1,211 @@
+class LineFollowerController is subclass of AbstractLineFollower
+
+	types
+		modes = <A> | <B> | <C> | <D>;
+
+	instance variables
+		protected lineSensorLeft: AbstractSensorReal;
+		protected lineSensorCenter: AbstractSensorReal;
+		protected lineSensorRight: AbstractSensorReal;
+		
+		protected positionSensorLeft: AbstractSensorReal;
+		protected positionSensorRight: AbstractSensorReal;
+		
+		protected motorControlLeft : AbstractActuatorReal;
+		protected motorControlRight : AbstractActuatorReal;
+		
+		-- variable to store the mode class, which provides useful functionality
+		-- the concrete implementation of this class varies so
+		-- that different functionality is available at different times
+		protected controllerMode : AbstractControllerMode;
+		
+		protected calibrationTicksLeft : real := 0;
+		protected calibrationTicksRight : real := 0;
+		protected calibrationTime : real := 0;
+		
+		--public signalNoiseScale : real;
+		--public meanDotLength : real;
+		--public meanDashLength : real;
+		
+		private modeSequence : seq of modes;
+
+	operations
+		
+		-- used for determining when to calibrate
+		public setCalibrationTicksLeft: () ==> ()
+		setCalibrationTicksLeft () ==
+			calibrationTicksLeft := getPositionSensorLeft();
+			
+		public setCalibrationTicksRight: () ==> ()
+		setCalibrationTicksRight () ==
+			calibrationTicksRight := getPositionSensorRight();
+			
+		public setCalibrationTime: () ==> ()
+		setCalibrationTime () ==
+			calibrationTime := time;
+	
+		public LineFollowerController: AbstractSensorReal * AbstractSensorReal * AbstractSensorReal * 
+								AbstractSensorReal * AbstractSensorReal * 
+								AbstractActuatorReal * AbstractActuatorReal ==> LineFollowerController
+		LineFollowerController(lineLeft, lineCenter, lineRight, posLeft, posRight, motorLeft, motorRight) == (
+			
+			lineSensorLeft := lineLeft;
+			lineSensorCenter := lineCenter;
+			lineSensorRight := lineRight;
+			
+			positionSensorLeft := posLeft;
+			positionSensorRight := posRight;
+			
+			motorControlLeft := motorLeft;
+			motorControlRight := motorRight;
+			--motorControlActuatorLeft.setValue(0.01);
+			--motorControlActuatorRight.setValue(0.01);
+			
+			modeSequence := [<C>, <D>];
+			controllerMode := new ControllerModeCalibration(self);
+
+		);
+		
+		-- controllers implement this operation
+		public Step : () ==> ()
+		Step () == (
+			
+			controllerMode.step();	
+		);
+		
+		-- operations for calculating position
+		public getDistanceTraveledLeftWheel : () ==> real
+		getDistanceTraveledLeftWheel () ==
+			return (getPositionSensorLeft() - calibrationTicksLeft) * tickLength;
+		
+		public getDistanceTraveledRightWheel : () ==> real
+		getDistanceTraveledRightWheel () ==
+			return (getPositionSensorRight() - calibrationTicksRight) * tickLength;
+		
+		
+		public getDistanceTraveled : () ==> real
+		getDistanceTraveled () ==
+			return ((getPositionSensorLeft() - calibrationTicksLeft) * tickLength + (getPositionSensorRight() - calibrationTicksRight) * tickLength) / 2;
+			
+		public getTimeTraveled : () ==> real
+		getTimeTraveled () ==
+			return (time - calibrationTime) / 1e9;  
+		
+		-- move through different phases of operation
+		-- for each phase, change the mode instance veriable
+		-- so that different functionality is available
+		public controllerModeFinished : () ==> ()
+			controllerModeFinished () == (
+							
+			if hd modeSequence = <B> then
+				controllerMode := new ControllerModeCalibration(self);
+				
+			if hd modeSequence = <C> then
+				controllerMode := new ControllerModeFollowLine(self);
+				
+			if hd modeSequence = <D> then
+				controllerMode := new ControllerModeIdle(self);
+				
+			modeSequence := tl modeSequence;
+			
+		);	
+		
+		-- operations for controlling movement
+		public goForward : () ==> ()
+		goForward () == (
+		
+			motorControlLeft.setValue(Speed);
+			motorControlRight.setValue(Speed);
+		);
+		
+		public turnLeft : () ==> ()
+		turnLeft () == (
+		
+			motorControlLeft.setValue(Speed);
+			motorControlRight.setValue(0);
+		);
+		
+		public turnRight : () ==> ()
+		turnRight () == (
+		
+			motorControlLeft.setValue(0);
+			motorControlRight.setValue(Speed);
+		);
+		
+		public stop : () ==> ()
+		stop () == (
+		
+			motorControlLeft.setValue(0);
+			motorControlRight.setValue(0);
+		);
+		
+		
+		-- operations for getting/setting motors
+		public setMotorControlRight : real ==> () 
+			setMotorControlRight (newSignal) == (
+			
+				motorControlRight.setValue(newSignal);
+		
+		);
+		
+		public setMotorControlLeft : real ==> () 
+			setMotorControlLeft (newSignal) == (
+			
+				motorControlLeft.setValue(newSignal);
+		
+		);
+		
+		public getMotorControlRight : () ==> real 
+			getMotorControlRight () == (
+			
+				return motorControlRight.getValue();
+		
+		);
+		
+		public getMotorControlLeft : () ==> real 
+			getMotorControlLeft () == (
+			
+				return motorControlLeft.getValue();
+		
+		);
+		
+		-- reading in data from the line sensors
+		public getLineSignalRight: () ==> real
+			getLineSignalRight () == (
+			
+				return lineSensorRight.read();		
+		);
+		
+		public getLineSignalCenter: () ==> real
+			getLineSignalCenter () == (
+			
+				return lineSensorCenter.read();		
+		);
+				
+		public getLineSignalLeft: () ==> real
+			getLineSignalLeft () == (
+			
+				return lineSensorLeft.read();		
+		);
+		
+		
+		-- reading in data from position sensors
+		public getPositionSensorRight: () ==> real
+			getPositionSensorRight () == (
+			
+				return positionSensorRight.read();		
+		);
+		
+		public getPositionSensorLeft: () ==> real
+			getPositionSensorLeft () == (
+			
+				return positionSensorLeft.read();		
+		);
+		
+		values
+			private radius : real  = 0.03325; -- in meters
+			private tickLength : real = 2 * 3.14159 * radius / 44; --We get 44 ticks/rev.
+			private Speed : real = 5;
+		
+		
+end LineFollowerController

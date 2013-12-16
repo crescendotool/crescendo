@@ -1,0 +1,114 @@
+class ControllerModeMeasureDotDashLength is subclass of AbstractControllerMode
+
+	-- a concrete implementation of the mode, providing functionality
+	-- to remain identify lengths used in this message for dots and dashes
+	instance variables
+	
+		protected signalState : SignalState;
+		protected previousSignalState : SignalState`signalState;
+	
+		calibrationSequence : seq of MorseLookup`morseCharacter;
+		actualCalibrationState : seq of MorseLookup`morseCharacter;
+		
+		protected totalDotLength : real;
+		protected totalDashLength : real;
+		protected totalDots : int;
+		protected totalDashes : int;
+		protected clockCounter : int;
+		
+
+	operations
+	
+	public ControllerModeMeasureDotDashLength: ModalController ==> ControllerModeMeasureDotDashLength
+		ControllerModeMeasureDotDashLength (theController) == (
+		
+			let - = AbstractControllerMode(theController) in skip;
+		
+			--mainController := theController;			
+			--mainController.setMotorVoltage(0);
+			
+			signalState := new SignalState();
+			previousSignalState := <OFF>;
+			
+			-- the calibration sequence is known in advance 
+			calibrationSequence := [<DASH>, <DOT>, <DASH>, <DOT>, <DASH>];
+			actualCalibrationState := calibrationSequence;
+			
+			
+			totalDotLength := 0;
+			totalDashLength := 0;
+			totalDots := 0;
+			totalDashes := 0;
+			clockCounter := 0;
+			
+			IO`println("dot measurer constructed");
+			
+		);
+	
+	public step: () ==> ()
+		step () == (
+			
+			dcl currentSignalState : SignalState`signalState;
+			
+			--mainController.setMotorVoltage(0.005);
+			
+			clockCounter := clockCounter+1;
+			currentSignalState := signalState.getState(mainController.getMorseSignalFiltered());
+			-- we need to compare the current state to the previous states
+			
+			if currentSignalState = <ON> and previousSignalState = <OFF> then
+			(	
+				
+				IO`printf("calibration - morseSignal on, expecting a %s \n", [hd actualCalibrationState]);
+				clockCounter := 0;
+			);
+			
+			-- if the signal has just turned off look at its duration til now
+			if currentSignalState = <OFF> and previousSignalState = <ON> then
+			(
+			
+				IO`printf("calibration - morseSignal off, length was %s \n", [clockCounter]);
+				
+				-- if we can determine it was a dot, increment dots
+				if hd actualCalibrationState = <DOT> then
+				(
+					totalDots := totalDots +1;
+					totalDotLength := totalDotLength + clockCounter;
+				)
+				else
+				(
+					-- if we can determine it was a dash, increment dashes
+					totalDashes := totalDashes +1;
+					totalDashLength := totalDashLength + clockCounter;
+				);	
+				
+				
+				actualCalibrationState := tl actualCalibrationState;
+			);
+			
+			previousSignalState := currentSignalState;
+			
+			
+			if len actualCalibrationState = 0 then (
+				
+				
+				-- calculate the average length of a dot and of a dash
+				-- we know how many of each we saw and how long they were
+				-- in total
+				mainController.meanDotLength := totalDotLength/totalDots;
+				mainController.meanDashLength := totalDashLength/totalDashes;
+				
+				IO`println("dot measurer finished");
+				
+				mainController.controllerModeFinished();
+				);
+				
+				
+			
+		);
+		
+		
+		
+		
+
+end ControllerModeMeasureDotDashLength

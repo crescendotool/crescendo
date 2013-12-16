@@ -1,0 +1,53 @@
+class A
+instance variables
+public score : real :=0;
+end A
+
+
+system System
+
+instance variables 
+
+--Add
+-- sensors
+public static lineSenseLeft : [AbstractSensorReal] := nil;
+public static lineSenseCenter : [AbstractSensorReal] := nil;
+public static lineSenseRight : [AbstractSensorReal] := nil;
+
+public static positionSenseLeft : [AbstractSensorReal] := nil;
+public static positionSenseRight : [AbstractSensorReal] := nil;  
+
+--actuators
+public static motorControlLeft:  [AbstractActuatorReal] := nil;
+public static motorControlRight:  [AbstractActuatorReal] := nil;
+
+
+
+--score
+public static a : A := new A();
+
+--end Add
+
+
+
+
+
+-- controller
+public static controller: [LineFollowerController] := nil;
+
+-- cpu
+cpu: CPU := new CPU(<FP>, 1E6)
+
+operations
+
+public System: () ==> System
+System() ==
+(
+	-- instantiate instance variables
+	World`setup();
+
+	-- deployment
+	cpu.deploy(controller)
+)
+
+end System

@@ -1,0 +1,164 @@
+\section{The sequence controller}
+
+The sequence controllers are the second tier of the paper path 
+controller architecture. They create and modify so-called set-point 
+profiles which are send to the third tier, the loop controllers.
+
+\begin{vdm_al}
+class SequenceController
+
+instance variables
+  loopctrl : [LoopController] := nil
+  
+operations
+  public SequenceController: LoopController ==> SequenceController
+  SequenceController (plc) ==
+    ( loopctrl := plc;
+      -- set-up the PID parameters (identical for all motors)
+      loopctrl.setUpPID(4.0, 0.00268, 0.01073, 0.001, 10));
+  
+  public initIdle: () ==> ()
+  initIdle () == loopctrl.addProfileElement(0,0,0);
+      
+  public initNominal: real * real ==> ()
+  initNominal (v_nom, a_nom) ==
+    ( -- ramp up the motor to the nominal paper speed
+      loopctrl.addProfileElement(0, 0, a_nom);
+      -- and maintain a constant speed indefinitely
+      loopctrl.addProfileElement(v_nom / a_nom, v_nom, 0) )
+    pre v_nom > 0 and a_nom > 0;
+  
+  public initPeak: real ==> ()
+  initPeak (tsheet) ==
+    ( -- default is idle
+      initIdle();
+      -- inject 10 papers in the paper path
+      -- one sheet every 0.5 seconds after
+      for idx = 0 to 9 do
+        def tx = 1.0 + idx*tsheet in
+        ( loopctrl.addProfileElement(tx, -40, 0);
+          loopctrl.addProfileElement(tx+0.075,0,0) ) );
+          
+  public setStopProfile: real * real * real * real ==> ()
+  setStopProfile (t1, v1, acc, dstop) ==
+    def dt = v1 / acc in
+      ( loopctrl.addProfileElement(t1, v1, -acc);
+        loopctrl.addProfileElement(t1+dt, 0, 0);
+        loopctrl.addProfileElement(t1+dt+dstop, 0, acc);
+        loopctrl.addProfileElement(t1+dt+dstop+dt, v1, 0) );
+                                     
+  public setBeginAtProfile: real * real * real * real * real ==> ()
+  setBeginAtProfile (t1, v1, v2, amax, area) ==
+    -- start at t1, v1 and try to reach v2 
+    def vdiff = abs(v2 - v1) in
+    def tramp = vdiff / amax in
+    def acc = if v1 <= v2 then amax else -amax in
+    def aramp = 0.5 * tramp * (v1 + v2) in
+      -- check distance covered in ramping area
+      if aramp * 2 < area
+      then def darea = area - 2 * aramp in
+           def tflat = darea / v2 in
+             ( loopctrl.addProfileElement(t1, v1, acc);
+               loopctrl.addProfileElement(t1+tramp, v2, 0);
+               loopctrl.addProfileElement(t1+tramp+tflat, v2,-acc);
+               loopctrl.addProfileElement(t1+tramp+tflat+tramp, v1, 0) )
+      else def det = v1 * v1 + acc * area in
+           def dt = (MATH`sqrt(det) - v1) / acc in
+           def vt = v1 + dt * acc in
+             ( loopctrl.addProfileElement(t1, v1, acc);
+               loopctrl.addProfileElement(t1+dt, vt, -acc);
+               loopctrl.addProfileElement(t1+dt+dt, v1, 0) );
+
+  -- makeDistanceProfile can be used to cover dist in the time interval
+  -- [t1,t2] whereby the speed at t1 and t2 is vnom, the maximum speed
+  -- is vmax and the maximum accelleration is amax. the operation returns
+  -- the distance covered which is lower or equal to the requested distance
+  public makeDistanceProfile: real * real * real * real * real * real ==> real
+  makeDistanceProfile (t1, t2, vnom, vmax, amax, dist) ==
+    -- calculate the interval size
+    def dt = t2 - t1 in 
+    -- calculate the distance covered at the nominal speed
+    def dxnom = vnom * dt in
+    -- calculate the distance to compensate
+    def dx = dist - dxnom in
+      if dx = 0
+      then return dist
+      else if dx < 0
+           then return 0
+           else return dxnom + makeAccProfile (t1, dt, vnom, vmax, amax, dist, dx)
+    pre t2 > t1 and vnom <= vmax and vnom >= -vmax and amax > 0;
+    
+    public makeAccProfile: real * real * real * real * real * real * real ==> real
+    makeAccProfile (t1, dt, vnom, vmax, amax, dist, dx) ==
+      -- calculate the difference between nominal and maximum speed
+      def dvmax = vmax - vnom in
+      -- calculate the maximum rise time
+      def tvmax = dvmax / amax in
+      -- check the maximum rise time
+      if tvmax >= 0.5 * dt
+      -- we ramp-up too slow and cannot reach vmax in time
+      then ( -- calculate the maximum allowed rise time
+             def trise = 0.5 * dt in
+             -- the speed difference reached in that time
+             def vrise = trise * amax in
+             -- the maximum extra distance covered in that time
+             def xmax = vrise * trise in
+               -- compare to the required distance
+               if dx >= xmax
+               -- we cannot make it in time (best effort in stead)
+               then ( -- we cannot cover more distance than this
+                      loopctrl.addProfileElement(t1, vnom, amax);
+                      loopctrl.addProfileElement(t1+trise, vnom+vrise, -amax);
+                      loopctrl.addProfileElement(t1+trise+trise, vnom, 0);
+                      return xmax )
+               -- we can reach the goal, decellerate earlier
+               else ( -- calculate the demi distance
+                      def ttop = MATH`sqrt(dx / amax) in
+                      -- calculate the speed difference at that point
+                      def vtop = ttop * amax in
+                        ( loopctrl.addProfileElement(t1, vnom, amax);
+                          loopctrl.addProfileElement(t1+ttop, vnom+vtop, -amax);
+                          loopctrl.addProfileElement(t1+ttop+ttop, vnom, 0) );
+                      return dx ) )
+      -- we ramp-up fast and can reach vmax in time
+      else ( def trise = tvmax in
+             -- the speed difference reached in that time
+             def vrise = dvmax in
+             -- the distance covered in that time (up and down)
+             def xrise = vrise * trise in
+             -- the maximum reachable distance
+             def xmax = dt * vmax - xrise in
+               -- can we reach the goal at all
+               if dist >= xmax
+               then ( -- no we cannot cover more distance than this
+                      loopctrl.addProfileElement(t1, vnom, amax);
+                      loopctrl.addProfileElement(t1+trise, vmax, 0);
+                      loopctrl.addProfileElement(t1+dt-trise, vmax, -amax);
+                      loopctrl.addProfileElement(t1+dt, vnom, 0);
+                      return xmax - dt * vnom )
+               else ( -- yes we can reach the goal
+                      if xrise >= dx
+                      then ( -- calculate the demi distance
+                             def ttop = MATH`sqrt(dx / amax) in
+                             -- calculate the speed difference at that point
+                             def vtop = ttop * amax in
+                               ( loopctrl.addProfileElement(t1, vnom, amax);
+                                 loopctrl.addProfileElement(t1+ttop, vnom+vtop, -amax);
+                                 loopctrl.addProfileElement(t1+ttop+ttop, vnom, 0) ) )
+                      else ( -- calculate the *total* up and down area
+                             def xarea = 2 * trise * vmax - xrise in
+                             -- calculate the *total* remaining distance and time
+                             def xrest = dist - xarea in
+                             def trest = dt - 2 * trise in
+                             -- now calculate the vmax peak time
+                             def tpeak = (xrest - trest * vnom) / dvmax in
+                               ( loopctrl.addProfileElement(t1, vnom, amax);
+                                 loopctrl.addProfileElement(t1+trise, vmax, 0);
+                                 loopctrl.addProfileElement(t1+trise+tpeak, vmax, -amax);
+                                 loopctrl.addProfileElement(t1+trise+tpeak+trise, vnom, 0) ) );
+                      return dx ) )
+      pre dx > 0
+      post RESULT > 0 and RESULT <= dx
+          
+end SequenceController
+\end{vdm_al}

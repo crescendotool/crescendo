@@ -1,0 +1,17 @@
+class World
+
+operations
+  public run: () ==> ()
+  run () == 
+    ( -- ensure we start the controller thread
+      start(Demo`ctrl);
+      -- now wait infinitely
+      block () );
+
+  public block: () ==> ()
+  block () == skip
+
+sync
+  per block => false
+
+end World

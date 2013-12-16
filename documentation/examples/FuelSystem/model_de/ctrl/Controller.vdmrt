@@ -1,0 +1,118 @@
+class Controller
+
+types
+
+Mode = <DO_NOT_PUMP> | <CAN_PUMP> | <TT_ERROR>;
+
+instance variables
+
+-- sensors (interfaces)
+private LFT: AbstractSensorReal;
+private LMT: AbstractSensorReal;
+private TT: AbstractSensorReal;
+
+-- actuators (interfaces)
+private LMT2LFT: AbstractActuatorBool;
+private LMT2TT: AbstractActuatorBool;
+private TT2LFT: AbstractActuatorBool;
+
+-- current mode
+private mode: Mode;
+
+-- ensure certain pumps are off in certain modes
+--inv mode = <DO_NOT_PUMP> => (not LMT2LFT.Read() and not LMT2TT.Read() and not TT2LFT.Read()) and
+--    mode = <TT_ERROR> => (not LMT2TT.Read() and not TT2LFT.Read());
+
+operations
+
+-- constructor for Controller
+public Controller: AbstractSensorReal * AbstractSensorReal * AbstractSensorReal * AbstractActuatorBool * AbstractActuatorBool * AbstractActuatorBool ==> Controller
+Controller(lft, lmt, tt, lmt2lft, lmt2tt, tt2lft) ==
+(
+	-- set instance variables
+	LFT := lft;
+    LMT := lmt;
+    TT := tt;
+    LMT2LFT := lmt2lft;
+    LMT2TT := lmt2tt;
+	TT2LFT := tt2lft;
+    mode :=	<DO_NOT_PUMP>;
+);
+
+-- control loop
+public Step: () ==> ()
+Step() == --cycles(2) 
+(
+	-- pump to TT
+	if TT.Read() >= 10 then 
+	(
+		LMT2TT.Write(false);
+	);
+
+	-- pump to LFT
+	if LFT.Read() <= 4 then
+	(
+		if LMT.Read() > 0 then LMT2LFT.Write(true)
+		else if mode = <CAN_PUMP> and TT.Read() > 0 then TT2LFT.Write(true)
+	);
+	
+	-- shut off pumps if no fuel available
+	if LMT.Read() <= 0 then 
+	(
+		LMT2LFT.Write(false);
+		LMT2TT.Write(false);
+	);
+	if TT.Read() <= 0 then
+		TT2LFT.Write(false);
+);
+
+-- set the mode of the controller
+private SetMode: Mode ==> ()
+SetMode(m) ==
+(
+	mode := m
+);
+
+-- process enter_cruise event
+public async EnterCruise: () ==> ()
+EnterCruise() ==
+duration(0)
+(
+	if not mode = <TT_ERROR> then 
+    (
+        SetMode(<CAN_PUMP>);
+	    LMT2TT.Write(true)
+    )
+);
+
+-- process enter_pre_landing event
+public async EnterPreLanding: () ==> ()
+EnterPreLanding() ==
+duration(0)
+(
+    if mode = <CAN_PUMP> and LFT.Read() < 25 then 
+    	TT2LFT.Write(true);
+    	--LMT2TT.Write(true);
+);
+
+-- a sensor error in TT has been detected
+public async TTErrorDetected: () ==> ()
+TTErrorDetected() ==
+duration(0)
+(
+    -- stop using TT on error
+    IO`println("TTErrorDetected, bypassing pump. Time: ");
+    IO`println(time);
+	SetMode(<TT_ERROR>);
+    LMT2TT.Write(false);
+    TT2LFT.Write(false);
+);
+
+-- 10Hz control loop
+values SAMPLE_TIME = 0.1;
+thread periodic(1E8, 0, 0, 0)(Step);
+
+-- protect multiple invocations of SetMode
+sync mutex(SetMode)
+
+end Controller

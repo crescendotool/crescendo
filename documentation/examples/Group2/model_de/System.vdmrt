@@ -1,0 +1,44 @@
+system System
+
+instance variables 
+
+		public static lineSensorLeft: [AbstractSensorReal]:=nil;
+		public static lineSensorRight: [AbstractSensorReal]:=nil;
+		public static lineSensorLeftBack: [AbstractSensorReal]:=nil;
+		public static lineSensorRightBack: [AbstractSensorReal]:=nil;
+		
+		public static wheelPosLeft: [AbstractSensorReal]:=nil;
+		public static wheelPosRight: [AbstractSensorReal]:=nil;
+
+		public static motorVoltageLeft: [AbstractActuatorReal]:=nil;
+		public static motorVoltageRight: [AbstractActuatorReal]:=nil;	
+
+-- controller
+public static controller: [Controller] := nil;
+
+-- cpu
+cpu: CPU := new CPU(<FP>, 1E6)
+
+operations
+
+public System: () ==> System
+System() ==
+(
+	-- instantiate instance variables
+	World`setup();
+			lineSensorLeft := new SensorReal();
+			lineSensorRight := new SensorReal();
+			lineSensorLeftBack := new SensorReal();
+			lineSensorRightBack := new SensorReal();
+
+			wheelPosLeft := new EncoderSensor();
+			wheelPosRight := new EncoderSensor();
+			
+			motorVoltageLeft := new ActuatorReal();
+			motorVoltageRight := new ActuatorReal();
+			System`controller := new Controller(lineSensorLeft,lineSensorRight,lineSensorLeftBack,lineSensorRightBack,wheelPosLeft,wheelPosRight,motorVoltageLeft,motorVoltageRight);
+	-- deployment
+	cpu.deploy(controller)
+)
+
+end System

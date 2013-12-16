@@ -1,0 +1,20 @@
+class DTControl
+
+instance variables
+
+protected sampletime: [real] := nil;
+
+operations
+
+-- set the sample time used to calculate response	
+public SetSampleTime: real ==> ()
+SetSampleTime(s) ==
+	sampletime := s
+pre s >= 0;
+
+-- calculates output, based on the error
+public Output: real ==> real
+Output(err) == 
+	is subclass responsibility;
+
+end DTControl

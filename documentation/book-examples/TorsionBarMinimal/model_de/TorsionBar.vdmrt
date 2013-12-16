@@ -1,0 +1,19 @@
+system TorsionBar
+
+instance variables
+
+-- controller object ~ 50Hz
+public static ctrl: Controller := new Controller();
+
+-- architecture definition
+cpu : CPU := new CPU(<FP>, 200E6);
+	
+operations
+
+public TorsionBar: () ==> TorsionBar
+TorsionBar() == (
+	-- deploy controller
+	cpu.deploy(ctrl, "TorsionBarController")
+)
+
+end TorsionBar

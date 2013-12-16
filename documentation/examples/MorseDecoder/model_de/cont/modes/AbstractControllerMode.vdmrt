@@ -1,0 +1,17 @@
+class AbstractControllerMode
+
+	instance variables
+	protected mainController : ModalController;
+
+	operations
+	
+		public AbstractControllerMode: ModalController ==> AbstractControllerMode
+			AbstractControllerMode (theController) == (
+				mainController := theController;
+			);
+	
+		public step: () ==> ()
+			step () == is subclass responsibility;
+		
+
+end AbstractControllerMode

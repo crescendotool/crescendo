@@ -1,0 +1,16 @@
+-- ## Architecture ## --
+instance variables
+cpuL : CPU := new CPU(<FP>, 1e5);  -- Left
+cpuR : CPU := new CPU(<FP>, 1e5);  -- Right
+
+bus : BUS := new BUS(<CSMACD>, 72E3,{cpuL, cpuR});
+	
+		
+-- ## Deployment ## --
+cpuL.deploy(monitorL,"Monitor L");
+cpuL.deploy(rtControlInstanceL,"Chessway controller L");
+cpuL.deploy(pidInstanceL,"Chessway pid L");
+cpuR.deploy(monitorR,"Monitor R");
+cpuR.deploy(rtControlInstanceR,"Chessway controller R");
+cpuR.deploy(pidInstanceR,"Chessway pid R");	
+	

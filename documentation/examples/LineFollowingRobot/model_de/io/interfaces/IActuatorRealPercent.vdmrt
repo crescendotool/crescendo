@@ -1,0 +1,22 @@
+class IActuatorRealPercent
+
+-- interface to an actuator with a range (-1,1)
+
+types
+
+-- restricted to (-1,1)
+public Percent = real
+inv p == -1 <= p and p <= 1;
+
+operations
+
+-- write a value to this actuator
+public Write: Percent ==> ()
+Write(value) == is subclass responsibility
+pre -1 <= value and value <= 1;
+
+-- read the value written to this actuator
+public Read: () ==> Percent
+Read() == is subclass responsibility;
+
+end IActuatorRealPercent

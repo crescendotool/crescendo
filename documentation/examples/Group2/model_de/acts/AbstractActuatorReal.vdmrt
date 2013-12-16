@@ -1,0 +1,13 @@
+class AbstractActuatorReal
+
+	instance variables
+		protected value: real:= 0;
+ 
+	operations
+		public setValue: real ==> ()
+		setValue(val) == is subclass responsibility;
+		 
+		public getValue: () ==> real
+		getValue() == is subclass responsibility;
+		
+end AbstractActuatorReal
