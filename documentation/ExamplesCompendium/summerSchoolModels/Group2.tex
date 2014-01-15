@@ -1,0 +1,127 @@
+\section{Group 2}
+\subsection{Case Description}
+Group 2 employ four line-following sensors for their robot - two (for
+the left and for the right) placed forward and two (also for left and
+right) placed further back.  The sensors mounted towards the back of
+the robot are used to identify sharp turns, when the course of the
+line may be so sharp that it turns back behind the robot's current
+position.  Front-mounted sensors may find such a scenario difficult to
+detect, assuming that if the line cannot be seen ahead or on one side
+then it must have reached the finish point.
+
+Group 2 also made the decision to vary the speed of the robot, so that
+on tighter corners or on more straightforward elements of the track,
+the robot can move more quickly.  This is possible because the
+presence of two extra sensors towards the back of the robot in
+addition to two on the front allows corners and curves to be
+categorised as shallow (visible to the front sensors) or steep
+(visible to the back sensors and not to the front ones).  Different
+turning speeds can then be selected for these two types of corner.
+
+\subsection{Contract}
+The contract contains six variables of type \keyw{real}. Four
+\emph{monitored} variables, \texttt{lineSensorLeft},
+\texttt{lineSensorRight}, \texttt{lineSensorLeftB} and
+\texttt{lineSensorRightB}, are used to represent inputs from the four
+line-detecting sensors (front left and front right, back left and back
+right respectively).  Two further \emph{monitored} variables,
+\texttt{wheelPosLeft} and \texttt{wheelPosRight}, are used to
+represent input from the sensors used to count revolutions of the left
+and right wheel.  This information is necessary in order to calculate
+distance travelled, a requirement of the exercise.
+
+Two \emph{controlled} variables of type \keyw{real},
+\texttt{motorVoltageLeft} and \texttt{motorVoltageRight}, are used to
+produce signals to the motor for the left and right wheels
+respectively.
+
+Group 2 did not make use of any shared design parameters.
+
+\subsection{Discrete-event}
+The \texttt{System} class in Group 2's model begins by creating six
+instances of the class \texttt{Abstract\-Sen\-sor\-Real} for the six
+sensors (four for line-detecting and two to act as encoders for the
+wheels) and two instances of \texttt{AbstractActuatorReal} for the two
+actuators.  The \texttt{Controller} class acts as a controller and has
+the main thread of control; the \texttt{System} class deploys the
+\texttt{Controller} to a single CPU.
+
+At run time, \texttt{ActuatorReal} provides an implementation of
+\texttt{AbstractActuatorReal}.  This class simply passes a signal to
+the motors.  Implementations of the sensors are provided by different
+classes for the sensors used as encoders, and the sensors uses as
+line-detectors.  For the encoders, the class \texttt{EncoderSensor} is
+used.  This class includes some short logic to convert the input from
+the sensor representing the wheel encoder into a value for rotations
+of the wheel.  For the line-detecting sensors, implementation is
+provided by the class \texttt{SensorReal}, which simply handles data
+produced by the sensor.
+
+Like many other groups, Group 2 created different classes to contain
+the functionality required for the different modes of operation.  The
+\texttt{Controller} class stores a variable internally
+(\texttt{ControllerMode}) which is of type
+\texttt{AbstractControllerMode}.  At runtime different concrete
+implementations of this abstract class are used during different modes
+of operation.  The first implementation is provided by the
+\texttt{InitilaizeControlMode} class, which proceeds until it can be
+confirmed that the initial pattern on the ground has been detected and
+that the robot has proceeded beyond it.  During the next mode the
+concrete implementation of the \texttt{AbstractControllerMode} is
+provided by \texttt{LineFollowingControlMode}.  This class proceeds on
+a step-by-step basis.  For each step, the class first gathers readings
+from each of the four line-detecting sensors.  In cases where both
+front sensors can see the line, then the robot continues ahead at top
+speed.  If the right front sensor can detect a line but the left
+sensor cannot, then the robot should turn right.  Similarly, if the
+left front sensor can detect a line but the right sensor cannot, then
+the robot turns left.  \texttt{LineFollowingControlMode} checks for
+situations where one of the rear-mounted sensors can detect a line
+that is not visible to the front-mounted sensors.  In this case, it
+assumes that there is a sharp corner in the line's course, and
+executes a sharp turn in that direction.  If all four sensors detect
+no line, then the robot is deemed to have finished the course.
+
+Attempts are made to try and keep the speed as high as possible whilst
+executing a turn; Group 2's robot keeps one wheel at \texttt{topSpeed}
+and drops the speed of the other.  The model also differentiates
+between sharp corners and shallow turns, and uses different speed
+settings on the wheels to ensure that the robot turns more quickly in
+a shorter distance on a sharper corner.
+
+\subsection{Continuous-time}
+As with all the other groups, the CT model includes blocks to provide
+an implementation of robot physics (\texttt{RobotPhysics}) and data
+for the 3D simulation (\texttt{DataFor3D}) .
+
+Group 2's CT model employs a \texttt{Controller} block to act as an
+interface with the DE model.  The model also includes two blocks to
+represent the two encoders (\texttt{EncoderL} and \texttt{EncoderR}
+for the left and right encoders respectively).  Data incoming from the
+\texttt{Controller} for the encoders is processed by
+\texttt{RobotPhysics} and is then passed to the encoders, which apply
+some processing and generate an output for the wheels.
+
+There are four blocks to represent the four sensors
+(\texttt{Sensor\_Left\_Back} and \texttt{Sensor\-\_\-Right\-\_\-Back} are the left and
+right sensors at the back and \texttt{Sensor\_Left\_Front} and
+\texttt{Sensor\_Right\_Front} are mounted at the left and right front of the
+robot).  Each sensor block accepts an input which is the robot's
+current position.  It incorporates a lookup table \texttt{Table2D} to
+calculate the currently visible section of floor and produces an
+output representing the currently visible floor colour.
+
+Signals generated by all four sensors are processed by
+\texttt{RobotPhysics} and results are passed back to the
+\texttt{Controller} for sharing with the DE model.  Finally, the
+incoming data for the encoders, and the output generated by all four
+sensors, is also processed by \texttt{DataFor3D} to enable a 3D
+simulation.
+
+%\subsection{Scenarios}
+
+
+
+
+
+

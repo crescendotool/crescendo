@@ -1,0 +1,81 @@
+\section{Group 1}
+
+\subsection{Case Description}
+Group 1 opted for a design with two sensors (left and right), placed
+symmetrically.  The layout chosen is not completely finished and may
+not handle all maps equally well - it may cope with some angles and
+corners better than others.  Group 1's model is an example of a model
+that prioritises speed when executing turns, as both wheels continue
+to turn as fast as is practical whilst turning.  Some other models
+made different decisions and either halted one wheel entirely or
+reversed one wheel to execute a turn.
+
+\subsection{Contract} The contract contains six variables of type
+\keyw{real}. Two \emph{monitored} variables, \texttt{leftLSValye} and
+\texttt{rightLSValue}, are used to represent inputs from the
+line-detecting sensors on the left and the right respectively.  Two
+further \emph{monitored} variables, \texttt{leftEncoderValue} and
+\texttt{right\-Encoder\-Value}, are used to represent input from the
+sensors used to count revolutions of the wheels.  This information is
+necessary in order to calculate distance travelled, a requirement of
+the exercise.
+
+Two \emph{controlled} variables of type \keyw{real},
+\texttt{leftMotorDC} and \texttt{rightMotorDC}, are used to produce
+signals to the motor for the left and right wheels respectively.
+
+The contract also includes the five shared design parameters described
+for all groups in Section \ref{chap:summerschoolintro}.
+
+\subsection{Discrete-event}
+In the DE model, the \texttt{System} class instantiates two instances
+of the \texttt{Sensor} class to represent sensors placed on the left
+(\texttt{leftLineSensor}) and the right (\texttt{rightLineSensor}).
+In addition \texttt{System} instantiates two instances of
+\texttt{Actuator} (\texttt{leftPWM} and \texttt{rightPWM}) to provide
+signals to the motors for the left and right wheels.
+
+To provide a closed feedback loop, two more \texttt{Sensor} instances
+are created to represent the encoders monitoring actual revolutions
+turned by the wheels on the left (\texttt{leftEncoder}) and on the
+right (\texttt{rightEncoder}).
+
+Finally, \texttt{System} creates an instance of
+\texttt{ModalController} to provide controller functionality, and
+deploys it onto a single CPU.  \texttt{ModalController} provides the
+primary logic for the robot.  A number of modes are defined; an
+initial mode sees the robot start moving forward, hunting for the
+initial pattern.  Next is a calibration phase where the robot
+continues as it follows the initial pattern, and a line-following
+phase where the actual line begins.  A final phase sets the robot at
+rest after the end of the line is identified.  The robot reduces the
+speed of the left wheel to turn left if the left sensor detects the
+line on the ground, and it reduces the speed of the right wheel to
+turn right if the right sensor detects the line.
+
+\subsection{Continuous-time}
+As with all the other groups, the CT model includes blocks to provide
+an implementation of robot physics (\texttt{RobotPhysics}) and data
+for the 3D simulation (\texttt{DataFor3D}).
+
+A \texttt{controller} class handles interaction with the DE model.
+The CT model includes two blocks to represent the encoders for the
+wheels on the left (\texttt{encoderLeft}) and on the right
+(\texttt{encoderLeftRight}). Each encoder accepts input (data representing
+the number of black or white areas on the wheel which have moved past
+the sensor), and incorporates blocks that convert this data into a
+count of the number of revolutions the wheel has made.
+
+Input from the \texttt{controller} is passed to \texttt{RobotPhysics}
+for some processing and is then made available to the encoders.
+Output from \texttt{RobotPhysics} is also passed to a block
+\texttt{pos\-Con\-ver\-ter} which is responsible for calculating current
+position.  This block interacts with blocks \texttt{floorMapLeft} and
+\texttt{FloorMapRight}, which act as lookup tables for interpreting what is
+currently visible in the map.
+
+
+
+%\subsection{Scenarios}
+
+

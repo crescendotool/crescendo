@@ -1,0 +1,99 @@
+\chapter{Water Tank (Event-Driven)} \label{chap:watertankeventdriven}
+\section{Case Description}
+The event driven water tank model is very similar to the periodic
+water tank model described in Chapter \ref{chap:watertankperiodic}.
+It models a water tank that is supplied by a flow of water inwards.
+There is a valve at the bottom of the tank which can be opened so that
+water flows out of the tank, or closed to stop the outflowing water.
+Underneath the tank we assume that there is a drain to catch any water
+flowing out.  The tank is equipped with a sensor to measure the
+current water level.
+
+We should like the water in the tank to remain between some maximum
+and some minimum level.  If the water level falls below our minimum
+desired level then the valve should be closed to stop the outflow.  On
+the other hand, if the water rises above our maximum desired level,
+then the valve should be opened to enable water to flow out.
+
+The event-driven model accomplishes this using events, which are
+triggered on the CT side of the co-model.  When the water level sensor
+detects that the water is too high, it triggers a appropriate event
+and signals the DE model.  The DE model then triggers the valve to
+open by signalling the valve actuator.  Similarly, if the sensor
+detects a water level that is too low, the CT model triggers a
+different event and signals the DE model; the DE model then closes the
+valve.
+
+\section{Contract}
+The contract for the event-driven water tank model is very similar to
+that for the periodic water tank model.  It includes one
+\emph{monitored} variable of type \keyw{real} (called \texttt{level})
+which is the signal representing the current level of water in the
+tank as measured by the sensor.  And there is one \emph{controlled}
+variable of type \keyw{bool} (called \texttt{valve}) which is a signal
+produced by the DE model to open or shut the valve.
+
+In addition, there are two shared design parameters of type
+\keyw{real}: \texttt{maxlevel} and \texttt{minlevel}.  The shared
+design parameters can be configured at runtime when executing a
+simulation of the model, by opening the debug configuration options in
+the DESTECS tool before the simulation is started.
+
+Finally, the event-driven model also includes two declared events:
+\texttt{high}, which is an event triggered when the water level passes
+some maximum desired level; and \texttt{minLevelReached}, which is
+triggered when the water level falls below some desirable minimum
+level.
+
+\section{Discrete-event} The DE model contains an
+\texttt{Controller} class, which has the main thread of control.  An
+instance of \texttt{LevelSensor} is created to represent the sensor
+that measures the current water level, and also an instance of
+\texttt{ValveActuator} is created to represent the valve at the bottom
+of the tank.  An instance of \texttt{WatertankEventHandler} is created
+to receive the events that will be triggered by the CT model.
+
+\texttt{LevelSensor} returns a value to represent the current level of
+water, whilst \texttt{ValveActuator} accepts a boolean value that sets
+the valve to be open or closed.  We assume that the level sensor is
+able to self-detect and report some errors, and the
+\texttt{LevelSensor} class checks for these. The class
+\texttt{WatertankEventHandler} exists to catch the events triggered by
+the CT model and react to them.  It reacts to the \texttt{high} event
+by opening the valve on the tank, and it reacts to the
+\texttt{minLevelReached} by closing the valve.
+
+\section{Continuous-time}
+The CT model for the periodic water tank consists of two main parts,
+one to represent the link to the DE side of the model (\texttt{DE\_link})
+and one to represent the continuous-time side
+(\texttt{I\_O\_Plant}).
+
+The \texttt{discrete-event} block handles interaction with the DE
+model itself.  It contains a block, \texttt{Control}, which handles
+the input parameter produced by the DE model and also the parameter
+for data output by the CT model.  It also houses some logic for
+triggering the relevant events.  Events in this case are triggered by
+a zero value being reached.  The event \texttt{minLevelReached} is
+used to communicate to the DE model that the water level has fallen
+below some minimum desirable level of water, and is calculated by
+subtracting the minimum desired level from the actual current level; a
+result at zero results in the triggering of the event
+\texttt{minLevelReached}.  Similarly, the maximum desired level is
+also subtracted from the current level; when the result is zero this
+triggers the event \texttt{high}.
+
+The \texttt{continuous-time} block incorporates other blocks to
+represent the plant.  There is a \texttt{FlowSource} to represent the
+source of incoming water, a \texttt{tank} to contain the water and a
+\texttt{Valve} at the bottom of the tank to control outward flow.
+Underneath the tank is a \texttt{Drain}.
+
+\section{Usage}
+As with the periodic water tank model, running a simulation of the
+event-driven water tank will illustrate how the water level in the
+tank rises and falls between the maximum and minimum levels.  One way
+to experiment with the model is to change the shared design parameters
+which dictate these levels and experimenting to observe the effect on
+the model's behaviour.  These can be set in the Debug configuration
+window in the DESTECS tool.

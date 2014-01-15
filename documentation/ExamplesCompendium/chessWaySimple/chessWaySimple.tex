@@ -1,0 +1,80 @@
+\chapter{ChessWay Simple} \label{chap:chesswaysimple}
+\section{Case Description} The ChessWay is a two-wheeled,
+self-balancing scooter which utilises a gyroscope to maintain a stable
+upright position. The scooter consists of a platform on which the
+rider stands, two parallel wheels and a handlebar.  A model of the
+scooter can be seen in Fig~\ref{fig:chessWaySimple}.
+
+\begin{figure}[!ht] \centering
+\includegraphics{chessWaySimple/chesswaySimple.JPG}
+\caption{Image of the ChessWay personal scooter
+\label{fig:chessWaySimple}} \end{figure}
+
+The ChessWaySimple model is a simplified and abstracted model of the
+scooter.  It features a sensor which can be used to calculate current
+forward velocity and an acceleration sensor which can be used to
+determine the current angle. Each wheel has its own motor, although
+there is a single controller for both motors, so the scooter travels
+in a straight line only (see the ChessWay DESTECS model in Chapter
+\ref{chap:chesswaydestecs} for a slightly more complex model that
+permits separate inputs to motors). Users simply lean forwards to
+increase forward motion.  This is a trivial and simple version of the
+ChessWay model; for more advanced versions of the same vehicle we
+recommend studying Chapters \ref{chap:chesswaysl} and
+\ref{chap:chesswaydestecs}.
+
+%\section{External Links}
+
+%\begin{itemize} %\item Papers/technical reports where the model
+%is used %\end{itemize}
+
+\section{Contract} The contract contains four shared state
+variables of type {\textbf\ttfamily{real}}. Two monitored variables
+are responsible for reading in signals from the sensors used for
+calculating velocity (\texttt{v\_in}) and acceleration
+(\texttt{a\_in}). Two controlled variables are responsible for
+producing a signal to the motors to alter forward velocity
+(\texttt{v\_out}) or to make adjustments to the current angle
+(\texttt{a\_out}). Both of the controlled variables produce a signal
+to power the motors.
+
+\section{Discrete-event} The DE model includes a
+\texttt{Controller} class which manages the main thread of
+control. The Controller instantiates two \texttt{IActuatorReal}
+abstract classes, to represent the actuator signal for adjusting
+vertical position (\texttt{acc\_out}) and the actuator signal for
+adjusting forward velocity (\texttt{vel\_out}). It also instantiates
+two \texttt{ISensorReal} abstract classes to represent input signals
+from the velocity sensor (\texttt{vel\_in}) and the acceleration
+sensor (\texttt{acc\_in}). At run-time, the \texttt{Actuator} class
+provides a concrete implementation of \texttt{IActuatorReal} and the
+\texttt{Sensor} class provides an implementation of
+\texttt{ISensorReal}.
+
+The ChessWay scooter implements a closed feedback loop to produce the
+self-balancing functionality. The current angle at any one time is
+calculated (based on the input from the \texttt{acc\_in} class that
+represents the gyroscope's readings), and then based on this, the
+scooter's motor is fed a signal to make corrections and ensure the
+scooter stays upright.
+
+The \texttt{System} class deploys the \texttt{Controller} onto a
+single CPU.
+
+\section{Continuous-time} On the top level of the hierarchy, the
+model consists of three main blocks: the controller (the
+\texttt{cosim} part of the model), the plant and a block used for
+\texttt{IO} which resides in between the \texttt{cosim} and the
+plant. The controller handles the passing of variables to/from the DE
+model. The plant block contains three elements, to represent the axis,
+the person frame (the unit consisting of the platform and handlebar)
+and the wheels. And finally the \texttt{IO} block primarily contains
+D-A and A-D conversion functionality.
+
+\section{Usage}
+The ChessWay Simple model is designed to be a simple introduction to a
+more complex version of the same scooter (see Chapter
+\ref{chap:chesswaydestecs}).  Running a simulation of the Simple model
+demonstrates how the scooter responds to small changes in velocity by
+altering signals to the actuators so that it can maintain an upright
+position by way of many small corrections.

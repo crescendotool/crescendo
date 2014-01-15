@@ -1,0 +1,94 @@
+\section{Group 5}
+\subsection{Case Description}
+Group 5's robot employs two line-detecting sensors, positioned left
+and right.  The group elected to employ faster turns in the shortest
+possible distance by setting one wheel to maximum voltage and the
+other to maximum negative voltage (i.e., reversing) when turning on
+corners.
+
+\subsection{Contract} 
+The contract contains six variables of type \keyw{real}.  Two
+\emph{monitored} variables are used to represent inputs from the
+line-detecting sensors on the left (\texttt{SensorVisionLeft}) and on
+the right (\texttt{sensorVisionRight}).  Two further \emph{monitored}
+variables, \texttt{sensorRotationSpeedLeft} and
+\texttt{sensorRotationSpeedRight}, are used to represent input from
+the sensors used to count revolutions of the left and right wheel
+respectively.
+
+Two \emph{controlled} variables, \texttt{actuatorWheelLeft} and
+\texttt{actuatorWheelRight} are used to produce signals to the motor
+for the left and right wheels respectively.
+
+The contract also includes the five shared design parameters described
+for all groups in Section \ref{chap:summerschoolintro}.
+
+\subsection{Discrete-event} 
+The DE model for Group 5's model begins with the \texttt{System}
+class, which creates two instances of \texttt{SensorVision} to
+represent sensors for the line-sensing task, and two instances of
+\texttt{Sensor\-Ro\-ta\-tion} to represent sensors for the wheel encoders.
+It also instantiates two actuators, using the \texttt{ActuatorWheel}
+class, to power the wheels, and a single instance of
+\texttt{Controller} to provide control functionality.  Finally it
+deploys the model to a single CPU.
+
+The \texttt{ActuatorWheel} class simply handles passing data to the
+actuators and the \texttt{Sensor\-Ro\-ta\-tion} class simply handles data
+coming from the sensors employed as encoders.  The
+\texttt{Sensor\-Vision} class, however, which represents the
+line-detecting sensors, includes some extra functionality that
+analyses the colour values of the area of floor currently visible and
+makes a decision as to whether it represents line, background or some
+undertermined value.  Group 5 have created some abstract classes for
+the actuators and sensors (\texttt{AbstractAcutatorReal} and
+\texttt{AbstractSensorReal} respectively) but these are not currently
+employed by the model.
+
+The \texttt{Controller} also creates an instance of
+\texttt{ComputeSpeedAlg2}.  This class calculates the optimal speed
+for each wheel, given some information about the current
+line-detecting sensors and encoders (several alternative versions of
+this class were created but are not in current use in the model).
+\texttt{ComputeSpeedAlg2} collects the currently visible colours from
+the line-detecting sensors and makes a decision.  Initially the class
+hunts for the known pattern.  Once the line has been detected, it
+adopts slightly different logic.  If both sensors see background, then
+it's assumed that the end of the line has been reached.  If the
+right-hand sensor detects the line and the left-hand does not then the
+speed is calculated to turn the robot to the right.  Likewise, if the
+left-hand sensor detects the line and the right-hand does not, then
+the robot turns to the left.
+
+When turning, Group 5's robot produces a positive voltage for one
+wheel and a negative for the other, in order to optimise the amount of
+rotation in the shortest distance.
+
+\subsection{Continuous-time} 
+As with all the other groups, the CT model includes blocks to provide
+an implementation of robot physics (\texttt{RobotPhysics}) and to
+produce data for the 3D simulation (\texttt{DataFor3D}).  There is a
+\texttt{Controller} block which acts as an interface between the DE
+and CT models, accepting data from the DE model for the actuators and
+producing information from the sensors for the DE model to process.
+
+There are separate blocks representing the two actuators/encoders
+(\texttt{scalingLeft} and \texttt{Sca\-ling\-Right}).  These blocks incorporate
+some logic to translate data from the encoders into number of
+revolutions the wheel has turned.  There are also two (unfinished)
+blocks representing the line-detecting sensors
+(\texttt{DummyLineSensorLeft} and \texttt{DummyLineSensorRight}),
+which would produce data representing the colour of the currently
+visible area on the ground.  Data from the \texttt{Controller} for the
+encoders passes first through the \texttt{RobotPhysics} block before
+being passed to the actuators/encoders.  Output from the sensors and
+the \texttt{RobotPhysics} block is passed to the \texttt{DataFor3D}
+block for processing in a 3D simulation.
+
+%\subsection{Scenarios} 
+
+
+
+
+
+
