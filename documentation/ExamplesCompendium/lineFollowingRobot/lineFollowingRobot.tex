@@ -1,7 +1,7 @@
 \chapter{Line Following Robot} \label{chap:lineFollowingRobot}
 \section{Case Description} The line following robot is a
 co-model that demonstrates how design space exploration is supported
-in DESTECS.  The co-model simulates a robot that can follow a line
+in \DESTECS.  The co-model simulates a robot that can follow a line
 painted on the ground. It is assumed that the colour of the line is
 known and that it is differentiated from the background colour (which
 is not known), but the line may exhibit gentle or sharp corners or
@@ -38,9 +38,9 @@ number of sensors or changing their positions (sensor position can be
 adjusted laterally or longitudinally). Any given design can be
 assessed by comparing distance travelled, which will be shorter for
 more accurate robots, and average speed, which will ideally be as high
-as possible.  DESTECS facilitates exploration of the design space by
+as possible.  \DESTECS facilitates exploration of the design space by
 automating simulations with different design parameters. For example,
-DESTECS can automatically simulate a model with two sensors set
+\DESTECS can automatically simulate a model with two sensors set
 initially close together, then increasing the distance between them by
 some distance \texttt{n} until a maximum distance is reached.  The
 results of each simulation can then be compared to determine the ideal
@@ -159,7 +159,7 @@ If the \emph{fail\_fixed\_value} implementation is selected in the left sensor, 
 \section{Usage}
 
 The line-following robot model is a good opportunity to see how
-DESTECS can support design space exploration.  A good starting point
+\DESTECS can support design space exploration.  A good starting point
 is to run the co-model (using the \texttt{LineFollowingRobot} launch configuration), examining the speed and accuracy (distance)
 with which it can complete various lines. You can then run the \texttt{LineFollowingRobot\_Outside} launch, in which the shared design parameter \texttt{line\_follow\_x} has been increased so that the sensors are ``outside'' the line on either side. Note how the simple line-following algorithm still works.
 
@@ -169,7 +169,7 @@ sensors may make this task easier or more difficult, whilst changing
 the width between the two sensors also has an impact, by altering the
 resolution of the information which can be gathered about the line.
 
-To try various designs automatically, you can define an ``ACA Launch'' configuration. Select \texttt{LineFollowingRobot} as the ``Base Configuration'', then on the ``SDPs Sweep'' tab, then try the following values: \texttt{line\_follow\_x} from 0.01 to 0.05 by 0.02, and \texttt{line\_follow\_y} from 0.01 to 0.13 by 0.06. The DESTECS tool will then run 9 co-simulations generated from the above numbers.
+To try various designs automatically, you can define an ``ACA Launch'' configuration. Select \texttt{LineFollowingRobot} as the ``Base Configuration'', then on the ``SDPs Sweep'' tab, then try the following values: \texttt{line\_follow\_x} from 0.01 to 0.05 by 0.02, and \texttt{line\_follow\_y} from 0.01 to 0.13 by 0.06. The \DESTECS tool will then run 9 co-simulations generated from the above numbers.
 
 Beyond this step, you could try to improve the robot's line-following. First, you could change \texttt{fast\_wheel\_speed} and \texttt{slow\_wheel\_ratio} (between 0.0 and 1.0) to alter the controller aggression. The robot could be made to drive more smoothly if a \emph{proportional} control mode was used, which applies more or less turn depending on how far from the line it is. You could change the \texttt{FollowMode} class, or create you own class and instantiate it in the constructor of \texttt{LineFollower} class.
 

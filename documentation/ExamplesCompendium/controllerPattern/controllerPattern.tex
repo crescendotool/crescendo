@@ -19,12 +19,12 @@ There are two versions of the Simple Controller model provided, which can be
 compared side-by-side (it is possible to switch between the two models
 in 20-sim).  One version is entirely implemented as a CT model, with a
 CT controller block to interact with the motor and an encoder.  
-The second version is a DESTECS co-model, which has a controller
+The second version is a \DESTECS co-model, which has a controller
 implemented in VDM.  Because there are two versions of the model
 provided, the Simple Controller may be of interest to those with a
 background in CT modelling who want to see how to convert an existing
-CT model to a DESTECS co-model. The design pattern visible in the
-co-model here is reused in many other, more complex DESTECS co-models.
+CT model to a \DESTECS co-model. The design pattern visible in the
+co-model here is reused in many other, more complex \DESTECS co-models.
 
 \begin{figure}[!ht]
 \begin{subfigure}
@@ -62,7 +62,7 @@ by the \texttt{System} class.
 \section{Continuous-time} There are two versions of the CT model
 provided in 20-sim, one with all control implemented entirely in a CT
 (20-sim) model, and one with all control implemented in VDM (i.e., a
-DESTECS co-model). Both models share the same plant, in which a power
+\DESTECS co-model). Both models share the same plant, in which a power
 signal, \emph{K}, is output to a motor, \emph{T}, which produces torque to rotate
 a wheel, \emph{J}, modeling its inertia, whilst the bearing attached to the wheel models friction.
 
@@ -70,9 +70,9 @@ In the CT-only model the
 \texttt{Controller} block houses the controller that calculates an
 appropriate output for the motor. 
 
-In the second model - a DESTECS co-model - the
+In the second model - a \DESTECS co-model - the
 functionality previously implemented by the \texttt{Controller}
-has now been moved into a VDM model in the DESTECS tool, and so the second implementation of the 
+has now been moved into a VDM model in the \DESTECS tool, and so the second implementation of the 
 \texttt{Controller} block, now takes responsibility for importing data to and exporting data
 from the DE model. 
 
@@ -91,4 +91,4 @@ from 20-sim. To do this, right click on the high-level \texttt{Controller} block
 20-sim, select \texttt{Edit Implementation}, and select
 \texttt{CT}, and launch the model. 
 Alternatively one can select \texttt{Destecs} here and
-then launch the co-simulation from the DESTECS tool.
+then launch the co-simulation from the \DESTECS tool.
