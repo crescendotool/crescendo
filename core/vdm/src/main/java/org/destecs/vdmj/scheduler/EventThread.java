@@ -200,5 +200,13 @@ public class EventThread implements ISchedulableThread
 	{
 		//Not used
 	}
+	public boolean stopThread()
+	{
+		return false;
+	}
+	public void reschedule(Context ctxt, ILexLocation location)
+	{
+		//Not used
+	}
 
 }
