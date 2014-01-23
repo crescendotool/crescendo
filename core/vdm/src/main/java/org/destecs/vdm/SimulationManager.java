@@ -341,6 +341,7 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				File logFile = new File(outputDir, "ExecutionTrace.logrt");
 				controller.setLogFile(logFile);
+				RTLogger.enable(true);
 				RTLogger.setLogfile(RTTextLogger.class,logFile);
 				RTLogger.setLogfile(NextGenRTLogger.class,logFile);
 			}
