@@ -83,6 +83,7 @@ import org.overture.interpreter.debug.DBGPReaderV2;
 import org.overture.interpreter.debug.DBGPStatus;
 import org.overture.interpreter.messages.Console;
 import org.overture.interpreter.messages.rtlog.RTLogger;
+import org.overture.interpreter.messages.rtlog.RTTextLogger;
 import org.overture.interpreter.messages.rtlog.nextgen.NextGenRTLogger;
 import org.overture.interpreter.runtime.Context;
 import org.overture.interpreter.runtime.RuntimeValidator;
@@ -341,8 +342,8 @@ public class SimulationManager extends BasicSimulationManager
 				File logFile = new File(outputDir, "ExecutionTrace.logrt");
 				controller.setLogFile(logFile);
 				RTLogger.enable(true);
-				RTLogger.setLogfile(new PrintWriter(logFile));
-				NextGenRTLogger.getInstance().setLogfile(logFile);
+				RTLogger.setLogfile(RTTextLogger.class,logFile);
+				RTLogger.setLogfile(NextGenRTLogger.class,logFile);
 			}
 
 			if (Settings.timingInvChecks)
