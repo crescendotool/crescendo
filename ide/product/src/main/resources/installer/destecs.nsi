@@ -21,14 +21,17 @@ SetCompress off
 !define TARBALL "combined.tar"
 
 !define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.4.0"
+!define SIM20_VERSION "4.4.1"
 !define SIM20_PLATFORM "win32"
 !define SIM20_EXE "${SIM20_NAME}-${SIM20_VERSION}-${SIM20_PLATFORM}.exe"
 
-!define DESTECSIDE "CrescendoIde-"
-!define DESTECSFOLDER "${DESTECSIDE}${PRODUCT_VERSION}"
+!define DESTECSIDE "Crescendo"
+!define DESTECSFOLDER "${DESTECSIDE}-${PRODUCT_VERSION}"
 ;!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
-!define DESTECSZIP "destecs.zip"
+!define CRESCENDO_NAME "Crescendo"
+!define CRESCENDO_VERSION "2.0.0"
+!define CRESCENDO_ARCH "x86"
+!define DESTECSZIP "${CRESCENDO_NAME}-${CRESCENDO_VERSION}-win32.win32.${CRESCENDO_ARCH}.zip"
 
 !include "WordFunc.nsh"
   !insertmacro VersionCompare
@@ -106,18 +109,20 @@ Section "Crescendo (required)" ;No components page, name is not important
   WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "" $INSTDIR
   WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "Version" "${PRODUCT_VERSION}"
 
-  ; Combined Tools instalation file
-  File "data\${TARBALL}"
+  ;; Combined Tools instalation file
+  ;File "data\${TARBALL}"
+  File "data\${SIM20_EXE}"
+  File "data\${DESTECSZIP}"
   ; Call the function to unpack the tarball before installing the tools
-  untgz::extract -znone -j -d "$INSTDIR" "${TARBALL}"
-  Delete "${TARBALL}"
+  ;untgz::extract -znone -j -d "$INSTDIR" "${TARBALL}"
+  ;Delete "${TARBALL}"
 
   ; Calling the function that installs Crescendo  
   Call DESTECSInstall
   
   ; Calling the function that installs 20-sim
   call 20simVersionTest
-  Call writeRegistryKey 
+  call writeRegistryKey 
   
   AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   ; Registry creation
