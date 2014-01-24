@@ -117,7 +117,7 @@ Section "Crescendo (required)" ;No components page, name is not important
   
   ; Calling the function that installs 20-sim
   call 20simVersionTest
-  Call writeRegistryKey 
+  ;Call writeRegistryKey 
   
   AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   ; Registry creation
@@ -239,9 +239,9 @@ Function 20simVersionTest
 
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayVersion"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayVersion"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayVersion"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayVersion"
 ${EndIf}
 
 
@@ -276,9 +276,9 @@ FunctionEnd
 Function Add20simFirewallException
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayIcon"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayIcon"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.3\" "DisplayIcon"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayIcon"
 ${EndIf}
  
 IfErrors isError 
