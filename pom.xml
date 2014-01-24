@@ -5,7 +5,7 @@
 
   <groupId>org.destecs</groupId>
   <artifactId>root</artifactId>
-  <version>2.0.0-SNAPSHOT<!--Replaceable: Main Version--></version>
+  <version>2.0.0</version>
   <name>DESTECS</name>
 
   <modules>
@@ -68,6 +68,34 @@
 
   <build>
     <defaultGoal>install</defaultGoal>
+
+    <plugins>
+      <plugin>
+        <!--
+            This plugin allows you to run
+
+            $ mvn versions:set -DnewVersion=1.6.1 -Dtycho.mode=maven
+
+            and get all the version numbers updated nearly for free.
+            The tycho bit on the end just tells tycho (used in the
+            eclipse plugin build) to piss off.
+
+            Also set the version in
+            eclipse/astEditor/META-INF/MANIFEST.MF or the build will
+            complain.
+
+            More details on the versions-maven-plugin are at
+            http://mojo.codehaus.org/versions-maven-plugin/
+        -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <configuration>
+          <!-- Version control obviates the need for this. -->
+          <generateBackupPoms>false</generateBackupPoms>
+        </configuration>
+      </plugin>
+    </plugins>
+
     <pluginManagement>
       <plugins>
 	<plugin>
@@ -149,6 +177,12 @@
 	  <artifactId>maven-clean-plugin</artifactId>
 	  <version>2.5</version>
 	</plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
 
 	<plugin>
 	  <groupId>org.codehaus.mojo</groupId>
