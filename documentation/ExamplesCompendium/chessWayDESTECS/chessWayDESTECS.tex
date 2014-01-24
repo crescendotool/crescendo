@@ -1,0 +1,160 @@
+\chapter{ChessWay \DESTECS} \label{chap:chesswaydestecs}
+\section{Case Description} The ChessWay \DESTECS model is an
+extension of the previous two models (see Chapters
+\ref{chap:chesswaysimple} and \ref{chap:chesswaysl}). Like the model
+presented in Chapter \ref{chap:chesswaysl}, the vehicle described by
+the ChessWay\DESTECS model is a self-balancing scooter with two parallel
+wheels and a handlebar, an ignition switch and a removable safety key.
+
+The scooter employs sensors to indicate whether the safety key has
+been removed from the handlebar unit, or whether the user has switched
+off the ignition. There are some differences in how the scooter should
+respond when ignition is switched off, or when the safety key is
+removed. If the user turns off the scooter, then the model should
+first check the current state of the vehicle, and if it is currently
+in active motion it should bring it to a safe, stationary position
+before deactivating. In contrast, if the safety key is removed from
+the handlebar unit, then we assume that the user has fallen from the
+scooter and so it should be immediately brought to rest with no need
+to check current status.
+
+Unlike the ChessWaySimple model, there are separate controllers for
+each of the wheels.  The controllers for the motors are connected
+wirelessly, so the model must cope with occasional lost data packets.
+As before, there is a sensor which can be used to calculate current
+forward velocity of the scooter, and a gyroscope (acceleration) which
+can be used to determine the current vertical angle.
+
+\section{Contract} The contract contains six shared state variables of
+type {\textbf\ttfamily{real}}. Two monitored variables are responsible for
+reading in detected error in velocity
+(\texttt{rmsVelocityError}) and the current angle of the
+handlebar mast (\texttt{poleAngle}). Four more controlled
+variables are responsible for producing signals to the motors to
+alter velocity for the left (\texttt{pwmSettingL}) and right
+(\texttt{pwmSettingR}) wheels, and for powering the safety key
+override on the left (\texttt{safetySwitchL}) and on the right
+(\texttt{safetySwitchR}).
+
+The contract also contains 6 display variables, all of type
+{\textbf\ttfamily{controlled real}}. The display variables are shared
+between the DE and CT models and are available for 3D modelling,
+if needed.
+
+Finally, there are two shared design parameters, \texttt{pidGain} and
+\texttt{sdpSlip}, the values of which can be set or altered to
+simulate different errors.
+
+\section{Discrete-event}  We recommend also reading Chapter \ref{chap:chesswaysl}, which describes the process of implementing this model in more detail.   The DE model includes a number of
+classes to designed to represent various sensors, including one each
+for \texttt{Gyro}, \texttt{Ignition}, \texttt{SafetyKey},
+\texttt{VelocitySensor} and one to detect \texttt{VelocityError} (it's
+assumed that the hardware is capable of reporting self-detected
+errors). There are also two classes representing actuators:
+\texttt{Pid} handles the standard actuators powering the wheels. And
+\texttt{SafetySwitch} handles an override of the \texttt{Pid} class,
+if the safety key has been withdrawn.
+
+The DE model starts with a \texttt{System} class, which creates
+single instances of each of the sensors for monitoring: the
+gyroscope; the safety key; the ignition switch; the velocity;
+and detected velocity errors. \texttt{System} then creates two
+instances of a \texttt{Monitor} class (one for each wheel/motor)
+to monitor these sensors and determine the correct current state
+for the scooter. \texttt{System} also creates two instances of
+the \texttt{RTControl} class, which act as controllers (one for
+each motor/wheel). The \texttt{RTControl} instances each have
+their own copy of a \texttt{Pid} class (representing the
+actuator for activating the motor) and a \texttt{SafetySwitch}
+class (for overriding the actuator).
+
+Finally, \texttt{System} also creates a single instance of a
+class that represents the wireless data connection. An abstract
+class \texttt{Ether} is provided for this purpose along with
+several concrete implementations, each of which behaves slightly
+differently. Currently the model uses the concrete
+implementation \texttt{LossyEther}, which `drops' randomly
+selected data packets at runtime.
+
+\section{Continuous-time} The CT model is presented in more
+detail than other examples, and several possible 20-sim models
+are provided. There are some small variations in detail in each
+of the 20-sim models, but for each one the blocks are gathered
+into collections of actuators (which receive signals for the
+motors driving the wheels and for the safety switch circuit) and
+sensors (which produce outputs relating to the current angle,
+the velocity and detected error). To maintain a high level of
+dependability, we assume that the safety key functionality is
+deployed onto a separate CPU to the main plant. Both the main
+plant and the safety monitor receive copies of the sensor input;
+should the safety monitor detect anything amiss it overrides the
+main plant's outputs with its own signal to deactivate the
+scooter.
+
+A single block (\texttt{sbsInterface}) handles imports from, and
+exports to, the DE model; this block produces outputs for the actuators and
+receives inputs from the sensors. In each model a collection of
+\texttt{Cycloid} blocks is used to calculate whether the
+gyroscope is accurately detecting vertical. A single block
+(either \texttt{Chessway} or \texttt{SBS}) represents a detailed
+submodel of the plant, and interacts with the actuators, sensors
+and error-detecting functionality.
+
+The actuators for each wheel communicate via a wireless
+connection in this model, allowing some fault tolerance
+behaviour to be tested as the model must cope with packets
+occasionally lost in transmission. In the CT model each of the
+receivers for the motors is linked to a fault-generating block
+that loses occasional packets.
+
+\section{Usage}
+This is a complex model, and many scenarios are also possible.  The
+\DESTECS co-model provides alternative implementations of the
+\texttt{Ether} class, for example, which exhibit different behaviours
+and may be tried separately to test fault tolerance.  The difference
+between activating the safety key and deactivating the ignition can be
+seen by changing the script above to shutdown the ignition instead of
+removing the safety key.
+
+\subsection{Scenarios}
+A simple scenario is provided for the
+ChessWay \DESTECS model, demonstrating some aspects of the
+scooter's safety.
+
+\begin{dcl}[caption=DCL script which activates the scooter and then simulates the removal of the safety key and its replacement]
+when time = 0.0 do (de real safetyKeyEnabled := 1.0; );
+
+when time = 0.2 do (de real safetyKeyEnabled := 0.0;);
+
+when time = 0.3 do (de real safetyKeyEnabled := 1.0;);
+
+when de real poleAngle < 0.0-0.2
+	or de real poleAngle > 0.2
+	do ( print "QUIT ... "; quit; );
+
+\end{dcl}
+
+In this scenario, the safety key is withdrawn from the handlebar
+unit (\texttt{when time = 0.2}) and then quickly replaced
+(\texttt{when time = 0.3}). The scooter responds to the removal
+of the safety key by beginning to shut down, but the replacement
+of the key results in abandoning the shut down and the scooter
+attempting to recover its stable vertical position. The timings
+provided in this scenario should demonstrate that the scooter is
+capable of recovering and returning to vertical safely. The
+scenario can be altered and executed with different timings,
+allowing us to determine the maximum length of time that may
+elapse between withdrawing the safety key and replacing it and
+still have the scooter recover its upright position.
+
+Another possibility is to try out the gyroscope fault detection
+functionality.  The script below simulates the detection of an error
+in the gyroscope.
+
+\begin{dcl}[caption=DCL script which activates the scooter and then simulates detection of a fault in the gyroscope]
+when time = 0.0 do (de real safetyKeyEnabled := 1.0; );
+
+when time = 0.1 do (de int gyroError := 1;);
+
+when time = 0.13 do (de int gyroError := 0;);
+\end{dcl}

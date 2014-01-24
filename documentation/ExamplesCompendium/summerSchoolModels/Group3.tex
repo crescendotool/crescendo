@@ -1,0 +1,96 @@
+\section{Group 3}
+\subsection{Case Description}
+Group 3 opted for a design with three line-detecting sensors.  Two
+sensors are mounted in a row with one sensor on the left, one on the
+right.  The third sensor is mounted between these two, but is
+positioned behind them.
+
+\subsection{Contract} 
+The contract contains five \emph{monitored} variables of type
+\keyw{real}.  Three of these variables provide input from the
+line-detecting sensors to the DE model: \texttt{sensorLeft},
+\texttt{sensorRight} and \texttt{sensorFront}, are used to represent
+inputs from the line-detecting sensors on the left, on the right, and
+in the centre respectively.  Two further \emph{monitored} variables,
+\texttt{wheelCountLeft} and \texttt{wheelCountRight}, are used to
+represent input from the encoders for the wheels.
+
+There is one \emph{controlled} variable - \texttt{motorVoltages} -
+which is an \keyw{array} with a length of 2.  This variable is used to
+communicate the two signals for the motors (one for each motor) from
+the DE model to the CT model.
+
+The contract also includes five shared design parameters.  Some of
+these are described for all groups in Section
+\ref{chap:summerschoolintro} (\texttt{encoder\_resolution},
+\texttt{linefollow\_lateral\_offset} and
+\texttt{linefollow\_longitudinal\_offset}).  In addition to these,
+Group 3 added two other shared design parameters: \texttt{r\_wheel},
+which is of type \keyw{real}, is used to store the calculated radius
+of the wheel and is used to compute the total revolutions of the wheel
+and \texttt{routeIndex}, which is also of type \keyw{real} but is not
+actively used in the model supplied here.
+
+\subsection{Discrete-event} 
+The DE model created by Group 3 begins by creating three instances of
+the \texttt{Sensor} class: \texttt{sensorLeft}, \texttt{sensorRight}
+and \texttt{sensorMiddle} represent the left-hand, right-hand and
+central sensors respectively.  It also creates two instances of the
+\texttt{Wheel} class, to represent the left (\texttt{wheelLeft}) and
+right (\texttt{wheelRight}) wheels.  The \texttt{Sensor} class simply
+handles the production of data from the sensor, and the \texttt{Wheel}
+class handles the passing of a signal to the motor for the wheels.
+
+The \texttt{System} class creates these instances as well as a
+controller, which holds the main thread of control.  
+
+The \texttt{Controller} class implements all the functionality
+necessary to move through the various modes of operation.  The class
+begins with calibrating, which involves detecting the initial starting
+point and moving the robot forward past the initial pattern and onto
+the line itself, facing in the correct direction.  Next the robot
+enters a line-following phase.  If the left sensor can detect the line
+then the robot turns left, and if the right sensor can detect the line
+then the robot turns right.  If none of the three sensors can detect
+the line, the robot assumes that it has reached the end of the line
+and halts.
+
+Group 3's robot minimises the distance taken to turn by delivering the
+maximum negative voltage to one wheel and the maximum positive to the
+other.  The negative voltage results in one wheel turning in reverse,
+minimising the distance travelled as the robot corners.
+
+\texttt{System} deploys \texttt{Controller} to a single CPU.
+
+\subsection{Continuous-time} 
+Group 3's CT model includes a \texttt{Controller} block which acts as
+an interface between the CT and DE models.  As with all the other
+groups, the CT model includes blocks to provide an implementation of
+robot physics (\texttt{RobotPhysics}) and data for the 3D simulation
+(\texttt{DataFor3D}).  There are blocks to represent the sensors:
+\texttt{LeftSensor}, \texttt{FrontSensor} and \texttt{RightSensor}
+represent the left, central and right sensors respectively.  All
+sensors incorporate a lookup table \texttt{Table2D} and some
+processing to determine the currently visible floor colour.
+
+Incoming signals from the DE model for the motors are passed from
+\texttt{Controller} to the \texttt{RobotPhysics} block first of all.
+\texttt{RobotPhysics} includes functionality to move the robot within
+its environment.  Output from this block is passed to the sensors so
+that they can sample the currently visible section of floor, as well
+as to the \texttt{DataFor3D} block which handles 3D simulation.
+Finally, the \texttt{Controller} block accepts data back from the
+three sensors and from \texttt{RobotPhysics}.  The data produced from
+each sensor is an indication of the colour currently visible on the
+floor.
+
+%\subsection{Scenarios} 
+
+
+
+
+
+
+
+
+

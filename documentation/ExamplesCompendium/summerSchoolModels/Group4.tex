@@ -1,0 +1,131 @@
+\section{Group 4}
+\subsection{Case Description}
+Group 4 decided to use three sensors - a left, a right and a centre -
+for their line-following robot.  They decided that the robot should
+attempt to keep the line lying directly below the central sensor,
+which should result in a more accurate path.  Having three sensors
+rather than two also allowed for more fine-grained adjustments to be
+made to the course, which are not possible to achieve with fewer
+sensors.
+
+\subsection{Contract} 
+The contract contains seven variables of type \keyw{real}. Three
+\emph{monitored} variables are used to represent inputs from the
+line-detecting sensors on the left (\texttt{lineSensorLeftShared}), in
+the centre (\texttt{lineSensorCenterShared}) and on the right
+(\texttt{lineSensorRight\-Sha\-red}).  Two further \emph{monitored}
+variables are used to represent input from the sensors used to count
+revolutions of the left wheel (\texttt{positionSensorLeftShared}) and
+the right wheel (\texttt{position\-Sensor\-Right\-Sha\-red}).
+
+Two \emph{controlled} variables are included:
+\texttt{motorControlSignalLeftShared} to produce a signal for the
+left-hand motor, and \texttt{motorControlSignalRightShared} to control
+the right-hand motor.
+
+The contract also includes the five shared design parameters described
+for all groups in Section \ref{chap:summerschoolintro}.
+
+\subsection{Discrete-event} 
+The DE model for Group 4's model begins with the \texttt{System}
+class, which instantiates three sensors for the line-sensing task and
+two sensors for the wheel encoders, using the
+\texttt{AbstractSensorReal} class for all sensors.  It also
+instantiates two actuators, using the \texttt{AbstractActuatorReal}
+class, to power the wheels, and a single instance of
+\texttt{LineFollowerController} to provide control functionality.
+Finally it deploys the model to a single CPU.
+
+At runtime, the \texttt{SensorReal} class provides a concrete
+implementation of the abstract \texttt{Ab\-stract\-Sensor\-Real}.  This
+class simply returns a value representing whether or not light or dark
+was detected.  \texttt{Actuator\-Real} provides the implementation of
+\texttt{AbstractActuatorReal} at runtime; this class simply handles
+the passing of values to the actuators.
+
+Like many other groups, Group 4 also decided to employ different
+classes to provide the functionality necessary for different `modes'
+of operation.  The \texttt{LineFollower\-Controller} stores a variable
+of type \texttt{AbstractControllerMode} which provides the
+functionality needed during the current mode of operation.  As the
+robot moves from one mode of operation to another, the concrete
+implementation of this variable is changed so that different
+functionality is available at different times.  The
+\texttt{LineFollowerController} begins with a calibration mode, where
+the robot moves forward until it detects and proceeds past the
+anticipated initial pattern.  The concrete implementation of
+\texttt{AbstractControllerMode} during this phase is provided by
+\texttt{ControllerModeCalibration}.  When
+\texttt{ControllerModeCalibration} has detected initial pattern,
+proceeded past it and detected the start of the line, it signals to
+the \texttt{Line\-Follower\-Controller}, which changes the concrete
+implementation of \texttt{AbstractControllerMode} to
+\texttt{ControllerModeFollowLine}.  This class repeatedly retrieves
+values from all three sensors and makes a decision about how to move
+forward.  In general, the robot attempts to keep the line lying above
+the central sensor.  Therefore, if the left sensor and right sensor
+detect background and the central sensor detects the line, then the
+robot can move forward.  If the left and central sensors see
+background and the right sensor can see the line, then the robot turns
+right, whilst if the opposite happens and the right and central
+sensors can detect the background and the left sensor can detect the
+line, then the robot turns left.  `Turning' involves setting a zero
+voltage on one motor and continuing at full speed with the other
+motor.
+
+If all three sensors detect background, it's assumed that the end of the line has been found and the concrete implementation of \texttt{AbstractControllerMode} is changed to \texttt{Controller\-Mode\-Idle}, which brings the robot to a standstill.
+
+\subsection{Continuous-time} 
+As with other groups, the CT model includes blocks to provide an
+implementation of robot physics (\texttt{RobotPhysics}), data for the
+3D simulation (\texttt{DataFor3D}) and lookup tables to process
+information from the 2D image representing the floor
+(\texttt{Table2D1}, \texttt{Table2D2} and \texttt{Table2D3}).
+\texttt{RobotPhysics} accept inputs from the motor control blocks
+(representing voltages to be applied to the motors), and produces
+outputs for the motor/position sensors.  Data processed by
+\texttt{RobotPhysics} is also passed to the three line sensors, which
+apply some logic to interpret the area of the floor now currently
+visible.
+
+Group 4's CT model does not have one central block to handle
+interaction with the DE model; the shared elements of the co-model are
+found individually in relevant blocks.  The model includes two motors,
+\texttt{K}, one for each wheel.  Each of these provides input for a
+position sensor (either \texttt{positionSensorLeftShared} or
+\texttt{positionSensorRightShared}).  The two position sensors map
+directly to shared variables declared in the contract
+(\texttt{positionSensorLeftShared} and
+\texttt{positionSensorLeftShared}) and so they are responsible for
+passing information to the DE model about the current position of the
+wheel.
+
+The model also includes two blocks handling the interface with the
+motor signal (\texttt{motor\-Con\-trol\-Signal\-Left\-Shared} and
+\texttt{motorControlSignalRightShared}), which accept inputs from the
+DE model representing voltages to be applied to the left and right
+motors respectively.
+
+Finally, the model also contains three blocks to represent sensors for
+detecting the line on the ground: \texttt{LineSensorLeftShared},
+\texttt{LineSensorCenterShared} and \texttt{LineSensor\-Right\-Shared}.
+These three blocks map directly to shared variables declared in the
+contract (\texttt{lineSensorLeftShared},
+\texttt{lineSensorCenterShared}, \texttt{lineSensorRightShared}) and
+so they are responsible for passing information to the DE model from
+the three line-detecting sensors.  Data output by
+\texttt{RobotPhysics} is first processed by a block of logic (one for
+each sensor: \texttt{calculateLeftLineSensorPosition} for the
+left-hand sensor, \texttt{calculateCenter\-LineSensorPosition} for the
+central sensor or \texttt{calculateRightLineSensorPosition} for the
+right-hand sensor), which calculate the current position within the
+known floor area.  This information is passed to blocks which perform
+some lookup functionality (\texttt{Table2D1}, \texttt{Table2D2} and
+\texttt{Table2D3}) and finally an output is produced from this for the
+line sensor to interpret.
+
+%\subsection{Scenarios} 
+
+
+
+

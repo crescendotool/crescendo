@@ -1,0 +1,350 @@
+\documentclass{crescendorepchap}
+%**********************************************************
+%
+% Bibliography support
+%
+%**********************************************************
+%\def\@reportno{YY--NN}		% default report no.
+%\def\reportno#1{\gdef\@reportno{#1}}
+\RequirePackage{xspace}                 % smart spaces after macro
+\usepackage[nounderscore]{syntax}
+\usepackage{rotating}
+\usepackage{subfigure}
+\usepackage{capt-of}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{longtable}
+\usepackage{vdmlisting}
+\newcommand{\DESTECS}{\textbf{Crescendo}\xspace}
+
+\newcommand{\bthisbibliography}[1]{\chapter*{References}%
+   \begin {list} {}%
+     {\settowidth {\labelwidth} {[#1]XX}%
+      \setlength {\leftmargin} {\labelwidth}%
+      \addtolength{\leftmargin} {\labelsep}%
+      \setlength {\parsep} {1ex}%
+      \setlength {\itemsep} {2ex}%
+     }
+  }
+\newcommand{\ethisbibliography}{\end{list}}
+\newcommand{\refitem}[2]
+  {\bibitem[#1]{#2}}
+
+\newcommand{\back}{$\setminus$}
+\newcommand{\RuleTarget}[1]{\hypertarget{rule:#1}{}}
+\newcommand{\Ruledef}[2]
+{
+  \RuleTarget{#1}\Rule{#1}{#2}%
+  }
+\newcommand{\Ruleref}[1]{
+  \hyperlink{rule:#1}{#1}}
+\newcommand{\Lit}[1]{`{\tt #1}\Quote}
+\newcommand{\Rule}[2]{
+  \begin{quote}\begin{tabbing}
+    #1\index{#1}\ \ \= = \ \ \= #2  ; %    Adds production rule to index
+
+  \end{tabbing}\end{quote}
+  }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Model transformation rule box
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{formationRule}
+\setcounter{formationRule}{0}
+\newenvironment{formationRule}
+%{\refstepcounter{formationRule}\vspace{10pt}\par\noindent
+%Exercise \theformationRule
+%\begin{itshape}\par\noindent\vspace{10pt}}%
+%{\end{itshape}\vspace{10pt}\par}
+{%
+\refstepcounter{formationRule}
+%increment
+%\addtocounter{transformationRuleCounter}{1}%
+%\ctf{}%
+%\labelformat{formationRule}{\value{formationRule}}
+\begin{center}%
+\begin{tabular}{ | p{10cm} |}\hline%
+\textbf{Transformation Rule \theformationRule}
+
+}
+{
+\\
+    \hline
+    \end{tabular}
+\end{center}
+
+}
+\newcommand{\kw}[1]{{\textbf\ttfamily #1}}
+\newcommand{\SeqPt}[1]{\{\ #1\ \}}
+\newcommand{\lfeed}{\\ \> \>}
+\newcommand{\dsepl}{\ $|$\ }
+\newcommand{\dsep}{\\ \> $|$ \>}
+\newcommand{\Lop}[1]{`{\sf #1}\Quote}
+\newcommand{\blankline}{\vspace{\baselineskip}}
+\newcommand{\Brack}[1]{(\ #1\ )}
+\newcommand{\nmk}{\footnotemark}
+\newcommand{\ntext}[1]{\footnotetext{{\bf Note: } #1}}
+\newlength{\kwlen}
+\newcommand{\Keyw}[1]{\settowidth{\kwlen}{\tt #1}\makebox[\kwlen][l]{\sf
+    #1}}
+\newcommand{\keyw}[1]{{\sf #1}}
+\newcommand{\vdmkeyw}[1]{{\bf\ttfamily #1}}
+
+\newcommand{\id}[1]{{\tt #1}}
+\newcommand{\metaiv}[1]{\begin{alltt}\input{#1}\end{alltt}}
+
+\newcommand{\OptPt}[1]{[\ #1\ ]}
+\newcommand{\MAP}[2]{\kw{map }#1\kw{ to }#2}
+\newcommand{\INMAP}[2]{\kw{inmap }#1\kw{ to }#2}
+\newcommand{\SEQ}[1]{\kw{seq of }#1}
+\newcommand{\NSEQ}[1]{\kw{seq1 of }#1}
+\newcommand{\SET}[1]{\kw{set of }#1}
+\newcommand{\PROD}[2]{#1 * #2}
+\newcommand{\TO}[2]{$#1 \To #2$}
+\newcommand{\FUN}[2]{#1 \To #2}
+\newcommand{\PUBLIC}{\ifthenelse{\boolean{VDMpp}}{public\mbox{}}{\mbox{}}}
+\newcommand{\PRIVATE}{\ifthenelse{\boolean{VDMpp}}{private}{\mbox{}}}
+\newcommand{\PROTECTED}{\ifthenelse{\boolean{VDMpp}}{protected}{\mbox{}}}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[LO]{\leftmark}
+\fancyhead[RE]{Crescendo Examples Compendium}
+\fancyhead[RO,LE]{\resizebox{0.05\textwidth}{!}{\includegraphics{crescendo_logo_512}}}
+\fancyfoot[C]{\thepage}
+
+\usepackage{makeidx}
+
+\usepackage{graphicx, color}
+
+% definition of VDM++, JavaCC, JJTree, JTB, ANTLR and SableCC for listings
+\newcommand{\NL}{\mbox{}\\ \vspace*{-5mm}}
+\usepackage{listings}
+\usepackage{listingsDCL}
+\newcommand{\url}[1]{\texttt{#1}}
+%\usepackage{vdmsl-2e}
+\usepackage{hyperref}
+
+\usepackage{times}
+\usepackage{color}
+
+%\include{ifad}
+%\include{graphics}
+\usepackage{cite}
+\usepackage{alltt}
+%\usepackage{fancyhdr}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.9}
+\makeindex
+
+%\input{include/settings}
+
+% Defining deadline command
+\newcommand{\deadline}[3]{
+\fbox{Responsability: #1} \\
+\fbox{Full Draft: #2} \\
+\fbox{Final Version: #3}
+}
+
+\begin{document}
+\title{Crescendo Examples Compendium}
+\author{Claire Ingram, Ken Pierce, Carl Gamble, \\[5mm]
+Sune Wolff, Martin Peter
+Christensen and Peter Gorm Larsen\\
+Aarhus University, Department of Engineering\\
+Finlandsgade 22, DK-8200 Aarhus N, Denmark
+}
+
+\date{January 2014}
+
+\reportno{TR-002}
+
+\maketitle
+%\makerro
+
+\frontmatter
+
+\textbf{Document history}
+
+\begin{tabular}{|l|l|l|l|}\hline
+Month   & Year & Version & Version of Crescendo.exe \\ \hline
+December& 2012 & 1       & 1.1.8 (then called DESTECS)  \\ \hline
+January& 2014 & 2       & 2.0.0 \\ \hline
+\end{tabular}
+%\maketitle
+
+\cleardoublepage
+
+%\input{Abstract}
+
+\cleardoublepage
+
+% The front matter starts here
+
+%\include{Summary}
+
+%\include{Preface}
+
+% In a two-sided printing style, it makes the next page a right-hand
+% (odd-numbered) page, producing a blank page if necessary.
+%\cleardoublepage
+
+% Add the table of contents pages (TOC)
+\tableofcontents
+
+
+% The report body, i.e. the main matter, starts here
+\mainmatter
+\chapter{Introduction}\label{cha:intro}
+This deliverable provides an overview of different public example
+co-models that stakeholders who are interested in experimenting with
+the \DESTECS technology can use as a starting point\footnote{The corresponding
+sources of all the examples can be directly imported into the \DESTECS tool.}.
+
+This deliverable is structured in different chapters, each of which
+provides a brief (2 to 3 pages) introduction to one example model.
+Depending upon your own background and your interest in exploring the
+\DESTECS technology and the particular features that interest you, you
+may wish to start with a different chapter than that presented first. The
+different chapters and the examples they present illustrate different
+aspects as explained here:
+
+\begin{itemize}
+\item Chapter~\ref{chap:controllerPattern} illustrates the
+  \emph{Simple Controller}.  This example may be of particular
+  interest to those with a background in CT modelling who want to see
+  how to convert an existing CT model to a \DESTECS co-model.
+\item Chapters \ref{chap:watertankperiodic} and
+  \ref{chap:watertankeventdriven} present two different models of a
+  water tank which maintains a given water level.  Chapter
+  \ref{chap:watertankperiodic} describes a model which in which the
+  controller periodically polls the sensor for the current state,
+  whilst Chapter \ref{chap:watertankeventdriven} describes a similar
+  model that employs an event-driven solution to the same problem.
+\item Chapter~\ref{chap:pidPinch} presents a small example with a pair
+  of rollers used inside a printer (called ``pinches''). This example
+  is of particular relevance for those who are interested in different
+  types of faults and alternative fault tolerance techniques.
+\item Chapter~\ref{chap:fuelSystem} presents a fuel system for an
+  aircraft. This example has been used in other formalisms as well and
+  different faulty scenarios are also considered.
+%\item Chapter~\ref{chap:pacemaker} describes a pacemaker device, that
+% monitors a human heart and intervenes to regulate the heart rate if
+% it detects irregularities in the heart's natural beat.  The
+%  pacemaker models the behaviour of a healthy heart, and also several
+ % different irregularities.
+\item Chapter \ref{chap:morsecodereader} describes a decoder which can
+  translate messages presented in Morse code (as ``dots'' and
+  ``dashes'' on a strip of tape) into Latin characters.  This example
+  demonstrates the use of shared design parameters to test model
+  performance in different environmental conditions (such as varying
+  levels of background noise).
+\item Chapter~\ref{chap:lineFollowingRobot} illustrates a
+  line-following robot. This example demonstrates how the \DESTECS
+  technology can support design space exploration using an Automated
+  Co-model Analysis (ACA). Here it is used to analyse alternative
+  placements of different light sensors.
+\item Chapter \ref{chap:summerschoolmodels} expands on Chapter
+  \ref{chap:lineFollowingRobot}.  It presents five further co-models
+  of a line-following robot, each developed independently by attendees
+  at the 2012 \DESTECS summer school.  Each co-model exhibits different
+  design choices and optimisations for solving the same problems and
+  so these models are interesting to study side-by-side for those
+  interested in exploration of the design space.
+\item Chapters \ref{chap:chesswaysimple}, \ref{chap:chesswaysl} and
+  \ref{chap:chesswaydestecs} present progressively more complex models
+  of a self-balancing scooter, called a Chessway.  Chapter
+  \ref{chap:chesswaysimple} describes a very simple model that
+  includes basic functionality only.  Chapter
+  \ref{chap:chesswaydestecs} describes a more complex model of the
+  same scooter.  The latter includes some components linked over a
+  wireless connection, and so it also demonstrates some fault tolerant
+  techniques.  The plant model for this particular model is larger
+  than many other examples.  Chapter \ref{chap:chesswaysl} presents an
+  intermediate model which bridges the gap between the simple model
+  and the more complex one. It includes a DE model only, which has
+  been developed in order to answer some key design questions
+  necessary before the model in Chapter \ref{chap:chesswaydestecs} can
+  be built.
+\end{itemize}
+
+In order to guide you as to which models to consider inspecting we
+have created a table illustrating the different characteristics of the
+various co-models available (see Table~\ref{tab:characteristics});
+characteristics which might be of interest include scripted scenarios,
+fault tolerance, Automated Co-model Analysis (ACA), 2D/3D animation,
+and patterns which have been implemented in each model.  For more on
+patterns, see \DESTECS deliverable D2.3~\cite{DESTECSD23}.  Some models here have been implemented entirely as a DE model (e.g., entirely in VDM, with no 20-sim component), or entirely as a CT model (e.g., entirely in 20-sim, with no VDM component).  We indicate whether this applies in Table \ref{tab:characteristics}, with \emph{CT alone enabled} or \emph{DE alone enabled}.
+
+\begin{table}[!h]
+\begin{centering}
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}\hline
+Co-model(s)
+&\begin{sideways}Event triggered\end{sideways}
+&\begin{sideways}CT alone enabled\end{sideways}
+&\begin{sideways}DE alone enabled\end{sideways}
+&\begin{sideways}Scenarios included\end{sideways}
+&\begin{sideways}CT faults included\end{sideways}
+&\begin{sideways}DE faults included\end{sideways}
+&\begin{sideways}ACA included\end{sideways}
+&\begin{sideways}2D/3D animation\end{sideways}
+&\begin{sideways}Patterns implemented\end{sideways} \\
+\hline
+Simple controller       & &x& & & & & & & 1\\ \hline
+Water tank (periodic)  	 & & & &x& &x& &x &2 \\ \hline
+Water tank (event-driven)&x& & & & & & &x &2 \\ \hline
+Paper Pinch              & &x & & &x& & & &2, 6, 9, 10, 12\\ \hline
+Aircraft fuel system     & & & &x&x& & &x & 2, 9, 13\\ \hline
+%Pacemaker                & & & &x&x& & & &2 \\ \hline
+Morse code reader        & & & & &x& & & &2, 3 \\ \hline
+Line following robot     & & & & &x& &x&x &2, 3, 4, 5, 8, 9\\ \hline
+Summer school Group 1    & & & & & & & &x &2\\ \hline
+Summer school Group 2    & & & & & & & &x &2, 3\\ \hline
+Summer school Group 3    & & & & & & & &x &2 \\ \hline
+Summer school Group 4    & & & & & & & &x &2, 3 \\ \hline
+Summer school Group 5    & & & & & & & &x &2 \\ \hline
+Tractor simple           & & & & & & & &x&2 \\ \hline
+ChessWay simple          & & & & & & & &x &1\\ \hline
+ChessWay SL              & & &x & & &x & & & \\ \hline
+Chessway \DESTECS         & &x &x& &x&x& &x &1, 7, 13 \\ \hline
+\end{tabular}
+\caption{Overview of characteristics for co-models\label{tab:characteristics}}
+\end{centering}
+\end{table}
+
+\include{controllerPattern/controllerPattern}
+\include{waterTankPeriodic/waterTankPeriodic}
+\include{waterTankEventDriven/waterTankEventDriven}
+\include{pidPinch/pidPinch}
+\include{fuelSystem/fuelSystem}
+%\include{pacemaker/pacemaker}
+\include{morseCodeReader/morseCodeReader}
+\include{lineFollowingRobot/lineFollowingRobot}
+\include{summerSchoolModels/summerSchoolModels}
+\input{summerSchoolModels/Group1}
+\input{summerSchoolModels/Group2}
+\input{summerSchoolModels/Group3}
+\input{summerSchoolModels/Group4}
+\input{summerSchoolModels/Group5}
+\include{TractorSimple/TractorSimple}
+\include{chessWaySimple/chessWaySimple}
+\include{chessWaySL/chessWaySL}
+\include{chessWayDESTECS/chessWayDESTECS}
+
+% Appendix starts here
+\appendix
+%\include{ACAAppendixA}
+
+
+% Bibliography starts here
+\backmatter
+
+% Generate bibliography
+%\fancyhead[LO]{Bibliography}
+\bibliographystyle{alpha}
+\label{ch:bib} %label to refer to
+\bibliography{../usermanual/dan,comp}
+%\cleardoublepage
+
+\end{document}
+
