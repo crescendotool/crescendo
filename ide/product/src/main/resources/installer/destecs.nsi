@@ -12,37 +12,17 @@ SetCompress off
 
 !include 'FileFunc.nsh'
 !insertmacro Locate
- 
-
-!define PRODUCT_VERSION "0.0.0"
-!define PRODUCT_REG_KEY "Crescendo"
-!define PRODUCT_NAME "Crescendo"
-
-!define TARBALL "combined.tar"
-
-!define SIM20_NAME "20-sim"
-!define SIM20_VERSION "4.4.1"
-!define SIM20_PLATFORM "win32"
-!define SIM20_EXE "${SIM20_NAME}-${SIM20_VERSION}-${SIM20_PLATFORM}.exe"
-
-!define DESTECSIDE "Crescendo"
-!define DESTECSFOLDER "${DESTECSIDE}-${PRODUCT_VERSION}"
-;!define DESTECSZIP "${DESTECSFOLDER}-win32.win32.x86.zip"
-!define CRESCENDO_NAME "Crescendo"
-!define CRESCENDO_VERSION "2.0.0"
-!define CRESCENDO_ARCH "x86"
-!define DESTECSZIP "${CRESCENDO_NAME}-${CRESCENDO_VERSION}-win32.win32.${CRESCENDO_ARCH}.zip"
 
 !include "WordFunc.nsh"
-  !insertmacro VersionCompare
+!insertmacro VersionCompare
 
 Var UNINSTALL_OLD_VERSION
 
 
 ; The name of the installer
-Name "Crescendo"
+Name ${product.name}
 
-OutFile "Crescendo_#VERSION#_#PLATFORM#.exe"
+OutFile "${product.installer}"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Crescendo
@@ -61,12 +41,8 @@ RequestExecutionLevel admin
   !define MUI_ICON "crescendo_installer.ico"
   !define MUI_UNICON "crescendo_uninstaller.ico"
   !define MUI_ABORTWARNING
-  !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes Crescendo ${PRODUCT_VERSION} and 20-sim ${SIM20_VERSION}."
+  !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes Crescendo ${crescendo.version} and ${sim20.name} ${sim20.version}."
 ;-------------------------------- 
-
-;!define MUI_WELCOMEPAGE_TITLE "dsasda"
-;!define MUI_WELCOMEPAGE_TITLE_3LINES
-;!define MUI_WELCOMEPAGE_TEXT "dsadas sdadas dassd ada dsa dsadsa"
 
 
 ;--------------------------------
@@ -75,23 +51,23 @@ RequestExecutionLevel admin
 ;Page components
 ;Page directory
 ;Page instfiles
-  ;!insertmacro MUI_PAGE_WELCOME   
-  !insertmacro MUI_PAGE_LICENSE "license.txt"
-  !insertmacro MUI_PAGE_COMPONENTS
-   ; Var StartMenuFolder
-;!insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
-  !insertmacro MUI_PAGE_DIRECTORY
-  !insertmacro MUI_PAGE_INSTFILES
-  
+;!insertmacro MUI_PAGE_WELCOME   
 
-  
-  !insertmacro MUI_UNPAGE_CONFIRM
-  !insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_PAGE_LICENSE "license.txt"
+!insertmacro MUI_PAGE_COMPONENTS
+
+;Var StartMenuFolder
+;!insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
+
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
 
 ;--------------------------------
 
-  !insertmacro MUI_LANGUAGE "English"
-
+!insertmacro MUI_LANGUAGE "English"
 
 ; The stuff to install
 Section "Crescendo (required)" ;No components page, name is not important
@@ -106,33 +82,28 @@ Section "Crescendo (required)" ;No components page, name is not important
   ExecWait '$UNINSTALL_OLD_VERSION'
 
   core.files:
-  WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "" $INSTDIR
-  WriteRegStr HKLM "Software\${PRODUCT_REG_KEY}" "Version" "${PRODUCT_VERSION}"
+  WriteRegStr HKLM "Software\${product.regkey}" "" $INSTDIR
+  WriteRegStr HKLM "Software\${product.regkey}" "Version" "${crescendo.version}"
 
   ;; Combined Tools instalation file
-  ;File "data\${TARBALL}"
-  File "data\${SIM20_EXE}"
-  File "data\${DESTECSZIP}"
-  ; Call the function to unpack the tarball before installing the tools
-  ;untgz::extract -znone -j -d "$INSTDIR" "${TARBALL}"
-  ;Delete "${TARBALL}"
+  File "data\${sim20.exe}"
+  File "data\${crescendo.zip}"
 
   ; Calling the function that installs Crescendo  
   Call DESTECSInstall
   
   ; Calling the function that installs 20-sim
   call 20simVersionTest
-  ;call writeRegistryKey 
   
   AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   ; Registry creation
   ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\${PRODUCT_REG_KEY} "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM SOFTWARE\${product.regkey} "Install_Dir" "$INSTDIR"
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "DisplayName" "Crescendo Tool"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}" "NoRepair" 1
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "DisplayName" "Crescendo Tool"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
 SectionEnd ; end the section
@@ -140,9 +111,9 @@ SectionEnd ; end the section
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts (Optional)"
   SetShellVarContext all
-  CreateDirectory "$SMPROGRAMS\${PRODUCT_REG_KEY}"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_REG_KEY}\Crescendo.lnk" "$INSTDIR\Crescendo.exe" "" "$INSTDIR\Crescendo.exe" 0
+  CreateDirectory "$SMPROGRAMS\${product.regkey}"
+  CreateShortCut "$SMPROGRAMS\${product.regkey}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\${product.regkey}\Crescendo.lnk" "$INSTDIR\Crescendo.exe" "" "$INSTDIR\Crescendo.exe" 0
 SectionEnd
 
 ; Uninstaller
@@ -153,8 +124,8 @@ Section "Uninstall"
   
   
   ; Remove registry keys
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_REG_KEY}"
-  DeleteRegKey HKLM SOFTWARE\${PRODUCT_REG_KEY}
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}"
+  DeleteRegKey HKLM SOFTWARE\${product.regkey}
   ; Remove files and uninstaller
   ;Delete $INSTDIR\example2.nsi
   DetailPrint "Deleting $INSTDIR\configuration"
@@ -185,9 +156,9 @@ Section "Uninstall"
  
  SetShellVarContext all
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\${PRODUCT_REG_KEY}\*.*"
+  Delete "$SMPROGRAMS\${product.regkey}\*.*"
   ; Remove directories used
-  RMDir "$SMPROGRAMS\${PRODUCT_REG_KEY}"
+  RMDir "$SMPROGRAMS\${product.regkey}"
   
   
   RMDir "$INSTDIR"
@@ -197,17 +168,17 @@ SectionEnd
 Function .onInit
   ;Check earlier installation
   ClearErrors
-  ReadRegStr $0 HKLM "Software\${PRODUCT_REG_KEY}" "Version"
+  ReadRegStr $0 HKLM "Software\${product.regkey}" "Version"
   IfErrors init.uninst ; older versions might not have "Version" string set
-  ${VersionCompare} $0 ${PRODUCT_VERSION} $1
+  ${VersionCompare} $0 ${crescendo.version} $1
   IntCmp $1 2 init.uninst
-    MessageBox MB_YESNO|MB_ICONQUESTION "${PRODUCT_NAME} version $0 seems to be already installed on your system.$\nWould you like to proceed with the installation of version ${PRODUCT_VERSION}?" \
+    MessageBox MB_YESNO|MB_ICONQUESTION "${product.name} version $0 seems to be already installed on your system.$\nWould you like to proceed with the installation of version ${crescendo.version}?" \
         IDYES init.uninst
     Quit
 
 init.uninst:
   ClearErrors
-  ReadRegStr $0 HKLM "Software\${PRODUCT_REG_KEY}" ""
+  ReadRegStr $0 HKLM "Software\${product.regkey}" ""
   IfErrors init.done
   StrCpy $UNINSTALL_OLD_VERSION '"$0\uninstall.exe" /S _?=$0'
 
@@ -219,24 +190,21 @@ Function DESTECSInstall
   ; Print to detail log 
   DetailPrint "Installing Crescendo Tool"
   ; Unzip the file
-   ZipDLL::extractall "${DESTECSZIP}" "$INSTDIR"
+  ZipDLL::extractall "${crescendo.zip}" "$INSTDIR"
   
- ; ZipDLL::extractall "${DESTECSZIP}" "$TEMP\destecs"
- ; ExecWait 'xcopy /S /Y $\"$TEMP\destecs\*.*$\" $\"$INSTDIR$\"'
-  ;Moving files from DESTECS folder to root of $INSTDIR
-  ;!insertmacro MoveFolder "$INSTDIR\${DESTECSFOLDER}\" $INSTDIR "*.*"
-  ;ExecWait 'xcopy /S /Y $\"$INSTDIR\${DESTECSFOLDER}$\" $\"$INSTDIR$\"'
+  ; ZipDLL::extractall "${crescendo.zip}" "$TEMP\destecs"
+  ;ExecWait 'xcopy /S /Y $\"$TEMP\destecs\*.*$\" $\"$INSTDIR$\"'
+  ; Moving files from DESTECS folder to root of $INSTDIR
+  ;!insertmacro MoveFolder "$INSTDIR\${crescendo.installfolder}\" $INSTDIR "*.*"
+  ;ExecWait 'xcopy /S /Y $\"$INSTDIR\${crescendo.installfolder}$\" $\"$INSTDIR$\"'
   ; Delete the zip and old folder
-  ;RMdir /r "$INSTDIR\${DESTECSFOLDER}"
+  ;RMdir /r "$INSTDIR\${crescendo.installfolder}"
   DetailPrint "Adding Crescendo firewall exception"
   SimpleFC::AddApplication "Crescendo" "$INSTDIR\Crescendo.exe" 0 2 "" 1
   Pop $0
   DetailPrint "0=Success/1=Error: $0 "
-  
-  
-  Delete "${DESTECSZIP}"
-  
-  
+
+  Delete "${crescendo.zip}"
 FunctionEnd
 
 
@@ -244,33 +212,33 @@ Function 20simVersionTest
 
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayVersion"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayVersion"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayVersion"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayVersion"
 ${EndIf}
 
 
 IfErrors isError
-DetailPrint "Installed 20sim is version: $0 / 20sim present in the installer is version: ${SIM20_VERSION}"
+DetailPrint "Installed ${sim20.name} is version: $0 / ${sim20.name} present in the installer is version: ${sim20.version}"
 
-${VersionCompare} $0 ${SIM20_VERSION} $1
+${VersionCompare} $0 ${sim20.version} $1
 ;    $1=0  Versions are equal
 ;    $1=1  Version1 is newer
 ;    $1=2  Version2 is newer
 IntCmp $1 2 higher lower 
 higher:
-   DetailPrint "Installing 20sim version ${SIM20_VERSION} present in the installer" 
+   DetailPrint "Installing ${sim20.name} version ${sim20.version} present in the installer" 
    call 20simInstall   
    Goto done 
 lower:
-    DetailPrint "20sim up to date"
+    DetailPrint "${sim20.name} up to date"
     Goto done
 isError: 
-   DetailPrint "No previous 20sim version found"  
+   DetailPrint "No previous ${sim20.name} version found"  
    call 20simInstall
    Goto done
 done:
-  Delete "${SIM20_EXE}"
+  Delete "${sim20.exe}"
 
 call Add20simFirewallException
 
@@ -281,17 +249,17 @@ FunctionEnd
 Function Add20simFirewallException
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayIcon"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayIcon"       
 ${Else}
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\20-sim 4.4\" "DisplayIcon"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayIcon"
 ${EndIf}
  
 IfErrors isError 
-    DetailPrint "Adding 20sim firewall exception"  
+    DetailPrint "Adding ${sim20.name} firewall exception"  
     SimpleFC::AddApplication "20sim" "$0" 0 2 "" 1
     goto done
 isError:
-    DetailPrint "Could not add 20sim firewall exception"
+    DetailPrint "Could not add ${sim20.name} firewall exception"
 done:
 
 FunctionEnd
@@ -300,26 +268,15 @@ FunctionEnd
 ; Install 20-sim function
 Function 20simInstall
   ; Print to detail log
-  DetailPrint "Installing 20-sim"  
+  DetailPrint "Installing ${sim20.name}"  
   ;Executing the installer
-  ExecWait  '"$INSTDIR\${SIM20_EXE}'
-  DetailPrint "Done installing 20-sim"  
+  ExecWait  '"$INSTDIR\${sim20.exe}'
+  DetailPrint "Done installing ${sim20.name}"  
   
   ; Update the Windows Registry
   ;Call updateRegistry
      
-  ; NOT NEEDED ANYMORE - Copy the DestecsInterface.xrl to 20-sim folder
+  ; NOT NEEDED ANYMORE - Copy the DestecsInterface.xrl to ${sim20.name} folder
   ;Call copyXRL 
-   
-FunctionEnd
-
-
-
-Function writeRegistryKey
-;${If} ${RunningX64}
-;    WriteRegDWORD HKCU "Software\Wow6432Node\20-sim\version 4.3\tools\general" "xmlrpc" 1
-;${Else}
-    WriteRegDWORD HKCU "Software\20-sim\version 4.3\tools\general" "xmlrpc" 1
-;${EndIf}
 FunctionEnd
 

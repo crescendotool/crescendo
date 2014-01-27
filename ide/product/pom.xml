@@ -15,6 +15,28 @@
   <artifactId>org.destecs.ide.product</artifactId>
   <name>DESTECS IDE Standalone Product</name>
   
+  <properties>
+    <product.arch>x86</product.arch>
+
+    <crescendo.name>Crescendo</crescendo.name>
+    <crescendo.version>${project.version}</crescendo.version>
+    <crescendo.prefix>${product.name}-${crescendo.version}</crescendo.prefix>
+    <crescendo.platform>win32.win32</crescendo.platform>
+    <crescendo.zip>${crescendo.prefix}-${crescendo.platform}.${product.arch}.zip</crescendo.zip>
+
+    <sim20.name>20-sim</sim20.name>
+    <sim20.version>4.4.1</sim20.version>
+    <sim20.platform>win32</sim20.platform>
+    <sim20.exe>${sim20.name}-${sim20.version}-${sim20.platform}.exe</sim20.exe>
+    <sim20.regkey>20-sim 4.4</sim20.regkey>
+
+    <product.name>${crescendo.name}</product.name>
+    <product.regkey>${crescendo.name}</product.regkey>
+    <product.installfolder>${crescendo.name}-${crescendo.version}</product.installfolder>
+    <product.installer>${crescendo.name}-${crescendo.version}-${product.arch}.exe</product.installer>
+
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -38,7 +60,7 @@
 	  <products>
 	    <product>
 	      <id>org.destecs.ide.platform.product</id>
-	      <archiveFileName>Crescendo-${project.version}</archiveFileName>
+	      <archiveFileName>${crescendo.prefix}</archiveFileName>
 	    </product>
 	  </products>
 	</configuration>
@@ -46,4 +68,23 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>win-installer</id>
+      <!-- <properties> -->
+      <!--   <product.arch>x86</product.arch> -->
+      <!-- </properties> -->
+      <build>
+        <resources>
+          <resource>
+            <directory>${basedir}/src/main/resources/installer</directory>
+            <includes>
+              <include>*.nsi</include>
+            </includes>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+  </profiles>
 </project>
