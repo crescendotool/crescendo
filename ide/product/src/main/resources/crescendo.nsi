@@ -20,12 +20,12 @@ Var UNINSTALL_OLD_VERSION
 
 
 ; The name of the installer
-Name ${product.name}
+Name ${installer.name}
 
-OutFile "${product.installer}"
+OutFile "${installer.output}"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\Crescendo
+InstallDir $PROGRAMFILES\${installer.name}
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -37,9 +37,9 @@ RequestExecutionLevel admin
 ;Interface Configuration
 
   !define MUI_HEADERIMAGE 
-  !define MUI_HEADERIMAGE_BITMAP "Crescendo.bmp" ; optional
-  !define MUI_ICON "crescendo_installer.ico"
-  !define MUI_UNICON "crescendo_uninstaller.ico"
+  !define MUI_HEADERIMAGE_BITMAP "${installer.path}/Crescendo.bmp" ; optional
+  !define MUI_ICON "${installer.path}/crescendo_installer.ico"
+  !define MUI_UNICON "${installer.path}/crescendo_uninstaller.ico"
   !define MUI_ABORTWARNING
   !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes Crescendo ${crescendo.version} and ${sim20.name} ${sim20.version}."
 ;-------------------------------- 
@@ -53,7 +53,7 @@ RequestExecutionLevel admin
 ;Page instfiles
 ;!insertmacro MUI_PAGE_WELCOME   
 
-!insertmacro MUI_PAGE_LICENSE "license.txt"
+!insertmacro MUI_PAGE_LICENSE "${installer.path}/license.txt"
 !insertmacro MUI_PAGE_COMPONENTS
 
 ;Var StartMenuFolder
@@ -82,12 +82,12 @@ Section "Crescendo (required)" ;No components page, name is not important
   ExecWait '$UNINSTALL_OLD_VERSION'
 
   core.files:
-  WriteRegStr HKLM "Software\${product.regkey}" "" $INSTDIR
-  WriteRegStr HKLM "Software\${product.regkey}" "Version" "${crescendo.version}"
+  WriteRegStr HKLM "Software\${installer.regkey}" "" $INSTDIR
+  WriteRegStr HKLM "Software\${installer.regkey}" "Version" "${crescendo.version}"
 
   ;; Combined Tools instalation file
-  File "data\${sim20.exe}"
-  File "data\${crescendo.zip}"
+  File "${sim20.path}\${sim20.exe}"
+  File "${crescendo.path}\${crescendo.zip}"
 
   ; Calling the function that installs Crescendo  
   Call DESTECSInstall
@@ -98,12 +98,12 @@ Section "Crescendo (required)" ;No components page, name is not important
   AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   ; Registry creation
   ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\${product.regkey} "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM SOFTWARE\${installer.regkey} "Install_Dir" "$INSTDIR"
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "DisplayName" "Crescendo Tool"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}" "NoRepair" 1
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}" "DisplayName" "${crescendo.name}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
 SectionEnd ; end the section
@@ -111,9 +111,9 @@ SectionEnd ; end the section
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts (Optional)"
   SetShellVarContext all
-  CreateDirectory "$SMPROGRAMS\${product.regkey}"
-  CreateShortCut "$SMPROGRAMS\${product.regkey}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${product.regkey}\Crescendo.lnk" "$INSTDIR\Crescendo.exe" "" "$INSTDIR\Crescendo.exe" 0
+  CreateDirectory "$SMPROGRAMS\${installer.regkey}"
+  CreateShortCut "$SMPROGRAMS\${installer.regkey}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\${installer.regkey}\Crescendo.lnk" "$INSTDIR\Crescendo.exe" "" "$INSTDIR\Crescendo.exe" 0
 SectionEnd
 
 ; Uninstaller
@@ -124,8 +124,8 @@ Section "Uninstall"
   
   
   ; Remove registry keys
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${product.regkey}"
-  DeleteRegKey HKLM SOFTWARE\${product.regkey}
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}"
+  DeleteRegKey HKLM SOFTWARE\${installer.regkey}
   ; Remove files and uninstaller
   ;Delete $INSTDIR\example2.nsi
   DetailPrint "Deleting $INSTDIR\configuration"
@@ -156,9 +156,9 @@ Section "Uninstall"
  
  SetShellVarContext all
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\${product.regkey}\*.*"
+  Delete "$SMPROGRAMS\${installer.regkey}\*.*"
   ; Remove directories used
-  RMDir "$SMPROGRAMS\${product.regkey}"
+  RMDir "$SMPROGRAMS\${installer.regkey}"
   
   
   RMDir "$INSTDIR"
@@ -168,17 +168,17 @@ SectionEnd
 Function .onInit
   ;Check earlier installation
   ClearErrors
-  ReadRegStr $0 HKLM "Software\${product.regkey}" "Version"
+  ReadRegStr $0 HKLM "Software\${installer.regkey}" "Version"
   IfErrors init.uninst ; older versions might not have "Version" string set
   ${VersionCompare} $0 ${crescendo.version} $1
   IntCmp $1 2 init.uninst
-    MessageBox MB_YESNO|MB_ICONQUESTION "${product.name} version $0 seems to be already installed on your system.$\nWould you like to proceed with the installation of version ${crescendo.version}?" \
+    MessageBox MB_YESNO|MB_ICONQUESTION "${installer.name} version $0 seems to be already installed on your system.$\nWould you like to proceed with the installation of version ${crescendo.version}?" \
         IDYES init.uninst
     Quit
 
 init.uninst:
   ClearErrors
-  ReadRegStr $0 HKLM "Software\${product.regkey}" ""
+  ReadRegStr $0 HKLM "Software\${installer.regkey}" ""
   IfErrors init.done
   StrCpy $UNINSTALL_OLD_VERSION '"$0\uninstall.exe" /S _?=$0'
 
@@ -188,7 +188,7 @@ FunctionEnd
 ; Install Crescendo Tool
 Function DESTECSInstall
   ; Print to detail log 
-  DetailPrint "Installing Crescendo Tool"
+  DetailPrint "Installing ${crescendo.name}"
   ; Unzip the file
   ZipDLL::extractall "${crescendo.zip}" "$INSTDIR"
   

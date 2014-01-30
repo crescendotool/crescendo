@@ -15,29 +15,67 @@
   <artifactId>org.destecs.ide.product</artifactId>
   <name>DESTECS IDE Standalone Product</name>
   
+  <!-- To generate the installer scripts, do
+
+       $ mvn -Dtycho.mode=maven resources:resources -Dsim20.path=/whereever/the/20sim/installer/is -Dinstaller.arch=x86
+       $ mvn -Dtycho.mode=maven resources:resources -Dsim20.path=/whereever/the/20sim/installer/is -Dinstaller.arch=x86_64
+
+       They will create crescendo.nsi scripts in target/installers/x86
+       and target/installers/x86_64 that, when run using
+
+       $ makensis target/installers/x86/crescendo.nsi
+       $ makensis target/installers/x86_64/crescendo.nsi
+
+       will create the corresponding installer .exe files in the same
+       directory as the crescendo.nsi files.
+
+       Note that the installer scripts are heavily dependent on the
+       structure of the maven target folder, but are configured
+       through the properties below.
+  -->
+
   <properties>
-    <product.arch>x86</product.arch>
+    <installer.arch>x86_64</installer.arch> <!-- This should probably be called on the commandline -->
+    <installer.path>${project.build.directory}/installer</installer.path>
+    <installer.name>Crescendo</installer.name>
+    <installer.regkey>${installer.name}</installer.regkey>
+    <installer.output>${crescendo.name}-${crescendo.version}-${installer.arch}.exe</installer.output>
 
     <crescendo.name>Crescendo</crescendo.name>
     <crescendo.version>${project.version}</crescendo.version>
-    <crescendo.prefix>${product.name}-${crescendo.version}</crescendo.prefix>
+    <crescendo.prefix>${crescendo.name}-${crescendo.version}</crescendo.prefix>
     <crescendo.platform>win32.win32</crescendo.platform>
-    <crescendo.zip>${crescendo.prefix}-${crescendo.platform}.${product.arch}.zip</crescendo.zip>
+    <crescendo.path>${project.build.directory}/products</crescendo.path>
+    <crescendo.zip>${crescendo.prefix}-${crescendo.platform}.${installer.arch}.zip</crescendo.zip>
 
     <sim20.name>20-sim</sim20.name>
     <sim20.version>4.4.1</sim20.version>
     <sim20.platform>win32</sim20.platform>
+    <sim20.path>${installer.path}</sim20.path> <!-- The 20-sim-4.4.1-win32.exe file is not part of the repo, so set this! -->
     <sim20.exe>${sim20.name}-${sim20.version}-${sim20.platform}.exe</sim20.exe>
     <sim20.regkey>20-sim 4.4</sim20.regkey>
-
-    <product.name>${crescendo.name}</product.name>
-    <product.regkey>${crescendo.name}</product.regkey>
-    <product.installfolder>${crescendo.name}-${crescendo.version}</product.installfolder>
-    <product.installer>${crescendo.name}-${crescendo.version}-${product.arch}.exe</product.installer>
-
   </properties>
 
   <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <targetPath>${installer.path}</targetPath>
+        <excludes>
+          <exclude>crescendo.nsi</exclude>
+        </excludes>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <targetPath>${installer.path}/${installer.arch}</targetPath>
+        <includes>
+          <include>crescendo.nsi</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
@@ -67,24 +105,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>win-installer</id>
-      <!-- <properties> -->
-      <!--   <product.arch>x86</product.arch> -->
-      <!-- </properties> -->
-      <build>
-        <resources>
-          <resource>
-            <directory>${basedir}/src/main/resources/installer</directory>
-            <includes>
-              <include>*.nsi</include>
-            </includes>
-            <filtering>true</filtering>
-          </resource>
-        </resources>
-      </build>
-    </profile>
-  </profiles>
 </project>
