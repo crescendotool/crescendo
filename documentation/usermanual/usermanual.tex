@@ -155,16 +155,17 @@ Hengelosestraat 500, 7521 AN Enschede, The Netherlands
 Month   & Year & Version & Version of Crescendo.exe \\ \hline
 December& 2012 & 1       & 1.1.8 (then called DESTECS)  \\ \hline
 November& 2013 & 2       & 2.0.0 \\ \hline
+January& 2014 & 3 & 2.0.0 (review by M. Verhoef) \\ \hline
 \end{tabular}
 
 \tableofcontents
 
 \begin{abstract}
 This document is the user manual for the Crescendo Integrated
-Development Environment (IDE) version 2.0.0 enabling collaborative
+Development Environment (IDE) version 2.0.0, enabling collaborative
 analysis of models written in the Discrete Event (DE) formalism VDM
 and the Continuous Time (CT) formalism bond graphs. The specific
-dialect of VDM is called VDM Real Time (VDM-RT) and it is supported by
+dialect of VDM used is called VDM Real Time (VDM-RT) and it is supported by
 the Overture tool whereas the bond graph formalism is supported by the
 tool called 20-sim.  Both the Crescendo as well as the Overture tool
 is built on top of the Eclipse platform.
@@ -174,19 +175,19 @@ is built on top of the Eclipse platform.
 
 \section{What is the Crescendo Tool?}\label{sec:crescendointro}
 
-The Crescendo tool was originally called the DESTECS tool since it was produced in the European research project called DESTECS (see Section~\ref{sec:destecs} below). It supports collaborative modelling and simulation called \emph{co-simulation}. 
+The Crescendo tool was originally called the DESTECS tool since it was produced in the European Seventh Framework research project called DESTECS (see Section~\ref{sec:destecs} below). It supports collaborative modelling and simulation called \emph{co-simulation}. 
 
 \section{What was the DESTECS Project?}\label{sec:destecs}
 
 The DESTECS (Design Support and Tooling for Embedded Control
-Software)\footnote{See \url{www.destecs.org}.} project had a
+Software)\footnote{See \url{www.destecs.org}.} project was performed by a
 consortium of research groups and companies working on the challenge
 of developing fault-tolerant embedded systems \cite{Broenink&10}. The
 consortium focussed on developing design methods and tools that
 bridge the gap between the disciplines involved in designing an
 embedded system: systems, control, mechanical and software
 engineering, for example.  DESTECS aimed to develop methods and tools
-that that combine Continuous-Time (CT) tiem models with Discrete Event (DE)
+that combine Continuous-Time (CT) time models with Discrete Event (DE)
 controller models through co-simulation to allow multi-disciplinary
 modelling, including modelling of faults and fault tolerance
 mechanisms. The analysis of these effects at every stage in a design
@@ -194,54 +195,54 @@ process will help to build more dependable real-time embedded systems. The DE mo
 
 \section{What is the Vienna Development Method?} \label{sec:vdm}
 
-The Vienna Development Method (VDM) is one of the longest established
+The Vienna Development Method (VDM) is one of the oldest established
 model-oriented formal methods for the development of computer-based
-systems and software
-\cite{Bjorner&78,Jones90a,Fitzgerald&08c}. It consists of a
-group of mathematically well-founded languages for expressing system
-models during early design stages, before expensive implementation
-commitments are made. VDM has a strong record of industrial
-application, in many cases has been used
-by practitioners who were not specialists in
-the underlying formalism or logic
+systems and software \cite{Bjorner&78,Jones90a,Fitzgerald&08c}. It consists of a
+group of mathematically well-founded languages for expressing and analysing system
+models during early design stages, with the aim to reduce developments risks
+before expensive implementation commitments are made. VDM has a strong
+record of industrial applications, in many cases it has been used
+by practitioners who were not specialists in the underlying formalism or logic
 \cite{Larsen&96b,Clement&99,Kurita&09}. Experience with the method
-suggests that the effort expended on formal modelling and analysis can
-be recovered in reduced rework costs arising from design errors.
+suggests that the effort spent on formal modelling and analysis can
+be recovered easily in reduced rework costs arising from prevented
+design errors.
 
 VDM models are expressed in a specification language (VDM-SL) which
 supports the description of data and functionality
-\cite{ISOVDM96a,Fitzgerald&98b,Fitzgerald&09}. Data are defined by
-means of types built using constructors that define structured data
-and collections such as sets, sequences and mappings from basic values
-such as Booleans and natural numbers. These types are very abstract,
-allowing you to add any relevant constraints using data type
+\cite{ISOVDM96a,Fitzgerald&98b,Fitzgerald&09}. Data is defined by
+means of abstract data types built using constructors that define structured
+data and collections such as sets, sequences and mappings from basic values
+such as Booleans, reals, characters and natural numbers. These types are very
+abstract, allowing you to add any relevant constraints using data type
 invariants. Functionality is defined in terms of operations over these
 data types. Operations can be defined implicitly by preconditions and
 postconditions that characterize their behavior, or explicitly by
 means of specific algorithms. An extension of VDM-SL, called VDM++,
-supports object-oriented structuring of models and permits direct
+supports object-oriented structuring of models and also permits direct
 modelling of concurrency \cite{Fitzgerald&05}. A further extension
-to VDM++, called VDM Real Time (VDM-RT\footnote{Formerly called VDM In a
-Constrained Environment (VICE).}), includes support for discrete
-time models \cite{Mukherjee&00,Verhoef&06b}. All
-three VDM dialects are supported by Overture.
+to VDM++, called VDM Real Time (VDM-RT\footnote{Originally called VDM In a
+Constrained Environment (VICE).}), which includes support for explicit computing
+and communication architectures for executing specific deployments of discrete
+time models \cite{Mukherjee&00,Verhoef&06b}. All three VDM dialects
+are supported by Overture.
 
 \section{What are Bond Graphs?}\label{sec:bond}
 
 Bond graphs are directed graphs in which the vertices are submodels
 and the edges, called \textit{bonds}, denote the ideal (or idealised)
-exchange of energy. Entry points of submodels are called
-\textit{ports}. The exchange of energy through a port ($p$) is always
-described by two implicit variables, effort ($p.e$) and flow
+exchange of energy between those submodels. Entry points of submodels
+are called \textit{ports}. The exchange of energy through a port ($p$) is
+always described by two implicit variables, effort ($p.e$) and flow
 ($p.f$). The product of these variables is the amount of energy that
 passes through the port. The meaning of these two variables depends on
 the physical domain (examples include voltage and current, and force
-and velocity).
+and velocity), which makes the method ideal for multi-domain modelling.
 
 The 20-sim tool supports the creation and simulation of models that
 can be represented in a variety of forms, including basic bond graphs;
 collections of differential equations describing the behaviour of
-nodes; and iconic diagram. Although the tool is commercial, all the
+nodes; and iconic diagram. Although the 20-sim tool is commercial, all the
 model libraries are open source. The package supports mixed-mode
 integration techniques to allow the modelling and simulation of
 computer controlled \textit{physical systems} that contain
@@ -255,15 +256,14 @@ co-simulation.
 
 \section{Structure of this User Manual}\label{sec:structure}
 
-This user manual explains how to use the Crescendo IDE for developing colaborating models
- (co-models) and analyse them. In essence it is structured in 2 parts: The first part provides the basics for getting started with using the Crescendo tool and the second part act as a reference manual for the Crescendo tool. The first part contains Chapter~\ref{chap:introconcepts} introducing the basic Crescendo concepts\footnote{Appendix~\ref{app:Glossary} provides a complete list of the Crescendo common concepts.};
-Chapter~\ref{chap:getting} explaning how to get hold of the software; and finally
-Chapter~\ref{chap:gettingstarted} with information about how to quickly get started using the Crescendo tool with existing models that can be imported directly. Afterwards the second part also contains four chapters explaining the main possibilities in the Crescendo tool. Here we have Chapter~\ref{chap:basic} which explains about the different views in the Crescendo tool, its editors and its way of handling projects. Afterwards, Chapter~\ref{chap:cosim} explains about the co-simulation possibilities. This is followed by Chapter~\ref{chap:DSE} which provides information about how co-simulation can be extended with exploring the candidate design space. Finally this part is completed in Chapter~\ref{chap:postana} explaining about the post-analysis possibilities in particular relevant in an exploration setting.
+This user manual explains how to use the Crescendo IDE for developing collaborating models
+ (co-models) and how to analyse them. In essence, this manual is structured in 2 parts: the first part provides the basics for getting started with the Crescendo tool and the second part act as a reference manual. The first part contains Chapter~\ref{chap:introconcepts} introducing the basic Crescendo concepts\footnote{Appendix~\ref{app:Glossary} provides a complete list of the Crescendo common concepts.}; Chapter~\ref{chap:getting} explains how to get hold of the software; and finally
+Chapter~\ref{chap:gettingstarted} provides information on how to get started quickly using the Crescendo tool with existing models that can be imported directly. The second part also contains four chapters explaining the main possibilities in the Crescendo tool. Chapter~\ref{chap:basic} explains about the different views in the Crescendo tool, its editors and its way of handling projects. Chapter~\ref{chap:cosim} presents the co-simulation possibilities. This is followed by Chapter~\ref{chap:DSE} which provides information about how co-simulation can be extended with exploring the candidate design spaces. Finally, Chapter~\ref{chap:postana} presents the post-analysis possibilities which are in particular relevant in a design exploration setting.
 
 \chapter{Basic Crescendo Concepts}\label{chap:introconcepts}
 
-The Crescendo tool allows you to define and a co-simulation. To get a
-basic understanding of the tool we first need to define some concepts.
+The Crescendo tool allows you to define co-models and to perform a co-simulation. To get a
+basic understanding of the tool, we first need to define some concepts.
 We will use use a popular description of these concepts that might not
 be completely correct but will, hopefully, enhance the understanding of
 beginning Crescendo users.
@@ -283,22 +283,19 @@ time steps nothing happens.
 
 Continuous-time models can be entered and simulated in 20-sim. This tool
 will calculate continuous-time models with as many small time steps as
-required to get accurate results. Sometime the accuracy is violated. The
+required to get accurate results. Sometimes the accuracy is violated. The
 tool will then step back and use smaller time steps until the required
 accuracy is met. This is called a \textbf{continuous-time simulation}. A
 continuous-time simulation is therefore always characterized by the
 accuracy of the simulation and the time steps taken.~Discrete-event
 models can be entered and simulated in Overture/VDM. This tool will calculate
-discrete-event models with exactly the time steps required. This is
+discrete-event models with the exact time steps required. This is
 called a \textbf{discrete-event simulation}. There is no accuracy issues
 involved and therefore no backstepping is required.
 
 The properties of a model~that affects its behaviour, but which remains
 constant during a simulation are called \textbf{parameters}. Examples of
-parameters are the \texttt{height} of a watertank with varying waterlevel or
-the \texttt{mass} of a car with varying~speed. A \emph{variable} is a
-property~of a model that may change during a given simulation. Examples
-of variables are the varying \texttt{waterlevel} of a watertank~or the
+parameters are for example the \texttt{height} of a watertank or the \texttt{mass} of a car. A \emph{variable} is a property~of a model that may change during a given simulation, for example the varying \texttt{waterlevel} of a watertank~or the
 varying \texttt{speed} of a car.
 
 \section{Co-Simulation}
@@ -306,14 +303,14 @@ varying \texttt{speed} of a car.
 A \textbf{co-simulation} is a combined simulation of a continuous-time
 model and a discrete-event model in separate tools. The Crescendo tool
 allows you to run discrete-event models in VDM and continuous-time
-models in 20-sim and exchange information between VDM and 20-sim during
-run time.Because the notion of a model in a co-simulation may lead
+models in 20-sim and exchange information between VDM and 20-sim at
+run time. Because the notion of a model in a co-simulation setting may lead
 to misinterpretations, we will use the following definitions:
 
 \begin{description}
 \item[constituent model:] the continuous-time model or the
   discrete-event model of a co-simulation.
-\item[co-model:]~a model comprising two constituent models (a
+\item[co-model:] a model comprising two constituent models (a
   discrete event submodel and a continuous-time submodel).
 \end{description}
 
@@ -345,8 +342,8 @@ The Crescendo tool suite can be downloaded as a single installation
 package from the Crescendo website. The package contains a
 full installation for Overture/VDM, 20-sim and the
 Crescendo tools. Overture/VDM and the Crescendo tools are open source tools and
-will run on any computer. However, 20-sim is a commerical tool that will run as a
-viewer on any computer. If you want to build your own models in 20-sim
+will run on any computer equipped with a Java virtual machine. However, 20-sim is a
+commerical tool that will run as a viewer on any Windows computer. If you want to build your own models in 20-sim
 and store them, you will need a license (see Section~\ref{sec:install}). In order to install to package of the Crescendo package you need to have:
 
 \begin{itemize}
@@ -381,9 +378,9 @@ installed, the Crescendo installer will continue.
 Both VDM and the Crescendo tools are open source and do not require an
 additional license. 20-sim is a commercial tool that will run in
 viewer mode on any computer. This means that you
-can only run and edit models! If you want to store models, you will need
-a license. You can send an email to
-Controllab \url{mailto://info@controllab.nl} to get an trial license.
+can only run and edit models!
+If you also want to store models, you will need a 20-sim license. You can send an email to
+Controllab \url{info@controllab.nl} to get an trial license.
 
 \subsection{Manuals}
 
@@ -391,10 +388,10 @@ Controllab \url{mailto://info@controllab.nl} to get an trial license.
 \item[VDM:] To help you work with VDM the VDM language manual~\cite{Larsen&13b} and the Overture user guide~\cite{Larsen&13a}\footnote{Both of these and more manuals can be found at
   \url{http://overturetool.org/?q=Documentation}.}.
 \item[20-sim:] To help you work with 20-sim, you can visit the
-  website~\cite{20sim} or look at the reference
+  website~\cite{20sim} or look at the 20-sim reference
   manual~\cite{Kleijn09}\footnote{See also
-    \url{http://www.20sim.com/support/movies.html}
-    or~\url{http://www.20sim.com/downloads/files/20sim43GettingStartedManual.pdf}.}.
+    \url{http://www.20sim.com/support/movies.html} and \\
+    \url{http://www.20sim.com/downloads/files/20sim43GettingStartedManual.pdf}.}.
 \end{description}
 
 \section{20-sim Standalone}
@@ -416,7 +413,7 @@ the license dialog will be opened.
 \end{itemize}
 
 Unless you have purchased a license during model editing and
-simulation, the 20-sim Viewer will annoy you with a message:
+simulation, the 20-sim Viewer will remind you with a message:
 
 \begin{figure}[htbp]
 \centering
@@ -429,8 +426,8 @@ simulation, the 20-sim Viewer will annoy you with a message:
   You have to \emph{click on top} of this message to continue.
 \end{itemize}
 
-If you feel the Viewer is too annoying or want to store models, you have
-to ask Controllab for trial license.
+% If you feel the Viewer is too annoying or want to store models, you have
+% to ask Controllab for trial license.
 
 \chapter{Quick Start with Crescendo} \label{chap:gettingstarted}
 
@@ -445,7 +442,7 @@ by step instructions how to configure the software, get a basic
 \item
   \textbf{Open Crescendo} from the \textbf{start menu}.
 You will see a splash screen when the program opens and a dialog
-prompting you to give a location for the workspace as in Figure~\ref{fig:wsloc}.
+prompting you to give a location for the workspace, as in Figure~\ref{fig:wsloc}.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -466,18 +463,18 @@ The program should respond by opening with a welcome screen as shown in Figure~\
 \caption{The Crescendo Welcome Screen.\label{fig:welcome}}
 \end{figure}
 
-When the welcome screen is closed the standard Crescendo perspective as shown in Figure~\ref{fig:DestecsStartScreen} with different views explained further in Chapter~\ref{chap:basic}.
+When the welcome screen is closed the standard Crescendo perspective becomes active, as shown in Figure~\ref{fig:DestecsStartScreen} with different views explained further in Chapter~\ref{chap:basic}.
 
 \section{Opening the Project}
 
 \begin{itemize}
 \item
-  From the \emph{File} menu choose ``\emph{File} and then \emph{Import}''.
+  From the \emph{File} menu choose ``\emph{File}" and then ``\emph{Import}''.
 \item
   Select ``\emph{General and Existing Projects into Workspace}''
-  and click \emph{Next} and get a window similar to Figure~\ref{fig:importex}.
+  and click ``\emph{Next}" and get a window similar to Figure~\ref{fig:importex}.
 \item
-  \emph{Crescendo Examples} and select at least the
+ Go to  \emph{Crescendo Examples} and select at least the
   \texttt{WatertankPeriodic} example.
 \item
   Click \emph{Finish} to import the selected project(s).
@@ -499,7 +496,7 @@ Now (at least) the \texttt{WaterTankPeriodic} project should be visible.
 \item
   Press the \emph{Debug button}
   (if you have multiple
-  projects loaded, you have to select the \texttt{WaterTankPeriodic} project first, by
+  projects loaded, you have to select the \\ \texttt{WaterTankPeriodic} project first, by
   clicking the black triangle at the right of the Debug button)
 \end{itemize}
 
@@ -509,7 +506,7 @@ Figure~\ref{fig:watertankeditor}, the 20-sim Simulator (showing the
 plot of the continuous-time part of the simulation) will be opened and
 the 3D animator (showing an animation of the watertank) will be opened
 as shown in Figure~\ref{fig:water3Dani}. In addition graphs for
-selected variables during the simulation is shown as in
+selected variables during the simulation are shown as in
 Figure~\ref{fig:watercosimplot}.
 
 \begin{figure}[htbp]
@@ -527,7 +524,7 @@ Figure~\ref{fig:watercosimplot}.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.6\textwidth]{images/20simSimulatorWaterTank.png}
+\includegraphics[width=.9\textwidth]{images/20simSimulatorWaterTank.png}
 \caption{The 20-sim Simulator shows the co-simulated plots.\label{fig:watercosimplot}}
 \end{figure}
 
@@ -540,7 +537,7 @@ provides a common look and~feel to a large collection of extension
 products. Thus, if a user is familiar with one Eclipse product, it will
 generally be easy to start using a different product on the same
 workbench. The Eclipse workbench consists of several panels known as
-views as shown in Figure~\ref{fig:DestecsStartScreen}. 
+views, as shown in Figure~\ref{fig:DestecsStartScreen}. 
 A collection of panels is called a perspective. The figure below
 shows the standard Crescendo perspective. The Crescendo perspective consists
 of a set of views for managing Crescendo projects and viewing and editing
@@ -549,7 +546,7 @@ based on the task that you are doing. In the subsections below the different vie
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.8\textwidth]{images/DestecsWorkbenchOutline.png}
+\includegraphics[width=.9\textwidth]{images/DestecsWorkbenchOutline.png}
 \caption{Standard Crescendo Perspective.\label{fig:DestecsStartScreen}}
 \end{figure}
 
@@ -567,7 +564,7 @@ adding new files to existing projects is enabled. In Figure~\ref{fig:explorervie
 
 \subsection{Editor View}\label{sec:editorview}
 
-The Crescendo \emph{Editor View} allows you to edit VDM files, Contracts and Scenario's and it highlights the different keywords. Figure~\ref{fig:editorcontract1} showns how a Crescendo contract looks in the editor (and in a different pane a VDM-RT file).
+The Crescendo \emph{Editor View} allows you to edit VDM files, Contracts and Scenario's and it highlights the different keywords. Figure~\ref{fig:editorcontract1} shows how a Crescendo contract looks in the editor (and in a different pane a VDM-RT file).
 
 \begin{figure}[htbp]
 \centering
@@ -583,7 +580,7 @@ declared VDM definitions such as their state components, values, types,
 functions and operations. The type of the definitions are also shown in
 the outline view. The Outline view is at the moment only available for
 the VDM models of the system. In the case another type of file is
-selected, the message An outline is not available will be displayed. 
+selected, the message ``\emph{An outline is not available}" will be displayed. 
 Figure~\ref{fig:outlineview} shows an extract of the outline of a class called \texttt{System}. 
 
 \begin{figure}[htbp]
@@ -728,12 +725,12 @@ project.
   Right-click the \emph{Explorer View} (see Section~\ref{subsec:explorer} above)  and
   select \emph{Import.}
 \item
-  Select either the standard \emph{Crescendo} or the \emph{General -> Existing Projects into
+  Select either the standard \emph{Crescendo} or the \emph{General $\rightarrow$ Existing Projects into
   Workspace} part. Using the \emph{Crescendo} one enables you to import the standard Crescendo examples or the examples used in the book about this \cite{Fitzgerald&13a}. Using the \emph{General} entry you can import anything else that has been produced by someone and exported for your use.
 \item
   Click \emph{Next} to proceed.
 \item
-  If one of the \emph{Crescendo} options is taken a list of the potential projects to import will appear. Otherwise if the  \emph{General} one was selected you shall select the the radio button ``\emph{Select root directory}'' if the project
+  If one of the \emph{Crescendo} options is taken, a list of the potential projects to import will appear. Otherwise if the  \emph{General} one was selected you shall select the the radio button ``\emph{Select root directory}'' if the project
   is uncompressed. Otherwise select the the radio button \emph{Select archive
   file} if the project is contained in a compressed archive file. Afterwards, use
   the \emph{Browse} button to locate the project.
@@ -874,7 +871,7 @@ Select \emph{New} and \emph{Crescendo New Contract} as shown in Figure~\ref{fig:
 \end{itemize}
 
 After following these steps a new file named \texttt{contract.csc} will
-appear under the \texttt{configuration} folder contained in the project
+appear under the \\ \texttt{configuration} folder contained in the project
 tree. The contract can be viewed in the editor as shown in Figure~\ref{fig:editorcontract2}.
 
 \begin{figure}[htbp]
@@ -885,12 +882,12 @@ tree. The contract can be viewed in the editor as shown in Figure~\ref{fig:edito
 
 \subsection{Contents of a Contract}
 
-A contract between a CT and a DE model can contain the following kind of
+A contract between a CT and a DE model can contain the following kinds of
 information:
 
 \begin{description}
 \item[Design parameters:] These are typically values which indicate
-  the properties of components (e.g.~size, weight, temperature). A
+  the properties of components (e.g. size, weight, temperature). A
   designer would like to explore different values of these parameters in
   order to find an optimal solution to the challenge he is working on.
   The actual values for the shared design parameters are set outside the
@@ -967,7 +964,6 @@ In VDM matrices of ``n'' dimensions
 represented as (\vdmkeyw{seq of ... seq of real}). So a 2x2 matrix is
 represented as a (\vdmkeyw{seq of seq of
 real}).
-
 The contract matrix variables are linked in the same manner as any other
 variable but the target variable needs to be of the correct type, in our
 case~\vdmkeyw{seq of seq of real}. At the VDM level this would typically 
@@ -975,7 +971,6 @@ be declared as:
 
 \begin{vdmrt}
 instance variables
-
     M: seq of seq of real := [[0.0,0.0],[0.0,0.0]];
 \end{vdmrt}
 
@@ -987,18 +982,17 @@ Arrays can be declared in the same style:
 monitored array position[3];
 \end{dcl}
 
-Although arrays are limited to one dimension.
+\noindent Arrays are basically matrices limited to one dimension.
 
 \subsection{Error Detection in the Contract/Link File}
 
 A static error check is performed every time the contract or the
-link file are saved. This is a
-cross-file consistency check which resolves if all the variables/events
+link file are saved. This is a cross-file consistency check which resolves if all the variables and events
 declared in a contract are also present in the link and vice-versa.
 Crescendo will prevent the launch of projects with consistency errors
 between the contract and link files but there is the possibility to turn
 this protection off by un-checking the referent preference (accessible
-in the menu ``\emph{Windows} followed by \emph{Preferences}''). This is illustrated in Figure~\ref{fig:linkerrors}.
+in the menu ``\emph{Windows}" followed by ``\emph{Preferences}''). This is illustrated in Figure~\ref{fig:linkerrors}.
 
 \begin{figure}[htbp]
 \centering
@@ -1010,13 +1004,8 @@ in the menu ``\emph{Windows} followed by \emph{Preferences}''). This is illustra
 
 The link file is automatically created when you start a new project. You
 can edit the link file by selecting the configuration folder in the
-project tree.
-
-\begin{itemize}
-\item
-  Expand the project and configuration folder and \emph{select the
+project tree. Expand the project and configuration folder and \emph{select the
   file} \texttt{vdm.link}.
-\end{itemize}
 
 \begin{figure}[htbp]
 \centering
@@ -1024,7 +1013,7 @@ project tree.
 \caption{Expand the configuration folder to see the link file.\label{fig:linkfile}}
 \end{figure}
 
-Figure~\ref{fig:linkfile} shows the editor with the contents of the link file.
+\noindent Figure~\ref{fig:linkfile} shows the editor with the contents of the link file.
 
 \subsubsection{Contents of a link file}
 
@@ -1041,7 +1030,6 @@ be able to reference them from a script (the keyword ''\vdmkeyw{model}'' is used
 for this purpose). The right-hand-side of all the ``\texttt{=}'' signs provide
 the names seen from the DE co-model side, e.g., the instance variables
 inside a system class in the VDM-RT model.
-
 The syntax of these definitions are:
 
 \begin{grammar}
@@ -1066,16 +1054,16 @@ The syntax of these definitions are:
   an instance variable in the DE model. The qualified name must start
   with the system class name.
 \item
-  \vdmkeyw{sdp} \textbf{links a shared design parameter in the contract with
-  a value in the DE model}. \emph{'The qualified name can start by any
-  class name and the referenced value must be a "}value''" in VDM.
+  \vdmkeyw{sdp} links a shared design parameter in the contract with
+  a value in the DE model. The \emph{qualified name} can start with any
+  class name and the referenced value must be a VDM value.
 \item
   \vdmkeyw{model} links a ``name'' and a variable in the VDM model. The
   name can then be used to reference the variable in scripts.~The
   qualified name must start with the system class name.
 \end{itemize}
 
-The \texttt{vdm.link} file for the \texttt{WaterTankPeriodic} example looks as:
+\noindent The \texttt{vdm.link} file for the \texttt{WaterTankPeriodic} example looks as:
 
 \begin{dcl}
 -- connect shared variables to DE model
@@ -1087,8 +1075,10 @@ sdp maxlevel = Controller.maxLevel;
 sdp minlevel = Controller.minLevel;
 	
 -- other linked names used in scenarios
-model isLevelSensorBroken = System.levelSensor.isLevelSensorBroken;
-model isValveBroken = System.valveActuator.isValveBroken;
+model isLevelSensorBroken =
+   System.levelSensor.isLevelSensorBroken;
+model isValveBroken = 
+   System.valveActuator.isValveBroken;
 \end{dcl}
 
 \subsubsection{CT Model}
@@ -1096,14 +1086,10 @@ model isValveBroken = System.valveActuator.isValveBroken;
 On the 20-sim side, a link file is not used, but still, the
 variables/parameters need to be declared in a certain way inside the 20-sim model in order to
 carry out the co-simulation.
-
-%%\subsection{Co-simulation variables}
-
 Variables used in the co-simulation, need to be in the
-\vdmkeyw{externals} field and marked as \vdmkeyw{'global}'. Depending if
+\vdmkeyw{externals} field and marked as \vdmkeyw{global}. Depending if
 they are used as input or output they need to be marked
 \vdmkeyw{import} or \vdmkeyw{export} respectively.
-
 Example:
 
 \begin{dcl}
@@ -1112,12 +1098,8 @@ externals
   real global import valve;
 \end{dcl}
 
-%%\subsection{Shared Design Parameters}
-
-The parameters to be shared across the two models need to be marked with
-the keyword \vdmkeyw{shared}.
-
-Example:
+\noindent The parameters to be shared across the two models need to be marked with
+the keyword \vdmkeyw{shared}. Example:
 
 \begin{dcl}
 parameters
@@ -1129,13 +1111,12 @@ parameters
 Events need to be marked using the \vdmkeyw{event} keyword this marks
 the variable that it used as return value of the event function to be an
 event variable.~The keywords \vdmkeyw{eventdown} and \vdmkeyw{eventup}
-are used as in standalone 20-sim models. 
-
-Example:
+are used as in standalone 20-sim models.  Example:
 
 \begin{dcl}
 variables
   boolean minLevelReached ('event');
+
 equations
   maxLevelReached = eventup(levelIn-maxlevel);
 \end{dcl}
@@ -1158,7 +1139,7 @@ variable. The form they are presented is:
 VDM variable <-> Contract Variable <-> 20-sim variable
 \end{verbatim}
 
-The ``\emph{not checked}'' appears next to the 20-sim variables because at
+The ``\emph{not checked}'' warning appears next to the 20-sim variables because at
 this moment is not possible to static check if the variables exist in
 the 20-sim model.
 
@@ -1186,7 +1167,7 @@ simulation time. In this section we will go through each pane in the debug confi
 \item
   A drop-down menu will appear, in which the option
   \emph{Debug configuration} has to be selected, and as a consequence
-a new window as shown in Figure~\ref{fig:DestecsDebugConfigurationNew}.
+a new window will appear as shown in Figure~\ref{fig:DestecsDebugConfigurationNew}.
 \item
   Select the option \emph{Co-Sim Launch} and
   \emph{New Configuration}
@@ -1194,7 +1175,7 @@ a new window as shown in Figure~\ref{fig:DestecsDebugConfigurationNew}.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.6\textwidth]{images/DestecsDebugConfigurationNew.png}
+\includegraphics[width=.8\textwidth]{images/DestecsDebugConfigurationNew.png}
 \caption{Select a new debug configuration.\label{fig:DestecsDebugConfigurationNew}}
 \end{figure}
 
@@ -1236,7 +1217,7 @@ wanted project, \emph{the DE model path is automatically filled
 since it is only possible to have one DE model} in the \texttt{model\_de}
 folder. Though the CT model path needs to be selected \emph{Browse...}
 button. If a scenario should be used, it is possible
-to select which one in the Simulation Configuration section. The total
+to select the right one in the Simulation Configuration section. The total
 simulation time should be a number greater than zero to be able to run
 the co-simulation.
 
@@ -1244,7 +1225,7 @@ the co-simulation.
 
 An important feature of the debug configuration is the possibility to
 view and modify the \emph{shared design
-parameters} of the co-simulation. This is configures in Figure~\ref{fig:sdpindebug}. 
+parameters} of the co-simulation. This is configured in Figure~\ref{fig:sdpindebug}. 
 
 \begin{figure}[htbp]
 \centering
@@ -1262,7 +1243,7 @@ parameters} of the co-simulation. This is configures in Figure~\ref{fig:sdpindeb
 
 In the \emph{Shared Design Parameters} tab, a list of the parameters used in
 the simulation can be viewed. For the variables to appear for the first
-time the the button ``\emph{Synchronize with contract}'' needs to be pressed.
+time the button ``\emph{Synchronize with contract}'' needs to be pressed.
 Every time the shared design parameters are changed in the contract, the
 button must be pressed again in order to synchronize the view with the
 contract.
@@ -1275,20 +1256,20 @@ parameter.
 
 \subsection{DE Simulator Tab}
 
-The \emph{DE Simulator} tab is the tab where runtime options for the DE part of
-the model can be activated/deactivated. It is divided in 4 options
+The \emph{DE Simulator} tab is the place where runtime options for the DE part of
+the model can be activated and deactivated. It is divided in 4 options
 groups:
 
 \begin{description}
-\item[Interpreting:] These are options related with the interpretation of
+\item[Interpreting:] These are options related to the interpretation of
   the DE models. Certain checks and also the generation of reports such
-  as coverage or the real-time events can be turned on/off. Usage of these
+  as coverage or the real-time events can be turned on and off. Usage of these
   options are further explained in the Overture/VDM user manual \cite{Larsen&13a}.
 \item[Log:] In this group it is possible to select variables from the DE
   model that should be logged during the simulation. To find more
   details about this feature, see Section~\ref{sec:Logfiles}.
 \item[Faults:] In this group it is possible to
-  chose a class \texttt{A} to replace a class \texttt{B} before the co-simulation start. The
+  select a class \texttt{A} to replace a class \texttt{B} before the co-simulation start. The
   intention is to experiment with faulty modules that can be substituted
   by the non-faulty model. To make sure there will be no run-time
   exceptions, class \texttt{B} should be subclass of \texttt{A}. To indicate that class \texttt{A}
@@ -1310,14 +1291,14 @@ groups:
 
 \subsection{CT Simulator Tab}
 
-The 20-sim Options tab contains options related with the execution of
+The 20-sim tab contains options related with the execution of
 the CT model. At first, both tables (Log and Settings) contain only the
 previously saved settings, if no settings were previously selected then
 the tables will be empty; the tables can be populated by pressing the
 "\emph{Populate...}" button. The "\emph{Populate..}."~button launches
 the model selected in 20-sim model and dynamically extracts the settings
-and the variables present in the model. As shown in Figure~\ref{fig:CTSimInDebug} there is two areas present
-in the 20-sim options tab:
+and the variables present in the model. As shown in Figure~\ref{fig:CTSimInDebug}
+there are two areas present in the 20-sim options tab:
 
 \begin{description}
 \item[Log:] In this area it is possible to select which CT variables
@@ -1329,13 +1310,11 @@ in the 20-sim options tab:
   side (``\emph{Options}'' group).
 \end{description}
 
-
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/DestecsDebugConfigurationCTSimulator.png}
 \caption{The CT simulator tab of the Debug Configuration.\label{fig:CTSimInDebug}}
 \end{figure}
-
 
 \section{Post-Processing Tab}
 
@@ -1348,7 +1327,7 @@ post-processing phase (see Figure~\ref{fig:postproctab}).
 \caption{Post-processing tab for debug configuration.\label{fig:postproctab}}
 \end{figure}
 
-``Show plot automatically when the script runs'' with this option
+``\emph{Show plot automatically when the script runs}'' with this option
 enabled, the Octave script that is generated after each run will
 contain the commands to show the plot automatically, i.e., simply
 running the script will show the plots.
@@ -1483,30 +1462,30 @@ are not given.
 <statement-list> ::= <statement> | <statement> `;' <statement-list>
 
 <statement> ::= <identifier> `:=' <expression>
- \alt `print' <string>
- \alt `warn' <string>
- \alt `error' <string>
- \alt `quit'
+   \alt `print' <string>
+   \alt `warn' <string>
+   \alt `error' <string>
+   \alt `quit'
 
 <after> ::= `after' <revert-list>
 
 <revert-list> ::= `revert' <identifier> | `revert' <identifier> `;' <revert-list>
 \end{grammar}
 
-\subsection{CSL Examples}
+%% \subsection{CSL Examples}
 
-\begin{dcl}
-when time > 60 {s} do
-  print "Past one minute"
-\end{dcl}
+%% \begin{dcl}
+%% when time > 60 {s} do
+%%   print "Past one minute"
+%% \end{dcl}
 
-\begin{dcl}
-when de boolean active = true for 2 {m} do
-  ( print "Controller active for two minutes" ;
-    de boolean sensor = false )
-after
-  revert de boolean sensor
-\end{dcl}
+%% \begin{dcl}
+%% when de boolean active = true for 2 {m} do
+%% ( print "Controller active for two minutes" ;
+%%    de boolean sensor = false )
+%% after
+%%  revert de boolean sensor
+%% \end{dcl}
 
 %% scenario file = \{ numeric literal, (`\textbf{DE}' \textbar{}
 %% `\textbf{CT}'), `.', identifier, `:=', symbolic literal \}, `;'~;
@@ -1554,19 +1533,16 @@ the features of this script language.
 
 \begin{dcl}
 when time = 5 do
-
-(de real x := 10;);
+  (de real x := 10;);
 \end{dcl}
 
 The \vdmkeyw{time} keyword yields the current co-simulation time. The \vdmkeyw{de}
 keyword indicates that \texttt{x} is resides (at the top level) in the DE
 model. Naturally, the \vdmkeyw{ct} keyword is used to indicate the CT model.
-Comments may also be included:
 
 \begin{dcl}
 when time = 5 do
-
-(ct real y := true;);
+  (ct real y := true;);
 \end{dcl}
 
 Statements can also be grouped in blocks (surrounded by parentheses and
@@ -1578,9 +1554,9 @@ tool (or to a log in batch mode) with the \vdmkeyw{print} statement:
 \begin{dcl}
 when time = 900 {ms} do
 (
-de real x := 10;
-ct real y := true;
-print "Co-simulation time reached 900 ms.";
+  de real x := 10;
+  ct real y := true;
+  print "Co-simulation time reached 900 ms.";
 );
 \end{dcl}
 
@@ -1591,16 +1567,17 @@ that block statements do not permit local variables to be defined.~
 
 \begin{dcl}
 when time >= 10 and time < 15 do
-(print "Co-simulation time reached 10 seconds.";)
+  (print "Co-simulation time reached 10 seconds.";)
 \end{dcl}
 
 Since this script language does not allow local variables to be defined,
 a special statement, revert, may be used in an after clause to change a
 value back to what it was when the do clause executed.
+Note that comments may also be included:
 
 \begin{dcl}
 when time >= 10 and time < 15 do 
-(// assume x = 5
+(  // assume x = 5
  de real x := 10;
 )
 after (revert de real x;);
@@ -1614,7 +1591,7 @@ Additionally all shared variables can be accessed with the contract name
 and used in conditions, assignments or revert statements.
 
 It is also possible to have some statements executed exactly once, on
-the first time a condition is detected. This is acheived using the
+the first time a condition is detected. This is achieved using the
 \vdmkeyw{once} keyword instead of \vdmkeyw{when}.
 
 \begin{dcl}
@@ -1629,10 +1606,10 @@ print "First time x exceeds 500";
 \section{Logfiles}\label{sec:Logfiles}
 
 When starting a simulation, it is possible to select a set of variables
-that are logged throughout the co-simulation. At the moment this manual
+that are logged during the co-simulation. At the moment this manual
 is being written there is only the possibility of logging DE variables;
 support to log CT variables will be added later. The result of this
-logging is a CSV file (comma separated values).
+logging is a CSV file (comma separated values), which can be post processed with regular office tools.
 
 \subsection{DE Variables}
 
@@ -1650,30 +1627,24 @@ from the VDM \vdmkeyw{system} class.
 Checking the box next to a variable enables the logging of that
 variable. Currently it is only possible to log variables with basic
 types (all types except objects).
-
 For the \texttt{WatertankPeriodic} example, if we use the configuration
 shown above, a file with the contents as follows is generated:
 
 \begin{verbatim}
-time_,levelSensor.fault,levelSensor.level,valveActuator.valveState
-
+time,levelSensor.fault,levelSensor.level,valveActuator.valveState
 0.0,0,0,0
-
 0.01,0,0.01,0
-
 0.01,0,0.02,0
-
 0.02,0,0.03,0
-
 0.03,0,0.03,0
-
-... ... ... ...
+...
 \end{verbatim}
 
-The first column is the time and the following ones are the value of the
-variable at the given moment. A CSV file can be better visualized, for
+The first column is the simulation time and the following columns contain
+the value of the variable at that given moment. A CSV file can be better visualized, for
 example, in \emph{20-sim}, \emph{Excel} or other software capable of
-opening this format.
+opening this format. For convenience, the first line of the file provides the names of
+the exported variables.
 
 %% \section{Debug Reports}
 
@@ -1801,26 +1772,25 @@ opening this format.
 %% This is definitely a valuable collection of data, since it can be
 %% exported as data files for analysis by~external tools.
 
-\chapter{Design Space Exploration Posibilities}\label{chap:DSE}
+\chapter{Design Space Exploration Possibilities}\label{chap:DSE}
 
-In order to support Design Space Exploration (DSE), the Automated
-Co-model Analysis (ACA) is a feature that enables running many different
-co-simulations with minimal user intervention. The ACA feature enables
-the user to select different configurations for each individual parts of
-the co-model and then runs the co-simulation combining all possible
+Automated Co-model Analysis (ACA) is a feature that enables running many different
+co-simulations with minimal user intervention, to support In order to support Design Space Exploration (DSE). The ACA feature enables
+the user to select different configurations for each individual part of
+the co-model and then runs the co-simulation combining all possible combinations of
 configurations that were selected by the user.
 
 \section{ACA Workflow}
 
 The figure below illustrates the steps in the process of the ACA work
-flow. First the user provides configurations for different parts of the
+flow. First, the user provides configurations for different parts of the
 co-simulation, then the tool generates different complete configurations
 by composing the different configurations parts that were provided by
 the user.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.6\textwidth]{images/ACAworkflow.jpg}
+\includegraphics[width=.9\textwidth]{images/ACAworkflow.jpg}
 \caption{Illustration of the ACA process.}
 \end{figure}
 
@@ -1833,23 +1803,23 @@ shared design parameters.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.6\textwidth]{images/ACAconcept.jpg}
+\includegraphics[width=.9\textwidth]{images/ACAconcept.jpg}
 \caption{Illustration of the ACA process.}
 \end{figure}
 
-From these partial configurations it is possible to construct complete
-configurations in by combining each of the different partial
+From these partial configurations, it is possible to construct complete
+configurations by combining each of the different partial
 configurations. The figure above together with the following description
 helps illustrating the concept. The result of generating complete
 configurations from the partial configuration would be 4 different
 complete configurations: A1-B1-C1; A1-B1-C2; A1-B2-C1; and A1-B2-C2. The
-user can easily get many more configurations by adding more parameters
+user can easily create many more configurations by adding more parameters
 or adding more values to existing parameters, for example, simply adding
 a A2 value would result in 4 more different configurations.
 
 \section{Using the ACA Features}
 
-Launching an ACA is made through the Debug Configuration menu.
+Launching an ACA is made possible through the Debug Configuration menu.
 %% \begin{figure}[htbp]
 %% \centering
 %% \includegraphics[width=.6\textwidth]{images/DestecsACAdebugconfig.png}
@@ -1857,32 +1827,31 @@ Launching an ACA is made through the Debug Configuration menu.
 %% \end{figure}
 Creating a new Debug Configuration of an ACA Launch type will bring up
 the menu to configure the ACA. As it is possible to notice from the
-figure below, the several present tabs (The rightmost tab, the Common
-tab, will not be mention here since is a standard Eclipse tab) will be
-explained~individually in the following subsections.
+figure below, the several present tabs\footnote{The rightmost tab, the Common
+tab, will not be mentioned here since it is a standard Eclipse tab.} will be
+explained individually in the following subsections.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.6\textwidth]{images/DestecsACAdebugconfig.png}
-\caption{}
+\includegraphics[width=.9\textwidth]{images/DestecsACAdebugconfig.png}
+\caption{Configuring the ACA functionality for DSE.}
 \end{figure}
 
 To start an ACA launch, a base configuration needs to be selected. This
 configuration is a normal Crescendo launch which will be used as base for
 the ACA settings. This means that launch options that are not
 overwritten in the ACA will use as default the ones present in the base
-launch.
+launch configuration.
 
 \subsection{The Main Tab}
 
 The Main tab will be the place where general settings for the ACA launch
-are set. Here the Base Configuration first of all needs to be selected.
-The Base Configuration is the co-simulation configuration that
+are set. The Base Configuration is the co-simulation configuration that
 forms the base for the ACA to work. In addition there are two choices that can
 be made as shown in Figure~\ref{fig:Destecsacamaintab}. These are:
 
 \begin{itemize}
-\item The first is one where one can whether one would like to see the usual plots shown at the 20-sim side for each single co-simulation or one would prefer not spending time on that.
+\item The first is one where one can select whether one would like to see the usual plots shown at the 20-sim side for each single co-simulation or one would prefer not spending time on that.
 \item The second option can be ticked if a huge amount of data is expected to be produced. If this is ticked the data generated are not included in the directory used by the Crescendo tool (in general Eclipse does not like to have a very high number of files). 
 \end{itemize}
 
@@ -1894,7 +1863,7 @@ be made as shown in Figure~\ref{fig:Destecsacamaintab}. These are:
 
 By pressing the button Browse it is
 possible to browse through the Co-Sim Launches present in the Crescendo
-Tool and chose one. This configuration will be the base configuration
+Tool and select one. This configuration will be the base configuration
 for all the ones generated by the ACA. The ACA will take the base
 configuration and combine it in all possible ways depending on what the
 user set on the other tabs.
@@ -1902,8 +1871,7 @@ user set on the other tabs.
 \subsection{The Architecture Tab - Deployment Architectures}
 
 It is possible in this tab to select which Controller Architectures will
-be used in the ACA run (see Figure~\ref{fig:ArchitecturesACA}. For more information on Controller Architectures
-and how to define them please see Section~\ref{sec:DEArch}.
+be used in the ACA run, see Figure~\ref{fig:ArchitecturesACA}. For more information on how to define Controller Architectures see Section~\ref{sec:DEArch}.
 
 \begin{figure}[htbp]
 \centering
@@ -1913,7 +1881,7 @@ and how to define them please see Section~\ref{sec:DEArch}.
 
 \subsection{Shared Design Parameters Tab}
 
-In the Shared Design Parameters tab it is possible to make a value
+In the Shared Design Parameters tab, it is possible to make a value
 ``sweep'' of the shared design parameters (see Figure~\ref{fig:SDPsSweep}).
 
 \begin{figure}[htbp]
@@ -1924,7 +1892,7 @@ In the Shared Design Parameters tab it is possible to make a value
 
 \subsubsection{The incremental Sweep}
 
-In the first column it is possible to select from a drop-down the shared
+In the first column, it is possible to select from a drop-down the shared
 design parameter to sweep (see Figure~\ref{fig:IncrementalSweep}). 
 In the second column (\texttt{From}), it is possible
 to select the value which the sweep should start from. The third column
@@ -1939,10 +1907,10 @@ to select the value which the sweep should start from. The third column
 
 \subsubsection{The value set Sweep}
 
-In the first column it is possible to select from a drop-down the shared
+In the first column, it is possible to select from a drop-down the shared
 design parameter to sweep (see Figure~\ref{fig:ValueSetSweep}). 
 In the second column a list of double values
-should be introduced, separated by (;).
+should be introduced, separated by semicolons.
 
 \begin{figure}[htbp]
 \centering
@@ -1950,7 +1918,7 @@ should be introduced, separated by (;).
 \caption{Selecting values of SDP variables to sweep over.\label{fig:ValueSetSweep}}
 \end{figure}
 
-It is possible to sweep by value set complex variables as shown in Figure~\ref{fig:ValueSetSweepComplex}.
+\noindent It is possible to sweep by value set complex variables as shown in Figure~\ref{fig:ValueSetSweepComplex}.
 
 \begin{figure}[htbp]
 \centering
@@ -1959,24 +1927,24 @@ It is possible to sweep by value set complex variables as shown in Figure~\ref{f
 \end{figure}
 
 The behaviour of complex SDPs is a bit different from the atomic SDPs.
-For example, the configuration on the picture above will generate 2 ACA
+For example, the configuration on the picture above will generate two ACA
 runs for the variable ``\texttt{initial\_Position}''.
 
 \begin{itemize}
-\item 1st run: initial\_Position = {[}-1.448,-1.110{]}
+\item First run: initial\_Position = {[}-1.448,-1.110{]}
 
-\item 2nd run: initial\_Position = {[}-1.736,X*{]} - * where X is the value
-defined in the base debug configuration for initional\_Position{[}2{]}.
+\item Second run: initial\_Position = {[}-1.736,X*{]} - * where X is the value
+defined in the base debug configuration for initial\_Position{[}2{]}.
 \end{itemize}
 
 The values defined in the value sweep are put together according to the
-order they appear, if a for one of the indexes is missing (like in this
+order they appear, if a value for one of the indexes is missing (like in this
 case the second value of initial\_Position{[}2{]}), the value from the
 original debug configuration will be used.
 
 \subsection{Scenario Tab}
 
-In the scenarios tab it is possible to select which scenarios will be
+In the scenarios tab, it is possible to select which scenarios will be
 used in the ACA run (see Figure~\ref{fig:ScenariosACATab}. 
 The scenarios present in the ``\texttt{scenarios}'' folder
 in the root of the project will be presented on the ``Scenario
@@ -1992,8 +1960,7 @@ used in the ACA.
 \subsection{CT Settings Tab}
 
 The CT side settings here work much in a similar fashion to the ones in
-the normal
-Crescendo launch (see Figure~\ref{fig:SettingsACATab}). 
+the normal Crescendo launch (see Figure~\ref{fig:SettingsACATab}). 
 The only difference is that it is possible to select
 multiple options instead of one. In the ACA Settings tab it is only
 possible to select options which have limited alternatives (i.e.,
@@ -2008,8 +1975,7 @@ enumerations).
 \subsection{Common Tab}
 
 The common tab settings here work much in a similar fashion to the ones in
-the normal
-Crescendo launch (see Figure~\ref{fig:CommontabACA}). 
+the normal Crescendo launch (see Figure~\ref{fig:CommontabACA}). 
 
 \begin{figure}[htbp]
 \centering
@@ -2020,7 +1986,7 @@ Crescendo launch (see Figure~\ref{fig:CommontabACA}).
 \section{Repeating one single launch part of an ACA}
 
 After a successful ACA launch, the output folder will contain
-information regarding what was exactly run in a specific ACA launch.
+all information regarding what was exactly run in a specific ACA launch.
 This information in stored in the \texttt{output} folder. By looking at
 the result of an ACA run, it is possible
 to see a file named \texttt{xxx.dlaunch} for each ACA run.
@@ -2039,9 +2005,9 @@ prefixed by ``\texttt{generated}''.
 \caption{Relaunching single ACA experiments.\label{fig:CreateAndLaunchCommand}}
 \end{figure}
 
-Inspecting the launch configurations it is possible to find the launch
-that was just created. The launch contains all the same settings as the
-launch that was selected to be created from the ACA.
+% Inspecting the launch configurations it is possible to find the launch
+% that was just created. The launch contains all the same settings as the
+% launch that was selected to be created from the ACA.
 
 \begin{figure}[htbp]
 \centering
@@ -2066,7 +2032,7 @@ the project.
 
 \begin{itemize}
 \item
-  rightclick on the project and select '''New '''and \textbf{Other....}
+  rightclick on the project and select ``\emph{New}" and then ``\emph{Other....}"
 \item
   Under the \textbf{Crescendo folder}, select \textbf{Add Crescendo
   Library~}and click~\textbf{Next}.
@@ -2075,27 +2041,24 @@ the project.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/DestecsAddNewLibrary.png}
-\caption{images/GeneratedLaunch.png}
+\caption{Adding the Control Library to the specification}
 \end{figure}
-
-''Add the Control Library '\textbf{'TODO: New screenshot with control
-library in.}
 
 \begin{itemize}
 \item
   Then check the box marked \textbf{Control Library}.
 \end{itemize}
 
-Unless you want to edit the class files, leave Use linked libraries
-checked (default). The classes will now be added to your co-model.
+Unless you want to edit the class files, leave \emph{Use linked libraries}
+checked, which is the default. The classes will now be added to your co-model.
 
 \subsection{Using the Control Library}
 
 \subsubsection{Basic Use}
 
 To use a class from the library, simply define a variable of the correct
-type, instantiate it with a constructor, call ''SetSampleTime ''and then
-call ''Output ''in your control loop. All of the control library classes
+type, instantiate it with a constructor, call ``\emph{SetSampleTime}'' and then
+call ``\emph{Output}'' in your control loop. All of the control library classes
 have an operation called \emph{Output}, which takes in an error and
 returns a control value, with the following form:
 
@@ -2120,18 +2083,16 @@ private out: real
 operations
 -- constructor for Controller
 public Controller: () ==> Controller
-Controller() ==
-(
-pid := new PID(10, 1, 0.1);
-pid.SetSampleTime(SAMPLE_TIME)
+Controller() == (
+  pid := new PID(10, 1, 0.1);
+  pid.SetSampleTime(SAMPLE_TIME)
 );
 
 -- control loop
 public Step: () ==> ()
-Step() ==
-(
-dcl err: real := SP - MV;
-out := pid.Output(err)
+Step() == (
+  dcl err: real := SP - MV;
+  out := pid.Output(err)
 );
 
 -- 100Hz control loop
@@ -2141,7 +2102,7 @@ thread periodic(10E6, 0, 0, 0)(Step);
 end Controller
 \end{vdmrt}
 
-Also, all of the classes have an operation called \emph{SetSampleTime},
+\noindent All of the classes have an operation called \emph{SetSampleTime},
 which takes a sample time in seconds:
 
 \begin{vdmrt}
@@ -2152,24 +2113,24 @@ SetSampleTime(s) ==
 Unlike 20-sim, VDM does not have a \textbf{sampletime} keyword, so it is
 necessary to explicitly tell the object what sample time to use in
 calculations. Therefore, for all control objects (except P) you must
-call \emph{SetSampleTime} before the ''Output ''is used. This only needs
+call \emph{SetSampleTime} before the ``\emph{Output}" is used. This only needs
 to be done once and it is recommended that it is called immediately
-after the constructor. If this is not done, the co-simulation will fail
+after the constructor. If this is not done, then the co-simulation will fail
 with a pre-condition violation the first time \emph{Output} is called.
 
 \subsection{Advanced Use}
 
 All of the controller classes in the library are subclasses of a single
-class called ''DTObject ''(discrete-time object). This class contains
-the definitions for ''SetSampleTime ''and ''Output ''and enforces a
+class called ``\emph{DTObject}'' (discrete-time object). This class contains
+the definitions for ``\emph{SetSampleTime}" and ``\emph{Output}" and enforces a
 consistent interface. It is possible to use the various controller
 classes without making reference to \emph{DTObject}. However, if it is
 desirable to test different controllers, variables can be defined as
 type \emph{DTObject}, meaning that only the call to the constructor
 needs to be changed in order to use a different controller
 implementation. This is also useful if control objects are passed to
-controllers. In the following example, the ''Controller \emph{class can
-accept any control object (}P'', \emph{PID} etc.):
+controllers. In the following example, the ``\emph{Controller}" class can
+accept any control object:
 
 \begin{vdmrt}
 class Controller
@@ -2183,10 +2144,9 @@ operations
 
 -- constructor for Controller
 public Controller: DTControl ==> Controller
-Controller(c) ==
-(
-ctrl := c;
-ctrl.SetSampleTime(SAMPLE_TIME)
+Controller (c) == (
+  ctrl := c;
+  ctrl.SetSampleTime(SAMPLE_TIME)
 );
 
 ...
@@ -2263,25 +2223,24 @@ PID() == ...
 
 This feature allows the selection of the hardware and deployment to be
 specified in a separate file from the VDM system class.
-
 In order to do this separation, the following steps need to be done:
 
 \begin{itemize}
 \item
   The System class must be cleaned of CPU and BUS~declarations and
-  deployments of the objects
+  deployments of the objects.
 \item
   Annotations need to be added to the system class that indicate where
-  the architecture and deployment statements.~The architecture tag must
-  be places under an instance variables block:
+  the architecture and deployment statements should be inserted. The architecture tag must
+  be placed under an instance variables block:
 \end{itemize}
 
 \begin{vdmrt}
 -- ## Architecture ## -- 
 \end{vdmrt}
 
-The deployment tab must be places in the constructor where the
-deployment normally will have been specified:
+The deployment tab must be placed in the constructor where the
+deployment normally is specified:
 
 \begin{vdmrt}
 -- ## Deployment ## -- 
@@ -2294,10 +2253,11 @@ architecture files should have the following form:
 \begin{vdmrt}
 -- ## Architecture ## --
 instance variables
-cpu1: CPU := new CPU(<FCFS>, 1000000 /* Hz */);
-cpu2: CPU := new CPU(<FCFS>, 1000000 /* Hz */);
-cpu3: CPU := new CPU(<FCFS>, 1000000 /* Hz */);
-bus1: BUS := new BUS(<FCFS>, 1000 /* bits/s */,{cpu1,cpu2,cpu3});
+  cpu1: CPU := new CPU(<FCFS>, 1000000 /* Hz */);
+  cpu2: CPU := new CPU(<FCFS>, 1000000 /* Hz */);
+  cpu3: CPU := new CPU(<FCFS>, 1000000 /* Hz */);
+  bus1: BUS := new BUS(<FCFS>, 1000 /* bits/s */,{cpu1,cpu2,cpu3});
+
 -- ## Deployment ## --
 cpu1.deploy(mmi);
 cpu3.deploy(navigation);
@@ -2339,13 +2299,13 @@ qualified operation name in VDM in the link file:
 <events> ::= 'event', <identifier> = 'System', '.', <identifier>, ('.', <identifier>)+
 \end{grammar}
 
-An example of this could be:
+\noindent An example of this could be:
 
 \begin{dcl}
 event event1=System.eventHandler.event1;
 \end{dcl}
 
-Where:
+\noindent where:
 
 \begin{itemize}
 \item
@@ -2361,10 +2321,10 @@ Where:
 
 \section{Events in CT}
 
-Events need to be marked using the keyword '\vdmkeyw{event}', this marks the
+Events need to be marked in 20-sim using the keyword \vdmkeyw{event}, this marks the
 variable that it used as return value of the event function to be an
-event variable. The keywords '\vdmkeyw{eventdown}' and 'eventup' are used as in
-standalone 20-sim models. See more under Events. Example:
+event variable. The keywords \vdmkeyw{eventdown} and \vdmkeyw{eventup} are used as in
+standalone 20-sim models. Example:
 
 \begin{dcl}
 variables
@@ -2376,18 +2336,16 @@ equations
 
 \subsection{Events in DE}
 
-The scheduler in VDM do not schedule events in the same way as for
-instance a micro controller would do where the current executing job is
+The scheduler in VDM does not schedule events in the same way as for
+instance a microcontroller would do where the current executing job is
 suspended in favour of the interrupt routine. However, it is possible to
-get a similar behaviour by creating and deploying an object to a CPU
+get similar behaviour by creating and deploying an object to a CPU
 that contains the job to run when an interrupt occurs and then call this
 from the async operation which is triggered when event occurs. It is
 just important that no objects having a periodic threads are deployed to
 the same CPU since this will delay the event by exactly one periodic
-loop.
-
-Events are linked to VDM through \vdmkeyw{async} operations and made assessable
-through the \vdmkeyw{system} class.
+loop. Events are linked to VDM through \vdmkeyw{async} operations and
+made accessable through the \vdmkeyw{system} class.
 
 \begin{vdmrt}
 system System
@@ -2398,7 +2356,7 @@ end System
 
 The \vdmkeyw{async} operation must be specified in a class that is not deployed to
 a CPU. This makes the evaluation instant. This means that the event
-operation it self do not take time to run.
+operation it self does not take any time to run.
 
 \begin{vdmrt}
 class EventHandler
@@ -2412,63 +2370,64 @@ end EventHandler
 \end{vdmrt}
 
 \textbf{Note about the VDM scheduler}: \emph{The VDM scheduler uses
-priorities to select which thread should run,each thread is then
-executed with a limited allowed number of expressions/ statements it can
-execute before another thread has to be schedulled and executed. The
-priority defined how many expressions/ statements a thread can execute
+priorities to select which thread shold run, each thread is then
+executed with a limited allowed number of expressions and statements it can
+execute (time slice) before another thread has to be scheduled and executed. The
+priority defines how many expressions and statements a thread can execute
 at a time. A thread will always continue executing until it is blocked
-or finished the allowed number of expressions/ statements.}
+or finished with the time slice.}
 
 \chapter{Post-Analysis Possibilities}\label{chap:postana}
 
 \section{Octave}
 
-GNU Octave is a high-level interpreted language, primarily intended for
+GNU Octave is an open source and high-level interpreted language, primarily intended for
 numerical computations. It provides capabilities for the numerical
 solution of linear and non-linear problems, and for performing other
 numerical experiments. It also provides extensive graphics capabilities
 for data visualization and manipulation. Octave is normally used through
 its interactive command line interface, but it can also be used to write
-non-interactive programs. The Octave language is quite similar to Matlab
-so that most programs are easily portable.
+non-interactive (batch oriented) programs. The Octave language is quite similar to Matlab
+so that most programs are easily portable. See for more details
 \url{http://www.gnu.org/software/octave/}
 
-\subsection{Octave Version}
+%%\subsection{Octave Version}
 
-It is very important that the correct version of Octave is used to run
-the scripts generated by Crescendo. The correct version can be found in
-Chessforge together with the Crescendo Releases.
+%%It is very important that the correct version of Octave is used to run
+%%the scripts generated by Crescendo. The correct version can be found in
+%%Chessforge together with the Crescendo Releases.
 
 \subsection{Octave use in Crescendo}
 
-After each co-simulation run, an Octave script is generated in the
+After each co-simulation run, an Octave script is automatically generated in the
 output dir. The script contains Octave code that reads the variable logs
-produced by both VDM and 20-sim during the run.
+produced by both VDM and 20-sim during the simulation run.
 
 \subsection{Show plot automatically when script is run}
 
 There is one option available in the debug configuration that affects
-the script. This option appears in two places both in the normal Crescendo
+the script. This option appears in two places, both in the normal Crescendo
 run and in ACA. If enabled, when the script is executed, a plot (or
-several, depending on the amount of variables selected) will
-automatically be drawn. In the case of an ACA run being executed, for
-the same variable, the several runs will juxtaposed.
-
-Picture below shows where to find this option for a normal run
-(Post-Processing tab).
+several, depending on the amount of variables selected) will be drawn
+automatically. In the case of an ACA run being executed, for
+the same variable, the several runs will juxtaposed in the same graphic, so
+the results are easy to compare and inspect visually. The figure
+below shows where to find this option for a normal run
+(Post-Processing tab, see Figure~\ref{singleoctave})
+and in the ACA launch (Main Tab, see Figure~\ref{multioctave}).
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/TickOctaveplotNormal.png}
-\caption{images/TickOctaveplotNormal.png}
+\caption{Enable Octave plot after a simulation run}
+\label{singleoctave}
 \end{figure}
-
-And in the ACA launch (Main Tab)
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/TickOctavePlotACA.png}
-\caption{images/TickOctavePlotACA.png}
+\caption{Enable Octave plots after an ACA run}
+\label{multioctave}
 \end{figure}
 
 \subsection{Invoking Octave from Crescendo}
@@ -2476,21 +2435,21 @@ And in the ACA launch (Main Tab)
 It is possible to invoke Octave from the Crescendo IDE. Right-clicking on
 an Octave (\texttt{.m}) file reveals the option ``Run Octave''. If you want to
 use this command, be sure to tick the ``Show plot automatically when the
-script runs'' box
+script runs'' box.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/OctaveAction.png}
-\caption{}
+\caption{Running Octave from the user-interface}
 \end{figure}
 
-If the tick to show plot automatically was checked, a plot will be drawn
+\noindent If the tick to show plot automatically was checked, a plot will be drawn
 and shown in a window like this:
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/OctavePlotting.png}
-\caption{}
+\caption{Example of an Octave visualisation}
 \end{figure}
 
 \subsection{Setting Octave path}
@@ -2498,12 +2457,12 @@ and shown in a window like this:
 If your Octave installation was not made in the default installer path,
 the path to Octave must be corrected in the Crescendo settings for the
 feature mentioned above to work. The settings below can be found by
-navigating to the Window-\textgreater{}Preferences menu.
+navigating to the Window $\rightarrow$ Preferences menu.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/OctaveSettings.png}
-\caption{images/OctaveSettings.png}
+\caption{The Octave path settings in the Preferences dialog}
 \end{figure}
 
 \section{Folder Launch Configuration}
@@ -2516,7 +2475,7 @@ and the folder containing the launch files.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.6\textwidth]{images/DirectoryLaunchMainTab.png}
-\caption{images/DirectoryLaunchMainTab.png}
+\caption{Launching several configurations from a single directory}
 \end{figure}
 
 \appendix
@@ -2528,11 +2487,10 @@ and the folder containing the launch files.
 
 \chapter{Glossary}\label{app:Glossary}
 
-As might be expected in such an interdisciplinary project, terms and
+As might be expected in interdisciplinary projects, terms and
 concepts that are well known in one discipline may be unknown or
-understood quite differently in another. This page therefore contains
-common descriptions of core concepts agreed with the partners that are
-used consistently within the project.
+understood quite differently in another. This appendix therefore contains
+common descriptions of core concepts.
 
 \begin{description}
 \item[abstract class] (in object oriented programming) a class where one or more methods are defined abstractly using the text \textbf{\texttt{is subclass responsibility}} as their body.
