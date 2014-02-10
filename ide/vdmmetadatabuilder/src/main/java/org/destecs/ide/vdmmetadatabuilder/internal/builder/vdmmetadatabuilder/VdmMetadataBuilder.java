@@ -61,8 +61,7 @@ import org.overture.ast.types.ASeqSeqType;
 import org.overture.ast.types.PType;
 import org.overture.ide.core.IVdmModel;
 import org.overture.ide.core.resources.IVdmProject;
-import org.overture.typechecker.assistant.definition.PDefinitionAssistantTC;
-import org.overture.typechecker.assistant.type.PTypeAssistantTC;
+import org.overture.typechecker.assistant.TypeCheckerAssistantFactory;
 
 public class VdmMetadataBuilder extends
 		org.eclipse.core.resources.IncrementalProjectBuilder
@@ -72,14 +71,14 @@ public class VdmMetadataBuilder extends
 	private static final String CPU_TYPE_NAME = "CPU";
 	private static final String SYSTEM_TYPE_NAME = "_system";
 	private static final String UNKNOWN = "unknown";
-	
+
 	Set<PDefinition> expandedDefinitions = new HashSet<PDefinition>();
 
 	protected IProject[] build(int kind,
 			@SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
 			throws CoreException
 	{
-			try
+		try
 		{
 			expandedDefinitions.clear();
 			IVdmProject project = (IVdmProject) getProject().getAdapter(IVdmProject.class);
@@ -91,7 +90,7 @@ public class VdmMetadataBuilder extends
 
 				if (!model.isTypeChecked())
 				{
-					if(!project.typeCheck(new NullProgressMonitor()))
+					if (!project.typeCheck(new NullProgressMonitor()))
 					{
 						props.put("TYPE_CHECK_STATUS", "false");
 						storeProperties(monitor, props);
@@ -121,7 +120,7 @@ public class VdmMetadataBuilder extends
 					} else
 					{
 						List<String> values = new Vector<String>();
-						
+
 						for (PDefinition def : getDefinitions(node))
 						{
 							if (def instanceof AValueDefinition
@@ -132,34 +131,33 @@ public class VdmMetadataBuilder extends
 								String typeName = getTypeName(getVdmTypeName(def));
 								if (!typeName.equals(UNKNOWN))
 								{
-									
-									
-									save(props, PDefinitionAssistant.getName((PDefinition) node)+ "."
-											+ def.getName().getName(), typeName + "," + "const");
+
+									save(props, PDefinitionAssistant.getName((PDefinition) node)
+											+ "." + def.getName().getName(), typeName
+											+ "," + "const");
 								}
-							}
-							else
-							if(def instanceof AInstanceVariableDefinition)
+							} else if (def instanceof AInstanceVariableDefinition)
 							{
 								values.add(PDefinitionAssistant.getName(def));
 
 								String typeName = getTypeName(getVdmTypeName(def));
 								if (!typeName.equals(UNKNOWN))
 								{
-									save(props, PDefinitionAssistant.getName((PDefinition) node) + "."
-											+ def.getName().getName(), getNameTypeString(getVdmTypeName(def)));
+									save(props, PDefinitionAssistant.getName((PDefinition) node)
+											+ "." + def.getName().getName(), getNameTypeString(getVdmTypeName(def)));
 								}
-							}
-							else
-							if(def instanceof AExplicitOperationDefinition)
+							} else if (def instanceof AExplicitOperationDefinition)
 							{
 								AExplicitOperationDefinition op = (AExplicitOperationDefinition) def;
 								values.add(PDefinitionAssistant.getName(def));
-								
-								save(props, PDefinitionAssistant.getName((PDefinition) node) + "."
-										+ def.getName().getName(), "_operation"+ "," + (op.getAccess().getAsync()!=null  ? "async" : "sync") );
+
+								save(props, PDefinitionAssistant.getName((PDefinition) node)
+										+ "." + def.getName().getName(), "_operation"
+										+ ","
+										+ (op.getAccess().getAsync() != null ? "async"
+												: "sync"));
 							}
-							
+
 						}
 					}
 				}
@@ -188,13 +186,15 @@ public class VdmMetadataBuilder extends
 				props.store(out, "");
 			} catch (IOException e)
 			{
-				VdmMetadataBuilderPlugin.log("Failed to store metadatafile for project: "+getProject(), e);
+				VdmMetadataBuilderPlugin.log("Failed to store metadatafile for project: "
+						+ getProject(), e);
 			}
 
 			if (file.exists())
 			{
 				file.setContents(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
-			} else if( dp.getVdmModelFolder().isAccessible() &&  dp.getVdmModelFolder().exists())
+			} else if (dp.getVdmModelFolder().isAccessible()
+					&& dp.getVdmModelFolder().exists())
 			{
 				file.create(new ByteArrayInputStream(out.toByteArray()), IFile.FORCE, monitor);
 			}
@@ -202,16 +202,14 @@ public class VdmMetadataBuilder extends
 		}
 	}
 
-	
-
-	private void expandAndSave(Properties props, String prefix, PDefinition def,
-			IVdmModel model)
+	private void expandAndSave(Properties props, String prefix,
+			PDefinition def, IVdmModel model)
 	{
 		expandAndSave(props, prefix, def, model, false);
 	}
 
-	private void expandAndSave(Properties props, String prefix, PDefinition def,
-			IVdmModel model, boolean defIsField)
+	private void expandAndSave(Properties props, String prefix,
+			PDefinition def, IVdmModel model, boolean defIsField)
 	{
 
 		if (!prefix.isEmpty())
@@ -225,9 +223,7 @@ public class VdmMetadataBuilder extends
 			save(props, name, SYSTEM_TYPE_NAME + ",systemclass");
 		} else
 		{
-			
-			
-			
+
 			save(props, name, getNameTypeString(getVdmTypeName(def)));
 		}
 
@@ -251,16 +247,16 @@ public class VdmMetadataBuilder extends
 		}
 	}
 
-	private String getNameTypeString(PType type) {
-		if(PTypeAssistantTC.isClass(type))
+	private String getNameTypeString(PType type)
+	{
+		if (new TypeCheckerAssistantFactory().createPTypeAssistant().isClass(type))
 		{
 			return getTypeName(type) + ",class";
-		}
-		else
+		} else
 		{
 			return getTypeName(type) + ",variable";
 		}
-		
+
 	}
 
 	private void save(Properties props, String name, String list)
@@ -301,58 +297,56 @@ public class VdmMetadataBuilder extends
 		return t;
 
 	}
-	
+
 	private static PType unfoldVdmType(PType t)
 	{
-		if(t instanceof AOptionalType)
+		if (t instanceof AOptionalType)
 		{
-		return unfoldVdmType( ((AOptionalType)t).getType());	
+			return unfoldVdmType(((AOptionalType) t).getType());
 		}
-		
-		if(t instanceof ANamedInvariantType)
+
+		if (t instanceof ANamedInvariantType)
 		{
-		return unfoldVdmType( ((ANamedInvariantType)t).getType());	
+			return unfoldVdmType(((ANamedInvariantType) t).getType());
 		}
-		
+
 		return t;
 	}
 
 	private String getTypeName(PType t)
 	{
-		//unwrap
+		// unwrap
 		t = unfoldVdmType(t);
-		
-		if (t instanceof ARealNumericBasicType )//|| t.isType("real") != null)
+
+		if (t instanceof ARealNumericBasicType)// || t.isType("real") != null)
 		{
 			return "real";
 		} else if (t instanceof AIntNumericBasicType)// || t.isType("int") != null)
 		{
 			return "int";
-		} else if (t instanceof ANatNumericBasicType )//|| t.isType("nat") != null)
+		} else if (t instanceof ANatNumericBasicType)// || t.isType("nat") != null)
 		{
 			return "nat";
-		}else if (t instanceof ANatOneNumericBasicType)// || t.isType("nat1") != null)
+		} else if (t instanceof ANatOneNumericBasicType)// || t.isType("nat1") != null)
 		{
 			return "nat1";
-		}  else if (t instanceof ABooleanBasicType)// || t.isType("bool") != null)
+		} else if (t instanceof ABooleanBasicType)// || t.isType("bool") != null)
 		{
 			return "bool";
-		}else if (t instanceof ACharBasicType)// || t.isType("char") != null)
+		} else if (t instanceof ACharBasicType)// || t.isType("char") != null)
 		{
 			return "char";
-		}
-		 else if (t instanceof ASeqSeqType)
-		 {
-			 ASeqSeqType t1 = (ASeqSeqType) t;
-		 return "seq of (" + getTypeName(t1.getSeqof()) + ")";
-		 }
-		else if (t instanceof AClassType)
+		} else if (t instanceof ASeqSeqType)
+		{
+			ASeqSeqType t1 = (ASeqSeqType) t;
+			return "seq of (" + getTypeName(t1.getSeqof()) + ")";
+		} else if (t instanceof AClassType)
 		{
 			AClassType ct = (AClassType) t;
-			if(ct.getClassdef() instanceof ACpuClassDefinition)
+			if (ct.getClassdef() instanceof ACpuClassDefinition)
 			{
 				return CPU_TYPE_NAME;
-			}else if(ct.getClassdef() instanceof ABusClassDefinition)
+			} else if (ct.getClassdef() instanceof ABusClassDefinition)
 			{
 				return BUS_TYPE_NAME;
 			}
@@ -361,12 +355,12 @@ public class VdmMetadataBuilder extends
 		{
 			return getTypeName(((AOptionalType) t).getType());
 		}
-		
-//		if(t.isNumeric()) //this is trying to fit the value in a real (if it is compatible with real it is ok)
-//		{
-//			return "real";
-//		}
-		
+
+		// if(t.isNumeric()) //this is trying to fit the value in a real (if it is compatible with real it is ok)
+		// {
+		// return "real";
+		// }
+
 		return UNKNOWN;
 	}
 
@@ -412,7 +406,8 @@ public class VdmMetadataBuilder extends
 		List<PDefinition> variable = new Vector<PDefinition>();
 		for (INode node : model.getRootElementList())
 		{
-			if (node instanceof PDefinition && !PDefinitionAssistant.getName((PDefinition) node).equals(type))
+			if (node instanceof PDefinition
+					&& !PDefinitionAssistant.getName((PDefinition) node).equals(type))
 			{
 				continue;
 			}
@@ -431,7 +426,7 @@ public class VdmMetadataBuilder extends
 	{
 		if (node instanceof SClassDefinition)
 		{
-			return PDefinitionAssistantTC.getDefinitions(((SClassDefinition) node));
+			return new TypeCheckerAssistantFactory().createPDefinitionAssistant().getDefinitions(((SClassDefinition) node));
 		} else if (node instanceof AModuleModules)
 		{
 			return ((AModuleModules) node).getDefs();

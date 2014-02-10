@@ -49,7 +49,7 @@ import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdmj.VDMCO;
 import org.overture.ast.definitions.PDefinition;
 import org.overture.config.Settings;
-import org.overture.interpreter.assistant.type.PTypeAssistantInterpreter;
+import org.overture.interpreter.assistant.InterpreterAssistantFactory;
 import org.overture.interpreter.scheduler.BasicSchedulableThread;
 import org.overture.interpreter.scheduler.Signal;
 import org.overture.interpreter.scheduler.SystemClock;
@@ -85,6 +85,8 @@ public class CoSimImpl implements IDestecs
 	private String interfaceVersion = "3.0.4.0";
 	public static boolean DEBUG = false;;
 	private static Double finishTime = 0.0;
+	
+	static final InterpreterAssistantFactory interpreterAssistantFactory = new InterpreterAssistantFactory();
 
 	public Map<String, Integer> getStatus()
 	{
@@ -257,8 +259,7 @@ public class CoSimImpl implements IDestecs
 
 	private Integer extractDefinitionDimensions(PDefinition def)
 	{
-
-		if (PTypeAssistantInterpreter.isSeq(def.getType()))
+		if (interpreterAssistantFactory.createPTypeAssistant().isSeq(def.getType()))
 		{
 			return -1;
 		} else

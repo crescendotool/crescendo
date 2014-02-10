@@ -18,7 +18,6 @@
  *******************************************************************************/
 package org.destecs.vdm.utility;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +32,8 @@ import org.overture.ast.intf.lex.ILexNameToken;
 import org.overture.ast.lex.LexNameToken;
 import org.overture.ast.typechecker.NameScope;
 import org.overture.ast.types.AClassType;
+import org.overture.interpreter.assistant.IInterpreterAssistantFactory;
+import org.overture.interpreter.assistant.InterpreterAssistantFactory;
 import org.overture.interpreter.runtime.ValueException;
 import org.overture.interpreter.runtime.VdmRuntime;
 import org.overture.interpreter.runtime.state.SClassDefinitionRuntime;
@@ -41,7 +42,6 @@ import org.overture.interpreter.values.BooleanValue;
 import org.overture.interpreter.values.CPUValue;
 import org.overture.interpreter.values.NameValuePair;
 import org.overture.interpreter.values.NameValuePairList;
-import org.overture.interpreter.values.NameValuePairMap;
 import org.overture.interpreter.values.ObjectValue;
 import org.overture.interpreter.values.ReferenceValue;
 import org.overture.interpreter.values.SeqValue;
@@ -50,6 +50,8 @@ import org.overture.interpreter.values.Value;
 
 public class VDMClassHelper
 {
+
+	private static IInterpreterAssistantFactory af= new InterpreterAssistantFactory();
 
 	public static SClassDefinition findClassByName(String className,
 			ClassListInterpreter classes)
@@ -156,7 +158,7 @@ public class VDMClassHelper
 			try
 			{
 				
-				SClassDefinitionRuntime runtimeState = VdmRuntime.getNodeState(objVal.type.getClassdef());
+				SClassDefinitionRuntime runtimeState = VdmRuntime.getNodeState(af,objVal.type.getClassdef());
 				
 				
 				
