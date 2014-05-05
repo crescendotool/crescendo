@@ -34,7 +34,7 @@
   <repositories>
     <repository>
       <id>overture.au.dk Eclipse P2 repo for overture crescendo development</id>
-      <url>http://overture.au.dk/p2/crescendo-overture-development/</url>
+      <url>http://overture-in-spe.au.dk/p2/crescendo-overture-development/</url>
       <layout>p2</layout>
     </repository>
 
