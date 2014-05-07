@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Vendor: DESTECS
 Bundle-ActivationPolicy: lazy
-Bundle-Version: 2.0.0
+Bundle-Version: 2.0.2
 Eclipse-BuddyPolicy: registered
 Bundle-Localization: plugin
 Bundle-Name: org.destecs.ide.ui
@@ -24,10 +24,7 @@ Require-Bundle: org.eclipse.ui;visibility:=reexport,
  org.eclipse.core.expressions,
  org.overture.ide.core
 Bundle-Activator: org.destecs.ide.ui.DestecsUIPlugin
-Export-Package: org.destecs.ide.ui,
- org.destecs.ide.ui.editor.core,
- org.destecs.ide.ui.editor.syntax,
- org.destecs.ide.ui.navigator,
- org.destecs.ide.ui.utility,
- org.destecs.ide.ui.wizards
+Export-Package: org.destecs.ide.ui,org.destecs.ide.ui.editor.core,org.
+ destecs.ide.ui.editor.syntax,org.destecs.ide.ui.navigator,org.destecs
+ .ide.ui.utility,org.destecs.ide.ui.wizards
 Bundle-ClassPath: .
