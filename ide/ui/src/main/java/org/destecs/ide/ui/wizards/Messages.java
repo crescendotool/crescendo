@@ -5,8 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "org.destecs.ide.ui.wizards.messages"; //$NON-NLS-1$
-	public static String DestecsNewWizard_0;
-	public static String DestecsNewWizard_4;
+	public static String CrescendoNewWizard_0;
+	public static String CrescendoNewWizard_4;
 	static
 	{
 		// initialize resource bundle

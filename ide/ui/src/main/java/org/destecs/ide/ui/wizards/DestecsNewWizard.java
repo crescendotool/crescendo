@@ -47,7 +47,7 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard
 
 	public DestecsNewWizard()
 	{
-		setWindowTitle(Messages.DestecsNewWizard_0);
+		setWindowTitle(Messages.CrescendoNewWizard_0);
 
 	}
 
@@ -100,7 +100,7 @@ public class DestecsNewWizard extends BasicNewProjectResourceWizard
 
 
 			IProjectDescription d = prj.getDescription();
-			d.setComment(Messages.DestecsNewWizard_4+getPlatformBundleVersion());
+			d.setComment(Messages.CrescendoNewWizard_4+getPlatformBundleVersion());
 			prj.setDescription(d, new NullProgressMonitor());
 
 		} catch (CoreException e)
