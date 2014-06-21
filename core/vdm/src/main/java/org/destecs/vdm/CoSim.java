@@ -36,7 +36,7 @@ import org.destecs.protocol.ICoSimProtocol;
 
 /**
  * @author kela
- * @see http://ws.apache.org/xmlrpc/server.html
+ * @see "http://ws.apache.org/xmlrpc/server.html"
  */
 public class CoSim
 {

@@ -35,7 +35,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.overture.ast.assistant.definition.PDefinitionAssistant;
 import org.overture.ast.assistant.type.PTypeAssistant;
 import org.overture.ast.definitions.ABusClassDefinition;
 import org.overture.ast.definitions.ACpuClassDefinition;
@@ -62,6 +61,7 @@ import org.overture.ast.types.PType;
 import org.overture.ide.core.IVdmModel;
 import org.overture.ide.core.resources.IVdmProject;
 import org.overture.typechecker.assistant.TypeCheckerAssistantFactory;
+import org.overture.typechecker.assistant.definition.PDefinitionAssistantTC;
 
 public class VdmMetadataBuilder extends
 		org.eclipse.core.resources.IncrementalProjectBuilder
@@ -73,11 +73,16 @@ public class VdmMetadataBuilder extends
 	private static final String UNKNOWN = "unknown";
 
 	Set<PDefinition> expandedDefinitions = new HashSet<PDefinition>();
+	
+	final TypeCheckerAssistantFactory af = new TypeCheckerAssistantFactory();
+	final PDefinitionAssistantTC defAssistant = af.createPDefinitionAssistant();
+	final PTypeAssistant typeAssistant = af.createPTypeAssistant();
 
 	protected IProject[] build(int kind,
 			@SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
 			throws CoreException
 	{
+		
 		try
 		{
 			expandedDefinitions.clear();
@@ -111,7 +116,7 @@ public class VdmMetadataBuilder extends
 							if (def instanceof AValueDefinition
 									|| def instanceof ALocalDefinition)
 							{
-								values.add(PDefinitionAssistant.getName(def));
+								values.add(defAssistant.getName(def));
 							}
 						}
 
@@ -126,32 +131,32 @@ public class VdmMetadataBuilder extends
 							if (def instanceof AValueDefinition
 									|| def instanceof ALocalDefinition)
 							{
-								values.add(PDefinitionAssistant.getName(def));
+								values.add(defAssistant.getName(def));
 
 								String typeName = getTypeName(getVdmTypeName(def));
 								if (!typeName.equals(UNKNOWN))
 								{
 
-									save(props, PDefinitionAssistant.getName((PDefinition) node)
+									save(props, defAssistant.getName((PDefinition) node)
 											+ "." + def.getName().getName(), typeName
 											+ "," + "const");
 								}
 							} else if (def instanceof AInstanceVariableDefinition)
 							{
-								values.add(PDefinitionAssistant.getName(def));
+								values.add(defAssistant.getName(def));
 
 								String typeName = getTypeName(getVdmTypeName(def));
 								if (!typeName.equals(UNKNOWN))
 								{
-									save(props, PDefinitionAssistant.getName((PDefinition) node)
+									save(props, defAssistant.getName((PDefinition) node)
 											+ "." + def.getName().getName(), getNameTypeString(getVdmTypeName(def)));
 								}
 							} else if (def instanceof AExplicitOperationDefinition)
 							{
 								AExplicitOperationDefinition op = (AExplicitOperationDefinition) def;
-								values.add(PDefinitionAssistant.getName(def));
+								values.add(defAssistant.getName(def));
 
-								save(props, PDefinitionAssistant.getName((PDefinition) node)
+								save(props, defAssistant.getName((PDefinition) node)
 										+ "." + def.getName().getName(), "_operation"
 										+ ","
 										+ (op.getAccess().getAsync() != null ? "async"
@@ -383,20 +388,20 @@ public class VdmMetadataBuilder extends
 		if (t instanceof AOptionalType)
 		{
 			AOptionalType opType = (AOptionalType) t;
-			typeName = PTypeAssistant.getName(opType.getType());
+			typeName = typeAssistant.getName(opType.getType());
 
 		}
 		if (t instanceof AClassType)
 		{
-			typeName = PTypeAssistant.getName(t);
+			typeName = typeAssistant.getName(t);
 		} else if (t instanceof AOptionalType
 				&& ((AOptionalType) t).getType() instanceof AClassType)
 		{
-			typeName = PTypeAssistant.getName(t);
+			typeName = typeAssistant.getName(t);
 
 		} else
 		{
-			typeName = PDefinitionAssistant.getName(def);
+			typeName = defAssistant.getName(def);
 		}
 		return typeName;
 	}
@@ -407,7 +412,7 @@ public class VdmMetadataBuilder extends
 		for (INode node : model.getRootElementList())
 		{
 			if (node instanceof PDefinition
-					&& !PDefinitionAssistant.getName((PDefinition) node).equals(type))
+					&& !defAssistant.getName((PDefinition) node).equals(type))
 			{
 				continue;
 			}

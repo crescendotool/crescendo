@@ -10,8 +10,8 @@
   <!-- generate po menu binding -->
   <extension point="org.eclipse.ui.menus">
     <menuContribution locationURI="popup:org.destecs.ide.ui.destecsExplorer">
-      <menu icon="platform:/plugin/org.overture.ide.plugins.poviewer-string-based/icons/cview16/po_tsk.png" id="org.overture.ide.plugins.poviewer" label="%org.overture.ide.plugins.poviewer.label">
-        <command commandId="org.overture.ide.plugins.poviewer.commandGeneratedPO" label="%org.overture.ide.plugins.poviewer.commandGeneratedPO.label" style="push" tooltip="%org.overture.ide.plugins.poviewer.commandGeneratedPO.tooltip">
+      <menu icon="platform:/plugin/org.overture.ide.plugins.poviewer/icons/cview16/po_tsk.png" id="org.overture.ide.plugins.poviewer" label="%org.overture.ide.plugins.poviewer.label">
+        <command commandId="org.overture.ide.plugins.poviewer.commandGeneratedPO-new" label="%org.overture.ide.plugins.poviewer.commandGeneratedPO.label" style="push" tooltip="%org.overture.ide.plugins.poviewer.commandGeneratedPO.tooltip">
           <visibleWhen checkEnabled="false">
             <iterate ifEmpty="false">
               <or>

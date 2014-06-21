@@ -604,6 +604,8 @@ public class CoSimImpl implements IDestecs
 	/**
 	 * This method is just a skip, we need to resume from the IDE. This is needed because the IDE hold a state
 	 * representing the state of the threads
+	 * @return 
+	 * @throws Exception 
 	 */
 	public Boolean resume() throws Exception
 	{

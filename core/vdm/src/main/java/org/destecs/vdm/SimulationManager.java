@@ -51,6 +51,7 @@ import org.destecs.vdmj.VDMCO;
 import org.destecs.vdmj.log.SimulationLogger;
 import org.destecs.vdmj.log.SimulationMessage;
 import org.destecs.vdmj.scheduler.EventThread;
+import org.overture.ast.analysis.AnalysisException;
 import org.overture.ast.definitions.AClassClassDefinition;
 import org.overture.ast.definitions.ACpuClassDefinition;
 import org.overture.ast.definitions.AExplicitFunctionDefinition;
@@ -78,7 +79,6 @@ import org.overture.ast.types.AClassType;
 import org.overture.ast.types.PType;
 import org.overture.config.Release;
 import org.overture.config.Settings;
-import org.overture.interpreter.assistant.definition.PDefinitionAssistantInterpreter;
 import org.overture.interpreter.debug.DBGPReaderV2;
 import org.overture.interpreter.debug.DBGPStatus;
 import org.overture.interpreter.messages.Console;
@@ -86,6 +86,7 @@ import org.overture.interpreter.messages.rtlog.RTLogger;
 import org.overture.interpreter.messages.rtlog.RTTextLogger;
 import org.overture.interpreter.messages.rtlog.nextgen.NextGenRTLogger;
 import org.overture.interpreter.runtime.Context;
+import org.overture.interpreter.runtime.Interpreter;
 import org.overture.interpreter.runtime.RuntimeValidator;
 import org.overture.interpreter.runtime.ValueException;
 import org.overture.interpreter.runtime.state.ASystemClassDefinitionRuntime;
@@ -277,6 +278,11 @@ public class SimulationManager extends BasicSimulationManager
 						debugErr(e);
 						throw new RemoteSimulationException("Faild to evaluate event: "
 								+ event, e);
+					} catch (AnalysisException e)
+					{
+						debugErr(e);
+						throw new RemoteSimulationException("Faild to evaluate event: "
+								+ event, e);
 					}
 
 				}
@@ -342,8 +348,8 @@ public class SimulationManager extends BasicSimulationManager
 				File logFile = new File(outputDir, "ExecutionTrace.logrt");
 				controller.setLogFile(logFile);
 				RTLogger.enable(true);
-				RTLogger.setLogfile(RTTextLogger.class,logFile);
-				RTLogger.setLogfile(NextGenRTLogger.class,logFile);
+				RTLogger.setLogfile(RTTextLogger.class, logFile);
+				RTLogger.setLogfile(NextGenRTLogger.class, logFile);
 			}
 
 			if (Settings.timingInvChecks)
@@ -570,9 +576,11 @@ public class SimulationManager extends BasicSimulationManager
 		} else
 		{
 			this.status = CoSimStatusEnum.NOT_INITIALIZED;
-			throw new RemoteSimulationException("Status = " + this.status
-					+ ". Internal error: " + (controller.exception != null ? controller.exception.getMessage()
-					: "unknown"));
+			throw new RemoteSimulationException("Status = "
+					+ this.status
+					+ ". Internal error: "
+					+ (controller.exception != null ? controller.exception.getMessage()
+							: "unknown"));
 		}
 	}
 
@@ -689,7 +697,14 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						upVal.listeners.add(listener);
 					}
-					listener.changedValue(null, upVal, null);
+					try
+					{
+						listener.changedValue(null, upVal, null);
+					} catch (AnalysisException e)
+					{
+						debugErr(e);
+						throw new RemoteSimulationException("Faild to change value internally", e);
+					}
 				} else
 				{
 					System.err.println("A non updatable value cannot be logged...it is constant!");
@@ -749,7 +764,7 @@ public class SimulationManager extends BasicSimulationManager
 						{
 							AValueDefinition vDef = (AValueDefinition) def;
 							if (vDef.getPattern().toString().equals(vName.variableName)
-									&& PDefinitionAssistantInterpreter.isValueDefinition( vDef))
+									&& Interpreter.getInstance().assistantFactory.createPDefinitionAssistant().isValueDefinition(vDef))
 							{
 								if (dimension.length == 1
 										&& ((Integer) dimension[0] == 1))
@@ -795,8 +810,8 @@ public class SimulationManager extends BasicSimulationManager
 		return true;
 	}
 
-	private boolean createSeqEnum(String variableName,
-			ASeqEnumSeqExp seqEnum, Object[] objValue, Object[] objDimensions)
+	private boolean createSeqEnum(String variableName, ASeqEnumSeqExp seqEnum,
+			Object[] objValue, Object[] objDimensions)
 			throws NoSuchFieldException, IllegalAccessException,
 			RemoteSimulationException
 	{
@@ -892,7 +907,8 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		boolean found = false;
 
-		if (vDef.getExpression() != null && vDef.getExpression() instanceof ARealLiteralExp)
+		if (vDef.getExpression() != null
+				&& vDef.getExpression() instanceof ARealLiteralExp)
 		{
 			found = setValueForSDP(newValue, vDef.getExpression());
 
@@ -900,10 +916,13 @@ public class SimulationManager extends BasicSimulationManager
 				&& vDef.getExpression() instanceof AIntLiteralExp
 				|| vDef.getExpression() instanceof AUnaryMinusUnaryExp)
 		{
-			ARealLiteralExp newReal = AstFactoryTC.newARealLiteralExp(new LexRealToken(newValue, vDef.getLocation()));//new ARealLiteralExp(new LexRealToken(newValue, vDef.location));
-//			Field valDefField = AValueDefinition.class.getField("exp");
-//			valDefField.setAccessible(true);
-//			valDefField.set(vDef, newReal);
+			ARealLiteralExp newReal = AstFactoryTC.newARealLiteralExp(new LexRealToken(newValue, vDef.getLocation()));// new
+																														// ARealLiteralExp(new
+																														// LexRealToken(newValue,
+																														// vDef.location));
+			// Field valDefField = AValueDefinition.class.getField("exp");
+			// valDefField.setAccessible(true);
+			// valDefField.set(vDef, newReal);
 			vDef.setExpression(newReal);
 			found = true;
 		}
@@ -941,7 +960,7 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						AValueDefinition vDef = (AValueDefinition) def;
 						if (vDef.getPattern().toString().equals(vName.variableName)
-								&&PDefinitionAssistantInterpreter.isValueDefinition( vDef)
+								&& Interpreter.getInstance().assistantFactory.createPDefinitionAssistant().isValueDefinition(vDef)
 								&& vDef.getType() instanceof ARealType)
 						{
 							if (vDef.getExpression() instanceof ARealLiteralExp)
