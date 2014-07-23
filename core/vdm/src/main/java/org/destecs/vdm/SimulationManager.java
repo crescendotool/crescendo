@@ -764,7 +764,7 @@ public class SimulationManager extends BasicSimulationManager
 						{
 							AValueDefinition vDef = (AValueDefinition) def;
 							if (vDef.getPattern().toString().equals(vName.variableName)
-									&& Interpreter.getInstance().assistantFactory.createPDefinitionAssistant().isValueDefinition(vDef))
+									&& Interpreter.getInstance().getAssistantFactory().createPDefinitionAssistant().isValueDefinition(vDef))
 							{
 								if (dimension.length == 1
 										&& ((Integer) dimension[0] == 1))
@@ -960,7 +960,7 @@ public class SimulationManager extends BasicSimulationManager
 					{
 						AValueDefinition vDef = (AValueDefinition) def;
 						if (vDef.getPattern().toString().equals(vName.variableName)
-								&& Interpreter.getInstance().assistantFactory.createPDefinitionAssistant().isValueDefinition(vDef)
+								&& Interpreter.getInstance().getAssistantFactory().createPDefinitionAssistant().isValueDefinition(vDef)
 								&& vDef.getType() instanceof ARealType)
 						{
 							if (vDef.getExpression() instanceof ARealLiteralExp)
