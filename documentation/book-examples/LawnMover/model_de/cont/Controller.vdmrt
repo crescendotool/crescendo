@@ -1,0 +1,104 @@
+class Controller
+
+	thread periodic(100E6, 0 ,0, 0)(Step);
+		
+	instance variables
+		private sensorGNSS_Pos: SensorGNSS;
+		private actuatorAngle : ActuatorSteeringWheel;
+		private steering: SteeringController;
+		private steering_controllers : seq of SteeringController := [new AngleSteeringController(), new OffsetSteeringController()];
+		private old_tick: int := 0;
+		private delta: real := 0.0;
+		private gC: GuidanceController;
+		private PosGNSS: seq of real := [0.0, 0.0, 0.0, 0.0];
+		private PosGNSS_c: seq of real := [0.0, 0.0, 0.0, 0.0];
+		private old_pos: seq of real := [0.0, 0.0, 0.0, 0.0];
+		private test_a: real := 0;
+		public sc: real := 1;
+				
+	operations
+	
+		public IsFinished: () ==> bool
+			IsFinished() == gC.IsFinished();
+	
+		public Controller: SensorGNSS * ActuatorSteeringWheel ==> Controller
+		Controller(gnss_pos,aSW) == (
+			sensorGNSS_Pos := gnss_pos;
+			actuatorAngle :=  aSW;
+			
+			steering := steering_controllers(1);
+			
+			
+			gC := new GuidanceController();
+			
+			steering.UpdateWaypoint([gC.getWayPoint1().PosX(),gC.getWayPoint1().PosY()],[gC.getWayPoint2().PosX(),gC.getWayPoint2().PosY()]);
+		);
+		
+		public Step : () ==> ()
+		Step () == (
+			if not IsFinished() then (
+				sc := 1;
+				
+				sensorGNSS_Pos.Sync();
+				delta := 0.0;
+				PosGNSS := sensorGNSS_Pos.read();
+				PosGNSS_c(1) := PosGNSS(1);
+				PosGNSS_c(2) := PosGNSS(2);
+				
+				if 0.6 < MATH`sqrt((old_pos(1)-PosGNSS(1))*(old_pos(1)-PosGNSS(1))+(old_pos(2)-PosGNSS(2))*(old_pos(2)-PosGNSS(2))) then
+				(
+					if test_a = 1 then
+					(
+						PosGNSS_c(3) := atan2(PosGNSS(2)-old_pos(2),PosGNSS(1)-old_pos(1));
+					)
+					else(
+						test_a := 1;
+					);
+					
+					old_pos := PosGNSS;
+				);
+				
+				--IO`print(PosGNSS(3)*(180.0/3.14)); IO`print(", "); IO`print(PosGNSS_c(3)*(180.0/3.14)); IO`print("\n");
+
+				gC.UpdateRoute(PosGNSS);
+				
+				steering.UpdateWaypoint([gC.getWayPoint1().PosX(),gC.getWayPoint1().PosY()],[gC.getWayPoint2().PosX(),gC.getWayPoint2().PosY()]);
+				
+				delta := steering.Output(PosGNSS);
+			)else(
+				sc := 0;
+			);
+			old_tick := old_tick + 1;
+			actuatorAngle.setValue(delta*6);
+		);
+		
+		
+	private atan2: real * real ==> real
+		atan2(y,x) == (
+			dcl result: real;
+			result := 0;
+			
+			if x > 0 then
+			(
+				result := MATH`atan(y/x);
+			);
+			if y>= 0 and x < 0 then
+			(
+				result := MATH`atan(y/x)+MATH`pi;
+			);
+			if y< 0 and x < 0 then
+			(
+				result := MATH`atan(y/x)-MATH`pi;
+			);
+			if y > 0 and x = 0 then
+			(
+				result := MATH`pi/2.0;
+			);
+			if y < 0 and x = 0 then
+			(
+				result := -MATH`pi/2.0;
+			);
+			return result;
+		);
+
+end Controller

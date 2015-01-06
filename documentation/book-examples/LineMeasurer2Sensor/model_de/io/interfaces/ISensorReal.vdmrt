@@ -1,0 +1,11 @@
+class ISensorReal
+
+-- an interface to sensor that yields a single real value
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> real
+Read() == is subclass responsibility;
+
+end ISensorReal

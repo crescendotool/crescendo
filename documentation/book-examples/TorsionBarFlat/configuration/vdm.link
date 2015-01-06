@@ -1,6 +1,0 @@
--- linking of the monitored variables
-input enc_motor = TorsionBar.ctrl.enc_motor;
-input enc_load = TorsionBar.ctrl.enc_load;
-
--- linking of the controlled variables
-output pwm_amp = TorsionBar.ctrl.pwm_motor;

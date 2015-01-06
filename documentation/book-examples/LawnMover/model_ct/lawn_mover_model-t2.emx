@@ -1,0 +1,4981 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+ <Model version="4.3" build="4.3.0.3214">
+  <Sidops><![CDATA[model 128 184
+ description '<Information>
+ <Description>
+    <Version>4.3</Version>
+<IsMainModel>0</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>G:\windowsDropbox\Dropbox\Work\DESTECS\Destecs2.0.0workspace\lawn_mover\model_ct\lawn_mover_model-t2.emx</LibraryPath>
+  <TimeStamp>2013-11-14 14:52:08</TimeStamp>
+</Description>
+</Information>';
+ type 'Mainmodel-1'
+ end;
+ implementation bg
+  submodels
+   animation 72 112
+    description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>ScriptFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type 'Submodel-Equation'
+    end;
+    implementation eq
+parameters
+	real global w;
+	real global wfd;
+	real global wrd;
+	real global cg_a;
+	real global cg_b;
+
+variables
+	real w_r;
+	real w_l;
+	real w_rear;
+	real w_front;
+	real l_a;
+	real l_b;
+	real animation_a;
+	real offset_a;
+	real animation_b;
+	real offset_b;
+
+equations
+	w_l = -w/2;
+	w_r = w/2;
+	w_rear = w-wrd;
+	w_front = w-wfd;
+	l_a = cg_a;
+	l_b = -cg_b;
+	animation_b = 1.5*cg_b;
+	offset_b = -animation_b/2;
+	animation_a = 1.1*cg_a;
+	offset_a = animation_a/2;
+ implementation_end;
+   BicycleModel 224 208
+			specifications active 'equation_version'
+				specification 'equation_version'
+ description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+ type Submodel
+  ports
+   signal in delta_f;
+   signal out d_x_v;
+   signal out d_y_v;
+   signal out r;
+   signal in u_r;
+ end;
+ icon bg
+  figures
+   rectangle 187.2 192 260.8 224 fill 15132390;
+   text 'name' 224 208;
+  terminals
+   delta_f 200 192 fixed;
+   d_x_v 264 200 fixed;
+   d_y_v 264 208 fixed;
+   r 264 216 fixed;
+   u_r 248 192 fixed;
+ end;
+ implementation bg
+  submodels
+   plug delta_f 368 112;
+   plug d_x_v 320 432;
+   plug d_y_v 256 432;
+   plug r 120 432;
+   plug u_r 160 112;
+   vehicle_model 240 272
+    description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>ScriptFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type 'Submodel-Equation'
+     ports
+      signal in u_i;
+      signal in delta_f_i;
+      signal out r_o;
+      signal out v_o;
+      signal out u_o;
+    end;
+    implementation eq
+/* Equation Submodel
+Enter you equations here. You can use the Toolbar buttons at the left ( Add , f(x) etc. ).
+*/
+parameters
+real global dist_b ('shared');
+real global mu ('shared');
+real g = 9.8;
+real global m;
+real global cg_a;
+real global cg_b;
+real global C_af;
+real global C_ar;
+
+variables
+	real a;
+	real b;
+	real global I_zz;
+	real L;
+   real W_r;
+	real W_f;
+				
+	real f_y_f;
+	real f_y_r;
+	real h_s_f;
+	real h_s_r;
+
+	real d_r;
+	real d_v;
+	real alpha_f;
+	real alpha_r;
+   real v;
+   real r;
+
+	real F_y_f;
+	real F_y_r;
+
+initialequations
+	L = cg_a+cg_b;
+	a = L-(cg_b-dist_b);
+	b = L-(cg_a+dist_b);
+
+	I_zz = (m/4)*((a+b)^2);
+  	W_f = (m*g)*(b/L);
+	W_r = (m*g)*(a/L);
+	h_s_f = (W_f*mu)/2;
+	h_s_r = (W_r*mu)/2;
+
+equations
+	
+	if u_i <> 0 then
+   	alpha_f = ((v+a*r)/u_i)-delta_f_i;
+		alpha_r = ((v-b*r)/u_i);
+	else
+		alpha_f = 0;
+		alpha_r = 0;
+	end;
+	f_y_f = -C_af*tan(alpha_f);
+   f_y_r = -C_ar*tan(alpha_r);
+
+	if abs(f_y_f) > h_s_f then
+		F_y_f = -mu*W_f*sign(alpha_f)*(1-((mu*W_f)/(4*C_af*abs(tan(alpha_f)))));
+   else
+		F_y_f = f_y_f;
+	end;
+	if abs(f_y_r) > h_s_r then
+		F_y_r = -mu*W_r*sign(alpha_r)*(1-((mu*W_r)/(4*C_ar*abs(tan(alpha_r)))));
+   else
+		F_y_r = f_y_r;
+	end;
+
+	//F_y_f = -2*C_af*alpha_f;
+	//F_y_r = -2*C_ar*alpha_r;
+   if u_i <> 0 then
+   	d_v = (-m*u_i*r+F_y_f+F_y_r)/m;
+		d_r = (F_y_f*a-F_y_r*b)/I_zz;
+   else
+		d_v = 0;
+		d_r = 0;
+	end;
+   
+
+	v = int(d_v,0);
+	r = int(d_r,0);
+
+	v_o = v;
+	r_o = r;
+	u_o = u_i;
+
+	   
+  
+	
+  
+  
+ implementation_end;
+  end;
+  connections
+   delta_f -> vehicle_model\delta_f_i;
+   vehicle_model\r_o -> r;
+   vehicle_model\u_i <- u_r;
+   vehicle_model\u_o -> d_x_v;
+   vehicle_model\v_o -> d_y_v;
+  end;
+ implementation_end;
+specification_end;
+				specification 'default'
+description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+ type Submodel
+  ports
+   signal in delta_f;
+   signal out d_x_v;
+   signal out d_y_v;
+   signal out r;
+   signal in u_r;
+ end;
+ icon bg
+  figures
+   rectangle 27.2 160 100.8 192 fill 15132390;
+   text 'name' 64 176;
+  terminals
+   u_r 104 160 fixed;
+ end;
+ implementation bg
+  submodels
+   F_f_y 464 160
+    description '<Description>
+ <LibraryPath>Bond Graph\MR.emx</LibraryPath>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type MR
+     ports
+      power in p;
+      signal in r;
+      signal in delta;
+    end;
+    icon bg bottom
+     figures
+      text 'MR' 464 160 18 bold;
+    end;
+    implementation eq
+parameters
+real global C_af;
+real global a;
+real global V ('shared'); //Vehicle speed 1
+
+equations
+	p.e = -C_af * (((p.f+a*r)/V)-delta);implementation_end;
+   F_r_y 56 264
+    description '<Description>
+ <LibraryPath>Bond Graph\MR.emx</LibraryPath>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type MR
+     ports
+      power in p;
+      signal in r;
+    end;
+    icon bg bottom
+     figures
+      text 'MR' 56 264 18 bold;
+    end;
+    implementation eq
+parameters
+real global C_ar;
+real global V ('shared'); //Vehicle speed 2
+real global b;
+equations
+	p.e = -C_ar*(((p.f-b*r)/V));
+implementation_end;
+   I_zz 160 160
+    description '<Description>
+ <LibraryPath>Bond Graph\I.emx</LibraryPath>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type I
+     ports
+      power in p;
+      signal out state;
+     restrictions
+      causality preferred in p;
+    end;
+    icon bg bottom
+     figures
+      text 'I' 160 160 18 bold;
+    end;
+    implementation eq
+parameters
+	real global I_zz;
+equations
+    state = int(p.e);
+    p.f = state / I_zz;
+implementation_end;
+   m 296 272
+    description '<Description>
+ <LibraryPath>Bond Graph\I.emx</LibraryPath>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type I
+     ports
+      power in p;
+      signal out state;
+     restrictions
+      causality preferred in p;
+    end;
+    icon bg bottom
+     figures
+      text 'I' 296 272 18 bold;
+    end;
+    implementation eq
+parameters
+	real global m;
+equations
+    state = int(p.e);
+    p.f = state / m;
+implementation_end;
+   m2 296 368
+    description '<Description>
+ <LibraryPath>Bond Graph\I.emx</LibraryPath>
+ <Version>No Version Info</Version>
+ <IsMainModel>0</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type I
+     ports
+      power in p;
+      signal out state;
+     restrictions
+      causality preferred in p;
+    end;
+    icon bg bottom
+     figures
+      text 'I' 296 368 18 bold;
+    end;
+    implementation eq
+parameters
+	real global m;
+equations
+    state = int(p.e);
+    p.f = state / m;
+implementation_end;
+   MGY 256 312
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\MGY.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:03:53</TimeStamp>
+</Description>
+</Information>';
+    type MGY
+     ports
+      power in p1;
+      power out p2;
+      signal in r;
+     restrictions
+      causality constraint equal p1 p2;
+    end;
+    icon bg
+     figures
+      text 'MGY' 256 312 18 bold;
+    end;
+    implementation eq
+parameters
+	real global m;
+equations
+	p1.e = (m*r) * p2.f;
+	p2.e = (m*r) * p1.f;
+implementation_end;
+   MSf 256 216
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\MSf.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:14:18</TimeStamp>
+</Description>
+</Information>';
+    type MSf
+     ports
+      power out p;
+      signal in flow;
+     restrictions
+      causality fixed in p;
+    end;
+    icon bg
+     figures
+      text 'MSf' 256 216 18 bold;
+    end;
+    implementation eq
+variables
+	real effort;
+equations
+	p.f = flow; 
+	effort = p.e;
+implementation_end;
+   MTF 336 160
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\MTF.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:15:31</TimeStamp>
+</Description>
+</Information>';
+    type MTF
+     ports
+      power in p1;
+      power out p2;
+      signal in r;
+     restrictions
+      causality constraint not_equal p1 p2;
+    end;
+    icon bg
+     figures
+      text 'MTF' 336 160 18 bold;
+    end;
+    implementation eq
+parameters
+	real global a;
+equations
+		p1.e = a*cos(r) * p2.e;
+		p2.f = a*cos(r) * p1.f;
+
+implementation_end;
+   MTF1 336 208
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\MTF.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:15:31</TimeStamp>
+</Description>
+</Information>';
+    type MTF
+     ports
+      power in p1;
+      power out p2;
+      signal in r;
+     restrictions
+      causality constraint not_equal p1 p2;
+    end;
+    icon bg
+     figures
+      text 'MTF' 336 208 18 bold;
+    end;
+    implementation eq
+equations
+	p1.e = -sin(r) * p2.e;
+	p2.f = -sin(r) * p1.f;
+implementation_end;
+   MTF2 336 264
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\MTF.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:15:31</TimeStamp>
+</Description>
+</Information>';
+    type MTF
+     ports
+      power in p1;
+      power out p2;
+      signal in r;
+     restrictions
+      causality constraint not_equal p1 p2;
+    end;
+    icon bg
+     figures
+      text 'MTF' 336 264 18 bold;
+    end;
+    implementation eq
+equations
+	p1.e = cos(r) * p2.e;
+	p2.f = cos(r) * p1.f;
+implementation_end;
+   plug u_r 256 112;
+   plug r 120 432;
+   plug d_y_v 256 432;
+   plug d_x_v 320 432;
+   plug delta_f 368 112;
+   OneJunction 256 368
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\OneJunction.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:17:51</TimeStamp>
+</Description>
+</Information>';
+    knot OneJunction
+     ports
+      power knot duplicatable none p [1];
+      signal knot out flow [1];
+     restrictions
+      causality constraint one_out p;
+    end;
+    icon bg
+     figures
+      text '1' 256 368 18 bold;
+    end;
+    implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+implementation_end;
+   OneJunction1 256 272
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\OneJunction.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:17:51</TimeStamp>
+</Description>
+</Information>';
+    knot OneJunction
+     ports
+      power knot duplicatable none p [1];
+      signal knot out flow [1];
+     restrictions
+      causality constraint one_out p;
+    end;
+    icon bg
+     figures
+      text '1' 256 272 18 bold;
+    end;
+    implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+implementation_end;
+   OneJunction2 208 160
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\OneJunction.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:17:51</TimeStamp>
+</Description>
+</Information>';
+    knot OneJunction
+     ports
+      power knot duplicatable none p [1];
+      signal knot out flow [1];
+     restrictions
+      causality constraint one_out p;
+    end;
+    icon bg
+     figures
+      text '1' 208 160 18 bold;
+    end;
+    implementation eq
+equations
+	sum (direct (p.e)) = 0;
+	equal (collect (p.f));
+	flow = first (p.f);
+implementation_end;
+   Splitter 368 128
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>Signal\Block Diagram\Splitter.emx</LibraryPath>
+  <TimeStamp>2008-01-17 11:28:29</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 364.8 124.8 371.2 131.2 color -1 fill 0;
+      ellipse 363.7 123.7 372.3 132.3 color -1;
+     terminals
+      input 368 128 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+implementation_end;
+   Splitter1 120 312
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>Signal\Block Diagram\Splitter.emx</LibraryPath>
+  <TimeStamp>2008-01-17 11:28:29</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 116.8 308.8 123.2 315.2 color -1 fill 0;
+      ellipse 115.7 307.7 124.3 316.3 color -1;
+     terminals
+      input 120 312 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+implementation_end;
+   Splitter2 208 136
+    description '<Description><Version>4.0</Version>
+   <LibraryPath>Signal\Block Diagram\Splitter.emx</LibraryPath>
+  <TimeStamp>2008-01-17 11:28:29</TimeStamp>
+<IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+</Description>';
+    knot Splitter
+     ports
+      signal knot duplicatable out output [1];
+      signal knot in input [1];
+    end;
+    icon bg ellipse
+     figures
+      ellipse 204.8 132.8 211.2 139.2 color -1 fill 0;
+      ellipse 203.7 131.7 212.3 140.3 color -1;
+     terminals
+      input 208 136 fixed;
+    end;
+    implementation eq
+equations
+    collect (output) = input;
+implementation_end;
+   TF 176 208
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\TF.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:43:47</TimeStamp>
+</Description>
+</Information>';
+    type TF
+     ports
+      power in p1;
+      power out p2;
+     restrictions
+      causality constraint not_equal p1 p2;
+    end;
+    icon bg
+     figures
+      text 'TF' 176 208 18 bold;
+    end;
+    implementation eq
+parameters
+	real global b;
+equations
+	p1.e = -b * p2.e;
+	p2.f = -b * p1.f;
+implementation_end;
+   ZeroJunction 416 160
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\ZeroJunction.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:45:16</TimeStamp>
+</Description>
+</Information>';
+    knot ZeroJunction
+     ports
+      power knot duplicatable none p [1];
+      signal knot out effort [1];
+     restrictions
+      causality constraint one_in p;
+    end;
+    icon bg
+     figures
+      text '0' 416 160 18 bold;
+    end;
+    implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+implementation_end;
+   ZeroJunction1 144 264
+    description '<Information>
+ <Description>
+    <Version>4.2</Version>
+<IsMainModel>1</IsMainModel>
+  <KeepParameterValues>False</KeepParameterValues>
+    <LibraryPath>Bond Graph\ZeroJunction.emx</LibraryPath>
+  <TimeStamp>2011-11-29 16:45:16</TimeStamp>
+</Description>
+</Information>';
+    knot ZeroJunction
+     ports
+      power knot duplicatable none p [1];
+      signal knot out effort [1];
+     restrictions
+      causality constraint one_in p;
+    end;
+    icon bg
+     figures
+      text '0' 144 264 18 bold;
+    end;
+    implementation eq
+equations
+	sum (direct (p.f)) = 0;
+	equal (collect (p.e));
+	effort = first (p.e);
+implementation_end;
+  end;
+  connections
+   ZeroJunction\p => MTF2\p1;
+   MTF2\p2 => OneJunction\p;
+   OneJunction\p => ZeroJunction1\p;
+   MSf\p => OneJunction1\p;
+   OneJunction1\p => m\p;
+   OneJunction2\p => I_zz\p;
+   ZeroJunction\p => F_f_y\p;
+   ZeroJunction1\p => F_r_y\p;
+   OneJunction\p => m2\p;
+   TF\p2 => ZeroJunction1\p;
+   OneJunction2\p => TF\p1;
+   OneJunction2\p => MTF\p1;
+   ZeroJunction\p <= MTF\p2;
+   MGY\p1 <= OneJunction\p;
+   MGY\p2 => OneJunction1\p;
+   OneJunction1\p => MTF1\p1;
+   MTF1\p2 => ZeroJunction\p;
+   Splitter\output -> F_f_y\delta 472 128;
+   Splitter1\output -> r;
+   MSf\flow <- u_r;
+   delta_f -> Splitter\input;
+   Splitter2\output -> F_f_y\r 472 136;
+   Splitter2\output -> F_r_y\r 56 136;
+   OneJunction\flow -> d_y_v;
+   Splitter1\output -> MGY\r;
+   Splitter\output -> MTF\r 368 144;
+   Splitter\output -> MTF1\r 368 208;
+   OneJunction2\flow -> Splitter2\input;
+   OneJunction1\flow -> d_x_v 320 336;
+   Splitter\output -> MTF2\r 368 264;
+   Splitter1\input <- Splitter2\output 120 136;
+  end;
+ implementation_end;
+specification_end;
+			end;
+   Controller 224 88
+			specifications active 'destecs_interface'
+				specification 'simple_tester'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal out delta;
+   signal out V_r;
+   signal in GNSS_x_in;
+   signal in GNSS_y_in;
+ end;
+ icon bg
+  figures
+   rectangle 296 256 376 304 fill 9342520 dashed;
+   text 'name' 336 280;
+  terminals
+   delta 296 288 fixed;
+   V_r 312 304 fixed;
+   GNSS_x_in 336 304 fixed;
+   GNSS_y_in 336 304 fixed;
+ end;
+ implementation eq
+parameters
+	real amplitude = -0.5 {rad};
+	real start_time = 2.0 {s};
+	real global V ('shared');
+variables
+	boolean hidden change;
+equations
+	"calculate at least at the start time"
+	change = timeevent (start_time);
+	
+	"calculate the step signal"
+	delta = amplitude * 6* step (start_time);  
+	V_r = V;implementation_end;
+specification_end;
+				specification 'destecs_interface'
+ description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+  ports
+   signal out delta;
+   signal out V_r;
+   signal in GNSS_x_in;
+   signal in GNSS_y_in;
+   signal in GNSS_o_in;
+   signal in GNSS_r_in;
+ end;
+ icon bg
+  figures
+   rectangle 194 66 254 110 fill 14013909;
+   text 'name' 224 88;
+  terminals
+   delta 200 112 fixed;
+   V_r 248 112 fixed;
+   GNSS_x_in 256 96 fixed;
+   GNSS_y_in 256 88 fixed;
+   GNSS_o_in 256 80 fixed;
+   GNSS_r_in 256 72 fixed;
+ end;
+ implementation eq
+parameters
+	real global V ('shared');               //Vehicle speed 3
+externals
+   real global import steering_wheel_angle;
+	real global import sc;
+	real global export GNSS_Position[4];
+equations
+	delta = steering_wheel_angle;
+	if sc == 1 then
+		V_r = V;
+	else
+		V_r = 0;
+	end;
+
+   GNSS_Position[1] = GNSS_x_in;
+   GNSS_Position[2] = GNSS_y_in;
+	GNSS_Position[3] = GNSS_o_in;
+	GNSS_Position[4] = GNSS_r_in;
+	 implementation_end;
+specification_end;
+			end;
+   globals_CT_Only1 80 56
+			specifications active 'globals_Co_Sim'
+				specification 'globals_Co_Sim'
+ description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+ end;
+ icon bg
+  figures
+   rectangle 40 32 120 80 color 5855577 fill 13959039;
+   text 'Globals_Co_Sim' 80 56 fill 13959039;
+ end;
+ implementation eq
+parameters
+	// Robot Design
+	real global m = 275;
+	real global cg_a = 0.68;
+	real global cg_b = 0.5;
+	//real global mu = 0.55;
+   real global gnss_x = 0.5;//0.5
+   real global gnss_y = 0;//0.0
+  
+	real global w = 0.74;
+   real global wrd = 0.22;
+	real global wfd = 0.16;
+   real global R_r = 0.24; // Rear wheel radius
+   real global R_f = 0.19; // Front wheel radius
+
+	real global C_af = 34377;
+	real global C_ar = 42972;
+
+// Robot initialisation
+	real global initial_Position ('shared') [3] = [0, 0, 0]; // position, x,y in metres relative to the centre global cordinate system
+   real global Look_ahead_dist ('shared') = 0.5 {m}; //
+   real global V ('shared') = 4.0 {m/s}; // Vehicle speeed in the test
+   real global Control_Parameters ('shared');
+	real global dist_b ('shared') = 0.0;
+	real global mu ('shared') = 0.55;
+
+implementation_end;
+specification_end;
+				specification 'V2'
+description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+ type 'Submodel-Equation'
+ end;
+ icon bg
+  figures
+   rectangle 184 256 264 304 color 5855577 fill 13959039;
+   text 'Globals_Co_Sim' 224 280 fill 13959039;
+ end;
+ implementation eq
+parameters
+	// Robot Design
+	real global m = 275;
+	real global a = 0.68;
+	real global b = 0.5;
+   real global gnss_x = 0;
+   real global gnss_y = 0.5;
+	real global I_zz = 95.7275;
+   
+	real global w = 0.74;
+   real global wrd = 0.22;
+	real global wfd = 0.16;
+   real global R_r = 0.24; // Rear wheel radius
+   real global R_f = 0.19; // Front wheel radius
+
+	real global C_af = 22918;
+	real global C_ar = 28648;
+
+// Robot initialisation
+	real global initial_Position ('shared') [3] = [0, 0, 0]; // UTM position, x,y in metres relative to the centre global cordinate system
+   real global Look_ahead_dist ('shared') = 0.5 {m}; //
+   real global V ('shared') = 4.0 {m/s}; // Vehicle speeed in the test
+   real global Control_Parameters ('shared') [6];
+
+implementation_end;
+specification_end;
+			end;
+   GNSS 344.7 84
+    description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>';
+    type 'Submodel-Equation'
+     ports
+      signal in pos_x_in;
+      signal in pos_y_in;
+      signal out pos_x_out;
+      signal out pos_y_out;
+      signal in theta_in;
+      signal out theta_out;
+      signal out r_out;
+    end;
+    icon bg
+     figures
+      rectangle 321.4 64 368 104 fill 15132390;
+      text 'name' 344 88;
+     terminals
+      pos_x_in 336 104 fixed;
+      pos_y_in 344 104 fixed;
+      pos_x_out 320 96 fixed;
+      pos_y_out 320 88 fixed;
+      theta_in 352 104 fixed;
+      theta_out 320 80 fixed;
+      r_out 320 72 fixed;
+    end;
+    implementation eq
+/* Equation Submodel
+Enter you equations here. You can use the Toolbar buttons at the left ( Add , f(x) etc. ).
+*/
+parameters
+real global dist_b ('shared');
+real global gnss_x;
+real global gnss_y;
+variables					
+	real temp_theta;
+	real temp_x;
+	real temp_y;
+	real N_x;
+	real N_y;
+	real P_1[2,1];
+	real P_2[2,1];
+	real P_GNSS[2,1];
+	real P_N[2,1];
+	real R[2,2];
+initialequations
+	P_1 = [gnss_x+dist_b; gnss_y];
+	P_2 = [dist_b; 0];
+equations
+  // start typing here
+  R = [cos(theta_in), sin(theta_in); -sin(theta_in), cos(theta_in)];
+  P_GNSS = transpose(R) * P_1;
+  P_N = transpose(R) * P_2;  
+  temp_x = pos_x_in + P_GNSS[1];
+  temp_y = pos_y_in + P_GNSS[2];
+  N_x = pos_x_in + P_N[1];
+  N_y = pos_y_in + P_N[2];
+
+  pos_x_out = temp_x - (temp_x mod 0.02);
+  pos_y_out = temp_y - (temp_y mod 0.02);
+	
+
+  temp_theta = atan2(sin(theta_in),cos(theta_in));
+
+  theta_out = temp_theta - (temp_theta mod 0.015); // approx 2 degree error
+  r_out = 0;implementation_end;
+   PosCalc 344 209
+    description '<Description>
+ <Version>4.0</Version>
+ <LibraryPath>Template\Submodel-Equation.emx</LibraryPath>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <TimeStamp>2007-11-1 22:32:1</TimeStamp>
+ <AllowLibraryUpdate>False</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type 'Submodel-Equation'
+     ports
+      signal in Vx;
+      signal in Vy;
+      signal in r;
+      signal out x;
+      signal out y;
+      signal out theta;
+    end;
+    icon bg
+     figures
+      rectangle 306.3 192.6 381.7 225.4 fill 15132390;
+      text 'name' 344 209 bold;
+     terminals
+      Vx 304 200 fixed;
+      Vy 304 208 fixed;
+      r 304 216 fixed;
+      x 336 192 fixed;
+      y 344 192 fixed;
+      theta 352 192 fixed;
+    end;
+    implementation eq
+/* Equation Submodel
+Enter you equations here. You can use the Toolbar buttons at the left ( Add , f(x) etc. ).
+*/
+parameters
+	real global initial_Position ('shared') [3];		// initial value of x and y directions
+	
+variables
+	real r_a;
+	real V_m[2,1];
+   real V_in[2,1];
+	real R[2,2];
+externals
+	real global import sc;
+equations
+  R = [cos(theta), sin(theta); -sin(theta), cos(theta)];
+  if sc <> 0 then
+	V_in = [Vx; Vy];
+  else
+		V_in = [0; 0];
+  end;
+  V_m = transpose(R) * V_in;
+  x = initial_Position[1] + int(V_m[1,1],0);
+  y = initial_Position[2] + int(V_m[2,1],0);
+  if sc <> 0 then
+  	r_a = r;
+  else
+	r_a = 0;
+  end;
+  theta = initial_Position[3] + int(r_a,0);implementation_end;
+   SteeringWheel 200 152
+			specifications active 'testing'
+				specification 'testing'
+ description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+ type Submodel
+  ports
+   signal out delta_f;
+   signal in delta_f_w;
+ end;
+ icon bg
+  figures
+   rectangle 163.2 136 236.8 168 fill 15132390;
+   text 'name' 200 152;
+  terminals
+   delta_f 200 168 fixed;
+   delta_f_w 200 136 fixed;
+ end;
+ implementation bg
+  submodels
+   Attenuate 160 24
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Block Diagram\Attenuate.emx</LibraryPath>
+  <TimeStamp>2007-10-31 13:47:6</TimeStamp>
+</Description>';
+    type Attenuate
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 144 8 176 40 fill 15132390;
+      text 'K' 167.5 30.4 color 16711680 16 bold;
+      text '1' 153.6 18.7 color 16711680 16 bold;
+      line 153.6 34.7 167.5 15.5 color 16711680 width 2;
+    end;
+    implementation eq
+parameters
+	real K = 6;		// attenuation (divison parameter) 
+equations
+	output = input / K;
+       implementation_end;
+   LimitDelta1 216 24
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram Non-Linear\SignalLimiter-Limit.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:47:40</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type 'SignalLimiter-Limit'
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      group
+       rectangle 200 8 232 40 fill 15132390;
+       line 215.9 12.5 215.9 37 fill 15132390;
+       line 203 24.2 228.7 24.2 fill 15132390;
+       spline 209.9 31.1 221.9 17.4 color 16711680 fill 15132390 width 2;
+       spline 221.3 18.2 229.9 17.8 color 16711680 fill 15132390 width 2;
+       spline 203 31.6 209.9 31.1 color 16711680 fill 15132390 width 2;
+      end;
+    end;
+    implementation eq
+parameters
+	real maximum = 0.7;//0.9599; // 45 degress
+	real minimum = -0.7;//-0.9599; // -45 degress
+equations
+	output = limit (input, minimum, maximum);
+  implementation_end;
+   plug delta_f 272 24;
+   plug delta_f_w 24 24;
+   TransferFunction 96 24
+			specifications active 'FO'
+				specification 'SOOL'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2008-1-24 10:10:10</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 136 97.3 232 129.3 fill 15132390;
+   group
+    text 't' 198.4 118.1 color 16711680 'SymbolProp BT' 15;
+    text '2' 203.2 121.3 color 16711680 11;
+   end;
+   group
+    text 't' 153.6 118.1 color 16711680 'SymbolProp BT' 15;
+    text '1' 157.9 120.2 color 16711680 11;
+   end;
+   text 'k' 159.5 103.7 color 16711680 14;
+   line 140.8 112.2 226.1 112.2 color 16711680 fill 15132390;
+   text '(s    + 1)' 161.1 118.1 color 16711680 14;
+   text '(s    + 1)' 205.9 118.1 color 16711680 14;
+   group
+    text '(s    + 1)' 187.7 103.7 color 16711680 14;
+    text 't' 180.3 103.7 color 16711680 'SymbolProp BT' 15;
+    text 'L' 185.1 106.9 color 16711680 11;
+   end;
+ end;
+ implementation eq
+parameters
+    real k = 1;			// gain []
+    real tau1 = 1;		// time constant 1 [s ]
+	real tau2 = 1;		// time constant 2 [s ]
+	real tauL = 2;		// lead time [s]
+variables
+    	real hidden rate1,rate2, state1;
+	real state2;
+equations
+	rate1 = state2/k - input;
+	state1 = int (rate1);
+	rate2 = k/(tau1*tau2) * ( tauL*input - state1 - state2*(tau1+tau2)/k );
+	state2 = int(rate2);
+	output = state2;             implementation_end;
+specification_end;
+				specification 'SOO'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2008-1-24 10:10:10</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 136 96.6 232 128.6 fill 15132390;
+   group
+    text 't' 198.4 117.9 color 16711680 'SymbolProp BT' 15;
+    text '2' 203.2 121.1 color 16711680 11;
+   end;
+   group
+    text 't' 153.6 117.9 color 16711680 'SymbolProp BT' 15;
+    text '1' 157.9 120.1 color 16711680 11;
+   end;
+   line 140.8 112.1 226.1 112.1 color 16711680 fill 15132390;
+   text '(s    + 1)' 161.1 117.9 color 16711680 14;
+   text '(s    + 1)' 205.9 117.9 color 16711680 14;
+   text 'k' 183.5 103.3 color 16711680 14;
+ end;
+ implementation eq
+parameters
+    real k = 1;			// gain []
+    real tau1 = 1;		// time constant 1 [s / rad]
+	real tau2 = 1;		// time constant 2 [s / rad]
+variables
+    	real hidden rate1,rate2, state1;
+	real state2;
+equations
+	rate1 = (k * input - state1) / tau1;
+	state1 = int (rate1);
+	rate2 = (state1 - state2)/tau2;
+	state2 = int(rate2);
+	output = state2;                         implementation_end;
+specification_end;
+				specification 'SOUO'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2008-1-24 10:10:10</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 136 96.1 232 128.1 fill 15132390;
+   line 139.2 112.4 227.2 112.4 color 16711680 fill 15132390;
+   text 's  + 2      s  + ' 176 120.1 color 16711680 14;
+   text 'z' 172.3 121.2 color 16711680 'SymbolProp BT' 11 symbol;
+   text 'w' 181.3 120.1 color 16711680 'SymbolProp BT' 15;
+   text 'k' 176.5 103.6 color 16711680 14;
+   group
+    text '2' 194.7 101.2 color 16711680 11;
+    text 'w' 186.7 103.9 color 16711680 'SymbolProp BT' 15;
+   end;
+   group
+    text '2' 225.6 116.7 color 16711680 11;
+    text 'w' 217.6 119.4 color 16711680 'SymbolProp BT' 15;
+   end;
+   text '2' 149.3 116.2 color 16711680 11;
+ end;
+ implementation eq
+parameters
+    	real k = 1.0;			// gain []
+	real omega = 1.0;		// frequency [rad/s]
+	real zeta = 0.7;			// damping constant []
+variables
+    	real hidden rate1,rate2, state1;
+	real state2;
+equations
+	rate1 = (k * input - state2)*omega;
+	state1 = int (rate1);
+	rate2 = (state1 - 2*zeta*state2)*omega;
+	state2 = int(rate2);
+	output = state2;                            implementation_end;
+specification_end;
+				specification 'FO'
+ description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2008-1-24 10:10:10</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 72 7.4 120 40.6 fill 15132390;
+   text 'k' 97.1 15.1 color 16711680 14;
+   line 77.7 25 115.4 25 color 16711680 fill 15132390;
+   text 't' 90.7 31.7 color 16711680 'SymbolProp BT' 15;
+   text 's    + 1' 96 31.7 color 16711680 14;
+ end;
+ implementation eq
+parameters
+    real k = 1;		// gain []
+    real tau = 0.23;		// time constant [s / rad]
+variables
+    real rate, state;
+equations
+    rate = (k * input - state) / tau;
+    state = int (rate);
+    output = state;                    implementation_end;
+specification_end;
+				specification 'SOU'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2011-3-23 10:32:13</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 200 511.7 296 543.7 fill 15132390;
+   line 204.8 527.2 290.1 527.2 color 16711680 fill 15132390;
+   text 's  + 2     s  + 1' 254.3 535.7 color 16711680 14;
+   text 'z' 251.4 536.8 color 16711680 'SymbolProp BT' 11 symbol;
+   text '2' 216.4 532 color 16711680 11;
+   text 't' 210 535.7 color 16711680 'SymbolProp BT' 15;
+   text 't' 258.5 535.7 color 16711680 'SymbolProp BT' 15;
+   text 'k' 248.4 519.2 color 16711680 14;
+   text '2' 228.4 532 color 16711680 11;
+ end;
+ implementation eq
+parameters
+    	real k = 1;			// gain []
+    	real tau = 1;		// time constant [s ]
+	real zeta = 0.7;		// damping constant []
+variables
+    	real hidden rate1,rate2, state1;
+	real state2;
+equations
+	rate1 = (k * input - state2) / tau;
+	state1 = int (rate1);
+	rate2 = (state1 - 2*zeta*state2)/tau;
+	state2 = int(rate2);
+	output = state2;                            implementation_end;
+specification_end;
+				specification 'SOI'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2008-1-24 10:10:10</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 160 97 208 128 fill 15132390;
+   text 'k' 187.2 104 color 16711680 14;
+   line 163.2 112.5 202.7 112.5 color 16711680 fill 15132390;
+   group
+    text 's(s  + 1)' 184 118.4 color 16711680 14;
+    text 't' 181.9 118.4 color 16711680 'SymbolProp BT' 15;
+   end;
+ end;
+ implementation eq
+parameters
+	real k = 1;			// gain []
+ 	real tau = 1;		// time constant [s / rad]
+variables
+    real hidden rate1, state1;
+    real rate2,state2;
+equations
+	rate1 = ( k * input );
+	state1 = int (rate1);
+	rate2 = (state1 - state2)/tau;
+	state2 = int(rate2);
+	output = state2;                        implementation_end;
+specification_end;
+				specification 'FOL'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2008-1-24 10:10:10</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 152 96 216 128 fill 15132390;
+   group
+    text 't' 176.5 118.8 color 16711680 'SymbolProp BT' 15;
+    text 's    + 1' 184 118.8 color 16711680 14;
+   end;
+   line 155.5 114 210.9 114 color 16711680 fill 15132390;
+   group
+    text 'L' 187.2 108.2 color 16711680 11;
+    text 't' 181.3 105 color 16711680 'SymbolProp BT' 15;
+   end;
+   text 'k' 160.5 105.5 color 16711680 14;
+   text '(s    + 1)' 188.8 105 color 16711680 14;
+ end;
+ implementation eq
+parameters
+	real k = 1;			// gain []
+	real tau = 1;		// time constant [s ]
+	real tauL = 1;		// lead time [s]
+variables
+    real hidden rate, state;
+equations
+	rate = ( k * input - state );
+	state = int ( rate / tau );
+	output = state + ( tauL/tau ) * rate;  implementation_end;
+specification_end;
+				specification 'FOLA'
+description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Transfer Functions\TransferFunction.emx</LibraryPath>
+  <TimeStamp>2008-1-24 10:10:10</TimeStamp>
+</Description>';
+ type TransferFunction
+  ports
+   signal in input;
+   signal out output;
+ end;
+ icon bg bottom
+  figures
+   rectangle 152 96.5 216 128.5 fill 15132390;
+   line 156.6 113.5 211.9 113.5 color 16711680 fill 15132390;
+   group
+    text 'k' 160.5 105 color 16711680 14;
+    text '(s    + 1)' 187.7 104.4 color 16711680 14;
+    text 't' 180.3 104.4 color 16711680 'SymbolProp BT' 15;
+   end;
+   group
+    text 's    + 1' 182.4 119.4 color 16711680 14;
+    text 't' 173.9 119.4 color 16711680 'SymbolProp BT' 15;
+    text 'L' 179.7 122.6 color 16711680 11;
+   end;
+ end;
+ implementation eq
+parameters
+	real k = 1;			// gain []
+	real tau = 1;		// time constant [s ]
+	real tauL = 1;		// lag time [s]
+variables
+    real hidden rate, state;
+equations
+	rate = ( k * input - state );
+	state = int ( rate / tauL );
+	output = state + ( tau/tauL ) * rate;  implementation_end;
+specification_end;
+			end;
+  end;
+  connections
+   delta_f <- LimitDelta1\output;
+   delta_f_w -> TransferFunction\input;
+   Attenuate\output -> LimitDelta1\input;
+   TransferFunction\output -> Attenuate\input;
+  end;
+ implementation_end;
+specification_end;
+				specification 'motor_system'
+description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+ type Submodel
+  ports
+   signal out delta_f;
+   signal in delta_f_w;
+ end;
+ icon bg
+  figures
+   rectangle 187.2 328 260.8 360 fill 15132390;
+   text 'name' 224 344;
+  terminals
+   delta_f 224 360 fixed;
+   delta_f_w 224 328 fixed;
+ end;
+ implementation bg
+  submodels
+   Attenuate 240 24
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Block Diagram\Attenuate.emx</LibraryPath>
+  <TimeStamp>2007-10-31 13:47:6</TimeStamp>
+</Description>';
+    type Attenuate
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 224 8 256 40 fill 15132390;
+      text 'K' 247.5 30.4 color 16711680 16 bold;
+      text '1' 233.6 18.7 color 16711680 16 bold;
+      line 233.6 34.7 247.5 15.5 color 16711680 width 2;
+    end;
+    implementation eq
+parameters
+	real K = 6;		// attenuation (divison parameter) 
+equations
+	output = input / K;
+       implementation_end;
+   LimitDelta1 320 24
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram Non-Linear\SignalLimiter-Limit.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:47:40</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type 'SignalLimiter-Limit'
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      group
+       rectangle 304 8 336 40 fill 15132390;
+       line 319.9 12.5 319.9 37 fill 15132390;
+       line 307 24.2 332.7 24.2 fill 15132390;
+       spline 313.9 31.1 325.9 17.4 color 16711680 fill 15132390 width 2;
+       spline 325.3 18.2 333.9 17.8 color 16711680 fill 15132390 width 2;
+       spline 307 31.6 313.9 31.1 color 16711680 fill 15132390 width 2;
+      end;
+    end;
+    implementation eq
+parameters
+	real maximum = 0.9599; // 45 degress
+	real minimum = -0.9599; // -45 degress
+equations
+	output = limit (input, minimum, maximum);
+  implementation_end;
+   LinearSystem2 128 24
+    description '<Description><Version>4.0</Version><IsMainModel>1</IsMainModel><KeepParameterValues>False</KeepParameterValues>
+  <LibraryPath>Signal\Transfer Functions\LinearSystem.emx</LibraryPath>
+  <TimeStamp>2007-9-27 16:28:5</TimeStamp>
+  <AllowLibraryUpdate>False</AllowLibraryUpdate>
+</Description>
+';
+    type LinearSystem
+     ports
+      signal in u;
+      signal out y;
+    end;
+    icon bg bottom
+     figures
+      rectangle 104 7 152 41 fill 15132390;
+      text '3.683' 128 15 color 8388608;
+      text 's' 110 33;
+      text '+' 120 33;
+      text '3.67' 139 33 color 8388608;
+      line 110 25 148 25 color 9211020;
+    end;
+    implementation eq
+// 20-sim Linear System Editor
+// tf
+parameters
+	real hidden A [1, 1] = -3.67;
+	real hidden B [1, 1] = 3.683;
+	real hidden C [1, 1] = 1;
+	real hidden x0 [1] = 0;
+variables
+	real x [1];
+equations
+	ddt (x, x0) = A * x + B * u;
+	y = C * x;
+implementation_end;
+   plug delta_f 440 24;
+   plug delta_f_w 24 24;
+  end;
+  connections
+   delta_f <- LimitDelta1\output;
+   delta_f_w -> LinearSystem2\u;
+   Attenuate\output -> LimitDelta1\input;
+   LinearSystem2\y -> Attenuate\input;
+  end;
+ implementation_end;
+specification_end;
+				specification 'manual'
+description '<Description>
+ <Version>4.2</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+ type Submodel
+  ports
+   signal out delta_f;
+   signal in delta_f_w;
+ end;
+ icon bg
+  figures
+   rectangle 187.2 328 260.8 360 fill 15132390;
+   text 'name' 224 344;
+  terminals
+   delta_f 224 360 fixed;
+   delta_f_w 224 328 fixed;
+ end;
+ implementation bg
+  submodels
+   Attenuate 240 24
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+   <LibraryPath>Signal\Block Diagram\Attenuate.emx</LibraryPath>
+  <TimeStamp>2007-10-31 13:47:6</TimeStamp>
+</Description>';
+    type Attenuate
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      rectangle 224 8 256 40 fill 15132390;
+      text 'K' 247.5 30.4 color 16711680 16 bold;
+      text '1' 233.6 18.7 color 16711680 16 bold;
+      line 233.6 34.7 247.5 15.5 color 16711680 width 2;
+    end;
+    implementation eq
+parameters
+	real K = 6;		// attenuation (divison parameter) 
+equations
+	output = input / K;
+       implementation_end;
+   LimitDelta1 320 24
+    description '<Description>
+ <Version>4.0</Version>
+ <IsMainModel>1</IsMainModel>
+ <KeepParameterValues>False</KeepParameterValues>
+ <LibraryPath>Signal\Block Diagram Non-Linear\SignalLimiter-Limit.emx</LibraryPath>
+ <TimeStamp>2007-9-26 12:47:40</TimeStamp>
+ <AllowLibraryUpdate>True</AllowLibraryUpdate>
+   <Configuration><struct>
+  <member>
+    <name>DocumentationMask</name>
+    <value>
+      <struct>
+        <member>
+          <name>MaskChoice</name>
+          <value>
+            <int>1</int>
+          </value>
+        </member>
+        <member>
+          <name>BitmapFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>svgFilename</name>
+          <value>
+            <string></string>
+          </value>
+        </member>
+        <member>
+          <name>Scaling</name>
+          <value>
+            <double>1</double>
+          </value>
+        </member>
+      </struct>
+    </value>
+  </member>
+</struct>
+</Configuration>
+</Description>';
+    type 'SignalLimiter-Limit'
+     ports
+      signal in input;
+      signal out output;
+    end;
+    icon bg bottom
+     figures
+      group
+       rectangle 304 8 336 40 fill 15132390;
+       line 319.9 12.5 319.9 37 fill 15132390;
+       line 307 24.2 332.7 24.2 fill 15132390;
+       spline 313.9 31.1 325.9 17.4 color 16711680 fill 15132390 width 2;
+       spline 325.3 18.2 333.9 17.8 color 16711680 fill 15132390 width 2;
+       spline 307 31.6 313.9 31.1 color 16711680 fill 15132390 width 2;
+      end;
+    end;
+    implementation eq
+parameters
+	real maximum = 0.9599; // 45 degress
+	real minimum = -0.9599; // -45 degress
+equations
+	output = limit (input, minimum, maximum);
+  implementation_end;
+   plug delta_f 440 24;
+   plug delta_f_w 24 24;
+  end;
+  connections
+   delta_f <- LimitDelta1\output;
+   Attenuate\input <- delta_f_w;
+   Attenuate\output -> LimitDelta1\input;
+  end;
+ implementation_end;
+specification_end;
+			end;
+  end;
+  connections
+   SteeringWheel\delta_f_w <- Controller\delta;
+   SteeringWheel\delta_f -> BicycleModel\delta_f;
+   PosCalc\y -> GNSS\pos_y_in;
+   GNSS\theta_out -> Controller\GNSS_o_in;
+   GNSS\r_out -> Controller\GNSS_r_in;
+   PosCalc\theta -> GNSS\theta_in;
+   PosCalc\x -> GNSS\pos_x_in;
+   GNSS\pos_x_out -> Controller\GNSS_x_in;
+   GNSS\pos_y_out -> Controller\GNSS_y_in;
+   Controller\V_r -> BicycleModel\u_r;
+   BicycleModel\d_x_v -> PosCalc\Vx;
+   BicycleModel\d_y_v -> PosCalc\Vy;
+   BicycleModel\r -> PosCalc\r;
+  end;
+ implementation_end;
+]]>
+</Sidops>
+ </Model>
+ <Experiments>
+     <DefaultExperiment><![CDATA[Experiment 1]]>
+</DefaultExperiment>
+  <Experiment>
+    <Name>Experiment 1</Name>
+    <CreatedBy></CreatedBy>
+    <Info></Info>
+<ExpData>
+  <VersionNumber>4.3</VersionNumber>
+  <ModelProperties>
+    <ModelProperty section="tools\graph editor" entry="showGrid" value="0"/>
+  </ModelProperties>
+  <Variables>
+   <Parameters>
+    <Variable>
+     <Name>Control_Parameters</Name>
+     <Value>1.5</Value>
+    </Variable>
+   </Parameters>
+   <Initials>
+    <Variable>
+     <Name>SteeringWheel\TransferFunction\state_initial</Name>
+     <Value>0</Value>
+    </Variable>
+   </Initials>
+  </Variables>
+  <PlotSpecs>
+   <VarNames>
+    <VarName>time</VarName>
+    <VarName>animation\w_l</VarName>
+    <VarName>R_f</VarName>
+    <VarName>wfd</VarName>
+    <VarName>animation\w_r</VarName>
+    <VarName>animation\l_a</VarName>
+    <VarName>animation\l_b</VarName>
+    <VarName>R_r</VarName>
+    <VarName>wrd</VarName>
+    <VarName>PosCalc\theta</VarName>
+    <VarName>SteeringWheel\LimitDelta1\output</VarName>
+    <VarName>animation\w_rear</VarName>
+    <VarName>animation\animation_b</VarName>
+    <VarName>animation\offset_b</VarName>
+    <VarName>animation\offset_a</VarName>
+    <VarName>animation\animation_a</VarName>
+    <VarName>animation\w_front</VarName>
+    <VarName>gnss_y</VarName>
+    <VarName>SteeringWheel\TransferFunction\input</VarName>
+    <VarName>SteeringWheel\TransferFunction\output</VarName>
+    <VarName>gnss_x</VarName>
+    <VarName>GNSS\N_x</VarName>
+    <VarName>GNSS\N_y</VarName>
+    <VarName>GNSS\temp_y</VarName>
+    <VarName>GNSS\temp_x</VarName>
+    <VarName>SteeringWheel\delta_f</VarName>
+   </VarNames>
+   <Plots>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>1</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>15790320</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>model(1)</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>10</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>true</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>-5</Minimum>
+       <Maximum>20</Maximum>
+       <Linear>true</Linear>
+       <Scaling>0</Scaling>
+       <Label>temp_x</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>-1</Minimum>
+       <Maximum>4</Maximum>
+       <Linear>true</Linear>
+       <Scaling>0</Scaling>
+       <Label>temp_y</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>16711935</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711935</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>GNSS\temp_x</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>GNSS\temp_y</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+    <Plot>
+     <PlotType>D3DPlot</PlotType>
+     <BasePlot>
+       <PlotId>2</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>15790320</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <RenderQuality>137</RenderQuality>
+     <ShowGrid>true</ShowGrid>
+     <BackgroundColor>4294967295</BackgroundColor>
+     <SceneBackgroundImage>Gradients\BlueWhite.png</SceneBackgroundImage>
+     <FrameScale>1</FrameScale>
+     <FrameThickness>1</FrameThickness>
+     <MainFrame>
+      <Frame>
+       <ScaleValue>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ScaleValue>
+       <ShowReferenceFrame>true</ShowReferenceFrame>
+       <Name>Reference Frame</Name>
+       <Position>
+       </Position>
+       <Orientation>
+        <Angles>
+        </Angles>
+        <OrientationType>Bryant</OrientationType>
+       </Orientation>
+       <LockX>false</LockX>
+       <LockY>false</LockY>
+       <LockZ>false</LockZ>
+       <LockXPitch>false</LockXPitch>
+       <LockYYaw>false</LockYYaw>
+       <LockZRoll>false</LockZRoll>
+       <Childs>
+        <Frame>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Default Lights and Cameras</Name>
+         <Position>
+         </Position>
+         <Orientation>
+     <Angles>
+     </Angles>
+     <OrientationType>Bryant</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Ambient</Name>
+      <Position>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>0</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.3</Value>
+        </X>
+        <Y>
+         <Value>0.3</Value>
+        </Y>
+        <Z>
+         <Value>0.3</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <AmbientLight>
+       <Color>
+        <X>
+         <Value>0.3</Value>
+        </X>
+        <Y>
+         <Value>0.3</Value>
+        </Y>
+        <Z>
+         <Value>0.3</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </AmbientLight>
+      <AmbientOn>true</AmbientOn>
+      <DiffuseOn>false</DiffuseOn>
+      <SpecularOn>false</SpecularOn>
+     </Light>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Parallel</Name>
+      <Position>
+       <X>
+        <Value>-3</Value>
+       </X>
+       <Y>
+        <Value>5</Value>
+       </Y>
+       <Z>
+        <Value>3</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.457495710997814</Value>
+        </X>
+        <Y>
+         <Value>-0.762492851663023</Value>
+        </Y>
+        <Z>
+         <Value>-0.457495710997814</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.235379601434674</Value>
+        </X>
+        <Y>
+         <Value>-0.392299335724456</Value>
+        </Y>
+        <Z>
+         <Value>0.889211827642101</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>3</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <Attenuation>
+       <Constant>
+        <Value>1</Value>
+       </Constant>
+       <Linear>
+        <Value>0</Value>
+       </Linear>
+       <Quadratic>
+        <Value>0</Value>
+       </Quadratic>
+      </Attenuation>
+      <DiffuseLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </DiffuseLight>
+      <SpecularLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </SpecularLight>
+      <AmbientOn>false</AmbientOn>
+      <DiffuseOn>true</DiffuseOn>
+      <SpecularOn>true</SpecularOn>
+     </Light>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Spot Light 1</Name>
+      <Position>
+       <X>
+        <Value>-3</Value>
+       </X>
+       <Y>
+        <Value>-5</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.50709255283711</Value>
+        </X>
+        <Y>
+         <Value>0.845154254728517</Value>
+        </Y>
+        <Z>
+         <Value>-0.169030850945703</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.0869656553478673</Value>
+        </X>
+        <Y>
+         <Value>0.144942758913112</Value>
+        </Y>
+        <Z>
+         <Value>0.985610760609162</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>2</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <Attenuation>
+       <Constant>
+        <Value>1</Value>
+       </Constant>
+       <Linear>
+        <Value>0.05</Value>
+       </Linear>
+       <Quadratic>
+        <Value>0.05</Value>
+       </Quadratic>
+      </Attenuation>
+      <Umbra>
+       <Value>1.0471975511966</Value>
+      </Umbra>
+      <Penumbra>
+       <Value>1.0471975511966</Value>
+      </Penumbra>
+      <DiffuseLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </DiffuseLight>
+      <SpecularLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </SpecularLight>
+      <AmbientOn>false</AmbientOn>
+      <DiffuseOn>true</DiffuseOn>
+      <SpecularOn>true</SpecularOn>
+     </Light>
+     <Light>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Spot Light 2</Name>
+      <Position>
+       <X>
+        <Value>2</Value>
+       </X>
+       <Y>
+        <Value>-3</Value>
+       </Y>
+       <Z>
+        <Value>-1</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>-0.534522483824849</Value>
+        </X>
+        <Y>
+         <Value>0.801783725737273</Value>
+        </Y>
+        <Z>
+         <Value>0.267261241912424</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.14824986333222</Value>
+        </X>
+        <Y>
+         <Value>-0.22237479499833</Value>
+        </Y>
+        <Z>
+         <Value>0.963624111659432</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <LightType>2</LightType>
+      <LightColor>
+       <Color>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </LightColor>
+      <Attenuation>
+       <Constant>
+        <Value>1</Value>
+       </Constant>
+       <Linear>
+        <Value>0.05</Value>
+       </Linear>
+       <Quadratic>
+        <Value>0.05</Value>
+       </Quadratic>
+      </Attenuation>
+      <Umbra>
+       <Value>1.5707963267949</Value>
+      </Umbra>
+      <Penumbra>
+       <Value>1.5707963267949</Value>
+      </Penumbra>
+      <DiffuseLight>
+       <Color>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </DiffuseLight>
+      <SpecularLight>
+       <Color>
+        <X>
+         <Value>0.5</Value>
+        </X>
+        <Y>
+         <Value>0.5</Value>
+        </Y>
+        <Z>
+         <Value>0.5</Value>
+        </Z>
+       </Color>
+       <Offset>
+       </Offset>
+       <Multipliers>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Multipliers>
+       <Direct3DColorRange>true</Direct3DColorRange>
+      </SpecularLight>
+      <AmbientOn>false</AmbientOn>
+      <DiffuseOn>true</DiffuseOn>
+      <SpecularOn>true</SpecularOn>
+     </Light>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Camera Looking at Origin</Name>
+      <Position>
+       <X>
+        <Value>-8.5</Value>
+       </X>
+       <Y>
+        <Value>-8</Value>
+       </Y>
+       <Z>
+        <Value>10</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>0.553010041337502</Value>
+        </X>
+        <Y>
+         <Value>0.520480038905884</Value>
+        </Y>
+        <Z>
+         <Value>-0.650600048632356</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>0.473766950660018</Value>
+        </X>
+        <Y>
+         <Value>0.445898306503547</Value>
+        </Y>
+        <Z>
+         <Value>0.759420553263853</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>0.00392699081698724</Field>
+      <Fieldy>45</Fieldy>
+      <PlaneLeft>-10</PlaneLeft>
+      <PlaneRight>10</PlaneRight>
+      <PlaneTop>10</PlaneTop>
+      <PlaneBottom>-10</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>true</Perspective>
+      <IsSelectedCamera>false</IsSelectedCamera>
+     </Camera>
+     <Camera>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Camera Tracking Tractor</Name>
+      <Position>
+       <X>
+        <Value>10</Value>
+       </X>
+       <Y>
+        <Value>5</Value>
+       </Y>
+       <Z>
+        <Value>5</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <ZAxis>
+        <X>
+         <Value>-0.840190017180965</Value>
+        </X>
+        <Y>
+         <Value>-0.371397999068694</Value>
+        </Y>
+        <Z>
+         <Value>-0.395150934855556</Value>
+        </Z>
+       </ZAxis>
+       <YAxis>
+        <X>
+         <Value>-0.361415210880344</Value>
+        </X>
+        <Y>
+         <Value>-0.15976015354755</Value>
+        </Y>
+        <Z>
+         <Value>0.918616208589191</Value>
+        </Z>
+       </YAxis>
+       <OrientationType>Direct3D</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+      <FrontPlane>0.01</FrontPlane>
+      <BackPlane>100</BackPlane>
+      <AutoFrontBack>true</AutoFrontBack>
+      <Field>0.00392699081698724</Field>
+      <Fieldy>45</Fieldy>
+      <PlaneLeft>-10</PlaneLeft>
+      <PlaneRight>10</PlaneRight>
+      <PlaneTop>10</PlaneTop>
+      <PlaneBottom>-10</PlaneBottom>
+      <UseLookatPosition>true</UseLookatPosition>
+      <LookatPosition>
+       <X>
+        <VariableName>GNSS\N_x</VariableName>
+        <Value>-0.631254326756037</Value>
+       </X>
+       <Y>
+        <VariableName>GNSS\N_y</VariableName>
+        <Value>0.300555227024136</Value>
+       </Y>
+      </LookatPosition>
+      <UseAlwaysLookUp>true</UseAlwaysLookUp>
+      <LookUpVector>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </LookUpVector>
+      <RightHand>true</RightHand>
+      <Perspective>true</Perspective>
+      <IsSelectedCamera>true</IsSelectedCamera>
+     </Camera>
+         </Childs>
+        </Frame>
+        <Frame>
+         <ScaleValue>
+     <X>
+      <Value>1</Value>
+     </X>
+     <Y>
+      <Value>1</Value>
+     </Y>
+     <Z>
+      <Value>1</Value>
+     </Z>
+         </ScaleValue>
+         <ShowReferenceFrame>false</ShowReferenceFrame>
+         <Name>Scenery</Name>
+         <Position>
+         </Position>
+         <Orientation>
+     <Angles>
+     </Angles>
+     <OrientationType>Bryant</OrientationType>
+         </Orientation>
+         <LockX>false</LockX>
+         <LockY>false</LockY>
+         <LockZ>false</LockZ>
+         <LockXPitch>false</LockXPitch>
+         <LockYYaw>false</LockYYaw>
+         <LockZRoll>false</LockZRoll>
+         <Childs>
+     <Frame>
+      <ScaleValue>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Reference Frame</Name>
+      <Position>
+       <X>
+        <VariableName>GNSS\N_x</VariableName>
+        <Value>-0.631254326756037</Value>
+       </X>
+       <Y>
+        <VariableName>GNSS\N_y</VariableName>
+        <Value>0.300555227024136</Value>
+       </Y>
+       <Z>
+        <Value>0.1</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+        <Z>
+         <VariableName>PosCalc\theta</VariableName>
+         <Value>-0.791746051612005</Value>
+        </Z>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+       <Cylinder>
+        <CircleElements>20</CircleElements>
+        <LowerRadius>1</LowerRadius>
+        <UpperRadius>1</UpperRadius>
+        <Height>1</Height>
+        <Closed>true</Closed>
+        <LowerClosed>true</LowerClosed>
+        <UpperClosed>true</UpperClosed>
+        <CenterInOrigin>true</CenterInOrigin>
+        <ShowInnerSide>false</ShowInnerSide>
+        <ShowOuterSide>true</ShowOuterSide>
+        <ScaleValue>
+         <X>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </X>
+         <Y>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </Y>
+         <Z>
+     <VariableName>wfd</VariableName>
+     <Value>0.16</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>0</Value>
+         </X>
+         <Y>
+     <Value>0</Value>
+         </Y>
+         <Z>
+     <Value>0</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.498039215686275</Value>
+         </X>
+         <Y>
+     <Value>0.498039215686275</Value>
+         </Y>
+         <Z>
+     <Value>0.498039215686275</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>14.298713684082</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Cylinder</Name>
+        <Position>
+         <X>
+     <VariableName>animation\l_a</VariableName>
+     <Value>0.68</Value>
+         </X>
+         <Y>
+     <VariableName>animation\w_l</VariableName>
+     <Value>-0.37</Value>
+         </Y>
+         <Z>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <X>
+      <Value>1.5707963267949</Value>
+     </X>
+     <Y>
+      <VariableName>SteeringWheel\delta_f</VariableName>
+      <Value>0.7</Value>
+     </Y>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </Cylinder>
+       <Cylinder>
+        <CircleElements>20</CircleElements>
+        <LowerRadius>1</LowerRadius>
+        <UpperRadius>1</UpperRadius>
+        <Height>1</Height>
+        <Closed>true</Closed>
+        <LowerClosed>true</LowerClosed>
+        <UpperClosed>true</UpperClosed>
+        <CenterInOrigin>true</CenterInOrigin>
+        <ShowInnerSide>false</ShowInnerSide>
+        <ShowOuterSide>true</ShowOuterSide>
+        <ScaleValue>
+         <X>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </X>
+         <Y>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </Y>
+         <Z>
+     <VariableName>wfd</VariableName>
+     <Value>0.16</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>0</Value>
+         </X>
+         <Y>
+     <Value>0</Value>
+         </Y>
+         <Z>
+     <Value>0</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.498039215686275</Value>
+         </X>
+         <Y>
+     <Value>0.498039215686275</Value>
+         </Y>
+         <Z>
+     <Value>0.498039215686275</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>13.5413365364075</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Cylinder</Name>
+        <Position>
+         <X>
+     <VariableName>animation\l_a</VariableName>
+     <Value>0.68</Value>
+         </X>
+         <Y>
+     <VariableName>animation\w_r</VariableName>
+     <Value>0.37</Value>
+         </Y>
+         <Z>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <X>
+      <Value>1.5707963267949</Value>
+     </X>
+     <Y>
+      <VariableName>SteeringWheel\delta_f</VariableName>
+      <Value>0.7</Value>
+     </Y>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </Cylinder>
+       <Cylinder>
+        <CircleElements>20</CircleElements>
+        <LowerRadius>1</LowerRadius>
+        <UpperRadius>1</UpperRadius>
+        <Height>1</Height>
+        <Closed>true</Closed>
+        <LowerClosed>true</LowerClosed>
+        <UpperClosed>true</UpperClosed>
+        <CenterInOrigin>true</CenterInOrigin>
+        <ShowInnerSide>false</ShowInnerSide>
+        <ShowOuterSide>true</ShowOuterSide>
+        <ScaleValue>
+         <X>
+     <VariableName>R_r</VariableName>
+     <Value>0.24</Value>
+         </X>
+         <Y>
+     <VariableName>R_r</VariableName>
+     <Value>0.24</Value>
+         </Y>
+         <Z>
+     <VariableName>wrd</VariableName>
+     <Value>0.22</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>0</Value>
+         </X>
+         <Y>
+     <Value>0</Value>
+         </Y>
+         <Z>
+     <Value>0</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.498039215686275</Value>
+         </X>
+         <Y>
+     <Value>0.498039215686275</Value>
+         </Y>
+         <Z>
+     <Value>0.498039215686275</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>14.298713684082</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Cylinder</Name>
+        <Position>
+         <X>
+     <VariableName>animation\l_b</VariableName>
+     <Value>-0.5</Value>
+         </X>
+         <Y>
+     <VariableName>animation\w_r</VariableName>
+     <Value>0.37</Value>
+         </Y>
+         <Z>
+     <VariableName>R_r</VariableName>
+     <Value>0.24</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <X>
+      <Value>1.5707963267949</Value>
+     </X>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </Cylinder>
+       <Cylinder>
+        <CircleElements>20</CircleElements>
+        <LowerRadius>1</LowerRadius>
+        <UpperRadius>1</UpperRadius>
+        <Height>1</Height>
+        <Closed>true</Closed>
+        <LowerClosed>true</LowerClosed>
+        <UpperClosed>true</UpperClosed>
+        <CenterInOrigin>true</CenterInOrigin>
+        <ShowInnerSide>false</ShowInnerSide>
+        <ShowOuterSide>true</ShowOuterSide>
+        <ScaleValue>
+         <X>
+     <VariableName>R_r</VariableName>
+     <Value>0.24</Value>
+         </X>
+         <Y>
+     <VariableName>R_r</VariableName>
+     <Value>0.24</Value>
+         </Y>
+         <Z>
+     <VariableName>wrd</VariableName>
+     <Value>0.22</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>0</Value>
+         </X>
+         <Y>
+     <Value>0</Value>
+         </Y>
+         <Z>
+     <Value>0</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.498039215686275</Value>
+         </X>
+         <Y>
+     <Value>0.498039215686275</Value>
+         </Y>
+         <Z>
+     <Value>0.498039215686275</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>14.298713684082</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Cylinder</Name>
+        <Position>
+         <X>
+     <VariableName>animation\l_b</VariableName>
+     <Value>-0.5</Value>
+         </X>
+         <Y>
+     <VariableName>animation\w_l</VariableName>
+     <Value>-0.37</Value>
+         </Y>
+         <Z>
+     <VariableName>R_r</VariableName>
+     <Value>0.24</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <X>
+      <Value>1.5707963267949</Value>
+     </X>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </Cylinder>
+       <Cube>
+        <Center>Bottom</Center>
+        <RibLength>1</RibLength>
+        <ShowInnerSide>true</ShowInnerSide>
+        <Accuracy>4</Accuracy>
+        <ScaleValue>
+         <X>
+     <VariableName>animation\animation_b</VariableName>
+     <Value>0.75</Value>
+         </X>
+         <Y>
+     <VariableName>animation\w_rear</VariableName>
+     <Value>0.52</Value>
+         </Y>
+         <Z>
+     <Value>0.25</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>0</Value>
+         </Y>
+         <Z>
+     <Value>0</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.5</Value>
+         </X>
+         <Y>
+     <Value>0.5</Value>
+         </Y>
+         <Z>
+     <Value>0.5</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>15</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Block</Name>
+        <Position>
+         <X>
+     <VariableName>animation\offset_b</VariableName>
+     <Value>-0.375</Value>
+         </X>
+         <Z>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </Cube>
+       <Cube>
+        <Center>Bottom</Center>
+        <RibLength>1</RibLength>
+        <ShowInnerSide>true</ShowInnerSide>
+        <Accuracy>4</Accuracy>
+        <ScaleValue>
+         <X>
+     <VariableName>animation\animation_a</VariableName>
+     <Value>0.748</Value>
+         </X>
+         <Y>
+     <VariableName>animation\w_front</VariableName>
+     <Value>0.58</Value>
+         </Y>
+         <Z>
+     <Value>0.5</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>0</Value>
+         </Y>
+         <Z>
+     <Value>0</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.5</Value>
+         </X>
+         <Y>
+     <Value>0.5</Value>
+         </Y>
+         <Z>
+     <Value>0.5</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>15</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Block</Name>
+        <Position>
+         <X>
+     <VariableName>animation\offset_a</VariableName>
+     <Value>0.374</Value>
+         </X>
+         <Z>
+     <VariableName>R_f</VariableName>
+     <Value>0.19</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </Cube>
+       <Cylinder>
+        <CircleElements>16</CircleElements>
+        <LowerRadius>1</LowerRadius>
+        <UpperRadius>1</UpperRadius>
+        <Height>1</Height>
+        <Closed>true</Closed>
+        <LowerClosed>true</LowerClosed>
+        <UpperClosed>true</UpperClosed>
+        <CenterInOrigin>true</CenterInOrigin>
+        <ShowInnerSide>false</ShowInnerSide>
+        <ShowOuterSide>true</ShowOuterSide>
+        <ScaleValue>
+         <X>
+     <Value>0.15</Value>
+         </X>
+         <Y>
+     <Value>0.15</Value>
+         </Y>
+         <Z>
+     <Value>0.12</Value>
+         </Z>
+        </ScaleValue>
+        <OverrideColor>true</OverrideColor>
+        <MeshColor>
+         <X>
+     <Value>0</Value>
+         </X>
+         <Y>
+     <Value>0.501960784313725</Value>
+         </Y>
+         <Z>
+     <Value>0</Value>
+         </Z>
+        </MeshColor>
+        <Alpha>1</Alpha>
+        <MeshColorMultipliers>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </MeshColorMultipliers>
+        <MeshColorOffsets>
+        </MeshColorOffsets>
+        <Direct3DColorRange>true</Direct3DColorRange>
+        <SpecularColor>
+         <X>
+     <Value>0.498039215686275</Value>
+         </X>
+         <Y>
+     <Value>0.498039215686275</Value>
+         </Y>
+         <Z>
+     <Value>0.498039215686275</Value>
+         </Z>
+        </SpecularColor>
+        <EmissiveColor>
+        </EmissiveColor>
+        <ShininessPower>
+         <Value>14.298713684082</Value>
+        </ShininessPower>
+        <OverrideQuality>false</OverrideQuality>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Cylinder</Name>
+        <Position>
+         <X>
+     <VariableName>gnss_x</VariableName>
+     <Value>0.5</Value>
+         </X>
+         <Y>
+     <VariableName>gnss_y</VariableName>
+     <Value>0</Value>
+         </Y>
+         <Z>
+     <Value>0.7</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+       </Cylinder>
+       <Frame>
+        <ScaleValue>
+         <X>
+     <Value>1</Value>
+         </X>
+         <Y>
+     <Value>1</Value>
+         </Y>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </ScaleValue>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Reference Frame</Name>
+        <Position>
+         <X>
+     <Value>-0.15</Value>
+         </X>
+         <Z>
+     <Value>0.8</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <Angles>
+     <Y>
+      <Value>-0.785398163397448</Value>
+     </Y>
+     <Z>
+      <VariableName>SteeringWheel\TransferFunction\output</VariableName>
+      <Value>7.76503291205953</Value>
+     </Z>
+         </Angles>
+         <OrientationType>Bryant</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+         <Torus>
+     <TorusRadius>0.15</TorusRadius>
+     <TubeRadius>0.03</TubeRadius>
+     <Segments>100</Segments>
+     <PointsPerSegment>20</PointsPerSegment>
+     <CenterInOrigin>true</CenterInOrigin>
+     <ScaleValue>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>0.250980392156863</Value>
+      </X>
+      <Y>
+       <Value>0</Value>
+      </Y>
+      <Z>
+       <Value>0</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.5</Value>
+      </X>
+      <Y>
+       <Value>0.5</Value>
+      </Y>
+      <Z>
+       <Value>0.5</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>15</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Torus</Name>
+     <Position>
+     </Position>
+     <Orientation>
+      <Angles>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>true</LockX>
+     <LockY>true</LockY>
+     <LockZ>true</LockZ>
+     <LockXPitch>true</LockXPitch>
+     <LockYYaw>true</LockYYaw>
+     <LockZRoll>true</LockZRoll>
+     <Childs>
+     </Childs>
+         </Torus>
+         <Cylinder>
+     <CircleElements>20</CircleElements>
+     <LowerRadius>0.02</LowerRadius>
+     <UpperRadius>0.02</UpperRadius>
+     <Height>0.3</Height>
+     <Closed>true</Closed>
+     <LowerClosed>true</LowerClosed>
+     <UpperClosed>true</UpperClosed>
+     <CenterInOrigin>true</CenterInOrigin>
+     <ShowInnerSide>false</ShowInnerSide>
+     <ShowOuterSide>true</ShowOuterSide>
+     <ScaleValue>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>0.250980392156863</Value>
+      </X>
+      <Y>
+       <Value>0</Value>
+      </Y>
+      <Z>
+       <Value>0</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.5</Value>
+      </X>
+      <Y>
+       <Value>0.5</Value>
+      </Y>
+      <Z>
+       <Value>0.5</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>15</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Cylinder</Name>
+     <Position>
+     </Position>
+     <Orientation>
+      <Angles>
+       <Y>
+        <Value>1.5707963267949</Value>
+       </Y>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>true</LockX>
+     <LockY>true</LockY>
+     <LockZ>true</LockZ>
+     <LockXPitch>true</LockXPitch>
+     <LockYYaw>true</LockYYaw>
+     <LockZRoll>true</LockZRoll>
+     <Childs>
+     </Childs>
+         </Cylinder>
+         <Cylinder>
+     <CircleElements>20</CircleElements>
+     <LowerRadius>0.03</LowerRadius>
+     <UpperRadius>0.02</UpperRadius>
+     <Height>0.2</Height>
+     <Closed>true</Closed>
+     <LowerClosed>true</LowerClosed>
+     <UpperClosed>true</UpperClosed>
+     <CenterInOrigin>true</CenterInOrigin>
+     <ShowInnerSide>false</ShowInnerSide>
+     <ShowOuterSide>true</ShowOuterSide>
+     <ScaleValue>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>0.250980392156863</Value>
+      </X>
+      <Y>
+       <Value>0</Value>
+      </Y>
+      <Z>
+       <Value>0</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.5</Value>
+      </X>
+      <Y>
+       <Value>0.5</Value>
+      </Y>
+      <Z>
+       <Value>0.5</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>15</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Cylinder</Name>
+     <Position>
+      <Z>
+       <Value>-0.1</Value>
+      </Z>
+     </Position>
+     <Orientation>
+      <Angles>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>true</LockX>
+     <LockY>true</LockY>
+     <LockZ>true</LockZ>
+     <LockXPitch>true</LockXPitch>
+     <LockYYaw>true</LockYYaw>
+     <LockZRoll>true</LockZRoll>
+     <Childs>
+     </Childs>
+         </Cylinder>
+         <Cylinder>
+     <CircleElements>20</CircleElements>
+     <LowerRadius>0.02</LowerRadius>
+     <UpperRadius>0.02</UpperRadius>
+     <Height>0.3</Height>
+     <Closed>true</Closed>
+     <LowerClosed>true</LowerClosed>
+     <UpperClosed>true</UpperClosed>
+     <CenterInOrigin>true</CenterInOrigin>
+     <ShowInnerSide>false</ShowInnerSide>
+     <ShowOuterSide>true</ShowOuterSide>
+     <ScaleValue>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </ScaleValue>
+     <OverrideColor>true</OverrideColor>
+     <MeshColor>
+      <X>
+       <Value>0.250980392156863</Value>
+      </X>
+      <Y>
+       <Value>0</Value>
+      </Y>
+      <Z>
+       <Value>0</Value>
+      </Z>
+     </MeshColor>
+     <Alpha>1</Alpha>
+     <MeshColorMultipliers>
+      <X>
+       <Value>1</Value>
+      </X>
+      <Y>
+       <Value>1</Value>
+      </Y>
+      <Z>
+       <Value>1</Value>
+      </Z>
+     </MeshColorMultipliers>
+     <MeshColorOffsets>
+     </MeshColorOffsets>
+     <Direct3DColorRange>true</Direct3DColorRange>
+     <SpecularColor>
+      <X>
+       <Value>0.5</Value>
+      </X>
+      <Y>
+       <Value>0.5</Value>
+      </Y>
+      <Z>
+       <Value>0.5</Value>
+      </Z>
+     </SpecularColor>
+     <EmissiveColor>
+     </EmissiveColor>
+     <ShininessPower>
+      <Value>15</Value>
+     </ShininessPower>
+     <OverrideQuality>false</OverrideQuality>
+     <ShowReferenceFrame>false</ShowReferenceFrame>
+     <Name>Cylinder</Name>
+     <Position>
+     </Position>
+     <Orientation>
+      <Angles>
+       <X>
+        <Value>1.5707963267949</Value>
+       </X>
+      </Angles>
+      <OrientationType>Bryant</OrientationType>
+     </Orientation>
+     <LockX>true</LockX>
+     <LockY>true</LockY>
+     <LockZ>true</LockZ>
+     <LockXPitch>true</LockXPitch>
+     <LockYYaw>true</LockYYaw>
+     <LockZRoll>true</LockZRoll>
+     <Childs>
+     </Childs>
+         </Cylinder>
+        </Childs>
+       </Frame>
+       <Camera>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Camera</Name>
+        <Position>
+         <X>
+     <Value>9.25395888336977</Value>
+         </X>
+         <Y>
+     <Value>-5.44525484304431</Value>
+         </Y>
+         <Z>
+     <Value>2.34466641171958</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <ZAxis>
+     <X>
+      <Value>-0.807948927583008</Value>
+     </X>
+     <Y>
+      <Value>0.542736002969931</Value>
+     </Y>
+     <Z>
+      <Value>-0.229469304042371</Value>
+     </Z>
+         </ZAxis>
+         <YAxis>
+     <X>
+      <Value>-0.190482327862439</Value>
+     </X>
+     <Y>
+      <Value>0.127955633990054</Value>
+     </Y>
+     <Z>
+      <Value>0.973315898617869</Value>
+     </Z>
+         </YAxis>
+         <OrientationType>Direct3D</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+        <FrontPlane>0.01</FrontPlane>
+        <BackPlane>100</BackPlane>
+        <AutoFrontBack>true</AutoFrontBack>
+        <Field>0.00392699081698724</Field>
+        <Fieldy>45</Fieldy>
+        <PlaneLeft>-10</PlaneLeft>
+        <PlaneRight>10</PlaneRight>
+        <PlaneTop>10</PlaneTop>
+        <PlaneBottom>-10</PlaneBottom>
+        <UseLookatPosition>true</UseLookatPosition>
+        <LookatPosition>
+         <X>
+     <Value>0.777936908138299</Value>
+         </X>
+         <Y>
+     <Value>0.248474216890357</Value>
+         </Y>
+         <Z>
+     <Value>-0.0626477108731301</Value>
+         </Z>
+        </LookatPosition>
+        <UseAlwaysLookUp>true</UseAlwaysLookUp>
+        <LookUpVector>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </LookUpVector>
+        <RightHand>true</RightHand>
+        <Perspective>true</Perspective>
+        <IsSelectedCamera>false</IsSelectedCamera>
+       </Camera>
+       <Camera>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>FirstPersonView</Name>
+        <Position>
+         <X>
+     <Value>-0.6</Value>
+         </X>
+         <Z>
+     <Value>1.2</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <ZAxis>
+     <X>
+      <Value>0.93256809827409</Value>
+     </X>
+     <Z>
+      <Value>-0.360994102557712</Value>
+     </Z>
+         </ZAxis>
+         <YAxis>
+     <X>
+      <Value>0.360994102557712</Value>
+     </X>
+     <Z>
+      <Value>0.93256809827409</Value>
+     </Z>
+         </YAxis>
+         <OrientationType>Direct3D</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+        <FrontPlane>0.01</FrontPlane>
+        <BackPlane>100</BackPlane>
+        <AutoFrontBack>true</AutoFrontBack>
+        <Field>0.00392699081698724</Field>
+        <Fieldy>45</Fieldy>
+        <PlaneLeft>-10</PlaneLeft>
+        <PlaneRight>10</PlaneRight>
+        <PlaneTop>10</PlaneTop>
+        <PlaneBottom>-10</PlaneBottom>
+        <UseLookatPosition>true</UseLookatPosition>
+        <LookatPosition>
+         <X>
+     <Value>2.5</Value>
+         </X>
+        </LookatPosition>
+        <UseAlwaysLookUp>true</UseAlwaysLookUp>
+        <LookUpVector>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </LookUpVector>
+        <RightHand>true</RightHand>
+        <Perspective>true</Perspective>
+        <IsSelectedCamera>false</IsSelectedCamera>
+       </Camera>
+       <Camera>
+        <ShowReferenceFrame>false</ShowReferenceFrame>
+        <Name>Camera</Name>
+        <Position>
+         <X>
+     <Value>-0.01</Value>
+         </X>
+         <Z>
+     <Value>5</Value>
+         </Z>
+        </Position>
+        <Orientation>
+         <ZAxis>
+     <X>
+      <Value>0.001999996000012</Value>
+     </X>
+     <Z>
+      <Value>-0.999998000006</Value>
+     </Z>
+         </ZAxis>
+         <YAxis>
+     <X>
+      <Value>0.999998000006</Value>
+     </X>
+     <Z>
+      <Value>0.001999996000012</Value>
+     </Z>
+         </YAxis>
+         <OrientationType>Direct3D</OrientationType>
+        </Orientation>
+        <LockX>false</LockX>
+        <LockY>false</LockY>
+        <LockZ>false</LockZ>
+        <LockXPitch>false</LockXPitch>
+        <LockYYaw>false</LockYYaw>
+        <LockZRoll>false</LockZRoll>
+        <Childs>
+        </Childs>
+        <FrontPlane>0.01</FrontPlane>
+        <BackPlane>100</BackPlane>
+        <AutoFrontBack>true</AutoFrontBack>
+        <Field>0.00392699081698724</Field>
+        <Fieldy>45</Fieldy>
+        <PlaneLeft>-10</PlaneLeft>
+        <PlaneRight>10</PlaneRight>
+        <PlaneTop>10</PlaneTop>
+        <PlaneBottom>-10</PlaneBottom>
+        <UseLookatPosition>true</UseLookatPosition>
+        <LookatPosition>
+        </LookatPosition>
+        <UseAlwaysLookUp>true</UseAlwaysLookUp>
+        <LookUpVector>
+         <Z>
+     <Value>1</Value>
+         </Z>
+        </LookUpVector>
+        <RightHand>true</RightHand>
+        <Perspective>true</Perspective>
+        <IsSelectedCamera>false</IsSelectedCamera>
+       </Camera>
+      </Childs>
+     </Frame>
+     <Square>
+      <CornerInOrigin>false</CornerInOrigin>
+      <XLength>1</XLength>
+      <YLength>1</YLength>
+      <BothSides>true</BothSides>
+      <Accuracy>4</Accuracy>
+      <ScaleValue>
+       <X>
+        <Value>23</Value>
+       </X>
+       <Y>
+        <Value>23</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </ScaleValue>
+      <OverrideColor>true</OverrideColor>
+      <MeshColor>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColor>
+      <Alpha>1</Alpha>
+      <MeshColorMultipliers>
+       <X>
+        <Value>1</Value>
+       </X>
+       <Y>
+        <Value>1</Value>
+       </Y>
+       <Z>
+        <Value>1</Value>
+       </Z>
+      </MeshColorMultipliers>
+      <MeshColorOffsets>
+      </MeshColorOffsets>
+      <Direct3DColorRange>true</Direct3DColorRange>
+      <SpecularColor>
+       <X>
+        <Value>0.498039215686275</Value>
+       </X>
+       <Y>
+        <Value>0.498039215686275</Value>
+       </Y>
+       <Z>
+        <Value>0.498039215686275</Value>
+       </Z>
+      </SpecularColor>
+      <EmissiveColor>
+      </EmissiveColor>
+      <ShininessPower>
+       <Value>14.298713684082</Value>
+      </ShininessPower>
+      <OverrideQuality>false</OverrideQuality>
+      <Texture>
+       <Filename><![CDATA[route.png]]>
+</Filename>
+       <WrapStyle>0</WrapStyle>
+       <YWrap>
+        <Y>
+         <Value>1</Value>
+        </Y>
+       </YWrap>
+       <ZWrap>
+        <Z>
+         <Value>-1</Value>
+        </Z>
+       </ZWrap>
+       <XOrigin>
+        <Value>0.5</Value>
+       </XOrigin>
+       <YOrigin>
+        <Value>0.5</Value>
+       </YOrigin>
+       <Transparency>
+        <X>
+         <Value>1</Value>
+        </X>
+        <Y>
+         <Value>1</Value>
+        </Y>
+        <Z>
+         <Value>1</Value>
+        </Z>
+       </Transparency>
+      </Texture>
+      <ShowReferenceFrame>false</ShowReferenceFrame>
+      <Name>Square</Name>
+      <Position>
+       <X>
+        <Value>8.5</Value>
+       </X>
+       <Z>
+        <Value>0.1</Value>
+       </Z>
+      </Position>
+      <Orientation>
+       <Angles>
+        <Y>
+         <Value>3.14159265358979</Value>
+        </Y>
+       </Angles>
+       <OrientationType>Bryant</OrientationType>
+      </Orientation>
+      <LockX>false</LockX>
+      <LockY>false</LockY>
+      <LockZ>false</LockZ>
+      <LockXPitch>false</LockXPitch>
+      <LockYYaw>false</LockYYaw>
+      <LockZRoll>false</LockZRoll>
+      <Childs>
+      </Childs>
+     </Square>
+         </Childs>
+        </Frame>
+       </Childs>
+      </Frame>
+     </MainFrame>
+    </Plot>
+    <Plot>
+     <PlotType>GraphPlot</PlotType>
+     <BasePlot>
+       <PlotId>3</PlotId>
+       <UseWindowsBGColor>true</UseWindowsBGColor>
+       <BGColor>15790320</BGColor>
+       <PlotIsVisible>true</PlotIsVisible>
+     </BasePlot>
+     <Grid>
+      <DrawGrid>true</DrawGrid>
+      <GridColor>15780518</GridColor>
+      <XTicks>10</XTicks>
+      <YTicks>10</YTicks>
+      <ZTicks>10</ZTicks>
+      <Use3DLook>false</Use3DLook>
+     </Grid>
+     <PlotBGColor>16777215</PlotBGColor>
+     <ShowPlotTitle>true</ShowPlotTitle>
+     <TitlePosition>1</TitlePosition>
+     <PlotTitle>lawn_mover_model-t2</PlotTitle>
+     <ShowXValues>true</ShowXValues>
+     <Fonts>
+      <TitleFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </TitleFont>
+      <LabelFont>
+       <Name>Arial</Name>
+       <Height>12</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </LabelFont>
+      <ValuesFont>
+       <Name>Arial</Name>
+       <Height>10</Height>
+       <PitchFamily>34</PitchFamily>
+       <Weight>400</Weight>
+       <Italic>0</Italic>
+       <UnderLine>0</UnderLine>
+       <StrikeOut>0</StrikeOut>
+       <Color>0</Color>
+      </ValuesFont>
+     </Fonts>
+     <SharedXAxis>true</SharedXAxis>
+     <SharedYAxis>false</SharedYAxis>
+     <SharedZAxis>false</SharedZAxis>
+     <XAxes>
+      <Axis>
+       <Minimum>0</Minimum>
+       <Maximum>45</Maximum>
+       <Linear>true</Linear>
+       <Scaling>3</Scaling>
+       <Label>time</Label>
+      </Axis>
+     </XAxes>
+     <YAxes>
+      <Axis>
+       <Minimum>-12</Minimum>
+       <Maximum>8</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>input</Label>
+      </Axis>
+      <Axis>
+       <Minimum>-1</Minimum>
+       <Maximum>1</Maximum>
+       <Linear>true</Linear>
+       <Scaling>1</Scaling>
+       <Label>output</Label>
+      </Axis>
+     </YAxes>
+     <ZAxes>
+     </ZAxes>
+     <Curves>
+      <Curve>
+       <LineColor>16711680</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711680</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>SteeringWheel\TransferFunction\input</VarName>
+       </YCurveData>
+      </Curve>
+      <Curve>
+       <LineColor>16711935</LineColor>
+       <LineStyle>1</LineStyle>
+       <TickColor>16711935</TickColor>
+       <TickStyle>0</TickStyle>
+       <CurveVisible>true</CurveVisible>
+       <PixelThresshold>1</PixelThresshold>
+       <LineThickness>1</LineThickness>
+       <LineOrder>1</LineOrder>
+       <ShowYValues>true</ShowYValues>
+       <XCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>time</VarName>
+       </XCurveData>
+       <YCurveData>
+        <ShowUnit>true</ShowUnit>
+        <VarName>SteeringWheel\LimitDelta1\output</VarName>
+       </YCurveData>
+      </Curve>
+     </Curves>
+     <Legenda>
+      <ShowLegenda>true</ShowLegenda>
+     </Legenda>
+    </Plot>
+   </Plots>
+   <PlotPanels>
+    <PlotPanel>
+     <PlotPanelId>1</PlotPanelId>
+     <PlotPanelVisible>true</PlotPanelVisible>
+     <Name>Window 1</Name>
+     <Tiling>1</Tiling>
+     <PlotIds>
+       <PlotId>1</PlotId>
+     </PlotIds>
+     <ToggleState>Base</ToggleState>
+    </PlotPanel>
+    <PlotPanel>
+     <PlotPanelId>2</PlotPanelId>
+     <PlotPanelVisible>true</PlotPanelVisible>
+     <Name>Window 2</Name>
+     <Tiling>0</Tiling>
+     <PlotIds>
+       <PlotId>2</PlotId>
+     </PlotIds>
+     <ToggleState>Base</ToggleState>
+    </PlotPanel>
+    <PlotPanel>
+     <PlotPanelId>3</PlotPanelId>
+     <PlotPanelVisible>false</PlotPanelVisible>
+     <Name>Window 3</Name>
+     <Tiling>0</Tiling>
+     <PlotIds>
+       <PlotId>3</PlotId>
+     </PlotIds>
+     <ToggleState>Base</ToggleState>
+    </PlotPanel>
+   </PlotPanels>
+   <WindowRectangles virtualDesktopWidth="1920" virtualDesktopHeight="1080">
+     <WindowRectangle monitor="0" left="0" top="0" right="1920" bottom="1080" plotpanelid="1">
+0.201042 0.131481 0.734375 0.819444
+     </WindowRectangle>
+     <WindowRectangle monitor="0" left="0" top="0" right="1920" bottom="1080" plotpanelid="2">
+0.364583 0.308333 0.758333 0.774074
+     </WindowRectangle>
+     <WindowRectangle monitor="0" left="0" top="0" right="1920" bottom="1080" plotpanelid="3">
+0.00260417 0 1 1
+     </WindowRectangle>
+   </WindowRectangles>
+  </PlotSpecs>
+  <RunSpecs>
+   <SimulatorSettings>
+    <StartTime>0</StartTime>
+    <FinishTime>45</FinishTime>
+    <Warp>false</Warp>
+    <UseOutputAfterEach>false</UseOutputAfterEach>
+    <OutputAfterEach>0.1</OutputAfterEach>
+    <EventEpsilon>1e-006</EventEpsilon>
+    <AlgebraicTolerance>1e-007</AlgebraicTolerance>
+    <SteadyStateAnalysis>false</SteadyStateAnalysis>
+    <UpdateHoldInstructions>true</UpdateHoldInstructions>
+   </SimulatorSettings>
+   <IntegrationMethods>
+    <IntegrationMethod>
+     <Name>Euler</Name>
+     <StepSize>0.001</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BackwardEuler</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <StepSize>0.01</StepSize>
+     <Alpha>1</Alpha>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>AdamsBashforth</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta2</Name>
+     <StepSize>0.01</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta4</Name>
+     <StepSize>0.001</StepSize>
+     <AutoStepSize>false</AutoStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKutta8</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <SafetyFactor>0.9</SafetyFactor>
+     <Factor1>0.33</Factor1>
+     <Factor2>6</Factor2>
+     <Beta>0</Beta>
+     <UseMaxNrSteps>false</UseMaxNrSteps>
+     <MaxNrSteps>100000</MaxNrSteps>
+     <UseStiffDetection>false</UseStiffDetection>
+     <MaxNrStiffnessSteps>1000</MaxNrStiffnessSteps>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>RungeKuttaFehlberg</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>VodeAdams</Name>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <AbsoluteTolerance>1e-006</AbsoluteTolerance>
+     <RelativeTolerance>1e-006</RelativeTolerance>
+     <VodeUseBDF>true</VodeUseBDF>
+     <VodeUseNewton>true</VodeUseNewton>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>BDFMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <IntegrationMethod>
+     <Name>MeBDFiMethod</Name>
+     <AbsoluteTolerance>1e-005</AbsoluteTolerance>
+     <RelativeTolerance>1e-005</RelativeTolerance>
+     <AlgebraicAbsoluteTolerance>1e-005</AlgebraicAbsoluteTolerance>
+     <AlgebraicRelativeTolerance>1e-005</AlgebraicRelativeTolerance>
+     <UseInitialStepSize>false</UseInitialStepSize>
+     <InitialStepSize>0</InitialStepSize>
+     <UseMaximumStepSize>false</UseMaximumStepSize>
+     <MaximumStepSize>0</MaximumStepSize>
+     <UseFixedStepSize>false</UseFixedStepSize>
+     <FixedStepSize>0</FixedStepSize>
+    </IntegrationMethod>
+    <SelectedIntegrationMethod>8</SelectedIntegrationMethod>
+   </IntegrationMethods>
+  </RunSpecs>
+  <MultipleRun>
+   <NrSteps>10</NrSteps>
+   <CopyFromStates>false</CopyFromStates>
+   <JoinParameterVariation>true</JoinParameterVariation>
+   <ClearAfterRun>true</ClearAfterRun>
+   <RedrawAfterRun>false</RedrawAfterRun>
+   <DrawDuringSimulation>true</DrawDuringSimulation>
+   <ActionBeforeOptimization>0</ActionBeforeOptimization>
+   <CompareValue>0</CompareValue>
+   <UseCompareValue>true</UseCompareValue>
+   <MultipleRunType>MultipleRun</MultipleRunType>
+   <Minimize>true</Minimize>
+   <OptimizationVariable></OptimizationVariable>
+   <ResulVarUsage>UseEndValue</ResulVarUsage>
+   <Tolerance>0.001</Tolerance>
+   <OptimizationMethod>BroydonFletcherGoldfarbShanno</OptimizationMethod>
+   <MultipleRunVariables>
+   </MultipleRunVariables>
+  </MultipleRun>
+  <ExportData>
+   <WriteAsText>true</WriteAsText>
+   <ReadAsText>true</ReadAsText>
+   <WriteHeader>true</WriteHeader>
+   <ReadHeader>true</ReadHeader>
+   <ReadFilename></ReadFilename>
+   <WriteFilename></WriteFilename>
+   <DoWrite>false</DoWrite>
+   <ExportVariables>
+   </ExportVariables>
+   <ImportVariables>
+   </ImportVariables>
+  </ExportData>
+  <BreakPoints>
+  </BreakPoints>
+  <AnimationPlayback>
+   <PlaybackSpeed>1</PlaybackSpeed>
+  </AnimationPlayback>
+</ExpData>
+  </Experiment>
+</Experiments>
+</Document>

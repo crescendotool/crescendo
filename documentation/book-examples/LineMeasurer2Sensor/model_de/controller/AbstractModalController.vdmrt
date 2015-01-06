@@ -1,0 +1,228 @@
+class AbstractModalController
+
+types
+
+public Mode = token;
+
+-- sensor identifier
+public SensorId = seq of char | nat
+
+instance variables
+
+-- encoders (as abstract classes)
+private encLeft: ISensorReal;
+private encRight: ISensorReal;
+
+-- line-following sensors (as abstract classes)
+private lf: map SensorId to ISensorInt8 := {|->};
+private bw: map SensorId to BlackWhiteSensor := {|->};
+private names: seq1 of SensorId;
+private num_ir_sensors: nat :=0;
+
+-- servos (as abstract classes)
+private servoLeft:  IActuatorRealPercent;
+private servoRight: IActuatorRealPercent;
+
+-- current mode and map of all possible modes
+protected mode: Mode;
+protected modes: map Mode to IMode;
+private init: bool := true;
+
+-- control turn aggression
+private fastSpeed: IActuatorRealPercent`Percent;
+private slowSpeed: IActuatorRealPercent`Percent;
+
+operations
+
+-- constructor for Controller
+public AbstractModalController: IOFactory * seq1 of SensorId *  map Mode to IMode * Mode ==> AbstractModalController
+AbstractModalController(io, sensor_ids, ms, m) ==
+(
+	-- set instance variables
+	encLeft := io.EncoderFactory(<LEFT>);
+	encRight := io.EncoderFactory(<RIGHT>);
+	servoLeft := io.ServoFactory(<LEFT>);
+	servoRight := io.ServoFactory(<RIGHT>);
+	
+	-- grab line-following sensors and make black/white sensors
+	names := sensor_ids;
+	num_ir_sensors := len sensor_ids;
+	for i = 1 to len sensor_ids do (
+		let name = sensor_ids(i) in (
+			lf := lf ++ {name |-> io.IRSensorFactory(i)};
+			bw := bw ++ {name |-> new BlackWhiteSensor(lf(name))}
+		)
+	);
+	
+
+	-- calculate aggression
+	fastSpeed := limit(World`fast_wheel_speed, 0, 1);
+	slowSpeed := fastSpeed * limit(World`slow_wheel_ratio, -1, 1);
+
+	-- warn if values had to be limited
+	if limit(World`fast_wheel_speed, 0, 1) <> World`fast_wheel_speed
+	then IO`printf("Warning: fast_wheel_speed (%s) out of range [0,1], value has been limited.\n", [World`fast_wheel_speed]);
+
+	if limit(World`slow_wheel_ratio, -1, 1) <> World`slow_wheel_ratio
+	then IO`printf("Warning: slow_wheel_ratio (%s) out of range [-1,1], value has been limited.\n", [World`slow_wheel_ratio]);
+	
+	-- set modes
+	modes := ms;
+	mode := m
+);
+
+-- main control loop
+public Step: () ==> ()
+Step() == (
+	if init then (
+		-- initial mode
+		IO`printf("Initial mode: %s\n", [mode]);
+		modes(mode).Enter();
+		init := false		
+	);
+
+	-- check if a mode change is needed
+	let m = CheckModeChange() in 
+	    if m <> nil then ChangeMode(m);
+
+	-- delegate output to current mode
+	-- change mode if it requests
+	let m = modes(mode).Step() in
+	    if m <> nil then ChangeMode(m);     
+);
+
+-- return true if the controller is finished, false otherwise
+public IsFinished: () ==> bool
+IsFinished() == is subclass responsibility;
+
+-- mode change decision logic
+public CheckModeChange: () ==> [Mode]
+CheckModeChange() == is subclass responsibility;
+
+-- change mode
+public ChangeMode: Mode ==> ()
+ChangeMode(m) == (
+	-- call exit on the current mode
+	modes(mode).Exit();
+	
+	-- change mode pointer
+	IO`printf("Switching from %s to %s\n", [mode,m]);
+	mode := m;
+	
+	-- call entry on new mode
+	modes(mode).Enter();
+)
+pre m in set dom modes;
+
+-- access left encoder
+public GetLeftEncoder: () ==> ISensorReal
+GetLeftEncoder() == return encLeft;
+
+-- access right encoder
+public GetRightEncoder: () ==> ISensorReal
+GetRightEncoder() == return encRight;
+
+-- access line-following sensor
+public GetLF: SensorId ==> ISensorInt8
+GetLF(name) == return lf(name)
+pre name in set dom lf;
+
+-- access all line-following sensors
+public GetAllLF: () ==> map SensorId to ISensorInt8
+GetAllLF() == return lf;
+
+-- print out sensor values
+public PrintLFSensorValues: () ==> ()
+PrintLFSensorValues() == (
+	for name in names do
+		IO`printf("(%s,%s) ", [name, lf(name).Read()]);
+	IO`println(" ")
+);
+
+-- access black-white sensor
+public GetBW: SensorId ==> BlackWhiteSensor
+GetBW(name) == return bw(name)
+pre name in set dom bw;
+
+-- access all black-white sensors
+public GetAllBW: () ==> map SensorId to BlackWhiteSensor
+GetAllBW() == return bw;
+
+-- print out sensor values
+public PrintBWSensorValues: () ==> ()
+PrintBWSensorValues() == (
+	for name in names do
+		let colour = if bw(name).IsBlack() then "BLACK" else "WHITE" in
+			IO`printf("(%s,%s) ", [name, colour]);
+	IO`println(" ")
+);
+
+-- access a single working sensor
+public GetWorkingBW: () ==> BlackWhiteSensor
+GetWorkingBW() == (
+	if not GetLF("lf_left").HasFailed() then return GetBW("lf_left")
+	else if not GetLF("lf_right").HasFailed() then return GetBW("lf_right")	
+	else error
+);
+
+-- access left servo
+public GetLeftServo: () ==> IActuatorRealPercent
+GetLeftServo() == return servoLeft;
+
+-- access right servo
+public GetRightServo: () ==> IActuatorRealPercent
+GetRightServo() == return servoRight;
+
+-- drive forward
+public Forward: () ==> ()
+Forward() == (
+    GetLeftServo().Write(0.5);
+	GetRightServo().Write(0.5)	
+);
+
+-- drive backwards
+public Reverse: () ==> ()
+Reverse() == (
+    GetLeftServo().Write(-1);
+	GetRightServo().Write(-1)	
+);
+
+-- turn the robot
+public Turn: IActuatorRealPercent`Percent * IActuatorRealPercent`Percent ==> ()
+Turn(l,r) == (
+	GetLeftServo().Write(l);
+	GetRightServo().Write(r)
+);
+
+-- turn the robot left
+public TurnLeft: () ==> ()
+TurnLeft() == (
+	GetLeftServo().Write(slowSpeed);
+	GetRightServo().Write(fastSpeed)
+);
+
+-- turn the robot right
+public TurnRight: () ==> ()
+TurnRight() == (
+	--IO`println("TurnRight");
+	GetLeftServo().Write(fastSpeed);
+	GetRightServo().Write(slowSpeed)
+);
+
+-- stop the robot
+public Stop: () ==> ()
+Stop() == (
+    GetLeftServo().Write(0);
+	GetRightServo().Write(0)
+);
+
+functions
+
+-- limit a value between a and b
+limit: real * real * real -> real
+limit(x,a,b) ==
+	if x < a then a
+	else if x > b then b
+	else x
+
+end AbstractModalController

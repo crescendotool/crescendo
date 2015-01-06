@@ -1,0 +1,66 @@
+class LineFollower is subclass of AbstractModalController
+
+operations
+
+-- constructor for LineFollower
+public LineFollower: IOFactory ==> LineFollower
+LineFollower(io) == (
+
+	dcl measurer:Measurer := new Measurer(io);
+
+	-- initialize modes
+	dcl ms: map Mode to IMode := {
+		mk_token("WAIT")           |-> new WaitMode(self),
+	    mk_token("CALIBRATE")      |-> new CalibrateMode(self),
+	    mk_token("FIND_LINE")      |-> new FindLineMode(self, measurer),
+	    mk_token("FOLLOWING_MODE") |-> new FollowMode(self, measurer),
+		mk_token("SINGLE_FOLLOW")  |-> new SingleFollowMode(self, measurer),
+		mk_token("REFIND_LINE")    |-> new RefindLineMode(self),
+	    mk_token("IDLE")           |-> new IdleMode(self, measurer)
+    };
+    -- initial mode
+    dcl m: token := mk_token("WAIT");
+    
+    
+
+	-- call super constructor
+	let - = AbstractModalController(io, ["lf_left", "lf_right"] ,ms, m) in skip;	
+);
+
+-- return true if the controller is finished, false otherwise
+public IsFinished: () ==> bool
+IsFinished() == return mode = mk_token("IDLE") and modes(mode).Done();
+
+-- mode change decision logic
+public CheckModeChange: () ==> [Mode]
+CheckModeChange() == (
+
+	-- wait for sensors to come on
+	if mode = mk_token("WAIT") and modes(mode).Done() 
+	then return mk_token("CALIBRATE");
+
+	-- switch from calibration mode to search mode
+	if mode = mk_token("CALIBRATE") and modes(mode).Done() 
+	then return mk_token("FIND_LINE");
+	
+	-- once the line is found, start following
+	if mode = mk_token("FIND_LINE") and modes(mode).Done() 
+	then return mk_token("FOLLOWING_MODE");
+
+	-- once the line is lost, stop the robot
+	if mode = mk_token("LOST_LINE") and modes(mode).Done()
+	then return mk_token("IDLE");
+
+	-- failure in one sensor
+	if (mode = mk_token("FOLLOWING_MODE") or mode = mk_token("LOST_LINE")) and ( GetLF("lf_left").HasFailed() or GetLF("lf_right").HasFailed())
+	then (IO`println("A sensor has failed."); return mk_token("SINGLE_FOLLOW"));
+	
+	-- failure in both sensors
+	if GetLF("lf_left").HasFailed() and GetLF("lf_right").HasFailed()
+	then (IO`println("Both sensors failed, stopping."); return mk_token("IDLE"));
+	
+	-- no mode change
+	return nil
+);
+
+end LineFollower

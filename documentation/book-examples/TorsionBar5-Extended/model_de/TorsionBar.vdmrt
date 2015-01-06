@@ -1,0 +1,55 @@
+system TorsionBar
+
+instance variables
+
+-- sensors (two encoders)
+public static io: [AbstractIOFactory] := nil;
+
+-- controller object ~ 50Hz
+public static ctrl: [Controller] := nil ;
+
+-- monitor object ~ 60Hz
+public static mon: [Monitor] := nil;
+
+-- user object ~ 10Hz
+public static user: [User] := nil;
+
+-- environtment
+public static env: [Environment] := new Environment(50);
+
+-- architecture definition
+cpu1 : CPU := new CPU(<FP>, 200E6);
+cpu2 : CPU := new CPU(<FP>, 200E6);
+bus1: BUS := new BUS(<FCFS>, 115E2, {cpu1, cpu2});
+	
+operations
+
+public TorsionBar: () ==> TorsionBar
+TorsionBar() == (
+  -- instantiate factory based on simulation type (must be done after env)
+  if World`DE_ONLY = 1 then 
+  	io := deio
+  else
+  	io := ctio;
+  -- instantiate other classes	
+  ctrl := new Controller(50);
+  mon := new Monitor(60, ctrl);
+  user := new User(ctrl);
+
+  -- deploy controller
+  cpu1.deploy(ctrl, "TorsionBarController");
+  -- deploy sensors and actuators
+  cpu1.deploy(io.GetEncMotor(), "encMotor");
+  cpu1.deploy(io.GetEncLoad(), "encLoad");
+  cpu1.deploy(io.GetMotor(), "pwmMotor");
+  -- deploy monitor
+  cpu2.deploy(mon, "Monitor")
+)
+
+instance variables
+
+-- singleton
+private static deio: IOFactoryDE := new IOFactoryDE();
+private static ctio: IOFactoryCT := new IOFactoryCT();
+
+end TorsionBar

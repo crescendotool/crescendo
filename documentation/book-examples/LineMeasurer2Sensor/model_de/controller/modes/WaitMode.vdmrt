@@ -1,0 +1,16 @@
+class WaitMode is subclass of AbstractModeTimed
+
+operations
+
+-- constructor for WaitMode
+public WaitMode: AbstractModalController ==> WaitMode
+WaitMode(c) == (
+    -- call super constructor
+    let - = AbstractModeTimed`AbstractModeTimed(c, WAIT_TIME) in skip;
+);
+
+values
+
+WAIT_TIME = 1
+
+end WaitMode

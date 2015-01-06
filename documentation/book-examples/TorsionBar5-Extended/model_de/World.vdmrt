@@ -1,0 +1,34 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() == (
+    -- start threads
+	start(TorsionBar`ctrl);
+	start(TorsionBar`mon);
+	start(TorsionBar`user);
+	-- start DE simulator thread if DE-only
+	if World`DE_ONLY = 1 then start(TorsionBar`env);
+	block();
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => done;
+
+values
+
+-- SDPs
+public ENC_COUNTS: real = 2000;
+public USE_SCRIPT: real = 0;
+public DE_ONLY: real = 1;
+
+instance variables
+
+-- permits the de-only simulator to 
+static public done: bool := false;
+
+end World

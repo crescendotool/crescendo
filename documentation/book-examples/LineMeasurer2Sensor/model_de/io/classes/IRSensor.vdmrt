@@ -1,0 +1,31 @@
+class IRSensor is subclass of ISensorInt8
+
+-- class representing an 8-bit infrared sensor
+-- this class yields a single integer in the range [0,255]
+-- the class also has a flag to indicate when the sensor has failed
+-- this class relies on a demux object for its data
+
+instance variables
+
+protected demux: IRDemux;
+protected index: nat1;
+
+operations
+
+
+-- constructor for IRSensor
+public IRSensor: IRDemux * nat1 ==> IRSensor
+IRSensor(d,n) == (
+	demux := d;
+	index := n
+);
+
+-- read the current value of this sensor
+public Read: () ==> Int8
+Read() == return demux.Read(index);
+
+-- return true if this sensor has failed, false otherwise
+public HasFailed: () ==> bool
+HasFailed() == return demux.HasFailed(index);
+
+end IRSensor

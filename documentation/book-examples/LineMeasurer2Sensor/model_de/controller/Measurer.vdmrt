@@ -1,0 +1,112 @@
+class Measurer
+
+instance variables
+
+-- encoders (as abstract classes)
+private encLeft: ISensorReal;
+private encRight: ISensorReal;
+
+-- record energy from 20-sim
+private energySensor: EnergySensor;
+
+--- start and end energy
+start_energy: real := 0;
+final_energy: real := 0;
+
+--- start and end time
+start_time: real := 0;
+final_time: real := 0;
+
+--- start and end distances (left and right)
+start_dist_left: real := 0;
+final_dist_left: real := 0;
+start_dist_right: real := 0;
+final_dist_right: real := 0;
+
+operations
+
+-- constructor for Measurer
+public Measurer: IOFactory ==> Measurer
+Measurer(io) == (
+	encLeft := io.EncoderFactory(<LEFT>);
+	encRight := io.EncoderFactory(<RIGHT>);
+	energySensor := io.EnergySensorFactory();
+);
+
+-- start measuring
+public Start: () ==> ()
+Start() == (
+	start_energy := energySensor.Read();
+	start_time := time/1E9;
+	start_dist_left := encLeft.Read(); 
+	start_dist_right := encRight.Read();
+);
+
+-- end measuring
+public Stop: () ==> ()
+Stop() == (
+	final_energy := energySensor.Read();
+	final_time := time/1E9;
+	final_dist_left := encLeft.Read(); 
+	final_dist_right := encRight.Read();
+);
+
+
+public LogState: () ==> ()
+LogState() == (
+final_energy := energySensor.Read();
+	final_time := time/1E9;
+	final_dist_left := encLeft.Read(); 
+	final_dist_right := encRight.Read();
+);
+
+
+public Log: () ==> ()
+Log() == (
+
+	dcl temp : bool;
+	dcl results :seq of real;
+	dcl timeToMeasure: real := final_time - start_time;
+	dcl energyToMeasure: real := final_energy - start_energy;
+			
+	results := [World`line_follow_x, World`line_follow_y, timeToMeasure, GetMeasurement(), energyToMeasure];
+	
+	temp := CSV`fwriteval("results.csv", [results], <append>);
+);
+
+-- print the measurements
+public Print: () ==> ()
+Print() == (
+	IO`printf("Distance measured: %sm\n", [round(GetMeasurement())]);
+	IO`printf("Time taken: %ss\n", [round(GetTime())]);
+	IO`printf("Energy used: %sJ\n", [round(GetEnergy())]);	
+	IO`printf("Score: %s\n", [0.00]);
+);
+
+-- get the score based on energy / time / measurement
+private GetScore: () ==> real
+GetScore() == is not yet specified;
+
+-- get the energy used in measuring the line
+private GetEnergy: () ==> real
+GetEnergy() == return final_energy - start_energy;
+
+-- get the time taken to measure the line
+private GetTime: () ==> real
+GetTime() == return final_time - start_time;
+
+-- get the measurement of the line
+private GetMeasurement: () ==> real
+GetMeasurement() == (
+	dcl dist_left: real := final_dist_left - start_dist_left;
+	dcl dist_right: real := final_dist_right - start_dist_right;
+	return (dist_left + dist_right) / 2
+);
+
+functions
+
+-- round to 3 s.f.
+round: real -> real
+round(r) == (floor (r * 1000))/1000
+
+end Measurer

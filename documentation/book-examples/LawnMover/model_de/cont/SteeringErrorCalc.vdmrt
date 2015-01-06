@@ -1,0 +1,109 @@
+class SteeringErrorCalc
+	
+	instance variables
+	private phi: real := 0.0;
+	private d_phi: real := 0.0;
+	private phi_des: real := 0.0;
+	private phi_err: real := 0.0;
+	private y_err: real := 0.0;
+	private old_pos: seq of real := [0.0, 0.0];
+	
+	operations
+		public SteeringErrorCalc:() ==> SteeringErrorCalc
+		SteeringErrorCalc()==(
+			old_pos := [0.0, 0.0];
+		);
+	
+		public UpdateError: seq of real * seq of real * seq of real ==> () 
+		UpdateError(PosGNSS,WayPoint1,WayPoint2) == (
+			dcl a: real;
+			dcl b: real;
+			dcl c: real;
+		
+			dcl temp: real;
+			dcl abc: real;
+			dcl p_e: real;
+			
+			phi := PosGNSS(3); 
+
+			d_phi := PosGNSS(4);
+			
+
+			phi_des := atan2((WayPoint1(2)-PosGNSS(2)),(WayPoint1(1)-PosGNSS(1)));
+			--phi_des := atan2(WayPoint2(2)-WayPoint1(2), WayPoint2(1)-WayPoint1(1));
+			phi_err := atan2(MATH`sin(phi_des - phi), MATH`cos(phi_des - phi));
+			
+			a := (WayPoint2(2)-WayPoint1(2));
+			b := (WayPoint2(1)-WayPoint1(1));
+			c := b*(WayPoint1(1)-PosGNSS(1))-a*(WayPoint1(2)-PosGNSS(2));
+			
+			abc := atan2(a,b);
+			p_e := atan2(MATH`sin(phi - abc), MATH`cos(phi - abc));
+			
+			temp := (abs(c))/(MATH`sqrt(a*a + b*b));
+		
+			if phi_err = 0 then
+			(
+					temp := temp;
+			)else(
+				temp := (phi_err/(abs phi_err))*temp;
+			);
+			if abs phi_err < 3*(3.14/180) and abs temp < 0.1 then
+			(
+				temp := 0;
+			);
+			
+			y_err := temp;
+			--IO`print("Phi_e: "); IO`print(phi_err);IO`print(" P_e: "); IO`print(p_e);IO`print(" A: "); IO`print(abc);
+			--IO`print(" ye: "); IO`print(y_err);IO`print("\n");
+			old_pos := PosGNSS;
+		);
+		
+		public getPhiErr:() ==>  real
+			getPhiErr() == (
+				return phi_err;
+			);
+			
+		public getYErr:() ==>  real
+			getYErr() == (
+				return y_err;
+			);
+		
+		public getDPhi:() ==>  real
+			getDPhi() == (
+				return d_phi;
+			);
+		
+		private atan2: real * real ==> real
+		atan2(y,x) == (
+			dcl result: real;
+			result := 0;
+			
+			if x > 0 then
+			(
+				result := MATH`atan(y/x);
+				
+			);
+			if y >= 0 and x < 0 then
+			(
+				result := MATH`atan(y/x)+MATH`pi;
+			);
+			if y < 0 and x < 0 then
+			(
+				result := MATH`atan(y/x)-MATH`pi;
+			);
+			if y > 0 and x = 0 then
+			(
+				result := MATH`pi/2.0;
+			);
+			if y < 0 and x = 0 then
+			(
+				result := -MATH`pi/2.0;
+			);
+			
+			return result;
+		);
+		
+	
+
+end SteeringErrorCalc

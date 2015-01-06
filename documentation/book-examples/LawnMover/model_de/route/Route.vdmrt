@@ -1,0 +1,70 @@
+class Route
+		
+	instance variables
+		private current_route_element : WayPoint;
+		private next_route_element : WayPoint;
+		private route_elements : seq of WayPoint;
+		private route_lst : seq of WayPoint;
+		private count : nat;
+	operations
+		public Route: seq of WayPoint ==> Route
+			Route(wps) == (
+				route_elements := wps;
+				count := 0;
+			 );
+			 
+		public AddWayPoint: real * real ==> ()
+			AddWayPoint(px,py) ==
+			(
+				route_elements := route_elements ^ [new WayPoint(px,py)];
+			);
+		
+		public SetRoute : () ==> ()
+			SetRoute() ==
+			(
+			  route_lst := route_elements;
+			);
+		
+		public ResetRoute : () ==> ()
+			ResetRoute() ==
+			(
+			  IO`print("RESET ROUTE: ");IO`print(count); IO`print("\n");
+			  count := count + 1;
+			  route_elements := route_lst;
+			);
+		
+		public getRoute:() ==> seq of WayPoint 	
+			getRoute () == return route_elements;
+			
+		public getCurrentRouteElement:() ==> WayPoint 	
+			getCurrentRouteElement () == return current_route_element;
+			
+		public getNextRouteElement:() ==> WayPoint 	
+			getNextRouteElement () == return next_route_element;
+		
+		--public RouteDone: () ==> bool
+		--	-- RouteDone() == 
+			-- (
+			 --	return false;
+			-- );
+		
+		public RouteDone: () ==> bool
+			 RouteDone() == return not (len route_elements > 1);
+		
+		public NextWayPoint: () ==> WayPoint
+		NextWayPoint() ==
+		(
+			--if len route_elements < 2 then
+		 	--(
+		 	--	ResetRoute();
+		 	--);
+
+			current_route_element := (hd route_elements);
+			
+			route_elements := (tl route_elements);
+
+			next_route_element := (hd route_elements);
+	
+			return(current_route_element);
+		);
+end Route

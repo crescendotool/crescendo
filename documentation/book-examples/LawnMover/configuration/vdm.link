@@ -1,0 +1,18 @@
+-- shared design parameters 
+sdp initial_Position = World.initial_Position;
+sdp V = World.speed;
+sdp dist_b = World.dist_b;
+sdp mu = World.mu_w;
+
+
+sdp Control_Parameters = SteeringController.Pe;
+sdp Look_ahead_dist  = GuidanceController.LookAheadDistance;
+
+-- inputs
+input GNSS_Position = System.sensorGNSS_Pos.value;
+
+--input GNSS_Position = System.controller.val;
+
+-- outputs
+output steering_wheel_angle = System.actuatorAngle.value;
+output sc = System.controller.sc;

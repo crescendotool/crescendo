@@ -1,0 +1,91 @@
+class SingleFollowMode is subclass of AbstractMode
+
+types
+
+Colour = <BLACK> | <WHITE>;
+Direction = <LEFT> | <RIGHT>; 
+
+instance variables
+
+measurer: Measurer;
+
+-- track previous state
+prev_colour: Colour := <WHITE>;
+prev_dir: Direction := <RIGHT>;
+
+-- count time since line lost
+white_count: nat := 0;
+
+values
+
+WHITE_TIMEOUT = 0;
+
+-- speeds used in this mode
+FAST_WHEEL = 0.4;
+SLOW_WHEEL = 0.0;
+
+operations
+
+-- constructor for FollowMode
+public SingleFollowMode: AbstractModalController * Measurer ==> SingleFollowMode
+SingleFollowMode(c,m) == (
+	let - = AbstractMode`AbstractMode(c) in skip;
+	measurer := m;
+);
+
+-- called when we enter this mode
+public Enter: () ==> ()
+Enter() == (
+	-- get current colour
+	prev_colour := if con.GetWorkingBW().IsBlack() then <BLACK> else <WHITE>;
+	prev_dir := if con.GetLeftServo().Read() > con.GetRightServo().Read() 
+				then <RIGHT> else <LEFT>;
+	white_count := 0;
+	
+	-- best guess for finding the line quickest
+	if prev_dir = <RIGHT>  
+	then con.Turn(FAST_WHEEL,SLOW_WHEEL) 
+	else con.Turn(SLOW_WHEEL,FAST_WHEEL);
+	
+);
+
+-- control loop
+public Step: () ==> [AbstractModalController`Mode]
+Step() == (
+	-- current colour
+	dcl colour: Colour := if con.GetWorkingBW().IsWhite() 
+						  then <WHITE> else <BLACK>;
+
+	-- reset white count if line found
+	if colour = <BLACK> and prev_colour = <WHITE> then white_count := 0;
+	
+	-- moved off line, change direction
+	if colour = <WHITE> and prev_colour = <BLACK> then
+		if prev_dir = <LEFT> then (
+			con.Turn(FAST_WHEEL,SLOW_WHEEL);
+			prev_colour := <WHITE>;
+			prev_dir := <RIGHT>
+		)
+		else (
+			con.Turn(SLOW_WHEEL,FAST_WHEEL);
+			prev_colour := <WHITE>;			
+			prev_dir := <LEFT>			
+		);
+
+	-- lost the line, change mode
+	if colour = <WHITE> and prev_colour = <WHITE>
+	then white_count := white_count + 1;
+
+	-- record current colour
+	prev_colour := colour;	
+	
+	-- if just lost line, measuere should log the position
+	if white_count = 1 
+	then measurer.LogState();
+
+	-- switch mode if line lost
+	if white_count > WHITE_TIMEOUT then return mk_token("REFIND_LINE")
+	else return nil
+);
+
+end SingleFollowMode

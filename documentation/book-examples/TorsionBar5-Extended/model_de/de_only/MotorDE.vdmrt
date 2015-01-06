@@ -1,0 +1,25 @@
+class MotorDE is subclass of IActuatorPWM
+
+-- class representing a PWM-controlled motor
+-- accepts a real number in the range (-1,1)
+-- this class is designed to used in a DE-only simulation
+
+instance variables
+
+env: Environment;
+
+operations
+
+-- constructor for MotorDE
+public MotorDE: Environment ==> MotorDE
+MotorDE(e) == env := e;
+
+-- write a value to this actuator
+public Write: PWM ==> ()
+Write(v) == env.SetMotor(v);
+
+-- read the value written to this actuator
+public Read: () ==> PWM
+Read() == return env.GetMotor();
+
+end MotorDE

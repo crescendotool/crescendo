@@ -1,0 +1,4 @@
+when time >= 0.3 and time <= 0.4 do 
+(
+    de boolean input_trigger := true;
+);

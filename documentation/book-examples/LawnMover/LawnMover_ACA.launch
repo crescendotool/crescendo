@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.destecs.ide.debug.launchDSEConfigurationType">
+<stringAttribute key="DESTECS_ACA_20SIM_SETTINGS" value=""/>
+<stringAttribute key="destecs_aca_20sim_implementations" value=""/>
+<stringAttribute key="destecs_aca_architectures" value=""/>
+<stringAttribute key="destecs_aca_base_config" value="LawnMover"/>
+<booleanAttribute key="destecs_aca_data_intense" value="false"/>
+<stringAttribute key="destecs_aca_incremental_sdps" value="V|1.0|2.0|0.05|,dist_b|0|0.4|0.02|"/>
+<stringAttribute key="destecs_aca_scenarios" value=""/>
+<stringAttribute key="destecs_aca_valueset_sdps" value="mu|0.5;0.65;"/>
+<booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>
+</launchConfiguration>

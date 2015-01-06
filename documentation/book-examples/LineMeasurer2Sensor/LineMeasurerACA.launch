@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.destecs.ide.debug.launchDSEConfigurationType">
+<stringAttribute key="DESTECS_ACA_20SIM_SETTINGS" value=""/>
+<stringAttribute key="destecs_aca_20sim_implementations" value=""/>
+<stringAttribute key="destecs_aca_architectures" value=""/>
+<stringAttribute key="destecs_aca_base_config" value="LineMeasurer2Sensor"/>
+<booleanAttribute key="destecs_aca_data_intense" value="false"/>
+<stringAttribute key="destecs_aca_incremental_sdps" value="line_follow_x|0.005|0.0151|0.0025|,line_follow_y|0.00|0.075|0.01|"/>
+<stringAttribute key="destecs_aca_scenarios" value=""/>
+<stringAttribute key="destecs_aca_valueset_sdps" value=""/>
+<booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>
+</launchConfiguration>

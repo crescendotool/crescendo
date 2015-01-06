@@ -1,0 +1,16 @@
+class SensorGNSS is subclass of AbstractSensorReal
+
+	instance variables
+		protected value: seq of real := [0.0, 0.0, 0.0, 0.0];
+		protected local_val: seq of real := [0.0, 0.0, 0.0, 0.0];
+	
+	operations
+		public read: () ==> seq of real
+		read() == return local_val;
+	
+	public Sync: () ==> ()
+		Sync() == cycles(20)(
+			local_val := value;
+		);
+
+end SensorGNSS

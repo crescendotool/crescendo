@@ -1,0 +1,83 @@
+class FollowMode is subclass of AbstractMode
+
+
+instance variables
+	private measurer: Measurer;
+	private lineLastSeen: real := 0; 
+	private lineSeenLastStep : bool := true;
+	
+values
+-- max time to rediscover the line
+MAX_LINE_LOST_TIME = 15e8; --1.5s
+
+operations
+
+-- constructor for FollowMode
+public FollowMode: AbstractModalController * Measurer ==> FollowMode
+FollowMode(c,m) == (
+	let - = AbstractMode`AbstractMode(c) in skip;
+	measurer := m;	
+);
+
+
+-- called when we enter this mode
+-- can be overriden
+public Enter: () ==> ()
+Enter() == (
+	lineLastSeen := time;
+	lineSeenLastStep := true;
+);
+
+-- called when we exit this mode
+-- can be overriden
+public Exit: () ==> ()
+Exit() == (
+	skip;
+);
+
+
+
+-- control loop
+public Step: () ==> [AbstractModalController`Mode]
+Step() == (
+
+	if (con.GetBW("lf_right").IsBlack() or con.GetBW("lf_left").IsBlack()) then (
+		
+		-- line is visible
+		
+		if con.GetBW("lf_left").IsBlack() and con.GetBW("lf_right").IsBlack()
+		then con.Forward();
+	
+			-- black to the right, go right
+		if con.GetBW("lf_left").IsWhite() and con.GetBW("lf_right").IsBlack()
+		then con.TurnRight();
+
+		-- black to the left, go left
+		if con.GetBW("lf_left").IsBlack() and con.GetBW("lf_right").IsWhite()
+		then con.TurnLeft();
+	
+		lineSeenLastStep := true;
+	
+		-- no internal mode change
+		return nil;	
+	)else(
+		-- line is not visible
+
+		if (lineSeenLastStep) then (
+			measurer.LogState();
+			lineLastSeen := time;
+			lineSeenLastStep := false;
+		);
+		
+		if (time - lineLastSeen > MAX_LINE_LOST_TIME) then
+			return mk_token("IDLE")
+		else
+			return nil;
+	
+	);
+
+	
+);
+
+
+end FollowMode

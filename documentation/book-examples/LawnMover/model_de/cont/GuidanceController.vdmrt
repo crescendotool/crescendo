@@ -1,0 +1,110 @@
+class GuidanceController
+	values
+		protected LookAheadDistance : real = 0.5;
+
+	instance variables
+		private fr: FileReader;
+		private rt: Route := new Route([]);
+		private WayPoint1: WayPoint;
+		private WayPoint2: WayPoint;
+	
+	operations
+	public GuidanceController:() ==> GuidanceController
+		GuidanceController()==
+		(
+			dcl test : bool := true;
+			
+			fr := new FileReader(rt);
+			
+			test := fr.LoadTravlRoute("route.csv");
+			
+			
+			WayPoint1 := rt.NextWayPoint();
+			WayPoint2 := rt.getNextRouteElement();
+		);
+	
+	public IsFinished: () ==> bool
+			IsFinished() == rt.RouteDone();
+		
+	public UpdateRoute: seq of real ==> ()
+		UpdateRoute(PosGNSS) == (
+			
+			dcl phi: real;
+			dcl dist: real;
+			dcl waypointX: real;
+			dcl waypointY: real;
+			
+			waypointX := rt.getCurrentRouteElement().PosX();
+			waypointY := rt.getCurrentRouteElement().PosY();
+			
+			phi := atan2(waypointY-PosGNSS(2),waypointX-PosGNSS(1));
+			dist := MATH`sqrt((waypointX-PosGNSS(1))*(waypointX-PosGNSS(1))+(waypointY-PosGNSS(2))*(waypointY-PosGNSS(2)));
+			
+			--IO`print("-G START------------------------------------------------\n");
+			--IO`print(PosGNSS(1)); IO`print(" "); IO`print(PosGNSS(2)); IO`print(" "); IO`print(PosGNSS(3)); IO`print(" "); IO`print(phi);
+			--IO`print("\n");
+			
+			while (bounding(phi,PosGNSS(3)) or LookAheadDistance > dist) and (not IsFinished()) do
+			(
+				WayPoint1 := rt.NextWayPoint();
+				WayPoint2 := rt.getNextRouteElement();
+				--IO`print("NEW WAY point: ");
+				--IO`print([rt.getCurrentRouteElement().PosX(), rt.getCurrentRouteElement().PosY()]);
+				--IO`print(" ");
+				--IO`print([PosGNSS(1),PosGNSS(2)]);
+				--IO`print("\n");
+				waypointX := rt.getCurrentRouteElement().PosX();
+				waypointY := rt.getCurrentRouteElement().PosY();
+			
+				phi := atan2(waypointY-(PosGNSS(2)),(waypointX-PosGNSS(1)));
+				dist := MATH`sqrt((waypointX-PosGNSS(1))*(waypointX-PosGNSS(1))+(waypointY-PosGNSS(2))*(waypointY-PosGNSS(2)));
+			);
+			--IO`print(PosGNSS(1)); IO`print(" "); IO`print(PosGNSS(2)); IO`print(" "); IO`print(PosGNSS(3)); IO`print(" "); IO`print(phi);
+			--IO`print("\n");
+			--IO`print("-G END------------------------------------------------\n");
+			
+			
+			-- missing  LookAheadDistance analysis
+		);
+
+	private bounding: real*real ==> bool
+		bounding(phi1,phi2) ==
+		(
+			return MATH`pi/2 < abs(atan2(MATH`sin(phi1-phi2), MATH`cos(phi1-phi2)));
+		);
+
+	public getWayPoint1: () ==> WayPoint
+		getWayPoint1() == return WayPoint1;
+	
+	public getWayPoint2: () ==> WayPoint
+		getWayPoint2() == return WayPoint2;
+		
+	private atan2: real * real ==> real
+		atan2(y,x) == (
+			dcl result: real;
+			result := 0;
+			
+			if x > 0 then
+			(
+				result := MATH`atan(y/x);
+			);
+			if y>= 0 and x < 0 then
+			(
+				result := MATH`atan(y/x)+MATH`pi;
+			);
+			if y< 0 and x < 0 then
+			(
+				result := MATH`atan(y/x)-MATH`pi;
+			);
+			if y > 0 and x = 0 then
+			(
+				result := MATH`pi/2.0;
+			);
+			if y < 0 and x = 0 then
+			(
+				result := -MATH`pi/2.0;
+			);
+			return result;
+		);
+
+end GuidanceController

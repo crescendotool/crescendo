@@ -1,0 +1,4 @@
+when time > 2.5 do 
+(
+    ct real lf_left_stuck_value := 0;
+);

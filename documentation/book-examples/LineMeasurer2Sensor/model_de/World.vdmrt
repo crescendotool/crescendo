@@ -1,0 +1,33 @@
+class World
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() == (
+	start(System`mainthread);
+	block();
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+values
+
+-- shared design parameters
+public wheel_radius: real = 0.0;
+public encoder_resolution: real = 0.0;
+public line_follow_x: real = 0.0;
+public line_follow_y: real = 0.0;
+public initial_position: seq of real = [];
+public fast_wheel_speed: real = 0.0;
+public slow_wheel_ratio: real = 0.0;
+
+public energyUsed: real = 0.0;
+
+-- number of line-following sensors
+public MAX_IR_SENSORS = 2;
+
+end World

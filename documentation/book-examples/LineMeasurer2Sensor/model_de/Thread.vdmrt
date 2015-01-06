@@ -1,0 +1,41 @@
+class Thread
+
+instance variables
+
+-- thread period
+private period: nat := 1E9;
+
+-- sensors and actuators, controller
+private io: [IOFactory] := nil;
+private controller: [AbstractModalController] := nil;
+
+operations
+
+-- constructor for Thread
+public Thread: nat * IOFactory * AbstractModalController ==> Thread
+Thread(f,i,c) == (
+	period := frequency_to_period(f);
+	io := i;
+	controller := c
+);
+
+-- control loop
+Step: () ==> ()
+Step() == (
+    if not controller.IsFinished() then (
+		io.Sync();
+		controller.Step()
+	)
+);
+
+-- run as a periodic thread
+thread periodic(period, 0 ,0, 0)(Step);
+
+functions 
+
+-- convert frequency to period in nanoseconds
+private frequency_to_period: real -> nat
+frequency_to_period(f) == floor 1E9/f
+pre f <> 0
+
+end Thread

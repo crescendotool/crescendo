@@ -1,0 +1,25 @@
+class EnergySensor
+
+-- class for reading an energy value from 20-sim
+-- this sensor yields a single real value
+-- this class is designed to be connected to a co-simulation
+
+instance variables
+
+-- this value will be set through the co-simulation
+public val: real := 0;
+
+-- local copy of the shared variable
+protected local_val: real := 0;
+
+operations
+
+-- read the current value of this sensor
+public Read: () ==> real
+Read() == return local_val;
+
+-- read shared variable to local variable
+public Sync: () ==> ()
+Sync() == local_val := val;
+
+end EnergySensor

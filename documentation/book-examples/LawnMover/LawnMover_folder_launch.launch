@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.destecs.ide.debug.directoryLaunch">
+<stringAttribute key="destecs_directory_launch_folder" value="25_sim_folder_launch"/>
+<stringAttribute key="destecs_launch_config_project_name" value="LawnMover"/>
+</launchConfiguration>

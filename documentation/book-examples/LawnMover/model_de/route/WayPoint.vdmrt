@@ -1,0 +1,20 @@
+class WayPoint
+
+	instance variables
+		private posX: real := 0.0;
+		private posY: real := 0.0; 
+		
+	operations
+		public PosX: () ==> real
+		PosX() == return posX;
+		
+		public PosY: () ==> real
+		PosY() == return posY;
+		
+		public WayPoint: real * real ==> WayPoint
+			WayPoint(px,py) ==
+			(
+				posX := px;
+				posY := py;
+			);
+end WayPoint

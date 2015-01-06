@@ -1,0 +1,8 @@
+class AbstractSensorReal
+
+	
+	operations
+		public read: () ==> seq of real
+		read() == is subclass responsibility;
+
+end AbstractSensorReal

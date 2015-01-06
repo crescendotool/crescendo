@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.destecs.ide.debug.launchConfigurationType">
+<stringAttribute key="destecs_launch_config_20sim_implementations" value="BicycleModel=equation_version;Controller=destecs_interface;SteeringWheel=testing;SteeringWheel.TransferFunction=FO;globals_CT_Only1=globals_Co_Sim;"/>
+<stringAttribute key="destecs_launch_config_20sim_log_variables" value="GNSS.temp_x,GNSS.temp_y,time"/>
+<stringAttribute key="destecs_launch_config_20sim_settings" value="model.simulator.eventdelta=1e-006;model.simulator.fastmode=false;model.simulator.integrationmethod=BDFMethod;model.simulator.integrationmethod.AdamsBashforth.stepsize=0.01;model.simulator.integrationmethod.BDFMethod.absolutetolerance=1e-005;model.simulator.integrationmethod.BDFMethod.initialstepsize=0;model.simulator.integrationmethod.BDFMethod.maximumstepsize=0;model.simulator.integrationmethod.BDFMethod.relativetolerance=1e-005;model.simulator.integrationmethod.BackwardEuler.absolutetolerance=1e-005;model.simulator.integrationmethod.BackwardEuler.alpha=1;model.simulator.integrationmethod.BackwardEuler.relativetolerance=1e-005;model.simulator.integrationmethod.BackwardEuler.stepsize=0.01;model.simulator.integrationmethod.Euler.stepsize=0.001;model.simulator.integrationmethod.MeBDFiMethod.absolutetolerance=1e-005;model.simulator.integrationmethod.MeBDFiMethod.initialstepsize=0;model.simulator.integrationmethod.MeBDFiMethod.maximumstepsize=0;model.simulator.integrationmethod.MeBDFiMethod.relativetolerance=1e-005;model.simulator.integrationmethod.RungeKutta2.stepsize=0.01;model.simulator.integrationmethod.RungeKutta4.stepsize=0.001;model.simulator.integrationmethod.RungeKutta8.absolutetolerance=1e-006;model.simulator.integrationmethod.RungeKutta8.initialstepsize=0;model.simulator.integrationmethod.RungeKutta8.maximumstepsize=0;model.simulator.integrationmethod.RungeKutta8.relativetolerance=1e-006;model.simulator.integrationmethod.RungeKuttaFehlberg.absolutetolerance=1e-006;model.simulator.integrationmethod.RungeKuttaFehlberg.initialstepsize=0;model.simulator.integrationmethod.RungeKuttaFehlberg.maximumstepsize=0;model.simulator.integrationmethod.RungeKuttaFehlberg.relativetolerance=1e-006;model.simulator.integrationmethod.VodeAdams.absolutetolerance=1e-006;model.simulator.integrationmethod.VodeAdams.initialstepsize=0;model.simulator.integrationmethod.VodeAdams.maximumstepsize=0;model.simulator.integrationmethod.VodeAdams.relativetolerance=1e-006;"/>
+<stringAttribute key="destecs_launch_config_contract_path" value="configuration/contract.csc"/>
+<stringAttribute key="destecs_launch_config_ct_endpoint" value="http://localhost:1580"/>
+<booleanAttribute key="destecs_launch_config_ct_leave_dirty_for_inspection" value="true"/>
+<stringAttribute key="destecs_launch_config_ct_model_path" value="model_ct/lawn_mover_model-t2.emx"/>
+<stringAttribute key="destecs_launch_config_de_architecture" value=""/>
+<stringAttribute key="destecs_launch_config_de_endpoint" value=""/>
+<stringAttribute key="destecs_launch_config_de_model_path" value="model_de"/>
+<stringAttribute key="destecs_launch_config_de_replace" value=""/>
+<booleanAttribute key="destecs_launch_config_de_rt_validation" value="false"/>
+<booleanAttribute key="destecs_launch_config_debug" value="false"/>
+<booleanAttribute key="destecs_launch_config_enable_logging" value="false"/>
+<stringAttribute key="destecs_launch_config_project_name" value="lawn_mover"/>
+<booleanAttribute key="destecs_launch_config_remote_debug" value="false"/>
+<stringAttribute key="destecs_launch_config_remote_project_base1" value=""/>
+<stringAttribute key="destecs_launch_config_scenario_path" value=""/>
+<stringAttribute key="destecs_launch_config_shared_design_param" value="initial_Position[3]:=[-1.6, 0.0, 0.1];Look_ahead_dist:=0.4;V:=1;Control_Parameters:=1.5;dist_b:=0.1;mu:=0.55;"/>
+<booleanAttribute key="destecs_launch_config_show_debug_info" value="false"/>
+<booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>
+<stringAttribute key="destecs_launch_config_simulation_time" value="45"/>
+<booleanAttribute key="destecs_launch_config_use_remote_ct_simulator" value="false"/>
+<stringAttribute key="destecs_launch_config_vdm_log_variables" value=""/>
+<booleanAttribute key="vdm_launch_config_dtc_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_generate_coverage" value="true"/>
+<booleanAttribute key="vdm_launch_config_inv_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_log_rt" value="true"/>
+<booleanAttribute key="vdm_launch_config_measure_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_post_checks" value="true"/>
+<booleanAttribute key="vdm_launch_config_pre_checks" value="true"/>
+</launchConfiguration>

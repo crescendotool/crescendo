@@ -1,0 +1,31 @@
+class FileReader
+
+	instance variables
+	
+	private route: [Route] := nil;
+
+	operations
+	public FileReader: Route ==> FileReader
+	FileReader(r) ==
+	(
+		route := r;
+	);
+	
+	public LoadTravlRoute: seq of char ==> bool
+	LoadTravlRoute(filepath) ==
+	(
+		dcl test : bool := true;
+		def mk_(-,nl) = CSV`flinecount(filepath) in
+		(
+			for i = 1 to nl do
+			  (
+			  	def mk_(-,rsm) = CSV`freadval[seq of real](filepath,i) in		  			
+		  			route.AddWayPoint(rsm(1),rsm(2))
+			  );
+			  if (not test) then(IO`println("Route LOAD fail !!!"));
+		);
+		route.SetRoute();
+		return test
+	)pre route <> nil;
+	
+end FileReader

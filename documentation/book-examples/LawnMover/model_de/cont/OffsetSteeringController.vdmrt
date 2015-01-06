@@ -1,0 +1,18 @@
+class OffsetSteeringController is subclass of SteeringController
+	instance variables
+-- TODO Define instance variables here
+	operations
+
+	public Output: seq of real ==> real
+		Output(gnss_pos) == 
+		(
+			Error.UpdateError(gnss_pos,Current_WayPoint1,Current_WayPoint2);
+
+			--return outerCon.Output(Error.getDPhi()-innerCon.Output(Error.getYErr()));
+			
+			return Pe*Error.getYErr();
+		);
+		
+	
+
+end OffsetSteeringController

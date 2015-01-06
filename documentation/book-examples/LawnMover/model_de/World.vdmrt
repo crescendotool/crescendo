@@ -1,0 +1,43 @@
+class World
+values
+public initial_Position: seq of real = [];
+public speed: real = 0.1234;
+public dist_b: real = 0.5;
+public mu_w: real = 0.5;
+
+operations
+
+-- run a simulation
+public run: () ==> ()
+run() ==
+(
+	
+	start(System`controller);
+	IO`print(initial_Position);IO`print("\n");
+	block();
+);
+
+-- instantiate elements of System
+public static setup: () ==> ()
+setup() ==
+(
+
+	-- sensors
+	System`sensorGNSS_Pos := new SensorGNSS();
+
+    -- actuators
+    System`actuatorAngle := new ActuatorSteeringWheel();
+    
+	-- instantiate controller
+	System`controller := new Controller(System`sensorGNSS_Pos,
+										System`actuatorAngle);
+										
+
+);
+
+-- wait for simulation to finish
+block: () ==> ()
+block() == skip;
+sync per block => false;
+
+end World

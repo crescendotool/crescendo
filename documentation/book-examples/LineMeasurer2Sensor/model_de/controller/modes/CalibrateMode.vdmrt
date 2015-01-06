@@ -1,0 +1,70 @@
+class CalibrateMode is subclass of AbstractModeTimed
+
+instance variables
+
+-- readings
+private white_readings: seq of ISensorInt8`Int8;
+private black_readings: seq of ISensorInt8`Int8;
+
+values
+
+-- total time and number of readings
+CALIBRATION_TIME = 1;
+
+operations
+
+-- constructor for CalibrateMode
+public CalibrateMode: AbstractModalController ==> CalibrateMode
+CalibrateMode(c) == (
+    -- call super constructor
+    let - = AbstractModeTimed`AbstractModeTimed(c, CALIBRATION_TIME) in skip;
+
+	-- initialise instance variables
+	white_readings := [];
+	black_readings := [];
+);
+
+-- subclass control loop
+public SubStep: () ==> ()
+SubStep() == (
+	-- read sensors
+	black_readings := black_readings ^ [con.GetLF("lf_left").Read()];
+	white_readings := white_readings ^ [con.GetLF("lf_right").Read()];
+);
+
+public Exit: () ==> ()
+Exit() == (
+	-- default calibration
+	dcl min: real := 0;
+	dcl max: real := 255;
+
+	-- mean white readings (e.g. max)
+	if len white_readings = 0 then IO`println("No white readings taken!")
+	else max := sum(white_readings) / len white_readings;
+
+	-- mean black readings (e.g. min)
+	if len black_readings = 0 then IO`println("No black readings taken!")
+	else min := sum(black_readings) / len black_readings;
+
+	-- print out measurements
+	IO`printf("Took %s readings.\n", [len white_readings]);
+	IO`printf("White readings: %s, max = %s\n", [white_readings, floor max]);
+	IO`printf("Black readings: %s, min = %s\n", [black_readings, floor min]);
+
+	if floor min = floor max 
+	then IO`println("Calibration failed, readings equal.")
+	else (
+		con.GetBW("lf_left").Calibrate(floor min, floor max);
+		con.GetBW("lf_right").Calibrate(floor min, floor max);
+	)
+);
+
+-- calculate the sum of a sequence of integers 
+private sum: seq of real ==> real
+sum(s) == (
+	dcl sum: real := 0;
+	for i in s do sum := sum + i;
+	return sum
+)
+
+end CalibrateMode

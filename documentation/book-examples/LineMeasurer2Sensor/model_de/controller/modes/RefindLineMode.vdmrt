@@ -1,0 +1,88 @@
+class RefindLineMode is subclass of AbstractMode
+
+types
+
+Colour = <BLACK> | <WHITE>;
+Direction = <LEFT> | <RIGHT>; 
+
+instance variables
+
+
+-- track previous state
+prev_dir: Direction := <RIGHT>;
+
+-- for line searching
+sweep_counter: nat := 0;
+sweep_target: nat := 0 
+
+values
+
+-- initial time to sweep for
+SWEEP_INITIAL = 5;
+
+-- maximum sweep when we consider line lost
+SWEEP_MAXIMUM = 160;
+
+-- speeds used in this mode
+FAST_WHEEL = 0.2;
+SLOW_WHEEL = -0.2;
+
+operations
+
+-- constructor for FollowMode
+public RefindLineMode: AbstractModalController ==> RefindLineMode
+RefindLineMode(c) == 	let - = AbstractMode`AbstractMode(c) in skip;
+
+
+-- called when we enter this mode
+public Enter: () ==> ()
+Enter() == (
+	-- get current colour
+	prev_dir := if con.GetLeftServo().Read() > con.GetRightServo().Read() 
+				then <RIGHT> else <LEFT>;
+				
+	-- for line searching
+	sweep_counter := 0;
+	sweep_target := SWEEP_INITIAL 
+);
+
+-- control loop
+public Step: () ==> [AbstractModalController`Mode]
+Step() == (
+	-- current colour
+	dcl colour: Colour := if con.GetWorkingBW().IsWhite() 
+						  then <WHITE> else <BLACK>;	
+
+	-- found the line again
+	if colour = <BLACK> then return mk_token("SINGLE_FOLLOW"); 
+
+	-- count cycle	
+	sweep_counter := sweep_counter + 1;
+
+	-- change direction and increase search time
+	if sweep_counter = sweep_target then (
+		ChangeDirection();
+		sweep_target := sweep_target * 2;
+	);
+	
+	-- check for maximum sweep reached
+	if sweep_target > SWEEP_MAXIMUM
+	then return mk_token("IDLE");
+
+	return nil
+);
+
+-- change the robot's direction
+private ChangeDirection: () ==> ()
+ChangeDirection() == (
+	if prev_dir = <LEFT> then (
+		con.Turn(FAST_WHEEL, SLOW_WHEEL);
+		prev_dir := <RIGHT>
+	)
+	else (
+		con.Turn(SLOW_WHEEL, FAST_WHEEL);
+		prev_dir := <LEFT>			
+	);
+)
+
+end RefindLineMode

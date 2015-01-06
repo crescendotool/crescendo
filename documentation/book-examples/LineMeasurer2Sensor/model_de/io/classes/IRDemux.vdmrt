@@ -1,0 +1,47 @@
+class IRDemux
+
+instance variables
+
+-- number of sensors
+private num_values: nat1;
+
+-- these values are set through the co-simulation
+protected lf: seq of real := [];
+protected lf_failed: seq of bool := [];
+
+-- local copy of the shared variables
+protected local_lf: seq of real := [];
+protected local_lf_failed: seq of bool := [];
+
+operations
+
+-- constrcutor for IRDemux
+public IRDemux: nat1 ==> IRDemux
+IRDemux(n) == (
+	-- initialise values to zero
+	num_values := n;
+	for i = 1 to num_values do (
+		lf(i) := 0;
+		lf_failed(i) := false;
+	);
+	Sync()
+);
+
+-- read the current value of the given sensor
+public Read: nat1 ==> real
+Read(n) == return local_lf(n)
+pre n <= num_values;
+
+-- return true if the given sensor has failed, false otherwise
+public HasFailed: nat1 ==> bool
+HasFailed(n) == return local_lf_failed(n)
+pre n <= num_values;
+
+-- read shared variable to local variables
+public Sync: () ==> ()
+Sync() == (
+	local_lf := lf;
+	local_lf_failed := lf_failed
+)
+
+end IRDemux

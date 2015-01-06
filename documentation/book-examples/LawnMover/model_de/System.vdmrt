@@ -1,0 +1,31 @@
+system System
+
+instance variables 
+
+-- sensors (as interface types)
+public static sensorGNSS_Pos: [SensorGNSS] := nil;
+
+-- actuators (as interface types)
+public static actuatorAngle:  [ActuatorSteeringWheel] := nil;
+
+-- public static seqe : map char to SensorWheel := {|->};
+
+-- controller
+public static controller : [Controller] := nil;
+
+-- cpu
+cpu: CPU := new CPU(<FP>, 2000000) -- Set to 2 Ghz
+
+operations
+
+public System: () ==> System
+System() ==
+(
+	-- instantiate instance variables
+	World`setup();
+
+	-- deployment of the controller
+	cpu.deploy(controller,"Controller")
+)
+
+end System

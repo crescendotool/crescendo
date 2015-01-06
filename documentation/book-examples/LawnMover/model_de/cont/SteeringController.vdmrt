@@ -1,0 +1,33 @@
+class SteeringController
+
+	values
+		protected Pe : real = 1.0;
+
+	instance variables
+		protected Current_WayPoint1 : [seq of real] := nil;
+		protected Current_WayPoint2 : [seq of real] := nil;
+		protected Error : SteeringErrorCalc := new SteeringErrorCalc();
+		protected outerCon : [DTControl] := nil;
+		protected innerCon : [DTControl] := nil;
+		
+		
+	operations
+		public SteeringController:() ==> SteeringController
+			SteeringController()==(
+				--Setup(0.1,Pe,Pe(2),Pe(3),Pe(4),Pe(5),Pe(6));
+				Current_WayPoint1 := [0.0, 0.0];
+				Current_WayPoint2 := [12.0, 2.0];
+			);
+			
+		public UpdateWaypoint: seq of real * seq of real ==> ()
+			UpdateWaypoint(wp1,wp2)==(
+				Current_WayPoint1 := wp1;
+				Current_WayPoint2 := wp2;
+			)
+			pre wp1 <> wp2;
+	
+		public Output: seq of real ==> real
+		Output(gnss_pos) == 
+			is subclass responsibility;
+		
+end SteeringController

@@ -1,0 +1,14 @@
+class AngleSteeringController is subclass of SteeringController
+	instance variables
+-- TODO Define instance variables here
+	operations
+
+	public Output: seq of real ==> real
+		Output(gnss_pos) == 
+		(
+			Error.UpdateError(gnss_pos,Current_WayPoint1,Current_WayPoint2);
+			 
+			 return Pe*Error.getPhiErr();
+		);
+
+end AngleSteeringController

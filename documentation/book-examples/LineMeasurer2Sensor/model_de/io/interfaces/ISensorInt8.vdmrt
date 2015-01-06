@@ -1,0 +1,22 @@
+class ISensorInt8
+
+-- an interface to a sensor that yields a single integer in the range [0,255]
+-- the interface also has a flag to indicate when the sensor has failed
+
+types
+
+-- a type representing an integer in the range [0,255]
+public Int8 = nat
+inv i == i < 256;
+
+operations
+
+-- read the raw value of this sensor
+public Read: () ==> Int8
+Read() == is subclass responsibility;
+
+-- return true if this sensor has failed, false otherwise
+public HasFailed: () ==> bool
+HasFailed() == is subclass responsibility;
+
+end ISensorInt8
