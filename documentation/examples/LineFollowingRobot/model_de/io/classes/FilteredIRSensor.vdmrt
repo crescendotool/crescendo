@@ -28,7 +28,10 @@ sum(s) == (
 	dcl sum: int := 0;
 	for i in s do sum := sum + i;
 	return sum
-)
+);
+
+public HasFailed: () ==> bool
+HasFailed() == return sensor.HasFailed(); 
 
 values
 

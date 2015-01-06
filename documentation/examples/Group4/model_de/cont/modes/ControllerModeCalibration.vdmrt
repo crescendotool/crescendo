@@ -36,7 +36,7 @@ class ControllerModeCalibration is subclass of AbstractControllerMode
 						-- ... that means we've found the line
 						IO`println("Line folllower calibration done!\n");
 						
-						mainController.stop();
+						mainController.Stop();
 						--Record current number of ticks and time
 						mainController.setCalibrationTicksLeft();
 						mainController.setCalibrationTicksRight();

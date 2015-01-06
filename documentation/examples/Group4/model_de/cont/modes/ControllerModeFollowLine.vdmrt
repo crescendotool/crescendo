@@ -27,7 +27,7 @@ class ControllerModeFollowLine is subclass of AbstractControllerMode
 					centerSensor > 0.5 and
 					rightSensor > 0.5 then--end of line - stop
 					(
-						mainController.stop();
+						mainController.Stop();
 						showResults();
 						--IO`print("STOP!\n");
 						mainController.controllerModeFinished();

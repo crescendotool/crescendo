@@ -132,8 +132,8 @@ class LineFollowerController is subclass of AbstractLineFollower
 			motorControlRight.setValue(Speed);
 		);
 		
-		public stop : () ==> ()
-		stop () == (
+		public Stop : () ==> ()
+		Stop () == (
 		
 			motorControlLeft.setValue(0);
 			motorControlRight.setValue(0);

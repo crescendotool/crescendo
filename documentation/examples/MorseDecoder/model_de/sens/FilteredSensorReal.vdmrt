@@ -43,6 +43,10 @@ class FilteredSensorReal is subclass of AbstractFilteredSensorReal
 				
 				return sampleSum / len sampleSequence;
 		);
+		
+		-- FIXME is this correct
+		public read: () ==> real
+		read() == return value;
 
 
 end FilteredSensorReal

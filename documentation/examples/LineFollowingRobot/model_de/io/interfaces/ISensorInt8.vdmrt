@@ -17,6 +17,6 @@ Read() == is subclass responsibility;
 
 -- return true if this sensor has failed, false otherwise
 public HasFailed: () ==> bool
-HasFailed() == is subclass responsibility;
+HasFailed() == is subclass responsibility; 
 
 end ISensorInt8
