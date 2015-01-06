@@ -18,7 +18,7 @@
 <stringAttribute key="destecs_launch_config_project_name" value="ChessWay_DESTECS"/>
 <booleanAttribute key="destecs_launch_config_remote_debug" value="false"/>
 <stringAttribute key="destecs_launch_config_remote_project_base1" value=""/>
-<stringAttribute key="destecs_launch_config_scenario_path" value="scenarios/scenario2.script"/>
+<stringAttribute key="destecs_launch_config_scenario_path" value="scenarios/scenario2.script2"/>
 <stringAttribute key="destecs_launch_config_shared_design_param" value="sdpSlip:=100.0;pidGain:=-140.0;"/>
 <booleanAttribute key="destecs_launch_config_show_debug_info" value="false"/>
 <booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>
