@@ -1013,10 +1013,10 @@ public class CoSimLaunchConfigurationDelegate extends
 		IViewPart v;
 		try
 		{
-			IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
-			if (windows.length > 0)
+			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			if (window!=null)
 			{
-				v = windows[0].getActivePage().getActivePart().getSite().getPage().showView(id);
+				v = window.getActivePage().showView(id);
 				return (InfoTableView) v;
 			}
 			return null;
