@@ -20,7 +20,7 @@
 <stringAttribute key="destecs_launch_config_remote_project_base1" value=""/>
 <stringAttribute key="destecs_launch_config_scenario_path" value=""/>
 <stringAttribute key="destecs_launch_config_shared_design_param" value="maxlevel:=2;minlevel:=1;"/>
-<booleanAttribute key="destecs_launch_config_show_debug_info" value="true"/>
+<booleanAttribute key="destecs_launch_config_show_debug_info" value="false"/>
 <booleanAttribute key="destecs_launch_config_show_octave_plots" value="false"/>
 <stringAttribute key="destecs_launch_config_simulation_time" value="10"/>
 <booleanAttribute key="destecs_launch_config_use_remote_ct_simulator" value="false"/>
