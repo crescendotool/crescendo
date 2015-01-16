@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <overture.version>2.1.5-SNAPSHOT</overture.version>
+    <overture.version>2.1.7-SNAPSHOT</overture.version>
   </properties>
 
   <repositories>
