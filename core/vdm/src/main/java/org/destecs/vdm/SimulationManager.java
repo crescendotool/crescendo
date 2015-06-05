@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.LinkInfo;
+import org.destecs.core.vdmlink.Links;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStruct;
@@ -317,7 +317,7 @@ public class SimulationManager extends BasicSimulationManager
 		throw new RemoteSimulationException("Value: " + name + " not found");
 	}
 
-	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
+	public Boolean load(List<File> specfiles, Links links, File outputDir,
 			File baseDirFile, boolean disableRtLog, boolean disableCoverage,
 			boolean disableOptimization) throws RemoteSimulationException
 	{
@@ -326,18 +326,7 @@ public class SimulationManager extends BasicSimulationManager
 			noOptimization = disableOptimization;
 			this.variablesToLog.clear();
 			// this.variablesToLog.addAll(variablesToLog);
-			if (!linkFile.exists() || linkFile.isDirectory())
-			{
-				throw new RemoteSimulationException("The VDM link file does not exist: "
-						+ linkFile);
-			}
-			VdmLinkParserWrapper linksParser = new VdmLinkParserWrapper();
-			links = linksParser.parse(linkFile);// Links.load(linkFile);
-
-			if (links == null || linksParser.hasErrors())
-			{
-				throw new RemoteSimulationException("Faild to parse vdm links");
-			}
+			this.links = links;
 
 			if (disableRtLog)
 			{
