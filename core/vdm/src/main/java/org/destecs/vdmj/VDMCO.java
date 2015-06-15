@@ -41,6 +41,7 @@ import org.overture.interpreter.messages.Console;
 import org.overture.interpreter.messages.rtlog.RTLogger;
 import org.overture.interpreter.runtime.ClassInterpreter;
 import org.overture.interpreter.runtime.ContextException;
+import org.overture.interpreter.runtime.Interpreter;
 import org.overture.interpreter.scheduler.BasicSchedulableThread;
 import org.overture.interpreter.scheduler.InitThread;
 import org.overture.interpreter.util.ClassListInterpreter;
@@ -92,92 +93,127 @@ public class VDMCO extends VDMRT
 			@Override
 			public void run()
 			{
-				try
+				if (Settings.usingCmdLine)
 				{
-					InitThread iniThread = new InitThread(this);
-					BasicSchedulableThread.setInitialThread(iniThread);
-
-					if (script != null)
+					try
 					{
+						Thread main = new Thread(new Runnable()
+						{
+
+							public void run()
+							{
+								Interpreter i = Interpreter.getInstance();
+								i.init(null);
+								try
+								{
+									i.execute("new World().run()", null);
+								} catch (Exception e)
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						});
+						main.setDaemon(true);
+						main.setName("VDM console main");
+						main.start();
+
 						status = ExitStatus.EXIT_OK;
-						String host = "localhost";
-
-						String ideKey = "1";
-						dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, getInterpreter(), script, null);
-
-						int retryCountDown = 5;
-						int retried = 0;
-						while (dbgpreader.getStatus() == null)
-						{
-							if (retried > 0)
-							{
-								Thread.sleep(500);
-							}
-							retried++;
-							System.out.println("Trying to connect to IDE...("
-									+ retried + ")");
-							System.out.println("Status of DBGPReader is: "
-									+ dbgpreader.getStatus()
-									+ " with retried: " + retried);
-							dbgpreader.startup(null);
-
-							if (retryCountDown == 0)
-							{
-								status = ExitStatus.EXIT_ERRORS;
-							}
-							retryCountDown--;
-						}
-
-						retryCountDown = 5;
-						while (dbgpreader.getStatus() == DBGPStatus.STARTING)
-						{
-							System.out.println("DBGPReader status is now STARTING and a new try to start dbgpreader will be made in 1 sec.");
-							Thread.sleep(1000);
-							dbgpreader.startup(null);
-							if (retryCountDown == 0)
-							{
-								status = ExitStatus.EXIT_ERRORS;
-								finished = true;
-								return;
-							}
-							retryCountDown--;
-						}
-						try
-						{
-							dbgpreader.startCoSimulation();
-						} catch (Exception e)
-						{
-							// Failed to start simulation
-							e.printStackTrace();
-							exception = e;
-
-							status = ExitStatus.EXIT_ERRORS;
-							finished = true;
-						}
-
-					} else
+						finished = true;
+						return;
+					} catch (Exception e)
 					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 						status = ExitStatus.EXIT_ERRORS;
 					}
-
-					if (logfile != null)
+				} else
+					try
 					{
-						RTLogger.dump(true);
-						infoln("RT events dumped to " + logfile);
+						InitThread iniThread = new InitThread(this);
+						BasicSchedulableThread.setInitialThread(iniThread);
+
+						if (script != null)
+						{
+							status = ExitStatus.EXIT_OK;
+							String host = "localhost";
+
+							String ideKey = "1";
+							dbgpreader = new DBGPReaderCoSim(host, debugPort, ideKey, getInterpreter(), script, null);
+
+							int retryCountDown = 5;
+							int retried = 0;
+							while (dbgpreader.getStatus() == null)
+							{
+								if (retried > 0)
+								{
+									Thread.sleep(500);
+								}
+								retried++;
+								System.out.println("Trying to connect to IDE...("
+										+ retried + ")");
+								System.out.println("Status of DBGPReader is: "
+										+ dbgpreader.getStatus()
+										+ " with retried: " + retried);
+								dbgpreader.startup(null);
+
+								if (retryCountDown == 0)
+								{
+									status = ExitStatus.EXIT_ERRORS;
+								}
+								retryCountDown--;
+							}
+
+							retryCountDown = 5;
+							while (dbgpreader.getStatus() == DBGPStatus.STARTING)
+							{
+								System.out.println("DBGPReader status is now STARTING and a new try to start dbgpreader will be made in 1 sec.");
+								Thread.sleep(1000);
+								dbgpreader.startup(null);
+								if (retryCountDown == 0)
+								{
+									status = ExitStatus.EXIT_ERRORS;
+									finished = true;
+									return;
+								}
+								retryCountDown--;
+							}
+							try
+							{
+								dbgpreader.startCoSimulation();
+							} catch (Exception e)
+							{
+								// Failed to start simulation
+								e.printStackTrace();
+								exception = e;
+
+								status = ExitStatus.EXIT_ERRORS;
+								finished = true;
+							}
+
+						} else
+						{
+							status = ExitStatus.EXIT_ERRORS;
+						}
+
+						if (logfile != null)
+						{
+							RTLogger.dump(true);
+							infoln("RT events dumped to " + logfile);
+						}
+						finished = true;
+						return;
+					} catch (ContextException e)
+					{
+						Console.err.println("Execution: " + e);
+						e.ctxt.printStackTrace(Console.err, true);
+						Console.err.flush();
+						exception = e;
+					} catch (Exception e)
+					{
+						exception = e;
+						println("Execution: " + e);
 					}
-					finished = true;
-					return;
-				} catch (ContextException e)
-				{
-					Console.err.println("Execution: " + e);
-					e.ctxt.printStackTrace(Console.err, true);
-					Console.err.flush();
-					exception = e;
-				} catch (Exception e)
-				{
-					exception = e;
-					println("Execution: " + e);
-				}
 
 				status = ExitStatus.EXIT_ERRORS;
 				finished = true;

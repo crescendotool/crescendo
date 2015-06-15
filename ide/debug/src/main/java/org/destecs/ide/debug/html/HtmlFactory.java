@@ -2,6 +2,7 @@ package org.destecs.ide.debug.html;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.destecs.ide.debug.IDebugConstants;
 import org.destecs.ide.debug.core.model.internal.DestecsDebugTarget;
@@ -29,8 +30,7 @@ public class HtmlFactory
 						+ "\">" + target.getOutputFolder().getName()
 						+ "</a></h2>\n");
 
-				@SuppressWarnings("unchecked")
-				Map<Object, Object> attributes = target.getLaunch().getLaunchConfiguration().getAttributes();
+				Map<String, Object> attributes = target.getLaunch().getLaunchConfiguration().getAttributes();
 
 				sb.append("<table id=\"customers\">\n");
 				sb.append("<tr>\n");
@@ -38,7 +38,7 @@ public class HtmlFactory
 				sb.append("\t<th>Value</th>\n");
 				sb.append("</tr>\n");
 				boolean isEven = true;
-				for (Map.Entry<Object, Object> entry : attributes.entrySet())
+				for (Entry<String, Object> entry : attributes.entrySet())
 				{
 					sb.append("<tr " + (isEven ? "class=\"alt\"" : "") + ">\n");
 					sb.append("\t<td>" + entry.getKey() + "</td>\n");
