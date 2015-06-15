@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.destecs.ide.debug.DestecsDebugPlugin;
@@ -120,10 +121,9 @@ public class AcaSimulationManager //extends Thread
 
 				setActiveLaunch(null);
 
-				@SuppressWarnings("unchecked")
-				Map<Object, Object> attributes = config.getAttributes();
+				Map<String, Object> attributes = config.getAttributes();
 				String data = "** launch summery for ACA: " + config.getName();
-				for (Map.Entry<Object, Object> entry : attributes.entrySet())
+				for (Entry<String, Object> entry : attributes.entrySet())
 				{
 					data += entry.getKey() + " = " + entry.getValue() + "\n";
 				}
