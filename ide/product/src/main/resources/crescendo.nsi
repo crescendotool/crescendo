@@ -1,6 +1,6 @@
 ; No need to compress anything
 SetCompress off
- 
+
 ;--------------------------------
 ;Include Modern UI
 
@@ -27,7 +27,7 @@ OutFile "${installer.output}"
 ; The default installation directory
 InstallDir $PROGRAMFILES\${installer.name}
 
-; Registry key to check for directory (so if you install again, it will 
+; Registry key to check for directory (so if you install again, it will
 ; overwrite the old one automatically)
 InstallDirRegKey HKLM "Software\Crescendo" "Install_Dir"
 
@@ -36,13 +36,13 @@ RequestExecutionLevel admin
 ;--------------------------------
 ;Interface Configuration
 
-  !define MUI_HEADERIMAGE 
-  !define MUI_HEADERIMAGE_BITMAP "${installer.path}/Crescendo.bmp" ; optional
-  !define MUI_ICON "${installer.path}/crescendo_installer.ico"
-  !define MUI_UNICON "${installer.path}/crescendo_uninstaller.ico"
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_BITMAP "${installer.path}\Crescendo.bmp" ; optional
+  !define MUI_ICON "${installer.path}\crescendo_installer.ico"
+  !define MUI_UNICON "${installer.path}\crescendo_uninstaller.ico"
   !define MUI_ABORTWARNING
   !define MUI_LICENSEPAGE_TEXT_BOTTOM "This instalation includes Crescendo ${crescendo.version} and ${sim20.name} ${sim20.version}."
-;-------------------------------- 
+;--------------------------------
 
 
 ;--------------------------------
@@ -51,9 +51,9 @@ RequestExecutionLevel admin
 ;Page components
 ;Page directory
 ;Page instfiles
-;!insertmacro MUI_PAGE_WELCOME   
+;!insertmacro MUI_PAGE_WELCOME
 
-!insertmacro MUI_PAGE_LICENSE "${installer.path}/license.txt"
+!insertmacro MUI_PAGE_LICENSE "${installer.path}\license.txt"
 !insertmacro MUI_PAGE_COMPONENTS
 
 ;Var StartMenuFolder
@@ -89,12 +89,12 @@ Section "Crescendo (required)" ;No components page, name is not important
   File "${sim20.path}\${sim20.exe}"
   File "${crescendo.path}\${crescendo.zip}"
 
-  ; Calling the function that installs Crescendo  
+  ; Calling the function that installs Crescendo
   Call DESTECSInstall
-  
+
   ; Calling the function that installs 20-sim
   call 20simVersionTest
-  
+
   AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite"
   ; Registry creation
   ; Write the installation path into the registry
@@ -105,7 +105,7 @@ Section "Crescendo (required)" ;No components page, name is not important
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
-  
+
 SectionEnd ; end the section
 
 ; Optional section (can be disabled by the user)
@@ -120,9 +120,9 @@ SectionEnd
 Section "Uninstall"
 
   ;deleting the uninstall exe first is apparently normal
-  Delete $INSTDIR\uninstall.exe 
-  
-  
+  Delete $INSTDIR\uninstall.exe
+
+
   ; Remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${installer.regkey}"
   DeleteRegKey HKLM SOFTWARE\${installer.regkey}
@@ -152,15 +152,15 @@ Section "Uninstall"
   Delete "$INSTDIR\notice.html"
   DetailPrint "Deleting $INSTDIR\eclipsec.exe"
   Delete "$INSTDIR\eclipsec.exe"
- 
- 
+
+
  SetShellVarContext all
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\${installer.regkey}\*.*"
   ; Remove directories used
   RMDir "$SMPROGRAMS\${installer.regkey}"
-  
-  
+
+
   RMDir "$INSTDIR"
 SectionEnd
 
@@ -187,11 +187,11 @@ FunctionEnd
 
 ; Install Crescendo Tool
 Function DESTECSInstall
-  ; Print to detail log 
+  ; Print to detail log
   DetailPrint "Installing ${crescendo.name}"
   ; Unzip the file
   ZipDLL::extractall "${crescendo.zip}" "$INSTDIR"
-  
+
   ; ZipDLL::extractall "${crescendo.zip}" "$TEMP\destecs"
   ;ExecWait 'xcopy /S /Y $\"$TEMP\destecs\*.*$\" $\"$INSTDIR$\"'
   ; Moving files from DESTECS folder to root of $INSTDIR
@@ -212,7 +212,7 @@ Function 20simVersionTest
 
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayVersion"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayVersion"
 ${Else}
     ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayVersion"
 ${EndIf}
@@ -225,16 +225,16 @@ ${VersionCompare} $0 ${sim20.version} $1
 ;    $1=0  Versions are equal
 ;    $1=1  Version1 is newer
 ;    $1=2  Version2 is newer
-IntCmp $1 2 higher lower 
+IntCmp $1 2 higher lower
 higher:
-   DetailPrint "Installing ${sim20.name} version ${sim20.version} present in the installer" 
-   call 20simInstall   
-   Goto done 
+   DetailPrint "Installing ${sim20.name} version ${sim20.version} present in the installer"
+   call 20simInstall
+   Goto done
 lower:
     DetailPrint "${sim20.name} up to date"
     Goto done
-isError: 
-   DetailPrint "No previous ${sim20.name} version found"  
+isError:
+   DetailPrint "No previous ${sim20.name} version found"
    call 20simInstall
    Goto done
 done:
@@ -249,13 +249,13 @@ FunctionEnd
 Function Add20simFirewallException
 ClearErrors
 ${If} ${RunningX64}
-    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayIcon"       
+    ReadRegStr $0 HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayIcon"
 ${Else}
     ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${sim20.regkey}\" "DisplayIcon"
 ${EndIf}
- 
-IfErrors isError 
-    DetailPrint "Adding ${sim20.name} firewall exception"  
+
+IfErrors isError
+    DetailPrint "Adding ${sim20.name} firewall exception"
     SimpleFC::AddApplication "20sim" "$0" 0 2 "" 1
     goto done
 isError:
@@ -268,15 +268,15 @@ FunctionEnd
 ; Install 20-sim function
 Function 20simInstall
   ; Print to detail log
-  DetailPrint "Installing ${sim20.name}"  
+  DetailPrint "Installing ${sim20.name}"
   ;Executing the installer
   ExecWait  '"$INSTDIR\${sim20.exe}'
-  DetailPrint "Done installing ${sim20.name}"  
-  
+  DetailPrint "Done installing ${sim20.name}"
+
   ; Update the Windows Registry
   ;Call updateRegistry
-     
+
   ; NOT NEEDED ANYMORE - Copy the DestecsInterface.xrl to ${sim20.name} folder
-  ;Call copyXRL 
+  ;Call copyXRL
 FunctionEnd
 
