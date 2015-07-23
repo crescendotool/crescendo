@@ -341,13 +341,13 @@ public class VDMClassHelper
 	{
 		List<Integer> result = new Vector<Integer>();
 
-		if (value instanceof SeqValue)
+		if (value.deref() instanceof SeqValue)
 		{
-			SeqValue seqValue = (SeqValue) value;
+			SeqValue seqValue = (SeqValue) value.deref();
 			result.add(seqValue.values.size());
 			if (seqValue.values.size() > 0)
 			{
-				if (seqValue.values.get(0) instanceof SeqValue)
+				if (seqValue.values.get(0).deref() instanceof SeqValue)
 				{
 					result.addAll(getSequenceInnerDimensions(seqValue));
 				}
