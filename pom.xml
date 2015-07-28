@@ -70,20 +70,6 @@
     <defaultGoal>install</defaultGoal>
 
     <plugins>
-        <!-- Use the below to update the version numbers of the poms,
-             manifests, and feature.xml files with the commandline:
-
-             $ mvn -Dtycho.mode=maven tycho-versions:set-version -DnewVersion=2.0.2
-
-             Don't commit the changes to the export-packages lines in
-             the manifests, though.
-        -->
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-versions-plugin</artifactId>
-          <version>0.19.0</version>
-        </plugin>
-      <plugin>
         <!--
             This plugin allows you to run
 
@@ -100,6 +86,7 @@
             More details on the versions-maven-plugin are at
             http://mojo.codehaus.org/versions-maven-plugin/
         -->
+				<plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <configuration>

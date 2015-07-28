@@ -1,0 +1,4 @@
+coverage/
+*.logrt
+*.rtbin
+*.logtv

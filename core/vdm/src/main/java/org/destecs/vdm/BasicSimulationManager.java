@@ -223,6 +223,10 @@ public abstract class BasicSimulationManager
 					case Unknown:
 						System.err.println("Unknown value type to set");
 						return false;
+					case Auto:
+						break;
+					default:
+						break;
 				}
 
 				if (newval == null)

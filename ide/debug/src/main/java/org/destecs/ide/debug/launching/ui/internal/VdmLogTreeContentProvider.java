@@ -8,7 +8,6 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.overture.ast.definitions.ABusClassDefinition;
-import org.overture.ast.definitions.AClassClassDefinition;
 import org.overture.ast.definitions.ACpuClassDefinition;
 import org.overture.ast.definitions.AInstanceVariableDefinition;
 import org.overture.ast.definitions.ASystemClassDefinition;
@@ -83,9 +82,9 @@ public class VdmLogTreeContentProvider implements ITreeContentProvider
 				visitedCount.add(def);
 			}
 			
-			if (def instanceof AClassClassDefinition)
+			if (def instanceof SClassDefinition)
 			{
-				List<PDefinition> defs =  getChildrenOf((AClassClassDefinition) def);
+				List<PDefinition> defs =  getChildrenOf((SClassDefinition) def);
 				
 				return encapsulateDefs(parentNode,defs);
 			}
