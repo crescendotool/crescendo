@@ -210,24 +210,20 @@
     </extensions>
   </build>
 
-  <!-- none of this is correct any more -jwc/13Dec2013
-  <distributionManagement>
+
+<distributionManagement>
     <repository>
-      <id>destecs.sourceforge.net</id>
-      <name>Destecs Repo af SF.Net</name>
-      <url>sftp://web.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/repo</url>
+        <id>overture.au.dk</id>
+        <name>overture.au.dk-releases</name>
+        <url>http://overture.au.dk/artifactory/crescendo-development</url>
     </repository>
     <snapshotRepository>
-      <id>destecs.sourceforge.net</id>
-      <name>Destecs Snapshot Repo af SF.Net</name>
-      <url>sftp://web.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/snapshotrepo</url>
+        <id>overture.au.dk</id>
+        <name>overture.au.dk-snapshots</name>
+        <url>http://overture.au.dk/artifactory/crescendo-development</url>
     </snapshotRepository>
-    <site>
-      <id>destecs.sourceforge.net</id>
-      <url>scp://shell.sourceforge.net/home/groups/d/de/destecs/htdocs/maven/doc</url>
-    </site>
-  </distributionManagement>
-  -->
+</distributionManagement>
+
 
   <organization>
     <name>DESTECS</name>
