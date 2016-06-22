@@ -65,6 +65,13 @@ public abstract class AstGenBaseMojo extends AbstractMojo
 	 * @readonly
 	 */
 	protected org.apache.maven.project.MavenProject project;
+	
+	/**
+	 * Name of the directory into which the jprotocolgenerator should dump the java files.
+	 * 
+	 * @parameter property="outputDirectory" default-value="${project.build.directory}/generated-sources/jprotocolgenerator"
+	 */
+	protected File outputDirectory;
 
 //	/**
 //	 * default-value="${project.reporting.outputDirectory}"
