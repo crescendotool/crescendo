@@ -99,6 +99,10 @@
 	    <product>
 	      <id>org.destecs.ide.platform.product</id>
 	      <archiveFileName>${crescendo.prefix}</archiveFileName>
+	      <rootFolder>Crescendo</rootFolder>
+							<rootFolders>
+								<macosx>Crescendo.app</macosx>
+							</rootFolders>
 	    </product>
 	  </products>
 	</configuration>
