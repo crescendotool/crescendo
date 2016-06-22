@@ -26,8 +26,6 @@ target
 .settings
 .classpath
 .project
-core/protocol/src/main/java/org/destecs/protocol/structs
-core/protocol/src/main/java/org/destecs/protocol/*.java
 
 
 # Logs and databases #
