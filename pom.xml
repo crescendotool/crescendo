@@ -24,14 +24,14 @@
       <id>overture.au.dk-overture-crescendo</id>
       <name>Overture/Crescendo Buildserver Repository at AU</name>
       <releases>
-	<enabled>false</enabled>
-	<updatePolicy>daily</updatePolicy>
-	<checksumPolicy>warn</checksumPolicy>
+				<enabled>false</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
       </releases>
       <snapshots>
-	<enabled>true</enabled>
-	<updatePolicy>always</updatePolicy>
-	<checksumPolicy>warn</checksumPolicy>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
       </snapshots>
       <url>http://overture.au.dk/maven/crescendo-overture-development/</url>
       <layout>default</layout>
@@ -43,14 +43,14 @@
       <id>overture.iha.dk-overture-crescendo-plugins</id>
       <name>Overture/Crescendo Buildserver Repository at AU (Plugins)</name>
       <releases>
-	<enabled>true</enabled>
-	<updatePolicy>daily</updatePolicy>
-	<checksumPolicy>warn</checksumPolicy>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
       </releases>
       <snapshots>
-	<enabled>true</enabled>
-	<updatePolicy>daily</updatePolicy>
-	<checksumPolicy>warn</checksumPolicy>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
       </snapshots>
       <url>http://overture.au.dk/maven/crescendo-overture-development/</url>
       <layout>default</layout>
@@ -70,23 +70,23 @@
     <defaultGoal>install</defaultGoal>
 
     <plugins>
-        <!--
-            This plugin allows you to run
+      <!--
+          This plugin allows you to run
 
-            $ mvn versions:set -DnewVersion=1.6.1 -Dtycho.mode=maven
+$ mvn versions:set -DnewVersion=1.6.1 -Dtycho.mode=maven
 
-            and get all the version numbers updated nearly for free.
-            The tycho bit on the end just tells tycho (used in the
-            eclipse plugin build) to piss off.
+and get all the version numbers updated nearly for free.
+The tycho bit on the end just tells tycho (used in the
+eclipse plugin build) to piss off.
 
-            Also set the version in
-            eclipse/astEditor/META-INF/MANIFEST.MF or the build will
-            complain.
+Also set the version in
+eclipse/astEditor/META-INF/MANIFEST.MF or the build will
+complain.
 
-            More details on the versions-maven-plugin are at
-            http://mojo.codehaus.org/versions-maven-plugin/
-        -->
-				<plugin>
+More details on the versions-maven-plugin are at
+http://mojo.codehaus.org/versions-maven-plugin/
+      -->
+			<plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <configuration>
@@ -98,85 +98,85 @@
 
     <pluginManagement>
       <plugins>
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-compiler-plugin</artifactId>
-	  <version>3.0</version>
-	  <configuration>
-	    <source>1.6</source>
-	    <target>1.6</target>
-	  </configuration>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.5.1</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-source-plugin</artifactId>
-	  <version>2.2.1</version>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.2.1</version>
           <configuration>
-	    <attach>true</attach>
-	  </configuration>
-	</plugin>
+						<attach>true</attach>
+					</configuration>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-javadoc-plugin</artifactId>
-	  <version>2.9</version>
-	  <executions>
-	    <execution>
-	      <id>attach-javadocs</id>
-	      <goals>
-		<goal>jar</goal>
-	      </goals>
-	    </execution>
-	  </executions>
-	  <configuration>
-	    <failOnError>false</failOnError>
-	  </configuration>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-resources-plugin</artifactId>
-	  <version>2.6</version>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-surefire-plugin</artifactId>
-	  <version>2.13</version>
-	  <configuration>
-	    <testFailureIgnore>true</testFailureIgnore>
-	  </configuration>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.13</version>
+					<configuration>
+						<testFailureIgnore>true</testFailureIgnore>
+					</configuration>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-dependency-plugin</artifactId>
-	  <version>2.6</version>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-assembly-plugin</artifactId>
-	  <version>2.4</version>
-	  <configuration>
-	    <descriptorRefs>
-	      <descriptorRef>jar-with-dependencies</descriptorRef>
-	    </descriptorRefs>
-	  </configuration>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-jar-plugin</artifactId>
-	  <version>2.4</version>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
 
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-clean-plugin</artifactId>
-	  <version>2.5</version>
-	</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>2.5</version>
+				</plugin>
 
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -184,28 +184,28 @@
           <version>2.1</version>
         </plugin>
 
-	<plugin>
-	  <groupId>org.codehaus.mojo</groupId>
-	  <artifactId>build-helper-maven-plugin</artifactId>
-	  <version>1.7</version>
-	</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
 
-	<plugin>
-	  <groupId>pl.project13.maven</groupId>
-	  <artifactId>git-commit-id-plugin</artifactId>
-	  <version>2.1.4</version>
-	  <configuration>
-	    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-	  </configuration>
-	</plugin>
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>2.1.4</version>
+					<configuration>
+						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+					</configuration>
+				</plugin>
       </plugins>
     </pluginManagement>
 
     <extensions>
       <extension>
-	<groupId>org.apache.maven.wagon</groupId>
-	<artifactId>wagon-ssh</artifactId>
-	<version>2.4</version>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.4</version>
       </extension>
     </extensions>
   </build>
