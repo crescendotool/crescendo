@@ -14,7 +14,7 @@
 		<module>simulationengine</module>
 		<module>vdm</module>
 		<module>xmlrpcextensions</module>
-		<module>parsers</module>
+		<!--module>parsers</module-->
 	</modules>
 	<dependencies>
 		<dependency>
@@ -62,4 +62,40 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
+	<profiles>
+		<profile>
+			<id>java.1.7.profile</id>
+			<activation>
+				<jdk>1.7</jdk>
+
+				<property>
+					<name>java.1.7.profile.active</name>
+				</property>
+
+
+			</activation>
+
+			
+
+			<modules>
+				<module>parsers</module>
+			</modules>
+
+			
+		</profile>
+
+
+		<profile>
+      <id>default-any-java</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>!java.1.7.profile.active</name>
+        </property>
+      </activation>
+    </profile>
+		
+		
+	</profiles>
 </project>
