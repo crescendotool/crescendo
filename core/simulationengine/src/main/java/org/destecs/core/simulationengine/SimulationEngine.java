@@ -534,7 +534,7 @@ public class SimulationEngine
 
 			engineInfo(simulator, "Enable logging for:"
 					+ modelConfig.logVariables);
-			proxy.setLogVariables(modelConfig.logFile, true, new Vector<String>(modelConfig.logVariables));
+			proxy.setLogVariables(modelConfig.logFile, true,new Vector<String>(modelConfig.logVariables));
 
 		} catch (Exception e)
 		{
@@ -893,10 +893,10 @@ public class SimulationEngine
 		{
 			if (simulator == Simulator.CT)
 			{
-				result = ctProxy.step(outputTime, inputs, singleStep, events);
+				result = ctProxy.step(events,inputs,outputTime   ,singleStep);
 			} else if (simulator == Simulator.DE)
 			{
-				result = dtProxy.step(outputTime, inputs, singleStep, events);
+				result = dtProxy.step(events,inputs,outputTime,  singleStep );
 			}
 		} catch (Exception e)
 		{
@@ -929,7 +929,7 @@ public class SimulationEngine
 		List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
 		for (StepStructoutputsStruct stepStructoutputsStruct : outputs)
 		{
-			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name, stepStructoutputsStruct.value, stepStructoutputsStruct.size));
+			inputs.add(new StepinputsStructParam(stepStructoutputsStruct.name, stepStructoutputsStruct.size, stepStructoutputsStruct.value));
 		}
 		return inputs;
 	}
@@ -942,7 +942,7 @@ public class SimulationEngine
 		{
 			simulationStarting(simulator);
 			messageInfo(simulator, new Double(0), "start");
-			boolean result = proxy.start(0.0, totalSimulationTime);
+			boolean result = proxy.start(totalSimulationTime,0.0);
 
 			if (result)
 			{
@@ -1381,7 +1381,7 @@ public class SimulationEngine
 			List<LoadpropertiesStructParam> arguments = new Vector<LoadpropertiesStructParam>();
 			for (Entry<String, String> entry : model.arguments.entrySet())
 			{
-				arguments.add(new LoadpropertiesStructParam(entry.getValue(), entry.getKey()));
+				arguments.add(new LoadpropertiesStructParam(entry.getKey(),entry.getValue()));
 			}
 
 			success = proxy.load(arguments);

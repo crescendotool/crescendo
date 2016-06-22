@@ -61,7 +61,7 @@ public class Launch20simUtility {
 		List<LoadpropertiesStructParam> arguments = new Vector<LoadpropertiesStructParam>();
 		for (Entry<String, String> entry : model.arguments.entrySet())
 		{
-			arguments.add(new LoadpropertiesStructParam(entry.getValue(), entry.getKey()));
+			arguments.add(new LoadpropertiesStructParam(entry.getKey(),entry.getValue()));
 		}
 
 		for (int i = 0; i < RETRIES; i++)

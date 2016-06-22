@@ -980,7 +980,7 @@ public class CoSimLaunchConfigurationDelegate extends
 						+ name);
 			}
 
-			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, value, size));
+			shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam(name, size,value));
 
 		}
 

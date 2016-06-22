@@ -235,7 +235,7 @@ public class SimulationManager extends BasicSimulationManager
 				ValueContents value = getOutput(key);
 				if (value != null)
 				{
-					outputs.add(new StepStructoutputsStruct(key, value.value, value.size));
+					outputs.add(new StepStructoutputsStruct(key, value.size, value.value));
 				} else
 				{
 					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "
@@ -248,7 +248,7 @@ public class SimulationManager extends BasicSimulationManager
 			}
 		}
 
-		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime), new Vector<String>(), outputs);
+		StepStruct result = new StepStruct(new Vector<String>(),outputs,StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime));
 
 		return result;
 	}
@@ -960,7 +960,7 @@ public class SimulationManager extends BasicSimulationManager
 								value.add(token.getValue());
 								List<Integer> size = new Vector<Integer>();
 								size.add(1);
-								return new GetDesignParametersStructdesignParametersStruct(parameterName, value, size);
+								return new GetDesignParametersStructdesignParametersStruct(parameterName, size,value);
 							} else if (vDef.getExpression() instanceof SSeqExp)
 							{
 								throw new RemoteSimulationException("getDesignParameter with type SeqExpression not supported: "

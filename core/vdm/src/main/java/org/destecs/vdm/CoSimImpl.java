@@ -440,7 +440,7 @@ public class CoSimImpl implements IDestecs
 		{
 			for (String name : data)
 			{
-				list.add(new GetParametersStructparametersStruct(name, SimulationManager.getInstance().getParameter(name), SimulationManager.getInstance().getParameterSize(name)));
+				list.add(new GetParametersStructparametersStruct(name, SimulationManager.getInstance().getParameterSize(name),SimulationManager.getInstance().getParameter(name)));
 			}
 			
 		} catch (RemoteSimulationException e)
@@ -769,7 +769,7 @@ public class CoSimImpl implements IDestecs
 		{
 			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getInstanceVariables(data).entrySet())
 			{
-				vars.variables.add(new GetVariablesStructvariablesStruct(p.getKey(), p.getValue().value, p.getValue().size));
+				vars.variables.add(new GetVariablesStructvariablesStruct(p.getKey(), p.getValue().size, p.getValue().value));
 			}
 		} catch (RemoteSimulationException e)
 		{
