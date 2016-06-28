@@ -81,7 +81,7 @@ public abstract class BasicSimulationManager
 		}
 	}
 
-	enum CoSimType
+	protected enum CoSimType
 	{
 		NumericValue, Boolean, String, Unknown, Auto
 	}
