@@ -168,63 +168,40 @@ public class SimulationManager extends BasicSimulationManager
 		return links.getOutputs();
 	}
 
+	/**
+	 * Crescendo step method using xml-rpc commands
+	 * 
+	 * @param outputTime
+	 * @param inputs
+	 * @param events
+	 * @return
+	 * @throws RemoteSimulationException
+	 */
 	public synchronized StepStruct step(Double outputTime,
-			List<StepinputsStructParam> inputs, List<String> events)
+			List<StepinputsStructParam> inputs, final List<String> events)
 			throws RemoteSimulationException
 	{
-		if (runtimeException != null)
-		{
-			throw runtimeException;
-		}
-		// first check if main thread is active
-		if (mainContext != null)
-		{
-			if (mainContext.threadState != null
-					&& mainContext.threadState.dbgp != null
-					&& mainContext.threadState.dbgp instanceof DBGPReaderCoSim
-					&& ((DBGPReaderCoSim) mainContext.threadState.dbgp).getStatus() == DBGPStatus.STOPPED)
-			{
-				throw new RemoteSimulationException("VDM Main Thread no longer active. Forced to stop before end time.", null);
-			}
-		} else
-		{
-			throw new RemoteSimulationException("Interpreter is not correctly initialized.", null);
-		}
+		checkMainContext();
 
 		for (StepinputsStructParam p : inputs)
 		{
 			setValue(p.name, CoSimType.Auto, new ValueContents(p.value, p.size));
 		}
 
-		nextTimeStep = outputTime.longValue();
-		debug("Next Step clock: " + nextTimeStep);
-
-		if (events.size() > 0)
+		doInternalStep(outputTime, new ICallDelegate()
 		{
-			for (String event : events)
+
+			public void call() throws RemoteSimulationException
 			{
-				evalEvent(event);
+				if (events.size() > 0)
+				{
+					for (String event : events)
+					{
+						evalEvent(event);
+					}
+				}
 			}
-		}
-
-		try
-		{
-			interpreterRunning = true;
-			SharedStateListner.resetAutoIncrementTime();
-			notify();// Wake up Scheduler
-
-			while (interpreterRunning)
-			{
-				this.wait();// Wait for scheduler to notify
-			}
-		} catch (Exception e)
-		{
-			debugErr(e);
-			throw new RemoteSimulationException("Notification of scheduler faild", e);
-		}
-		debug("Next Step return at clock: " + nextTimeStep);
-
-		this.status = CoSimStatusEnum.STEP_TAKEN;
+		});
 
 		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
 
@@ -248,9 +225,69 @@ public class SimulationManager extends BasicSimulationManager
 			}
 		}
 
-		StepStruct result = new StepStruct(new Vector<String>(),outputs,StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime));
+		StepStruct result = new StepStruct(new Vector<String>(), outputs, StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime));
 
 		return result;
+	}
+
+
+
+	protected void checkMainContext() throws RemoteSimulationException
+	{
+		if (runtimeException != null)
+		{
+			throw runtimeException;
+		}
+		// first check if main thread is active
+		if (mainContext != null)
+		{
+			if (mainContext.threadState != null
+					&& mainContext.threadState.dbgp != null
+					&& mainContext.threadState.dbgp instanceof DBGPReaderCoSim
+					&& ((DBGPReaderCoSim) mainContext.threadState.dbgp).getStatus() == DBGPStatus.STOPPED)
+			{
+				throw new RemoteSimulationException("VDM Main Thread no longer active. Forced to stop before end time.", null);
+			}
+		} else
+		{
+			throw new RemoteSimulationException("Interpreter is not correctly initialized.", null);
+		}
+	}
+
+	private static interface ICallDelegate
+	{
+		void call() throws RemoteSimulationException;
+	}
+
+	protected void doInternalStep(Double outputTime, ICallDelegate preStepAction)
+			throws RemoteSimulationException
+	{
+		nextTimeStep = outputTime.longValue();
+		debug("Next Step clock: " + nextTimeStep);
+
+		if (preStepAction != null)
+		{
+			preStepAction.call();
+		}
+
+		try
+		{
+			interpreterRunning = true;
+			SharedStateListner.resetAutoIncrementTime();
+			notify();// Wake up Scheduler
+
+			while (interpreterRunning)
+			{
+				this.wait();// Wait for scheduler to notify
+			}
+		} catch (Exception e)
+		{
+			debugErr(e);
+			throw new RemoteSimulationException("Notification of scheduler faild", e);
+		}
+		debug("Next Step return at clock: " + nextTimeStep);
+
+		this.status = CoSimStatusEnum.STEP_TAKEN;
 	}
 
 	private void evalEvent(String event) throws RemoteSimulationException
@@ -295,6 +332,14 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
+	/**
+	 * gets an output with dimensions
+	 * 
+	 * @param name
+	 * @return
+	 * @throws ValueException
+	 * @throws RemoteSimulationException
+	 */
 	private ValueContents getOutput(String name) throws ValueException,
 			RemoteSimulationException
 	{
@@ -960,7 +1005,7 @@ public class SimulationManager extends BasicSimulationManager
 								value.add(token.getValue());
 								List<Integer> size = new Vector<Integer>();
 								size.add(1);
-								return new GetDesignParametersStructdesignParametersStruct(parameterName, size,value);
+								return new GetDesignParametersStructdesignParametersStruct(parameterName, size, value);
 							} else if (vDef.getExpression() instanceof SSeqExp)
 							{
 								throw new RemoteSimulationException("getDesignParameter with type SeqExpression not supported: "
