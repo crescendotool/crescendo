@@ -70,7 +70,7 @@ public abstract class BasicSimulationManager
 
 	enum CoSimStatusEnum
 	{
-		NOT_INITIALIZED(0), LOADED(4), INITIALIZED(1), STARTED(5),STEP_TAKEN(2), FINISHED(
+		NOT_INITIALIZED(0), LOADED(4), INITIALIZED(1), STARTED(5), STEP_TAKEN(2), FINISHED(
 				3);
 
 		public int value;
@@ -95,12 +95,12 @@ public abstract class BasicSimulationManager
 	protected Long nextTimeStep = Long.valueOf(0);
 	protected Long nextSchedulableActionTime = Long.valueOf(0);
 
-	protected final LexLocation coSimLocation = new LexLocation(new File("SimulationInterface"), "SimulationInterface", 0, 0, 0, 0,0,0);
+	protected final LexLocation coSimLocation = new LexLocation(new File("SimulationInterface"), "SimulationInterface", 0, 0, 0, 0, 0, 0);
 
 	ArrayBlockingQueue<ValueUpdateRequest> updateValueQueueRequest = new ArrayBlockingQueue<ValueUpdateRequest>(1);
 
 	protected ClassInterpreter interpreter;
-	
+
 	protected RemoteSimulationException runtimeException = null;
 
 	public static class ValueUpdateRequest
@@ -130,7 +130,7 @@ public abstract class BasicSimulationManager
 						ValueUpdateRequest request = updateValueQueueRequest.take();
 						try
 						{
-							Context coSimCtxt = new ClassContext(interpreter.getAssistantFactory(),coSimLocation, "SimulationInterface", interpreter.initialContext, request.value.classDef);
+							Context coSimCtxt = new ClassContext(interpreter.getAssistantFactory(), coSimLocation, "SimulationInterface", interpreter.initialContext, request.value.classDef);
 							coSimCtxt.setThreadState(null, request.value.cpu);
 
 							request.value.value.set(coSimLocation, request.newValue, coSimCtxt);
@@ -144,13 +144,13 @@ public abstract class BasicSimulationManager
 						} catch (ContextException e)
 						{
 							String message = "Error in simulation: Cannot set shared instance variable \""
-								+ request.value.name.getModule()
-								+ "."
-								+ request.value.name.getName()
-								+ "\""
-								+ "\n\tReasong is: " + e.getMessage();
+									+ request.value.name.getModule()
+									+ "."
+									+ request.value.name.getName()
+									+ "\""
+									+ "\n\tReasong is: " + e.getMessage();
 							Console.err.println(message);
-							
+
 							runtimeException = new RemoteSimulationException(message);
 						} catch (Exception e)
 						{
@@ -254,6 +254,47 @@ public abstract class BasicSimulationManager
 		{
 			throw new RemoteSimulationException("Faild to find variable in setValue with name: "
 					+ name);
+		}
+		return true;
+
+	}
+
+	/**
+	 * schedule a value set from a VDM value, this method performs no checks on whether the value types matches
+	 * @param valueDisplayName
+	 * @param val
+	 * @param newValue
+	 * @return
+	 * @throws RemoteSimulationException
+	 */
+	protected boolean setScalarValue(String valueDisplayName, ValueInfo val,
+			Value newValue) throws RemoteSimulationException
+	{
+		if (val != null)
+		{
+
+			try
+			{
+
+				if (newValue == null)
+				{
+					throw new RemoteSimulationException("Error in setValue with variable: "
+							+ valueDisplayName
+							+ " properly a type mismatch. Requested input type was: ");
+				}
+
+				updateValueQueueRequest.put(new ValueUpdateRequest(val, newValue));
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+				throw new RemoteSimulationException("Internal error in setValue with name: "
+						+ valueDisplayName, e);
+			}
+
+		} else
+		{
+			throw new RemoteSimulationException("Faild to find variable in setValue with name: "
+					+ valueDisplayName);
 		}
 		return true;
 
@@ -412,7 +453,7 @@ public abstract class BasicSimulationManager
 
 		for (int i = 0; i < val.value.values.size(); i++)
 		{
-			ValueInfo elementValue =  VDMClassHelper.createValue(val.name, val.classDef, val.value.values.get(i), val.cpu);
+			ValueInfo elementValue = VDMClassHelper.createValue(val.name, val.classDef, val.value.values.get(i), val.cpu);
 			setScalarValue(elementValue, CoSimType.Auto, values.get(i).toString(), name);
 		}
 
