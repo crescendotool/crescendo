@@ -208,7 +208,7 @@ public class VDMClassHelper
 		Value val = value.deref();
 		if (val instanceof SeqValue)
 		{
-			return new SeqValueInfo(name, classDef, (SeqValue) val, cpu);
+			return new SeqValueInfo(name, classDef, (SeqValue) val,value, cpu);
 		}
 		return new ValueInfo(name, classDef, value, cpu);
 	}
