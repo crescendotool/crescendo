@@ -135,7 +135,7 @@ public class SimulationManager extends BasicSimulationManager
 	/**
 	 * A handle to the unique Singleton instance.
 	 */
-	static private volatile SimulationManager _instance = null;
+	static protected volatile SimulationManager _instance = null;
 
 	/**
 	 * @return The unique instance of this class.
@@ -623,7 +623,7 @@ public class SimulationManager extends BasicSimulationManager
 		final List<File> files = new Vector<File>();
 		try
 		{
-			files.addAll(getInstance().controller.getInterpreter().getSourceFiles());
+			files.addAll(controller.getInterpreter().getSourceFiles());
 		} catch (Exception e)
 		{
 			debugErr(e);
