@@ -56,7 +56,7 @@ public class ExpressionEvaluator extends AnswerAdaptor<Value>
 			case S:
 				return Value.valueOf(node.getValue());
 			case US:
-				//1 microsecond = 1.0 × 10-6 seconds
+				//1 microsecond = 1.0 10-6 seconds
 				return Value.valueOf(node.getValue()*(10E-6));
 
 		}
