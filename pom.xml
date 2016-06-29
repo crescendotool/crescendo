@@ -65,7 +65,7 @@
     </dependency>
   </dependencies>
 
- <profiles>
+	<profiles>
     <profile>
       <id>With-IDE</id>
       <modules>
@@ -207,6 +207,15 @@ http://mojo.codehaus.org/versions-maven-plugin/
 						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 					</configuration>
 				</plugin>
+
+				<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+          <configuration>
+            <tagNameFormat>Release/@{project.version}</tagNameFormat>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -220,7 +229,7 @@ http://mojo.codehaus.org/versions-maven-plugin/
   </build>
 
 
-<scm>
+	<scm>
 		<url>git@github.com:cresendotool/crescendo.git</url>
 		<connection>scm:git:git://github.com/crescendotool/crescendo.git</connection>
 		<developerConnection>scm:git:git@github.com:crescendotool/crescendo.git</developerConnection>
@@ -228,18 +237,18 @@ http://mojo.codehaus.org/versions-maven-plugin/
 	</scm>
 
 
-<distributionManagement>
+	<distributionManagement>
     <repository>
-        <id>overture.au.dk</id>
-        <name>overture.au.dk-releases</name>
-        <url>http://overture.au.dk/artifactory/crescendo-development</url>
+      <id>overture.au.dk</id>
+      <name>overture.au.dk-releases</name>
+      <url>http://overture.au.dk/artifactory/crescendo-development</url>
     </repository>
     <snapshotRepository>
-        <id>overture.au.dk</id>
-        <name>overture.au.dk-snapshots</name>
-        <url>http://overture.au.dk/artifactory/crescendo-development</url>
+      <id>overture.au.dk</id>
+      <name>overture.au.dk-snapshots</name>
+      <url>http://overture.au.dk/artifactory/crescendo-development</url>
     </snapshotRepository>
-</distributionManagement>
+	</distributionManagement>
 
 
   <organization>
