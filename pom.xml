@@ -220,6 +220,14 @@ http://mojo.codehaus.org/versions-maven-plugin/
   </build>
 
 
+<scm>
+		<url>git@github.com:cresendotool/crescendo.git</url>
+		<connection>scm:git:git://github.com/crescendotool/crescendo.git</connection>
+		<developerConnection>scm:git:git@github.com:crescendotool/crescendo.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+
 <distributionManagement>
     <repository>
         <id>overture.au.dk</id>
