@@ -32,6 +32,14 @@
   </modules>
 
   <repositories>
+
+ <repository>
+      <id>p2.overture.bintray.com</id>
+      <url>http://dl.bintray.com/overturetool/overturetool</url>
+      <layout>p2</layout>
+    </repository>
+
+
     <repository>
       <id>overture.au.dk Eclipse P2 repo for overture crescendo development</id>
       <url>http://overture.au.dk/p2/crescendo-overture-development/</url>

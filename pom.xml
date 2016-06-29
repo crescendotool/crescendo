@@ -11,12 +11,11 @@
   <modules>
     <module>core</module>
     <module>tools</module>
-    <module>ide</module>
   </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <overture.version>2.1.7-SNAPSHOT</overture.version>
+    <overture.version>2.3.6</overture.version>
   </properties>
 
   <repositories>
@@ -33,7 +32,7 @@
 				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>warn</checksumPolicy>
       </snapshots>
-      <url>http://overture.au.dk/maven/crescendo-overture-development/</url>
+      <url>http://overture.au.dk/artifactory/crescendo-overture-development/</url>
       <layout>default</layout>
     </repository>
   </repositories>
@@ -52,7 +51,7 @@
 				<updatePolicy>daily</updatePolicy>
 				<checksumPolicy>warn</checksumPolicy>
       </snapshots>
-      <url>http://overture.au.dk/maven/crescendo-overture-development/</url>
+      <url>http://overture.au.dk/artifactory/crescendo-overture-development/</url>
       <layout>default</layout>
     </pluginRepository>
   </pluginRepositories>
@@ -65,6 +64,16 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+ <profiles>
+    <profile>
+      <id>With-IDE</id>
+      <modules>
+        <module>ide</module>
+      </modules>
+    </profile>
+  </profiles>
+
 
   <build>
     <defaultGoal>install</defaultGoal>
@@ -103,8 +112,8 @@ http://mojo.codehaus.org/versions-maven-plugin/
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.5.1</version>
 					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
+						<source>1.7</source>
+						<target>1.7</target>
 					</configuration>
 				</plugin>
 
