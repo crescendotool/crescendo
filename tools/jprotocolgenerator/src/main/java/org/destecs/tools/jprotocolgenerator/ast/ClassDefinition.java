@@ -18,6 +18,8 @@
  *******************************************************************************/
 package org.destecs.tools.jprotocolgenerator.ast;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,7 @@ import org.destecs.tools.jprotocolgenerator.ast.SuppressWarningAnnotation.Warnin
 
 public class ClassDefinition extends IInterface
 {
-	public List<Field> fields = new Vector<Field>();
+	private List<Field> fields = new Vector<Field>();
 	public List<ITypeNode> implemented = new Vector<ITypeNode>();
 	Method toMapMethod;
 	Method toStringMethod;
@@ -238,5 +240,18 @@ public class ClassDefinition extends IInterface
 	public String toString()
 	{
 		return toSource();
+	}
+
+	public void addField(Field f)
+	{
+		this.fields.add(f);
+		
+		 Collections.sort(this.fields, new Comparator<Field>() {
+             @Override
+             public int compare(Field lhs, Field rhs) {
+                 return lhs.getName().compareTo(rhs.getName());
+             }
+         });
+		
 	}
 }

@@ -3,7 +3,8 @@
 	<parent>
 		<groupId>org.destecs</groupId>
 		<artifactId>root</artifactId>
-		<version>2.0.6</version>
+		<version>2.0.8</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.destecs</groupId>
 	<artifactId>core</artifactId>
@@ -14,7 +15,7 @@
 		<module>simulationengine</module>
 		<module>vdm</module>
 		<module>xmlrpcextensions</module>
-		<module>parsers</module>
+		<!--module>parsers</module-->
 	</modules>
 	<dependencies>
 		<dependency>
@@ -26,13 +27,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
@@ -62,4 +56,25 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
+	<profiles>
+		<profile>
+			<id>java.1.7.profile</id>
+			<activation>
+				<jdk>1.7</jdk>
+			</activation>
+			<modules>
+				<module>parsers</module>
+			</modules>
+		</profile>
+
+
+		<profile>
+      <id>default-any-java</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+		
+	</profiles>
 </project>

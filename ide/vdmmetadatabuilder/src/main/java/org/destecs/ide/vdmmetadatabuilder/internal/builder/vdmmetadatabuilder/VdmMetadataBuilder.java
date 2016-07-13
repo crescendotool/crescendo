@@ -60,6 +60,7 @@ import org.overture.ast.types.ASeqSeqType;
 import org.overture.ast.types.PType;
 import org.overture.ide.core.IVdmModel;
 import org.overture.ide.core.resources.IVdmProject;
+import org.overture.typechecker.FlatEnvironment;
 import org.overture.typechecker.assistant.TypeCheckerAssistantFactory;
 import org.overture.typechecker.assistant.definition.PDefinitionAssistantTC;
 
@@ -254,7 +255,7 @@ public class VdmMetadataBuilder extends
 
 	private String getNameTypeString(PType type)
 	{
-		if (new TypeCheckerAssistantFactory().createPTypeAssistant().isClass(type))
+		if (new TypeCheckerAssistantFactory().createPTypeAssistant().isClass(type,new FlatEnvironment(af, new Vector<PDefinition>())))
 		{
 			return getTypeName(type) + ",class";
 		} else

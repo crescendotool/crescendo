@@ -2,7 +2,7 @@
 <feature
       id="org.destecs.ide.features.rcp"
       label="%org.destecs.ide.features.rcp.name"
-      version="2.0.6">
+      version="2.0.7.qualifier">
 
    <description url="%description.url">
       %description.text

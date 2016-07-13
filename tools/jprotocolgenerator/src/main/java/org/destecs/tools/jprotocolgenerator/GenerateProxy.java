@@ -440,7 +440,7 @@ public class GenerateProxy
 		{
 			Field f = new Field();
 			f.setName(p);
-			returnClass.fields.add(f);
+			returnClass.addField(f);
 
 			ITypeNode type = map.possibleEntries.get(p);
 			if (type instanceof ListType)

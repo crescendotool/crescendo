@@ -1,12 +1,15 @@
 package vdm;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.destecs.core.parsers.VdmLinkParserWrapper;
+import org.destecs.core.vdmlink.Links;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.StepStruct;
 import org.destecs.protocol.structs.StepStructoutputsStruct;
@@ -49,8 +52,23 @@ public class CoSimTest
 
 		File linkFile = new File("src/test/resources/periodic-watertank/vdm.link".replace('/', File.separatorChar));
 		File baseDirFile = new File(".");
+		
+		Links links =null;
+		VdmLinkParserWrapper linksParser = new VdmLinkParserWrapper();
+		try
+		{
+			links= linksParser.parse(linkFile);
+		} catch (IOException e)
+		{
+			throw new RemoteSimulationException("Faild to parse vdm links",e);
+		}// Links.load(linkFile);
 
-		SimulationManager.getInstance().load(specfiles, linkFile, new File("."), baseDirFile, disableRtLog, disableCoverage, disableOptimization);
+		if (links == null || linksParser.hasErrors())
+		{
+			throw new RemoteSimulationException("Faild to parse vdm links");
+		}
+
+		SimulationManager.getInstance().load(specfiles, links, new File("."), baseDirFile, disableRtLog, disableCoverage, disableOptimization);
 
 		List<Map<String, Object>> parameters = new Vector<Map<String, Object>>();
 
@@ -75,7 +93,7 @@ public class CoSimTest
 		while (time < 5)
 		{
 			List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
-			inputs.add(new StepinputsStructParam("level", Arrays.asList(new Double[] { level }), Arrays.asList(new Integer[] { 1 })));
+			inputs.add(new StepinputsStructParam("level", Arrays.asList(new Integer[] { 1 }), Arrays.asList(new Double[] { level })));
 
 			double timeTmp = new Double(SystemClock.timeToInternal(TimeUnit.seconds, time));
 			StepStruct res = SimulationManager.getInstance().step(timeTmp, inputs, new Vector<String>());

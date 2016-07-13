@@ -18,8 +18,8 @@
  *******************************************************************************/
 package org.destecs.tools.jprotocolgenerator.ast;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 public class MapType implements ITypeNode
@@ -27,7 +27,7 @@ public class MapType implements ITypeNode
 	
 	public ITypeNode keyType;
 	public ITypeNode valueType;
-	public Map<String,ITypeNode> possibleEntries = new HashMap<String, ITypeNode>();
+	public Map<String,ITypeNode> possibleEntries = new TreeMap<String, ITypeNode>();
 
 	public MapType(Type type, ITypeNode rangeType)
 	{

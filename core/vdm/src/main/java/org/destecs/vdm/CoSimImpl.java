@@ -19,6 +19,7 @@
 package org.destecs.vdm;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -27,7 +28,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.LinkInfo;
+import org.destecs.core.vdmlink.Links;
 import org.destecs.protocol.IDestecs;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetDesignParametersStruct;
@@ -213,7 +216,30 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			return SimulationManager.getInstance().load(specfiles, linkFile, new File(outputDir), baseDirFile, disableRtLog, disableCoverage, disableOptimization);
+			Links links =null;
+			
+			if (!linkFile.exists() || linkFile.isDirectory())
+			{
+				throw new RemoteSimulationException("The VDM link file does not exist: "
+						+ linkFile);
+			}
+			VdmLinkParserWrapper linksParser = new VdmLinkParserWrapper();
+			try
+			{
+				links= linksParser.parse(linkFile);
+			} catch (IOException e)
+			{
+				throw new RemoteSimulationException("Faild to parse vdm links",e);
+			}// Links.load(linkFile);
+
+			if (links == null || linksParser.hasErrors())
+			{
+				throw new RemoteSimulationException("Faild to parse vdm links");
+			}
+			
+			
+			
+			return SimulationManager.getInstance().load(specfiles, links, new File(outputDir), baseDirFile, disableRtLog, disableCoverage, disableOptimization);
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -414,7 +440,7 @@ public class CoSimImpl implements IDestecs
 		{
 			for (String name : data)
 			{
-				list.add(new GetParametersStructparametersStruct(name, SimulationManager.getInstance().getParameter(name), SimulationManager.getInstance().getParameterSize(name)));
+				list.add(new GetParametersStructparametersStruct(name, SimulationManager.getInstance().getParameterSize(name),SimulationManager.getInstance().getParameter(name)));
 			}
 			
 		} catch (RemoteSimulationException e)
@@ -743,7 +769,7 @@ public class CoSimImpl implements IDestecs
 		{
 			for (Entry<String, ValueContents> p : SimulationManager.getInstance().getInstanceVariables(data).entrySet())
 			{
-				vars.variables.add(new GetVariablesStructvariablesStruct(p.getKey(), p.getValue().value, p.getValue().size));
+				vars.variables.add(new GetVariablesStructvariablesStruct(p.getKey(), p.getValue().size, p.getValue().value));
 			}
 		} catch (RemoteSimulationException e)
 		{

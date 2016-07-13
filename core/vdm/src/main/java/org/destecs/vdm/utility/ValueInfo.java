@@ -14,7 +14,7 @@ public class ValueInfo
 	public final SClassDefinition classDef;
 	public final ILexNameToken name;
 
-	protected ValueInfo(ILexNameToken name, SClassDefinition classDef, Value value,
+	public ValueInfo(ILexNameToken name, SClassDefinition classDef, Value value,
 			CPUValue cpu)
 	{
 		this.value = value;

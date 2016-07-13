@@ -110,8 +110,8 @@ public class Main
 		List<Integer> size = new Vector<Integer>();
 		size.add(1);
 		
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel", minLevel,size));
-		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel", maxLevel,size));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("minlevel",size, minLevel));
+		shareadDesignParameters.add(new SetDesignParametersdesignParametersStructParam("maxlevel",size, maxLevel));
 		return shareadDesignParameters;
 	}
 

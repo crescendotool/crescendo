@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.destecs.core.parsers.VdmLinkParserWrapper;
 import org.destecs.core.vdmlink.LinkInfo;
+import org.destecs.core.vdmlink.Links;
 import org.destecs.core.vdmlink.StringPair;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.protocol.structs.GetDesignParametersStructdesignParametersStruct;
@@ -135,7 +135,7 @@ public class SimulationManager extends BasicSimulationManager
 	/**
 	 * A handle to the unique Singleton instance.
 	 */
-	static private volatile SimulationManager _instance = null;
+	static protected volatile SimulationManager _instance = null;
 
 	/**
 	 * @return The unique instance of this class.
@@ -168,9 +168,71 @@ public class SimulationManager extends BasicSimulationManager
 		return links.getOutputs();
 	}
 
+	/**
+	 * Crescendo step method using xml-rpc commands
+	 * 
+	 * @param outputTime
+	 * @param inputs
+	 * @param events
+	 * @return
+	 * @throws RemoteSimulationException
+	 */
 	public synchronized StepStruct step(Double outputTime,
-			List<StepinputsStructParam> inputs, List<String> events)
+			List<StepinputsStructParam> inputs, final List<String> events)
 			throws RemoteSimulationException
+	{
+		checkMainContext();
+
+		for (StepinputsStructParam p : inputs)
+		{
+			setValue(p.name, CoSimType.Auto, new ValueContents(p.value, p.size));
+		}
+
+		doInternalStep(outputTime, new ICallDelegate()
+		{
+
+			public void call() throws RemoteSimulationException
+			{
+				if (events.size() > 0)
+				{
+					for (String event : events)
+					{
+						evalEvent(event);
+					}
+				}
+			}
+		});
+
+		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
+
+		for (String key : links.getOutputs().keySet())
+		{
+			try
+			{
+				ValueContents value = getOutput(key);
+				if (value != null)
+				{
+					outputs.add(new StepStructoutputsStruct(key, value.size, value.value));
+				} else
+				{
+					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "
+							+ key);
+				}
+			} catch (ValueException e)
+			{
+				debugErr(e);
+				throw new RemoteSimulationException("Faild to get output parameter", e);
+			}
+		}
+
+		StepStruct result = new StepStruct(new Vector<String>(), outputs, StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime));
+
+		return result;
+	}
+
+
+
+	protected void checkMainContext() throws RemoteSimulationException
 	{
 		if (runtimeException != null)
 		{
@@ -190,21 +252,22 @@ public class SimulationManager extends BasicSimulationManager
 		{
 			throw new RemoteSimulationException("Interpreter is not correctly initialized.", null);
 		}
+	}
 
-		for (StepinputsStructParam p : inputs)
-		{
-			setValue(p.name, CoSimType.Auto, new ValueContents(p.value, p.size));
-		}
+	private static interface ICallDelegate
+	{
+		void call() throws RemoteSimulationException;
+	}
 
+	protected void doInternalStep(Double outputTime, ICallDelegate preStepAction)
+			throws RemoteSimulationException
+	{
 		nextTimeStep = outputTime.longValue();
 		debug("Next Step clock: " + nextTimeStep);
 
-		if (events.size() > 0)
+		if (preStepAction != null)
 		{
-			for (String event : events)
-			{
-				evalEvent(event);
-			}
+			preStepAction.call();
 		}
 
 		try
@@ -225,32 +288,6 @@ public class SimulationManager extends BasicSimulationManager
 		debug("Next Step return at clock: " + nextTimeStep);
 
 		this.status = CoSimStatusEnum.STEP_TAKEN;
-
-		List<StepStructoutputsStruct> outputs = new Vector<StepStructoutputsStruct>();
-
-		for (String key : links.getOutputs().keySet())
-		{
-			try
-			{
-				ValueContents value = getOutput(key);
-				if (value != null)
-				{
-					outputs.add(new StepStructoutputsStruct(key, value.value, value.size));
-				} else
-				{
-					throw new RemoteSimulationException("Faild to get output parameter, output not bound for: "
-							+ key);
-				}
-			} catch (ValueException e)
-			{
-				debugErr(e);
-				throw new RemoteSimulationException("Faild to get output parameter", e);
-			}
-		}
-
-		StepStruct result = new StepStruct(StepResultEnum.SUCCESS.value, new Double(nextSchedulableActionTime), new Vector<String>(), outputs);
-
-		return result;
 	}
 
 	private void evalEvent(String event) throws RemoteSimulationException
@@ -295,6 +332,14 @@ public class SimulationManager extends BasicSimulationManager
 		}
 	}
 
+	/**
+	 * gets an output with dimensions
+	 * 
+	 * @param name
+	 * @return
+	 * @throws ValueException
+	 * @throws RemoteSimulationException
+	 */
 	private ValueContents getOutput(String name) throws ValueException,
 			RemoteSimulationException
 	{
@@ -317,7 +362,7 @@ public class SimulationManager extends BasicSimulationManager
 		throw new RemoteSimulationException("Value: " + name + " not found");
 	}
 
-	public Boolean load(List<File> specfiles, File linkFile, File outputDir,
+	public Boolean load(List<File> specfiles, Links links, File outputDir,
 			File baseDirFile, boolean disableRtLog, boolean disableCoverage,
 			boolean disableOptimization) throws RemoteSimulationException
 	{
@@ -326,18 +371,7 @@ public class SimulationManager extends BasicSimulationManager
 			noOptimization = disableOptimization;
 			this.variablesToLog.clear();
 			// this.variablesToLog.addAll(variablesToLog);
-			if (!linkFile.exists() || linkFile.isDirectory())
-			{
-				throw new RemoteSimulationException("The VDM link file does not exist: "
-						+ linkFile);
-			}
-			VdmLinkParserWrapper linksParser = new VdmLinkParserWrapper();
-			links = linksParser.parse(linkFile);// Links.load(linkFile);
-
-			if (links == null || linksParser.hasErrors())
-			{
-				throw new RemoteSimulationException("Faild to parse vdm links");
-			}
+			this.links = links;
 
 			if (disableRtLog)
 			{
@@ -589,7 +623,7 @@ public class SimulationManager extends BasicSimulationManager
 		final List<File> files = new Vector<File>();
 		try
 		{
-			files.addAll(getInstance().controller.getInterpreter().getSourceFiles());
+			files.addAll(controller.getInterpreter().getSourceFiles());
 		} catch (Exception e)
 		{
 			debugErr(e);
@@ -971,7 +1005,7 @@ public class SimulationManager extends BasicSimulationManager
 								value.add(token.getValue());
 								List<Integer> size = new Vector<Integer>();
 								size.add(1);
-								return new GetDesignParametersStructdesignParametersStruct(parameterName, value, size);
+								return new GetDesignParametersStructdesignParametersStruct(parameterName, size, value);
 							} else if (vDef.getExpression() instanceof SSeqExp)
 							{
 								throw new RemoteSimulationException("getDesignParameter with type SeqExpression not supported: "

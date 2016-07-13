@@ -2,7 +2,8 @@
 	<parent>
 		<groupId>org.destecs</groupId>
 		<artifactId>core</artifactId>
-		<version>2.0.6</version>
+		<version>2.0.8</version>
+<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.destecs.core</groupId>
@@ -29,6 +30,26 @@
 					<packagename>org.destecs.protocol</packagename>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+								<source>${project.build.directory}/generated-sources/jprotocolgenerator/</source>
+              </sources>
+            </configuration>
+          </execution>
+				</executions>
+      </plugin>
+			
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -50,7 +71,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

@@ -61,22 +61,23 @@ public class IInterface implements IAstNode, ITypeNode
 		boolean suppressUnused = false;
 		boolean suppressUnchecked = false;//!definitions.isEmpty();
 
+		sb.append("\n@SuppressWarnings(\"all\")");
 		if (suppressUnchecked || suppressUnused)
 		{
-			sb.append("\n@SuppressWarnings({");
-			if (suppressUnused)
-			{
-				sb.append("\"unused\"");
-			}
-			if (suppressUnchecked)
-			{
-				if (sb.toString().endsWith("\""))
-				{
-					sb.append(", ");
-				}
-				sb.append("\"unchecked\"");
-			}
-			sb.append("})");
+//			sb.append("\n@SuppressWarnings({");
+//			if (suppressUnused)
+//			{
+//				sb.append("\"unused\"");
+//			}
+//			if (suppressUnchecked)
+//			{
+//				if (sb.toString().endsWith("\""))
+//				{
+//					sb.append(", ");
+//				}
+//				sb.append("\"unchecked\"");
+//			}
+//			sb.append("})");
 		}
 
 		sb.append("\npublic " + typeName + " " + getName());

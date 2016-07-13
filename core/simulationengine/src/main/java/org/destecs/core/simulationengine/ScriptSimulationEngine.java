@@ -102,7 +102,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 					{
 						case CT:
 						{
-							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Integer>(Arrays.asList(new Integer[] { 1 })), new Vector<Double>(Arrays.asList(new Double[] { value })));
 							List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
 							list.add(parm);
 							ctProxy.setParameters(list);
@@ -111,7 +111,7 @@ public class ScriptSimulationEngine extends SimulationEngine
 							break;
 						case DE:
 						{
-							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Double>(Arrays.asList(new Double[] { value })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+							SetParametersparametersStructParam parm = new SetParametersparametersStructParam(name, new Vector<Integer>(Arrays.asList(new Integer[] { 1 })), new Vector<Double>(Arrays.asList(new Double[] { value })));
 							List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
 							list.add(parm);
 							deProxy.setParameters(list);

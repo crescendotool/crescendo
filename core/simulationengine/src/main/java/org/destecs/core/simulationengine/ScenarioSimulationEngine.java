@@ -68,7 +68,7 @@ public class ScenarioSimulationEngine extends SimulationEngine
 						engineInfo(Simulator.CT, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.CT, nextTime, "setParameter");
-						SetParametersparametersStructParam parm = new SetParametersparametersStructParam(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+						SetParametersparametersStructParam parm = new SetParametersparametersStructParam(action.variableName, new Vector<Integer>(Arrays.asList(new Integer[] { 1 })), new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })));
 						List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
 						list.add(parm);
 						ctProxy.setParameters(list);
@@ -85,7 +85,7 @@ public class ScenarioSimulationEngine extends SimulationEngine
 						engineInfo(Simulator.DE, "Setting parameter (Next time="
 								+ nextTime + "): " + action);
 						messageInfo(Simulator.DE, nextTime, "setParameter");
-						SetParametersparametersStructParam parm = new SetParametersparametersStructParam(action.variableName, new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })), new Vector<Integer>(Arrays.asList(new Integer[] { 1 })));
+						SetParametersparametersStructParam parm = new SetParametersparametersStructParam(action.variableName, new Vector<Integer>(Arrays.asList(new Integer[] { 1 })), new Vector<Double>(Arrays.asList(new Double[] { action.variableValue })));
 						List<SetParametersparametersStructParam> list = new Vector<SetParametersparametersStructParam>();
 						list.add(parm);
 						dtProxy.setParameters(list);
