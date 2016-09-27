@@ -54,7 +54,7 @@
     <repository>
       <id>eclipse-kepler</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/mars</url>
+      <url>http://download.eclipse.org/releases/neon</url>
     </repository>
   </repositories>
 
