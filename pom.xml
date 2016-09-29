@@ -223,12 +223,12 @@ http://mojo.codehaus.org/versions-maven-plugin/
     <repository>
       <id>overture.au.dk</id>
       <name>overture.au.dk-releases</name>
-      <url>http://overture.au.dk/artifactory/crescendo-development</url>
+      <url>http://overture.au.dk/artifactory/crescendo</url>
     </repository>
     <snapshotRepository>
       <id>overture.au.dk</id>
       <name>overture.au.dk-snapshots</name>
-      <url>http://overture.au.dk/artifactory/crescendo-development</url>
+      <url>http://overture.au.dk/artifactory/crescendo</url>
     </snapshotRepository>
 	</distributionManagement>
 
