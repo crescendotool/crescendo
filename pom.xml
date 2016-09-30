@@ -5,7 +5,7 @@
 
   <groupId>org.destecs</groupId>
   <artifactId>root</artifactId>
-  <version>2.0.8</version>
+  <version>2.1.0</version>
   <name>DESTECS</name>
 
   <modules>
@@ -15,46 +15,28 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <overture.version>2.3.6</overture.version>
+    <overture.version>2.4.0</overture.version>
   </properties>
 
-  <repositories>
+	<repositories>
+		<!-- This repo is needed for the parsers 2.0.8 which is compiled with Java 1.7. It cannot be compiled with a newer Java compiler like Java 1.8-->
     <repository>
-      <id>overture.au.dk-overture-crescendo</id>
-      <name>Overture/Crescendo Buildserver Repository at AU</name>
+      <id>overture.au.dk-crescendo</id>
+      <name>Crescendo Buildserver Repository at AU</name>
       <releases>
-				<enabled>false</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
       </releases>
       <snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
+        <enabled>false</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
       </snapshots>
-      <url>http://overture.au.dk/artifactory/crescendo-overture-development/</url>
+      <url>http://overture.au.dk/artifactory/crescendo</url>
       <layout>default</layout>
     </repository>
   </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>overture.iha.dk-overture-crescendo-plugins</id>
-      <name>Overture/Crescendo Buildserver Repository at AU (Plugins)</name>
-      <releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-      </releases>
-      <snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-      </snapshots>
-      <url>http://overture.au.dk/artifactory/crescendo-overture-development/</url>
-      <layout>default</layout>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencies>
     <dependency>
@@ -112,8 +94,8 @@ http://mojo.codehaus.org/versions-maven-plugin/
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.5.1</version>
 					<configuration>
-						<source>1.7</source>
-						<target>1.7</target>
+						<source>1.8</source>
+						<target>1.8</target>
 					</configuration>
 				</plugin>
 
@@ -213,6 +195,7 @@ http://mojo.codehaus.org/versions-maven-plugin/
           <artifactId>maven-release-plugin</artifactId>
           <version>2.5.3</version>
           <configuration>
+						<releaseProfiles>release,With-IDE,all-platforms</releaseProfiles>
             <tagNameFormat>Release/@{project.version}</tagNameFormat>
           </configuration>
         </plugin>
@@ -233,7 +216,7 @@ http://mojo.codehaus.org/versions-maven-plugin/
 		<url>git@github.com:cresendotool/crescendo.git</url>
 		<connection>scm:git:git://github.com/crescendotool/crescendo.git</connection>
 		<developerConnection>scm:git:git@github.com:crescendotool/crescendo.git</developerConnection>
-		<tag>Release/2.0.8</tag>
+		<tag>Release/2.1.0</tag>
 	</scm>
 
 
@@ -241,12 +224,12 @@ http://mojo.codehaus.org/versions-maven-plugin/
     <repository>
       <id>overture.au.dk</id>
       <name>overture.au.dk-releases</name>
-      <url>http://overture.au.dk/artifactory/crescendo-development</url>
+      <url>http://overture.au.dk/artifactory/crescendo</url>
     </repository>
     <snapshotRepository>
       <id>overture.au.dk</id>
       <name>overture.au.dk-snapshots</name>
-      <url>http://overture.au.dk/artifactory/crescendo-development</url>
+      <url>http://overture.au.dk/artifactory/crescendo</url>
     </snapshotRepository>
 	</distributionManagement>
 

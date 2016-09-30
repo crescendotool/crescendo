@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Crescendo Tools" uid="org.destecs.ide.platform.product" id="org.destecs.ide.platform.product" application="org.eclipse.ui.ide.workbench" version="2.0.6" useFeatures="true" includeLaunchers="true">
+<product name="Crescendo Tools" uid="org.destecs.ide.platform.product" id="org.destecs.ide.platform.product" application="org.eclipse.ui.ide.workbench" version="2.1.0" useFeatures="true" includeLaunchers="true">
+
    <aboutInfo>
       <image path="/icons/ctool128/destecs_misc.png"/>
       <text>
@@ -44,10 +45,10 @@
         <text>
    Crescendo
 
-Crescendo is an open source tool for the Vienna Development Method (VDM).
+Crescendo is an open source tool for the Vienna Development Method (VDM). 
 The tool supports different VDM dialects which include the ISO VDM-SL
 standard, as well as the object-oriented extension VDM++ and the real-time
-extension of that called VDM-RT.
+extension of that called VDM-RT. 
 
 Copyright (C) 2010 Crescendo contributors and others
 

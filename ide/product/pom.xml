@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.destecs</groupId>
     <artifactId>ide</artifactId>
-    <version>2.0.7-SNAPSHOT</version>
+    <version>2.1.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -17,21 +17,21 @@
   
   <!-- To generate the installer scripts, do
 
-       $ mvn -Dtycho.mode=maven resources:resources -Dsim20.path=/whereever/the/20sim/installer/is -Dinstaller.arch=x86
-       $ mvn -Dtycho.mode=maven resources:resources -Dsim20.path=/whereever/the/20sim/installer/is -Dinstaller.arch=x86_64
+$ mvn -Dtycho.mode=maven resources:resources -Dsim20.path=/whereever/the/20sim/installer/is -Dinstaller.arch=x86
+$ mvn -Dtycho.mode=maven resources:resources -Dsim20.path=/whereever/the/20sim/installer/is -Dinstaller.arch=x86_64
 
-       They will create crescendo.nsi scripts in target/installers/x86
-       and target/installers/x86_64 that, when run using
+They will create crescendo.nsi scripts in target/installers/x86
+and target/installers/x86_64 that, when run using
 
-       $ makensis target/installers/x86/crescendo.nsi
-       $ makensis target/installers/x86_64/crescendo.nsi
+$ makensis target/installers/x86/crescendo.nsi
+$ makensis target/installers/x86_64/crescendo.nsi
 
-       will create the corresponding installer .exe files in the same
-       directory as the crescendo.nsi files.
+will create the corresponding installer .exe files in the same
+directory as the crescendo.nsi files.
 
-       Note that the installer scripts are heavily dependent on the
-       structure of the maven target folder, but are configured
-       through the properties below.
+Note that the installer scripts are heavily dependent on the
+structure of the maven target folder, but are configured
+through the properties below.
   -->
 
   <properties>
@@ -94,19 +94,46 @@
             </goals>
           </execution>
         </executions>
-	<configuration>
-	  <products>
-	    <product>
-	      <id>org.destecs.ide.platform.product</id>
-	      <archiveFileName>${crescendo.prefix}</archiveFileName>
-	      <rootFolder>Crescendo</rootFolder>
+				<configuration>
+					<products>
+						<product>
+							<id>org.destecs.ide.platform.product</id>
+							<archiveFileName>${crescendo.prefix}</archiveFileName>
+							<rootFolder></rootFolder>
 							<rootFolders>
 								<macosx>Crescendo.app</macosx>
+								<linux>Crescendo</linux>
 							</rootFolders>
-	    </product>
-	  </products>
-	</configuration>
+						</product>
+					</products>
+				</configuration>
       </plugin>
     </plugins>
   </build>
+
+	<profiles>
+		<profile>
+
+			<id>release</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<version>3.0.0</version>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+	
 </project>
