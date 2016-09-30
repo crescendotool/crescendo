@@ -102,7 +102,7 @@ through the properties below.
 							<rootFolder>Crescendo</rootFolder>
 							<rootFolders>
 								<macosx>Crescendo.app</macosx>
-								 <linux>Crescendo</linux>
+								<linux>Crescendo</linux>
 							</rootFolders>
 						</product>
 					</products>
@@ -110,4 +110,30 @@ through the properties below.
       </plugin>
     </plugins>
   </build>
+
+	<profiles>
+		<profile>
+
+			<id>release</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<version>3.0.0</version>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+	
 </project>
