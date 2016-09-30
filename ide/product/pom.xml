@@ -99,7 +99,7 @@ through the properties below.
 						<product>
 							<id>org.destecs.ide.platform.product</id>
 							<archiveFileName>${crescendo.prefix}</archiveFileName>
-							<rootFolder>Crescendo</rootFolder>
+							<rootFolder></rootFolder>
 							<rootFolders>
 								<macosx>Crescendo.app</macosx>
 								<linux>Crescendo</linux>
