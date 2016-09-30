@@ -1,5 +1,7 @@
 instructions.configure=\
-  addRepository(type:0,location:http${#58}//download.eclipse.org/releases/galileo,name:Galileo Update Site);\
-  addRepository(type:1,location:http${#58}//download.eclipse.org/releases/galileo,name:Galileo Update Site);\
-  addRepository(type:0,location:http${#58}//destecs.sourceforge.net/ide/repository);\
-  addRepository(type:1,location:http${#58}//destecs.sourceforge.net/ide/repository);
+  addRepository(type:0,name:Overture,enabled:false,location:http${#58}//dl.bintray.com/overturetool/overturetool/);\
+  addRepository(type:1,name:Overture,enabled:false,location:http${#58}//dl.bintray.com/overturetool/overturetool/);\
+  addRepository(type:0,name:Neon,enabled:true,location:http${#58}//download.eclipse.org/releases/neon/);\
+  addRepository(type:1,name:Neon,enabled:true,location:http${#58}//download.eclipse.org/releases/neon/);\
+  addRepository(type:0,name:The Eclipse Project Updates,enabled:true,location:http${#58}//download.eclipse.org/eclipse/updates/4.6);\
+  addRepository(type:1,name:The Eclipse Project Updates,enabled:true,location:http${#58}//download.eclipse.org/eclipse/updates/4.6);
