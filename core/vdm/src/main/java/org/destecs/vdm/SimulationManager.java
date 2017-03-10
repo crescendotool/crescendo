@@ -131,6 +131,7 @@ public class SimulationManager extends BasicSimulationManager
 	private File coverageDirectory = null;
 	private boolean noOptimization;
 	private long internalFinishTime;
+	protected Exception exception = null;
 
 	/**
 	 * A handle to the unique Singleton instance.
@@ -174,7 +175,7 @@ public class SimulationManager extends BasicSimulationManager
 	 * @param outputTime
 	 * @param inputs
 	 * @param events
-	 * @return
+	 * @return returns the stepstruct with the required outputs
 	 * @throws RemoteSimulationException
 	 */
 	public synchronized StepStruct step(Double outputTime,
@@ -230,8 +231,6 @@ public class SimulationManager extends BasicSimulationManager
 		return result;
 	}
 
-
-
 	protected void checkMainContext() throws RemoteSimulationException
 	{
 		if (runtimeException != null)
@@ -276,14 +275,21 @@ public class SimulationManager extends BasicSimulationManager
 			SharedStateListner.resetAutoIncrementTime();
 			notify();// Wake up Scheduler
 
-			while (interpreterRunning)
+			while (interpreterRunning && exception == null)
 			{
-				this.wait();// Wait for scheduler to notify
+				this.wait(500);// Wait for scheduler to notify
 			}
+
 		} catch (Exception e)
 		{
 			debugErr(e);
 			throw new RemoteSimulationException("Notification of scheduler faild", e);
+		}
+
+		if (exception != null)
+		{
+			throw new RemoteSimulationException("Exception occured at clock: "
+					+ nextTimeStep + " " + exception.getMessage(), exception);
 		}
 		debug("Next Step return at clock: " + nextTimeStep);
 
@@ -801,7 +807,7 @@ public class SimulationManager extends BasicSimulationManager
 									&& Interpreter.getInstance().getAssistantFactory().createPDefinitionAssistant().isValueDefinition(vDef))
 							{
 								if (dimension.length == 1
-										&& ((Integer) dimension[0] == 1))
+										&& (Integer) dimension[0] == 1)
 								{
 									Double newValue = (Double) objValue[0];
 									found = setValueForSDP(newValue, vDef);
@@ -900,7 +906,9 @@ public class SimulationManager extends BasicSimulationManager
 			List<Integer> dimensions)
 	{
 		if (seqEnum.getMembers().size() != dimensions.get(0))
+		{
 			return false;
+		}
 
 		for (PExp exp : seqEnum.getMembers())
 		{
@@ -908,7 +916,9 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				ASeqEnumSeqExp seqEnumInner = (ASeqEnumSeqExp) exp;
 				if (seqEnumInner.getMembers().size() != dimensions.get(1))
+				{
 					return false;
+				}
 			}
 		}
 
@@ -924,7 +934,7 @@ public class SimulationManager extends BasicSimulationManager
 
 		if (exp != null && exp instanceof ARealLiteralExp)
 		{
-			ARealLiteralExp rExp = ((ARealLiteralExp) exp);
+			ARealLiteralExp rExp = (ARealLiteralExp) exp;
 			ILexRealToken token = rExp.getValue();
 
 			Field valueField = LexRealToken.class.getField("value");
@@ -999,7 +1009,7 @@ public class SimulationManager extends BasicSimulationManager
 						{
 							if (vDef.getExpression() instanceof ARealLiteralExp)
 							{
-								ARealLiteralExp exp = ((ARealLiteralExp) vDef.getExpression());
+								ARealLiteralExp exp = (ARealLiteralExp) vDef.getExpression();
 								ILexRealToken token = exp.getValue();
 								List<Double> value = new Vector<Double>();
 								value.add(token.getValue());
@@ -1043,7 +1053,7 @@ public class SimulationManager extends BasicSimulationManager
 	/**
 	 * This function returns VDM values which is constants
 	 * 
-	 * @return
+	 * @return returns vdm value constants
 	 * @throws RemoteSimulationException
 	 */
 	public Map<String, ValueContents> getParameters()
@@ -1075,7 +1085,7 @@ public class SimulationManager extends BasicSimulationManager
 			NameValuePairList members, int depth) throws ValueException
 	{
 		Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
-		String prefix = (name.length() == 0 ? "" : name + ".");
+		String prefix = name.length() == 0 ? "" : name + ".";
 		if (depth < 10)
 		{
 			for (NameValuePair p : members)
@@ -1113,7 +1123,7 @@ public class SimulationManager extends BasicSimulationManager
 	 * 
 	 * @param filter
 	 *            a filter used to restrict the returned collection, if empty the full set is returned
-	 * @return
+	 * @return returns the VDM instance variables
 	 * @throws RemoteSimulationException
 	 */
 	public Map<String, ValueContents> getInstanceVariables(List<String> filter)
@@ -1300,4 +1310,10 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		return internalFinishTime;
 	}
+
+	public void setException(Exception e)
+	{
+		exception = e;
+	}
+
 }

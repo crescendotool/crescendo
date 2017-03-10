@@ -97,37 +97,54 @@ public class VDMCO extends VDMRT
 				{
 					try
 					{
-						Thread main = new Thread(new Runnable()
+						InitThread iniThread = new InitThread(this);
+						BasicSchedulableThread.setInitialThread(iniThread);
+						{
+							final Interpreter i = Interpreter.getInstance();
+							i.init(null);
+						}
+						final Thread main = new Thread(new Runnable()
 						{
 
 							public void run()
 							{
-								Interpreter i = Interpreter.getInstance();
-								i.init(null);
 								try
 								{
+
+									Interpreter i = Interpreter.getInstance();
 									i.execute("new World().run()", null);
 								} catch (Exception e)
 								{
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+									exception = e;
+									status = ExitStatus.EXIT_ERRORS;
+									return;
 								}
 							}
 						});
+						InitThread mainThread = new InitThread(main);
+						BasicSchedulableThread.setInitialThread(mainThread);
 						main.setDaemon(true);
 						main.setName("VDM console main");
 						main.start();
 
 						status = ExitStatus.EXIT_OK;
-						finished = true;
+
 						return;
 					} catch (Exception e)
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						exception = e;
 						status = ExitStatus.EXIT_ERRORS;
+					} finally
+					{
+						finished = true;
+
 					}
 				} else
+				{
 					try
 					{
 						InitThread iniThread = new InitThread(this);
@@ -214,6 +231,7 @@ public class VDMCO extends VDMRT
 						exception = e;
 						println("Execution: " + e);
 					}
+				}
 
 				status = ExitStatus.EXIT_ERRORS;
 				finished = true;
@@ -222,8 +240,8 @@ public class VDMCO extends VDMRT
 
 			public boolean isFinished()
 			{
-				return finished
-						|| (dbgpreader != null && (/* dbgpreader.getStatus()==DBGPStatus.STARTING|| */dbgpreader.getStatus() == DBGPStatus.RUNNING));
+				return finished || dbgpreader != null
+						&& dbgpreader.getStatus() == DBGPStatus.RUNNING;
 			}
 
 			public ExitStatus getExitStatus()
@@ -318,7 +336,7 @@ public class VDMCO extends VDMRT
 						reader = new ClassReader(ltr);
 						classes.addAll(reader.readClasses());
 						long after = System.currentTimeMillis();
-						duration += (after - before);
+						duration += after - before;
 					} else
 					{
 						long before = System.currentTimeMillis();
@@ -339,7 +357,7 @@ public class VDMCO extends VDMRT
 						reader = new ClassReader(ltr);
 						classes.addAll(reader.readClasses());
 						long after = System.currentTimeMillis();
-						duration += (after - before);
+						duration += after - before;
 					}
 				}
 			} catch (InternalException e)
@@ -370,7 +388,7 @@ public class VDMCO extends VDMRT
 		if (n > 0)
 		{
 			info("Parsed " + plural(n, "class", "es") + " in "
-					+ (double) (duration) / 1000 + " secs. ");
+					+ (double) duration / 1000 + " secs. ");
 			info(perrs == 0 ? "No syntax errors" : "Found "
 					+ plural(perrs, "syntax error", "s"));
 			infoln(pwarn == 0 ? "" : " and " + (warnings ? "" : "suppressed ")

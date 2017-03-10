@@ -29,15 +29,27 @@ import org.destecs.vdm.utility.SeqValueInfo;
 import org.destecs.vdm.utility.VDMClassHelper;
 import org.destecs.vdm.utility.ValueInfo;
 import org.destecs.vdmj.VDMCO;
-import org.destecs.vdmj.scheduler.*;
+import org.destecs.vdmj.scheduler.CoSimResourceScheduler;
+import org.destecs.vdmj.scheduler.SharedVariableUpdateThread;
 import org.overture.ast.lex.LexLocation;
 import org.overture.interpreter.messages.Console;
-import org.overture.interpreter.runtime.*;
+import org.overture.interpreter.runtime.ClassContext;
+import org.overture.interpreter.runtime.ClassInterpreter;
+import org.overture.interpreter.runtime.Context;
+import org.overture.interpreter.runtime.ContextException;
+import org.overture.interpreter.runtime.ValueException;
 import org.overture.interpreter.runtime.state.ASystemClassDefinitionRuntime;
 import org.overture.interpreter.scheduler.BasicSchedulableThread;
 import org.overture.interpreter.scheduler.ISchedulableThread;
 import org.overture.interpreter.scheduler.SystemClock;
-import org.overture.interpreter.values.*;
+import org.overture.interpreter.values.BooleanValue;
+import org.overture.interpreter.values.NameValuePair;
+import org.overture.interpreter.values.NameValuePairList;
+import org.overture.interpreter.values.NumericValue;
+import org.overture.interpreter.values.ObjectValue;
+import org.overture.interpreter.values.SeqValue;
+import org.overture.interpreter.values.TransactionValue;
+import org.overture.interpreter.values.Value;
 
 public abstract class BasicSimulationManager
 {
@@ -86,7 +98,7 @@ public abstract class BasicSimulationManager
 		NumericValue, Boolean, String, Unknown, Auto
 	}
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	protected Links links = null;
 	protected VDMCO controller = null;
 	protected CoSimResourceScheduler scheduler = null;
@@ -261,6 +273,7 @@ public abstract class BasicSimulationManager
 
 	/**
 	 * schedule a value set from a VDM value, this method performs no checks on whether the value types matches
+	 * 
 	 * @param valueDisplayName
 	 * @param val
 	 * @param newValue
@@ -306,8 +319,8 @@ public abstract class BasicSimulationManager
 
 		ValueInfo val = getValue(name);
 
-		if (valueContents.size.size() == 0
-				|| (valueContents.size.size() == 1 && valueContents.size.get(0) == 1))
+		if (valueContents.size.size() == 0 || valueContents.size.size() == 1
+				&& valueContents.size.get(0) == 1)
 		{
 			return setScalarValue(val, inputType, valueContents.value.get(0).toString(), name);
 		} else
