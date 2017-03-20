@@ -632,7 +632,6 @@ public class SimulationManager extends BasicSimulationManager
 			files.addAll(controller.getInterpreter().getSourceFiles());
 		} catch (Exception e)
 		{
-			debugErr(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;

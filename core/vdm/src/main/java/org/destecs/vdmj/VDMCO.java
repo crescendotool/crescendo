@@ -115,8 +115,6 @@ public class VDMCO extends VDMRT
 									i.execute("new World().run()", null);
 								} catch (Exception e)
 								{
-									// TODO Auto-generated catch block
-									e.printStackTrace();
 									exception = e;
 									status = ExitStatus.EXIT_ERRORS;
 									return;
@@ -134,14 +132,12 @@ public class VDMCO extends VDMRT
 						return;
 					} catch (Exception e)
 					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 						exception = e;
 						status = ExitStatus.EXIT_ERRORS;
+						return;
 					} finally
 					{
 						finished = true;
-
 					}
 				} else
 				{
