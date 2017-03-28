@@ -5,7 +5,7 @@
 
   <groupId>org.destecs</groupId>
   <artifactId>root</artifactId>
-  <version>2.1.1-SNAPSHOT</version>
+  <version>2.2.0</version>
   <name>DESTECS</name>
 
   <modules>
@@ -216,7 +216,7 @@ http://mojo.codehaus.org/versions-maven-plugin/
 		<url>git@github.com:cresendotool/crescendo.git</url>
 		<connection>scm:git:git://github.com/crescendotool/crescendo.git</connection>
 		<developerConnection>scm:git:git@github.com:crescendotool/crescendo.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>Release/2.2.0</tag>
 	</scm>
 
 
