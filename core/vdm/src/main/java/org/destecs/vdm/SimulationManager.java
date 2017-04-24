@@ -221,7 +221,7 @@ public class SimulationManager extends BasicSimulationManager
 				}
 			} catch (ValueException e)
 			{
-				debugErr(e);
+				logger.error(e.getMessage(),e);
 				throw new RemoteSimulationException("Faild to get output parameter", e);
 			}
 		}
@@ -262,7 +262,7 @@ public class SimulationManager extends BasicSimulationManager
 			throws RemoteSimulationException
 	{
 		nextTimeStep = outputTime.longValue();
-		debug("Next Step clock: " + nextTimeStep);
+		logger.debug("Next Step clock: " + nextTimeStep);
 
 		if (preStepAction != null)
 		{
@@ -282,7 +282,7 @@ public class SimulationManager extends BasicSimulationManager
 
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e.getMessage(),e);
 			throw new RemoteSimulationException("Notification of scheduler faild", e);
 		}
 
@@ -291,7 +291,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw new RemoteSimulationException("Exception occured at clock: "
 					+ nextTimeStep + " " + exception.getMessage(), exception);
 		}
-		debug("Next Step return at clock: " + nextTimeStep);
+		logger.debug("Next Step return at clock: " + nextTimeStep);
 
 		this.status = CoSimStatusEnum.STEP_TAKEN;
 	}
@@ -318,12 +318,12 @@ public class SimulationManager extends BasicSimulationManager
 						evaluated = true;
 					} catch (ValueException e)
 					{
-						debugErr(e);
+						logger.error(e.getMessage(),e);
 						throw new RemoteSimulationException("Faild to evaluate event: "
 								+ event, e);
 					} catch (AnalysisException e)
 					{
-						debugErr(e);
+						logger.error(e.getMessage(),e);
 						throw new RemoteSimulationException("Faild to evaluate event: "
 								+ event, e);
 					}
@@ -333,7 +333,7 @@ public class SimulationManager extends BasicSimulationManager
 		}
 		if (!evaluated)
 		{
-			debugErr("Event: " + event + " not found");
+			logger.error("Event: " + event + " not found");
 			throw new RemoteSimulationException("Faild to find event: " + event);
 		}
 	}
@@ -491,7 +491,7 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 
 		{
-			debugErr(e);
+			logger.error(e.getMessage(),e);
 			throw new RemoteSimulationException("Internal Error while loading the model.", e);
 
 		}
@@ -741,7 +741,7 @@ public class SimulationManager extends BasicSimulationManager
 						listener.changedValue(null, upVal, null);
 					} catch (AnalysisException e)
 					{
-						debugErr(e);
+						logger.error(e.getMessage(),e);
 						throw new RemoteSimulationException("Faild to change value internally", e);
 					}
 				} else
@@ -780,7 +780,7 @@ public class SimulationManager extends BasicSimulationManager
 
 				if (!links.getSharedDesignParameters().keySet().contains(parameterName))
 				{
-					debugErr("Tried to set unlinked shared design parameter: "
+					logger.error("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 					throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 							+ parameterName);
@@ -827,7 +827,7 @@ public class SimulationManager extends BasicSimulationManager
 				}
 				if (!found)
 				{
-					debugErr("Tried to set unlinked shared design parameter: "
+					logger.error("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 					throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 							+ parameterName);
@@ -838,7 +838,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw e;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e.getMessage(),e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -982,7 +982,7 @@ public class SimulationManager extends BasicSimulationManager
 
 			if (!links.getSharedDesignParameters().keySet().contains(parameterName))
 			{
-				debugErr("Tried to set unlinked shared design parameter: "
+				logger.error("Tried to set unlinked shared design parameter: "
 						+ parameterName);
 				throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 						+ parameterName);
@@ -1027,7 +1027,7 @@ public class SimulationManager extends BasicSimulationManager
 			}
 			if (!found)
 			{
-				debugErr("Tried to get unlinked shared design parameter: "
+				logger.error("Tried to get unlinked shared design parameter: "
 						+ parameterName);
 				throw new RemoteSimulationException("Tried to get unlinked shared design parameter: "
 						+ parameterName);
@@ -1038,7 +1038,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw e;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1071,7 +1071,7 @@ public class SimulationManager extends BasicSimulationManager
 			return parameters;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1145,7 +1145,7 @@ public class SimulationManager extends BasicSimulationManager
 			return parameters;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1165,7 +1165,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw e;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1216,7 +1216,7 @@ public class SimulationManager extends BasicSimulationManager
 			return true;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1243,7 +1243,7 @@ public class SimulationManager extends BasicSimulationManager
 
 		} catch (ValueException e)
 		{
-			debugErr(e);
+			logger.error(e);
 			throw new RemoteSimulationException("Could not get parameter: "
 					+ name, e);
 		}

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.apache.log4j.Logger;
 import org.destecs.core.vdmlink.Links;
 import org.destecs.protocol.exceptions.RemoteSimulationException;
 import org.destecs.vdm.utility.SeqValueInfo;
@@ -98,7 +99,7 @@ public abstract class BasicSimulationManager
 		NumericValue, Boolean, String, Unknown, Auto
 	}
 
-	private static final boolean DEBUG = true;
+	protected Logger logger = Logger.getLogger(BasicSimulationManager.class);
 	protected Links links = null;
 	protected VDMCO controller = null;
 	protected CoSimResourceScheduler scheduler = null;
@@ -152,7 +153,7 @@ public abstract class BasicSimulationManager
 							}
 						} catch (ValueException e)
 						{
-							debugErr(e);
+							logger.error(e.getMessage(),e);
 						} catch (ContextException e)
 						{
 							String message = "Error in simulation: Cannot set shared instance variable \""
@@ -166,8 +167,7 @@ public abstract class BasicSimulationManager
 							runtimeException = new RemoteSimulationException(message);
 						} catch (Exception e)
 						{
-							debugErr(e);
-							e.printStackTrace();
+							logger.error(e.getMessage(),e);
 						}
 					} catch (InterruptedException e)
 					{
@@ -221,7 +221,7 @@ public abstract class BasicSimulationManager
 									: false);
 						} catch (NumberFormatException e)
 						{
-							debugErr(e);
+							logger.error(e.getMessage(),e);
 							throw new RemoteSimulationException("Faild to setvalue from: "
 									+ name, e);
 						}
@@ -252,12 +252,12 @@ public abstract class BasicSimulationManager
 				updateValueQueueRequest.put(new ValueUpdateRequest(val, newval));
 			} catch (ValueException e)
 			{
-				debugErr(e);
+				logger.error(e.getMessage(),e);
 				throw new RemoteSimulationException("Faild to setvalue from: "
 						+ name, e);
 			} catch (InterruptedException e)
 			{
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				throw new RemoteSimulationException("Internal error in setValue with name: "
 						+ name, e);
 			}
@@ -299,7 +299,7 @@ public abstract class BasicSimulationManager
 				updateValueQueueRequest.put(new ValueUpdateRequest(val, newValue));
 			} catch (InterruptedException e)
 			{
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				throw new RemoteSimulationException("Internal error in setValue with name: "
 						+ valueDisplayName, e);
 			}
@@ -525,7 +525,7 @@ public abstract class BasicSimulationManager
 		interpreterRunning = false;
 		this.notify();
 
-		debug("Wait at clock:   " + SystemClock.getWallTime() + " - for "
+		logger.debug("Wait at clock:   " + SystemClock.getWallTime() + " - for "
 				+ minstep + " steps");
 		try
 		{
@@ -536,29 +536,8 @@ public abstract class BasicSimulationManager
 			// Ok just check again
 		}
 
-		debug("Resume at clock: " + nextTimeStep);
+		logger.debug("Resume at clock: " + nextTimeStep);
 		return nextTimeStep;
 	}
 
-	protected static void debug(String message)
-	{
-		if (DEBUG)
-		{
-			System.out.println(message);
-		}
-	}
-
-	protected static void debugErr(Object message)
-	{
-		if (DEBUG)
-		{
-			if (message instanceof Exception)
-			{
-				((Exception) message).printStackTrace();
-			} else
-			{
-				System.err.println(message);
-			}
-		}
-	}
 }
