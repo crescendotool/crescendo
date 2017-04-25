@@ -45,22 +45,26 @@ node {
 		}
 
 		stage ('Publish Artifactory'){
-			def server = Artifactory.server "-844406945@1404457436085"
-			def buildInfo = Artifactory.newBuildInfo()
-			buildInfo.env.capture = true
-			buildInfo.env.filter.addExclude("org/destecs/ide/**")
-			def rtMaven = Artifactory.newMavenBuild()
-			rtMaven.tool = "Maven 3.1.1" // Tool name from Jenkins configuration
-			rtMaven.opts = "-Xmx1024m -XX:MaxPermSize=256M"
-			rtMaven.deployer releaseRepo:'crescendo', snapshotRepo:'crescendo', server: server
-			//rtMaven.deployer releaseRepo:'crescendo-pipe', snapshotRepo:'crescendo-pipe', server: server
-			rtMaven.run pom: 'pom.xml', goals: 'install', buildInfo: buildInfo
 
-			//get rid of old snapshots only keep then for a short amount of time
-			buildInfo.retention maxBuilds: 5, maxDays: 7, deleteBuildArtifacts: true
+			if (env.BRANCH_NAME != 'master') {
+			
+				def server = Artifactory.server "-844406945@1404457436085"
+				def buildInfo = Artifactory.newBuildInfo()
+				buildInfo.env.capture = true
+				buildInfo.env.filter.addExclude("org/destecs/ide/**")
+				def rtMaven = Artifactory.newMavenBuild()
+				rtMaven.tool = "Maven 3.1.1" // Tool name from Jenkins configuration
+				rtMaven.opts = "-Xmx1024m -XX:MaxPermSize=256M"
+				rtMaven.deployer releaseRepo:'crescendo', snapshotRepo:'crescendo', server: server
+				//rtMaven.deployer releaseRepo:'crescendo-pipe', snapshotRepo:'crescendo-pipe', server: server
+				rtMaven.run pom: 'pom.xml', goals: 'install', buildInfo: buildInfo
+
+				//get rid of old snapshots only keep then for a short amount of time
+				buildInfo.retention maxBuilds: 5, maxDays: 7, deleteBuildArtifacts: true
 		
-			// Publish build info.
-			server.publishBuildInfo buildInfo
+				// Publish build info.
+				server.publishBuildInfo buildInfo
+			}
 		}
 
 		
