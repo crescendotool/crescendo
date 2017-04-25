@@ -131,6 +131,7 @@ public class SimulationManager extends BasicSimulationManager
 	private File coverageDirectory = null;
 	private boolean noOptimization;
 	private long internalFinishTime;
+	protected Exception exception = null;
 
 	/**
 	 * A handle to the unique Singleton instance.
@@ -174,7 +175,7 @@ public class SimulationManager extends BasicSimulationManager
 	 * @param outputTime
 	 * @param inputs
 	 * @param events
-	 * @return
+	 * @return returns the stepstruct with the required outputs
 	 * @throws RemoteSimulationException
 	 */
 	public synchronized StepStruct step(Double outputTime,
@@ -220,7 +221,7 @@ public class SimulationManager extends BasicSimulationManager
 				}
 			} catch (ValueException e)
 			{
-				debugErr(e);
+				logger.error(e.getMessage(),e);
 				throw new RemoteSimulationException("Faild to get output parameter", e);
 			}
 		}
@@ -229,8 +230,6 @@ public class SimulationManager extends BasicSimulationManager
 
 		return result;
 	}
-
-
 
 	protected void checkMainContext() throws RemoteSimulationException
 	{
@@ -263,7 +262,7 @@ public class SimulationManager extends BasicSimulationManager
 			throws RemoteSimulationException
 	{
 		nextTimeStep = outputTime.longValue();
-		debug("Next Step clock: " + nextTimeStep);
+		logger.debug("Next Step clock: " + nextTimeStep);
 
 		if (preStepAction != null)
 		{
@@ -276,16 +275,23 @@ public class SimulationManager extends BasicSimulationManager
 			SharedStateListner.resetAutoIncrementTime();
 			notify();// Wake up Scheduler
 
-			while (interpreterRunning)
+			while (interpreterRunning && exception == null)
 			{
-				this.wait();// Wait for scheduler to notify
+				this.wait(500);// Wait for scheduler to notify
 			}
+
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e.getMessage(),e);
 			throw new RemoteSimulationException("Notification of scheduler faild", e);
 		}
-		debug("Next Step return at clock: " + nextTimeStep);
+
+		if (exception != null)
+		{
+			throw new RemoteSimulationException("Exception occured at clock: "
+					+ nextTimeStep + " " + exception.getMessage(), exception);
+		}
+		logger.debug("Next Step return at clock: " + nextTimeStep);
 
 		this.status = CoSimStatusEnum.STEP_TAKEN;
 	}
@@ -312,12 +318,12 @@ public class SimulationManager extends BasicSimulationManager
 						evaluated = true;
 					} catch (ValueException e)
 					{
-						debugErr(e);
+						logger.error(e.getMessage(),e);
 						throw new RemoteSimulationException("Faild to evaluate event: "
 								+ event, e);
 					} catch (AnalysisException e)
 					{
-						debugErr(e);
+						logger.error(e.getMessage(),e);
 						throw new RemoteSimulationException("Faild to evaluate event: "
 								+ event, e);
 					}
@@ -327,7 +333,7 @@ public class SimulationManager extends BasicSimulationManager
 		}
 		if (!evaluated)
 		{
-			debugErr("Event: " + event + " not found");
+			logger.error("Event: " + event + " not found");
 			throw new RemoteSimulationException("Faild to find event: " + event);
 		}
 	}
@@ -485,7 +491,7 @@ public class SimulationManager extends BasicSimulationManager
 		} catch (Exception e)
 
 		{
-			debugErr(e);
+			logger.error(e.getMessage(),e);
 			throw new RemoteSimulationException("Internal Error while loading the model.", e);
 
 		}
@@ -626,7 +632,6 @@ public class SimulationManager extends BasicSimulationManager
 			files.addAll(controller.getInterpreter().getSourceFiles());
 		} catch (Exception e)
 		{
-			debugErr(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -736,7 +741,7 @@ public class SimulationManager extends BasicSimulationManager
 						listener.changedValue(null, upVal, null);
 					} catch (AnalysisException e)
 					{
-						debugErr(e);
+						logger.error(e.getMessage(),e);
 						throw new RemoteSimulationException("Faild to change value internally", e);
 					}
 				} else
@@ -775,7 +780,7 @@ public class SimulationManager extends BasicSimulationManager
 
 				if (!links.getSharedDesignParameters().keySet().contains(parameterName))
 				{
-					debugErr("Tried to set unlinked shared design parameter: "
+					logger.error("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 					throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 							+ parameterName);
@@ -801,7 +806,7 @@ public class SimulationManager extends BasicSimulationManager
 									&& Interpreter.getInstance().getAssistantFactory().createPDefinitionAssistant().isValueDefinition(vDef))
 							{
 								if (dimension.length == 1
-										&& ((Integer) dimension[0] == 1))
+										&& (Integer) dimension[0] == 1)
 								{
 									Double newValue = (Double) objValue[0];
 									found = setValueForSDP(newValue, vDef);
@@ -822,7 +827,7 @@ public class SimulationManager extends BasicSimulationManager
 				}
 				if (!found)
 				{
-					debugErr("Tried to set unlinked shared design parameter: "
+					logger.error("Tried to set unlinked shared design parameter: "
 							+ parameterName);
 					throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 							+ parameterName);
@@ -833,7 +838,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw e;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e.getMessage(),e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -900,7 +905,9 @@ public class SimulationManager extends BasicSimulationManager
 			List<Integer> dimensions)
 	{
 		if (seqEnum.getMembers().size() != dimensions.get(0))
+		{
 			return false;
+		}
 
 		for (PExp exp : seqEnum.getMembers())
 		{
@@ -908,7 +915,9 @@ public class SimulationManager extends BasicSimulationManager
 			{
 				ASeqEnumSeqExp seqEnumInner = (ASeqEnumSeqExp) exp;
 				if (seqEnumInner.getMembers().size() != dimensions.get(1))
+				{
 					return false;
+				}
 			}
 		}
 
@@ -924,7 +933,7 @@ public class SimulationManager extends BasicSimulationManager
 
 		if (exp != null && exp instanceof ARealLiteralExp)
 		{
-			ARealLiteralExp rExp = ((ARealLiteralExp) exp);
+			ARealLiteralExp rExp = (ARealLiteralExp) exp;
 			ILexRealToken token = rExp.getValue();
 
 			Field valueField = LexRealToken.class.getField("value");
@@ -973,7 +982,7 @@ public class SimulationManager extends BasicSimulationManager
 
 			if (!links.getSharedDesignParameters().keySet().contains(parameterName))
 			{
-				debugErr("Tried to set unlinked shared design parameter: "
+				logger.error("Tried to set unlinked shared design parameter: "
 						+ parameterName);
 				throw new RemoteSimulationException("Tried to set unlinked shared design parameter: "
 						+ parameterName);
@@ -999,7 +1008,7 @@ public class SimulationManager extends BasicSimulationManager
 						{
 							if (vDef.getExpression() instanceof ARealLiteralExp)
 							{
-								ARealLiteralExp exp = ((ARealLiteralExp) vDef.getExpression());
+								ARealLiteralExp exp = (ARealLiteralExp) vDef.getExpression();
 								ILexRealToken token = exp.getValue();
 								List<Double> value = new Vector<Double>();
 								value.add(token.getValue());
@@ -1018,7 +1027,7 @@ public class SimulationManager extends BasicSimulationManager
 			}
 			if (!found)
 			{
-				debugErr("Tried to get unlinked shared design parameter: "
+				logger.error("Tried to get unlinked shared design parameter: "
 						+ parameterName);
 				throw new RemoteSimulationException("Tried to get unlinked shared design parameter: "
 						+ parameterName);
@@ -1029,7 +1038,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw e;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1043,7 +1052,7 @@ public class SimulationManager extends BasicSimulationManager
 	/**
 	 * This function returns VDM values which is constants
 	 * 
-	 * @return
+	 * @return returns vdm value constants
 	 * @throws RemoteSimulationException
 	 */
 	public Map<String, ValueContents> getParameters()
@@ -1062,7 +1071,7 @@ public class SimulationManager extends BasicSimulationManager
 			return parameters;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1075,7 +1084,7 @@ public class SimulationManager extends BasicSimulationManager
 			NameValuePairList members, int depth) throws ValueException
 	{
 		Map<String, ValueContents> parameters = new Hashtable<String, ValueContents>();
-		String prefix = (name.length() == 0 ? "" : name + ".");
+		String prefix = name.length() == 0 ? "" : name + ".";
 		if (depth < 10)
 		{
 			for (NameValuePair p : members)
@@ -1113,7 +1122,7 @@ public class SimulationManager extends BasicSimulationManager
 	 * 
 	 * @param filter
 	 *            a filter used to restrict the returned collection, if empty the full set is returned
-	 * @return
+	 * @return returns the VDM instance variables
 	 * @throws RemoteSimulationException
 	 */
 	public Map<String, ValueContents> getInstanceVariables(List<String> filter)
@@ -1136,7 +1145,7 @@ public class SimulationManager extends BasicSimulationManager
 			return parameters;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1156,7 +1165,7 @@ public class SimulationManager extends BasicSimulationManager
 			throw e;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1207,7 +1216,7 @@ public class SimulationManager extends BasicSimulationManager
 			return true;
 		} catch (Exception e)
 		{
-			debugErr(e);
+			logger.error(e);
 			if (e instanceof RemoteSimulationException)
 			{
 				throw (RemoteSimulationException) e;
@@ -1234,7 +1243,7 @@ public class SimulationManager extends BasicSimulationManager
 
 		} catch (ValueException e)
 		{
-			debugErr(e);
+			logger.error(e);
 			throw new RemoteSimulationException("Could not get parameter: "
 					+ name, e);
 		}
@@ -1300,4 +1309,10 @@ public class SimulationManager extends BasicSimulationManager
 	{
 		return internalFinishTime;
 	}
+
+	public void setException(Exception e)
+	{
+		exception = e;
+	}
+
 }

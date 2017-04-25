@@ -19,6 +19,9 @@
 package org.destecs.vdmj.scheduler;
 
 import org.destecs.vdm.SimulationManager;
+import org.overture.ast.expressions.PExp;
+import org.overture.config.Settings;
+import org.overture.interpreter.runtime.Context;
 import org.overture.interpreter.scheduler.BasicSchedulableThread;
 import org.overture.interpreter.scheduler.MainThread;
 import org.overture.interpreter.scheduler.Resource;
@@ -31,6 +34,36 @@ import org.overture.interpreter.values.BUSValue;
 
 public class CoSimResourceScheduler extends ResourceScheduler
 {
+
+	public interface IExceptionHandler
+	{
+		void setException(Exception e);
+	}
+
+	private static class ExceptionDelegatingMainThread extends MainThread
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private final IExceptionHandler exceptionHandler;
+
+		public ExceptionDelegatingMainThread(PExp expr, Context ctxt,
+				IExceptionHandler eHandler)
+		{
+			super(expr, ctxt);
+			this.exceptionHandler = eHandler;
+		}
+
+		@Override
+		public void setException(Exception e)
+		{
+			this.exceptionHandler.setException(e);
+		}
+
+	}
+
 	public CoSimResourceScheduler()
 	{
 		SimulationManager.getInstance().register(this);
@@ -45,10 +78,29 @@ public class CoSimResourceScheduler extends ResourceScheduler
 
 	private boolean forceStop = false;
 
+	protected static MainThread activeMainThread = null;
+
 	@Override
 	public void start(MainThread main)
 	{
-		mainThread = main;
+		activeMainThread = main;
+
+		if (Settings.usingCmdLine)
+		{
+			ResourceScheduler.mainThread = new ExceptionDelegatingMainThread(activeMainThread.expression, activeMainThread.ctxt, new IExceptionHandler()
+			{
+
+				@Override
+				public void setException(Exception e)
+				{
+					SimulationManager.getInstance().setException(e);
+				}
+			});
+		} else
+		{
+			ResourceScheduler.mainThread = activeMainThread;
+		}
+
 		SimulationManager.getInstance().setMainContext(mainThread.ctxt);
 		BUSValue.start(); // Start BUS threads first...
 
@@ -98,34 +150,9 @@ public class CoSimResourceScheduler extends ResourceScheduler
 				idle = false;
 			}
 
-		} while (/*!idle &&*/ main.getRunState() != RunState.COMPLETE);
+		} while (/* !idle && */main.getRunState() != RunState.COMPLETE);
 
 		stopping = true;
-		/*
-		if (main.getRunState() != RunState.COMPLETE)
-		{
-			for (Resource resource : resources)
-			{
-				if (resource.hasActive())
-				{
-					Console.err.println("DEADLOCK detected");
-					BasicSchedulableThread.signalAll(Signal.DEADLOCKED);
-
-					while (main.isAlive())
-					{
-						try
-						{
-							Thread.sleep(500);
-						} catch (InterruptedException e)
-						{
-							// ?
-						}
-					}
-
-					break;
-				}
-			}
-		}*/
 
 		BasicSchedulableThread.signalAll(Signal.TERMINATE);
 	}
@@ -134,7 +161,9 @@ public class CoSimResourceScheduler extends ResourceScheduler
 	{
 		long newTime = SystemClock.getWallTime() + minstep;
 		SimulationManager manager = SimulationManager.getInstance();
-		if (newTime <= nextSimulationStop || ( manager.isOptimizationEnabled() && SharedStateListner.isAutoIncrementTime() && newTime <manager.getFinishTime()))
+		if (newTime <= nextSimulationStop || manager.isOptimizationEnabled()
+				&& SharedStateListner.isAutoIncrementTime()
+				&& newTime < manager.getFinishTime())
 		{
 			return true; // OK, just proceed there is still simulation time left
 		} else

@@ -88,7 +88,7 @@ public class CoSimImpl implements IDestecs
 	private String interfaceVersion = "3.0.4.0";
 	public static boolean DEBUG = false;;
 	private static Double finishTime = 0.0;
-	
+
 	static final InterpreterAssistantFactory interpreterAssistantFactory = new InterpreterAssistantFactory();
 
 	public Map<String, Integer> getStatus()
@@ -115,8 +115,7 @@ public class CoSimImpl implements IDestecs
 		}
 	}
 
-	public Boolean load(
-			Map<String, List<Map<String, Object>>> data)
+	public Boolean load(Map<String, List<Map<String, Object>>> data)
 			throws RemoteSimulationException
 	{
 		VDMCO.replaceNewIdentifier.clear();
@@ -216,8 +215,8 @@ public class CoSimImpl implements IDestecs
 
 		try
 		{
-			Links links =null;
-			
+			Links links = null;
+
 			if (!linkFile.exists() || linkFile.isDirectory())
 			{
 				throw new RemoteSimulationException("The VDM link file does not exist: "
@@ -226,19 +225,17 @@ public class CoSimImpl implements IDestecs
 			VdmLinkParserWrapper linksParser = new VdmLinkParserWrapper();
 			try
 			{
-				links= linksParser.parse(linkFile);
+				links = linksParser.parse(linkFile);
 			} catch (IOException e)
 			{
-				throw new RemoteSimulationException("Faild to parse vdm links",e);
+				throw new RemoteSimulationException("Faild to parse vdm links", e);
 			}// Links.load(linkFile);
 
 			if (links == null || linksParser.hasErrors())
 			{
 				throw new RemoteSimulationException("Faild to parse vdm links");
 			}
-			
-			
-			
+
 			return SimulationManager.getInstance().load(specfiles, links, new File(outputDir), baseDirFile, disableRtLog, disableCoverage, disableOptimization);
 		} catch (RemoteSimulationException e)
 		{
@@ -271,15 +268,16 @@ public class CoSimImpl implements IDestecs
 				return extractDefinitionDimensions(def);
 			}
 
-		}catch(RemoteSimulationException e){
+		} catch (RemoteSimulationException e)
+		{
 			throw e;
-		}catch (Exception e)
+		} catch (Exception e)
 		{
 			ErrorLog.log(e);
-			throw new RemoteSimulationException("Fatal error in dimention calculation for \"" 	+ linkInfo 	+ "\"",e);
+			throw new RemoteSimulationException("Fatal error in dimention calculation for \""
+					+ linkInfo + "\"", e);
 
 		}
-
 
 	}
 
@@ -295,7 +293,8 @@ public class CoSimImpl implements IDestecs
 
 	}
 
-	public Map<String, Object> queryInterface() throws RemoteSimulationException
+	public Map<String, Object> queryInterface()
+			throws RemoteSimulationException
 	{
 		/*
 		 * Shared design variables minLevel maxLevel Variables level :IN valveState :OUT Events HIGH_LEVEL LOW_LEVEL
@@ -401,7 +400,7 @@ public class CoSimImpl implements IDestecs
 				CoSim.shutdown();
 			}
 		});
-		if(!DEBUG )
+		if (!DEBUG)
 		{
 			shutdown.start();
 		}
@@ -440,9 +439,9 @@ public class CoSimImpl implements IDestecs
 		{
 			for (String name : data)
 			{
-				list.add(new GetParametersStructparametersStruct(name, SimulationManager.getInstance().getParameterSize(name),SimulationManager.getInstance().getParameter(name)));
+				list.add(new GetParametersStructparametersStruct(name, SimulationManager.getInstance().getParameterSize(name), SimulationManager.getInstance().getParameter(name)));
 			}
-			
+
 		} catch (RemoteSimulationException e)
 		{
 			ErrorLog.log(e);
@@ -537,10 +536,10 @@ public class CoSimImpl implements IDestecs
 			if (data.values().size() > 0)
 			{
 				Object t = data.get("parameters");
-				for (Object parms : (Object[])t)
+				for (Object parms : (Object[]) t)
 				{
 					Map<String, Object> s = (Map<String, Object>) parms;
-					success =success && setParameter(s);
+					success = success && setParameter(s);
 				}
 				return success;
 			}
@@ -595,7 +594,7 @@ public class CoSimImpl implements IDestecs
 		{
 			Hashtable<String, Object> table = new Hashtable<String, Object>();
 			table.put("name", name);
-			table.put("size", new Integer[]{});
+			table.put("size", new Integer[] {});
 			result.add(table);
 		}
 		return result;
@@ -606,7 +605,7 @@ public class CoSimImpl implements IDestecs
 		List<Map<String, Object>> result = getParameters(new Vector<String>()).get("parameters");
 		for (Map<String, Object> map : result)
 		{
-			if(map.containsKey("value"))
+			if (map.containsKey("value"))
 			{
 				map.remove("value");
 			}
@@ -630,8 +629,9 @@ public class CoSimImpl implements IDestecs
 	/**
 	 * This method is just a skip, we need to resume from the IDE. This is needed because the IDE hold a state
 	 * representing the state of the threads
-	 * @return 
-	 * @throws Exception 
+	 * 
+	 * @return true
+	 * @throws Exception
 	 */
 	public Boolean resume() throws Exception
 	{
@@ -646,46 +646,46 @@ public class CoSimImpl implements IDestecs
 			for (Map<String, Object> map : data)
 			{
 				String name = map.get("key").toString();
-				Object  value = map.get("value");
-				if(value instanceof Boolean)
+				Object value = map.get("value");
+				if (value instanceof Boolean)
 				{
 					Field field = Settings.class.getField(name);
-					if(field.getType() == Boolean.class)
+					if (field.getType() == Boolean.class)
 					{
 						field.set(null, value);
 					}
-				}else if(value instanceof Integer)
+				} else if (value instanceof Integer)
 				{
 					Field field = Settings.class.getField(name);
-					if(field.getType() == Integer.class)
+					if (field.getType() == Integer.class)
 					{
 						field.set(null, value);
 					}
-				}else if(value instanceof Double)
+				} else if (value instanceof Double)
 				{
 					Field field = Settings.class.getField(name);
-					if(field.getType() == Double.class)
+					if (field.getType() == Double.class)
 					{
 						field.set(null, value);
 					}
-				}else if(value instanceof String)
+				} else if (value instanceof String)
 				{
 					Field field = Settings.class.getField(name);
-					if(field.getType() == String.class)
+					if (field.getType() == String.class)
 					{
 						field.set(null, value);
 					}
-				}else 
+				} else
 				{
 					Field field = Settings.class.getField(name);
-					if(field.getType().isEnum())
+					if (field.getType().isEnum())
 					{
 						@SuppressWarnings("rawtypes")
-						Enum e =(Enum) field.getType().newInstance();
+						Enum e = (Enum) field.getType().newInstance();
 						field.set(null, e.valueOf(e.getClass(), value.toString()));
 					}
 				}
-				
+
 			}
 		} catch (Exception e)
 		{
@@ -719,34 +719,36 @@ public class CoSimImpl implements IDestecs
 			throw e;
 		}
 	}
-	private Map<String,Object> createSettingsMapElement(String key,Object value,String... values)
+
+	private Map<String, Object> createSettingsMapElement(String key,
+			Object value, String... values)
 	{
-		Map<String,Object> setting = new Hashtable<String, Object>();
+		Map<String, Object> setting = new Hashtable<String, Object>();
 		setting.put("key", key);
 		setting.put("value", value.toString());
-		if(value instanceof Integer)
+		if (value instanceof Integer)
 		{
 			setting.put("type", "int");
-		}else if(value instanceof Double)
+		} else if (value instanceof Double)
 		{
 			setting.put("type", "double");
-		}else if(value instanceof Boolean)
+		} else if (value instanceof Boolean)
 		{
 			setting.put("type", "bool");
-		}else if(value instanceof Enum)
+		} else if (value instanceof Enum)
 		{
 			setting.put("type", "enum");
-		}else
+		} else
 		{
 			setting.put("type", "string");
 		}
-		
-		if(values == null)
+
+		if (values == null)
 		{
-			values = new String[]{};
+			values = new String[] {};
 		}
 		setting.put("enumerations", value);
-		setting.put("properties", new Object[]{});
+		setting.put("properties", new Object[] {});
 		return setting;
 	}
 
@@ -776,7 +778,7 @@ public class CoSimImpl implements IDestecs
 			ErrorLog.log(e);
 			throw e;
 		}
-		
+
 		return vars.toMap();
 	}
 
