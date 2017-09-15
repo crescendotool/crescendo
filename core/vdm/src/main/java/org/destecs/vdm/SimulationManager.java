@@ -178,7 +178,7 @@ public class SimulationManager extends BasicSimulationManager
 	 * @return returns the stepstruct with the required outputs
 	 * @throws RemoteSimulationException
 	 */
-	public synchronized StepStruct step(Double outputTime,
+	public synchronized StepStruct step(long outputTime,
 			List<StepinputsStructParam> inputs, final List<String> events)
 			throws RemoteSimulationException
 	{
@@ -258,10 +258,10 @@ public class SimulationManager extends BasicSimulationManager
 		void call() throws RemoteSimulationException;
 	}
 
-	protected void doInternalStep(Double outputTime, ICallDelegate preStepAction)
+	protected void doInternalStep(long outputTime, ICallDelegate preStepAction)
 			throws RemoteSimulationException
 	{
-		nextTimeStep = outputTime.longValue();
+		nextTimeStep = outputTime;
 		logger.debug("Next Step clock: " + nextTimeStep);
 
 		if (preStepAction != null)

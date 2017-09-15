@@ -95,7 +95,7 @@ public class CoSimTest
 			List<StepinputsStructParam> inputs = new Vector<StepinputsStructParam>();
 			inputs.add(new StepinputsStructParam("level", Arrays.asList(new Integer[] { 1 }), Arrays.asList(new Double[] { level })));
 
-			double timeTmp = new Double(SystemClock.timeToInternal(TimeUnit.seconds, time));
+			long timeTmp =SystemClock.timeToInternal(TimeUnit.seconds, time);
 			StepStruct res = SimulationManager.getInstance().step(timeTmp, inputs, new Vector<String>());
 
 			res.time = SystemClock.internalToTime(TimeUnit.seconds, res.time.longValue());

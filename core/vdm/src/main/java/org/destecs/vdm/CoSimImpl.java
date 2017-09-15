@@ -362,8 +362,8 @@ public class CoSimImpl implements IDestecs
 
 			StepStruct result;
 
-			outputTime = new Double(SystemClock.timeToInternal(TimeUnit.seconds, outputTime));
-			result = SimulationManager.getInstance().step(outputTime, inputs, events);
+			long internalOutputTime = SystemClock.timeToInternal(TimeUnit.seconds, outputTime);
+			result = SimulationManager.getInstance().step(internalOutputTime, inputs, events);
 
 			result.time = SystemClock.internalToTime(TimeUnit.seconds, result.time.longValue());
 			if (result.time > finishTime)
