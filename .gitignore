@@ -46,3 +46,7 @@ ehthumbs.db
 Thumbs.db
 
 repository
+
+# IntelliJ
+*.iml
+.idea/
