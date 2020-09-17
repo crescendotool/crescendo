@@ -283,7 +283,7 @@ public class CoSimImpl implements IDestecs
 
 	private Integer extractDefinitionDimensions(PDefinition def)
 	{
-		if (interpreterAssistantFactory.createPTypeAssistant().isSeq(def.getType()))
+		if (interpreterAssistantFactory.createPTypeAssistant().isSeq(def.getType(), null))
 		{
 			return -1;
 		} else
